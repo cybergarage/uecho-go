@@ -8,6 +8,6 @@ import (
 	"testing"
 )
 
-func TestNewClient(t *testing.T) {
-	NewClient()
+func TestNewClass(t *testing.T) {
+	NewClass()
 }
