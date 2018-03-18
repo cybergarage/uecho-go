@@ -4,6 +4,10 @@
 
 package uecho
 
+import (
+	"net"
+)
+
 const (
 	uEchoMessageHeaderLen = (1 + 1 + 2)
 	uEchoMessageMinLen    = (uEchoMessageHeaderLen + 3 + 3 + 1 + 1)
@@ -15,20 +19,27 @@ const (
 
 // Message is an instance for Echonet message.
 type Message struct {
-	EHD1     byte
-	EHD2     byte
-	TID      [uEchoTIDSize]byte
-	SEOJ     [uEchoEOJSize]byte
-	DEOJ     [uEchoEOJSize]byte
-	ESV      int
-	OPC      byte
-	Property *Property
-	bytes    []byte
-	srcAddr  string
+	EHD1      byte
+	EHD2      byte
+	TID       [uEchoTIDSize]byte
+	SEOJ      [uEchoEOJSize]byte
+	DEOJ      [uEchoEOJSize]byte
+	ESV       int
+	OPC       byte
+	Property  *Property
+	bytes     []byte
+	srcAddr   string
+	From      net.UDPAddr
+	Interface net.Interface
 }
 
 // NewMessage returns a new message.
 func NewMessage() *Message {
 	msg := &Message{}
 	return msg
+}
+
+// Parse parses the specified bytes.
+func (msg *Message) Parse(data []byte) error {
+	return nil
 }

@@ -18,4 +18,6 @@ const (
 
 	uEchoSpecifiedMessageFormat = 0x01
 	uEchoArbitraryMessageFormat = 0x02
+
+	uechoMaxPacketSize = 1024
 )

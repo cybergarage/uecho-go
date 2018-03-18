@@ -11,10 +11,33 @@ type Node struct {
 	Classes []Class
 	Objects []Object
 	Address string
+	server  *server
 }
 
 // NewNode returns a new object.
 func NewNode() *Node {
-	node := &Node{}
+	node := &Node{
+		server: newServer(),
+	}
 	return node
+}
+
+// Start starts the node.
+func (node *Node) Start() error {
+	err := node.server.Start()
+	if err != nil {
+		return nil
+	}
+
+	return nil
+}
+
+// Stop stop the node.
+func (node *Node) Stop() error {
+	err := node.server.Stop()
+	if err != nil {
+		return nil
+	}
+
+	return nil
 }
