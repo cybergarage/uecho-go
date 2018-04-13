@@ -26,7 +26,7 @@ func NewNode() *Node {
 func (node *Node) Start() error {
 	err := node.server.Start()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
@@ -36,7 +36,7 @@ func (node *Node) Start() error {
 func (node *Node) Stop() error {
 	err := node.server.Stop()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil

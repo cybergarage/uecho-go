@@ -9,5 +9,15 @@ import (
 )
 
 func TestNewController(t *testing.T) {
-	NewController()
+	ctrl := NewController()
+
+	err := ctrl.Start()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = ctrl.Stop()
+	if err != nil {
+		t.Error(err)
+	}
 }

@@ -30,3 +30,23 @@ func NewController() *Controller {
 func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.listener = l
 }
+
+// Start starts the controller.
+func (ctrl *Controller) Start() error {
+	err := ctrl.node.Start()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Stop stop the controller.
+func (ctrl *Controller) Stop() error {
+	err := ctrl.node.Stop()
+	if err != err {
+		return nil
+	}
+
+	return nil
+}
