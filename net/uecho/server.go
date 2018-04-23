@@ -4,31 +4,26 @@
 
 package uecho
 
-const ()
+import (
+	"github.com/cybergarage/uecho-go/net/uecho/session"
+)
 
 // server is an instance for Echonet node.
 type server struct {
-	*multiCastServer
-	*uniCastServer
+	*session.MessageManager
 }
 
 // NewNode returns a new object.
 func newServer() *server {
 	server := &server{
-		multiCastServer: newMultiCastServer(),
-		uniCastServer:   newUniCastServer(),
+		MessageManager: session.NewMessageManager(),
 	}
 	return server
 }
 
 // Start starts the server.
 func (server *server) Start() error {
-	err := server.multiCastServer.Start()
-	if err != nil {
-		return nil
-	}
-
-	err = server.uniCastServer.Start()
+	err := server.MessageManager.Start()
 	if err != nil {
 		return nil
 	}
@@ -38,12 +33,7 @@ func (server *server) Start() error {
 
 // Stop stop the server.
 func (server *server) Stop() error {
-	err := server.multiCastServer.Stop()
-	if err != nil {
-		return nil
-	}
-
-	err = server.uniCastServer.Stop()
+	err := server.MessageManager.Stop()
 	if err != nil {
 		return nil
 	}

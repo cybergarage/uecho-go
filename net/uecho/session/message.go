@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package uecho
+package session
 
 import (
 	"net"
@@ -37,6 +37,16 @@ type Message struct {
 func NewMessage() *Message {
 	msg := &Message{}
 	return msg
+}
+
+// NewMessageWithBytes returns a new message of the specified bytes.
+func NewMessageWithBytes(data []byte) (*Message, error) {
+	msg := NewMessage()
+	err := msg.Parse(data)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
 }
 
 // Parse parses the specified bytes.
