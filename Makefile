@@ -45,13 +45,13 @@ format:
 vet: format
 	go vet ${PACKAGES}
 
-build: antlr vet
+build: vet
 	go build -v ${PACKAGES}
 
-test: antlr vet
+test: vet
 	go test -v -cover ${PACKAGES}
 
-install: antlr vet
+install: vet
 	go install ${BINARIES}
 
 clean:
