@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package uecho
+package session
 
 import (
 	"testing"
 )
 
-func TestNewniCastServer(t *testing.T) {
-	newUniCastServer()
+func TestNewProperty(t *testing.T) {
+	NewProperty()
 }
