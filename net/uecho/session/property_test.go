@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package uecho
+package session
 
 import (
 	"testing"
 )
 
-func TestNewMessage(t *testing.T) {
-	NewMessage()
+func TestNewProperty(t *testing.T) {
+	NewProperty()
 }
