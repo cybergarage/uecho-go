@@ -5,18 +5,18 @@
 package uecho
 
 import (
-	"github.com/cybergarage/uecho-go/net/uecho/session"
+	"github.com/cybergarage/uecho-go/net/uecho/transport"
 )
 
 // server is an instance for Echonet node.
 type server struct {
-	*session.MessageManager
+	*transport.MessageManager
 }
 
 // NewNode returns a new object.
 func newServer() *server {
 	server := &server{
-		MessageManager: session.NewMessageManager(),
+		MessageManager: transport.NewMessageManager(),
 	}
 	return server
 }
@@ -31,7 +31,7 @@ func (server *server) Start() error {
 	return nil
 }
 
-// Stop stop the server.
+// Stop stops the server.
 func (server *server) Stop() error {
 	err := server.MessageManager.Stop()
 	if err != nil {

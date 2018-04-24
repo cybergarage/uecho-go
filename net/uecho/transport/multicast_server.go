@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package session
+package transport
 
 import (
 	"net"
+
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 // A MulticastListener represents a listener for MulticastServer.
 type MulticastListener interface {
-	MessageReceived(*Message)
+	MessageReceived(*protocol.Message)
 }
 
 // A MulticastServer represents a packet.
