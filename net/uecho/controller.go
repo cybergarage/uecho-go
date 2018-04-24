@@ -5,12 +5,12 @@
 package uecho
 
 import (
-	"github.com/cybergarage/uecho-go/net/uecho/session"
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 // ControllerListener is a listener for Echonet messages.
 type ControllerListener interface {
-	ControllerMessageReceived(msg *session.Message)
+	ControllerMessageReceived(msg *protocol.Message)
 }
 
 // Controller is an instance for Echonet controller.

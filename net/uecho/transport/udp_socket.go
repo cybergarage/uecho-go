@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package session
+package transport
 
 import (
 	"errors"
 	"net"
+
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 const (
@@ -44,7 +46,7 @@ func (sock *UDPSocket) Close() error {
 }
 
 // Read reads from the current opened socket.
-func (sock *UDPSocket) Read() (*Message, error) {
+func (sock *UDPSocket) Read() (*protocol.Message, error) {
 	if sock.Conn == nil {
 		return nil, errors.New(errorSocketIsClosed)
 	}
@@ -54,7 +56,7 @@ func (sock *UDPSocket) Read() (*Message, error) {
 		return nil, err
 	}
 
-	msg, err := NewMessageWithBytes(sock.readBuf[:n])
+	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
 	if err != nil {
 		return nil, err
 	}

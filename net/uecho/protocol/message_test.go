@@ -1,13 +1,13 @@
-// Copyright 2017 Satoshi Konno. All rights reserved.
+// Copyright (C) 2018 Satoshi Konno. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package session
+package protocol
 
 import (
 	"testing"
 )
 
-func TestNewUDPSocket(t *testing.T) {
-	NewUDPSocket()
+func TestNewMessage(t *testing.T) {
+	NewMessage()
 }
