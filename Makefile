@@ -24,7 +24,9 @@ PACKAGE_ID=${GITHUB}
 PACKAGES=\
 	${PACKAGE_ID} \
 	${PACKAGE_ID}/util \
-	${PACKAGE_ID}/session
+	${PACKAGE_ID}/encoding \
+	${PACKAGE_ID}/protocol \
+	${PACKAGE_ID}/transport
 
 SOURCE_ROOT_DIR=src/${PACKAGE_ROOT}
 
