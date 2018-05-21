@@ -52,7 +52,7 @@ func (server *UnicastServer) Stop() error {
 
 func handleUnicastConnection(server *UnicastServer) {
 	for {
-		msg, err := server.Socket.Read()
+		msg, err := server.Socket.ReadMessage()
 		if err != nil {
 			break
 		}
