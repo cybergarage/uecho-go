@@ -45,8 +45,22 @@ func (sock *UDPSocket) Close() error {
 	return nil
 }
 
-// Read reads from the current opened socket.
-func (sock *UDPSocket) Read() (*protocol.Message, error) {
+// ReadBytes reads received bytes from the current opened socket.
+func (sock *UDPSocket) ReadBytes() ([]byte, error) {
+	if sock.Conn == nil {
+		return nil, errors.New(errorSocketIsClosed)
+	}
+
+	n, _, err := sock.Conn.ReadFromUDP(sock.readBuf)
+	if err != nil {
+		return nil, err
+	}
+
+	return sock.readBuf[:n], nil
+}
+
+// ReadMessage reads a message from the current opened socket.
+func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	if sock.Conn == nil {
 		return nil, errors.New(errorSocketIsClosed)
 	}

@@ -52,7 +52,7 @@ func (server *MulticastServer) Stop() error {
 
 func handleMulticastConnection(server *MulticastServer) {
 	for {
-		msg, err := server.Socket.Read()
+		msg, err := server.Socket.ReadMessage()
 		if err != nil {
 			break
 		}
