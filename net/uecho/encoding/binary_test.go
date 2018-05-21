@@ -43,9 +43,3 @@ func TestBinaryEncoding(t *testing.T) {
 		}
 	}
 }
-
-func TestBinaryEncoding(t *testing.T) {
-	BOOST_CHECK_EQUAL(uecho_objectcode2classcode(0x0EF001), 0x0EF0)
-	BOOST_CHECK_EQUAL(uecho_objectcode2classcode(0x001102), 0x0011)
-	BOOST_CHECK_EQUAL(uecho_objectcode2classcode(0x001102), 0x0011)
-}
