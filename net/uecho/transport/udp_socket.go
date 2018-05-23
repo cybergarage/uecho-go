@@ -29,6 +29,15 @@ func NewUDPSocket() *UDPSocket {
 	return sock
 }
 
+// GetFD returns the file descriptor.
+func (sock *UDPSocket) GetFD() (uintptr, error) {
+	f, err := sock.Conn.File()
+	if err != nil {
+		return 0, err
+	}
+	return f.Fd(), nil
+}
+
 // Close closes the current opened socket.
 func (sock *UDPSocket) Close() error {
 	if sock.Conn == nil {
