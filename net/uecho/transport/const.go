@@ -1,12 +1,13 @@
-// Copyright 2017 Satoshi Konno. All rights reserved.
+// Copyright 2018 Satoshi Konno. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 package transport
 
 const (
-	PORT              = 1900
-	ADDRESS           = "239.255.255.250"
-	MULTICAST_ADDRESS = "239.255.255.250:1900"
+	PORT              = 3610
+	UDP_PORT          = PORT
+	TCP_PORT          = PORT
+	MULTICAST_ADDRESS = "224.0.23.0:3610"
 	MAX_PACKET_SIZE   = 1024
 )
