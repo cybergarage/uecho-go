@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"syscall"
 )
 
 // A MulticastSocket represents a socket.
@@ -37,6 +38,16 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 	sock.Conn, err = net.ListenMulticastUDP("udp", &ifi, addr)
 	if err != nil {
 		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
+	}
+
+	fd, err := sock.GetFD()
+	if err != nil {
+		return err
+	}
+
+	err = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+	if err != nil {
+		return err
 	}
 
 	sock.Interface = ifi
