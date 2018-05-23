@@ -1,4 +1,4 @@
-// Copyright 2017 The uecho-go Authors. All rights reserved.
+// Copyright 2018 The uecho-go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -7,8 +7,6 @@ package transport
 import (
 	"fmt"
 	"net"
-
-	"github.com/cybergarage/uecho-go/net/uecho/util"
 )
 
 // A UnicastSocket represents a socket.
@@ -30,7 +28,7 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	addr, err := util.GetInterfaceAddress(ifi)
+	addr, err := GetInterfaceAddress(ifi)
 	if err != nil {
 		return err
 	}

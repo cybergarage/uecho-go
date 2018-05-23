@@ -1,12 +1,8 @@
-// Copyright 2017 The uecho-go Authors. All rights reserved.
+// Copyright 2018 The uecho-go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 package transport
-
-import (
-	"github.com/cybergarage/uecho-go/net/uecho/util"
-)
 
 // A MulticastServerManager represents a multicast server list.
 type MulticastServerManager struct {
@@ -29,7 +25,7 @@ func (mgr *MulticastServerManager) Start() error {
 		return err
 	}
 
-	ifis, err := util.GetAvailableInterfaces()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		return err
 	}

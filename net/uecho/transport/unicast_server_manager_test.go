@@ -1,4 +1,4 @@
-// Copyright 2017 The uecho-go Authors. All rights reserved.
+// Copyright 2018 The uecho-go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -9,5 +9,17 @@ import (
 )
 
 func TestNewUnicastServerManager(t *testing.T) {
-	NewUnicastServerManager()
+	mgr := NewUnicastServerManager()
+
+	err := mgr.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = mgr.Stop()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }
