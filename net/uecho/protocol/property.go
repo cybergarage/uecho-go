@@ -4,18 +4,31 @@
 
 package protocol
 
-const ()
+const (
+	PropertyCodeMin = 0x80
+	PropertyCodeMax = 0xFF
+
+	PropertyAttrNone      = 0x00
+	PropertyAttrRead      = 0x01
+	PropertyAttrWrite     = 0x02
+	PropertyAttrAnno      = 0x10
+	PropertyAttrReadWrite = PropertyAttrRead | PropertyAttrWrite
+	PropertyAttrReadAnno  = PropertyAttrRead | PropertyAttrAnno
+)
 
 // Property is an instance for Echonet property.
 type Property struct {
 	Code byte
 	Attr int
 	Data []byte
-	Size int
 }
 
 // NewProperty returns a new property.
 func NewProperty() *Property {
-	prop := &Property{}
+	prop := &Property{
+		Code: 0,
+		Attr: PropertyAttrNone,
+		Data: make([]byte, 0),
+	}
 	return prop
 }

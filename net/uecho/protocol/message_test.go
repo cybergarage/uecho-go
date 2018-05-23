@@ -53,19 +53,22 @@ func TestParseMessage(t *testing.T) {
 		t.Errorf("%d != %d", msg.GetESV(), 3)
 	}
 
-	/*
-	  for (int n=1; n<=uecho_message_getopc(msg); n++) {
-	    uEchoProperty *prop = uecho_message_getproperty(msg, (n-1));
-	    BOOST_CHECK(prop);
-	    BOOST_CHECK_EQUAL(uecho_property_getcode(prop), n);
-	    BOOST_CHECK_EQUAL(uecho_property_getdatasize(prop), n);
-	    byte *data = uecho_property_getdata(prop);
-	    BOOST_CHECK(data);
-	    for (int i=0; i<uecho_property_getdatasize(prop); i++) {
-	      BOOST_CHECK_EQUAL(data[i], 'a' + (n-1) + i);
-	    }
-	  }
-
-	  uecho_message_delete(msg);
-	*/
+	for n := 1; n <= int(msg.GetOPC()); n++ {
+		prop := msg.GetProperty(n - 1)
+		if prop == nil {
+			t.Errorf("%d", n)
+		}
+		if prop.Code != byte(n) {
+			t.Errorf("%d != %d", prop.Code, n)
+		}
+		if len(prop.Data) != n {
+			t.Errorf("%d != %d", len(prop.Data), n)
+		}
+		for i := 0; i < len(prop.Data); i++ {
+			dataByte := byte('a' + (n - 1) + i)
+			if prop.Data[i] != dataByte {
+				t.Errorf("%d != %d", prop.Data[i], dataByte)
+			}
+		}
+	}
 }
