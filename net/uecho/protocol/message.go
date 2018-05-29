@@ -150,6 +150,13 @@ func (msg *Message) GetOPC() byte {
 	return msg.OPC
 }
 
+// AddProperty adds a property.
+func (msg *Message) AddProperty(prop *Property) error {
+	msg.OPC++
+	msg.EP = append(msg.EP, prop)
+	return nil
+}
+
 // GetProperty returns the specified property.
 func (msg *Message) GetProperty(n int) *Property {
 	if (len(msg.EP) - 1) < n {
