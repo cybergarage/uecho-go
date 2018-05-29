@@ -12,7 +12,7 @@ import (
 
 // A UnicastListener represents a listener for UnicastServer.
 type UnicastListener interface {
-	MessageReceived(*protocol.Message)
+	protocol.MessageListener
 }
 
 // A UnicastServer represents a unicast server.

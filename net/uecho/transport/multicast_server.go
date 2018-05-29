@@ -12,7 +12,7 @@ import (
 
 // A MulticastListener represents a listener for MulticastServer.
 type MulticastListener interface {
-	MessageReceived(*protocol.Message)
+	protocol.MessageListener
 }
 
 // A MulticastServer represents a multicast server.
