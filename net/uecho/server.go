@@ -13,7 +13,7 @@ type server struct {
 	*transport.MessageManager
 }
 
-// NewNode returns a new object.
+// newServer returns a new server.
 func newServer() *server {
 	server := &server{
 		MessageManager: transport.NewMessageManager(),

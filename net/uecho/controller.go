@@ -6,6 +6,7 @@ package uecho
 
 import (
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
+	"github.com/cybergarage/uecho-go/net/uecho/std"
 )
 
 // ControllerListener is a listener for Echonet messages.
@@ -53,4 +54,43 @@ func (ctrl *Controller) Stop() error {
 	}
 
 	return nil
+}
+
+// AnnounceMessage announces a message.
+func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
+	/*
+	      nodeProfObj = uecho_node_getnodeprofileclassobject(ctrl->node);
+	      if (!nodeProfObj)
+	   	 return false;
+
+	      uecho_message_settid(msg, uecho_controller_getnexttid(ctrl));
+
+	      return uecho_object_announcemessage(nodeProfObj, msg);
+	*/
+}
+
+// SearchAllObjectsWithESV searches all specified objects.
+func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
+	msg := std.NewSearchMessage()
+	msg.SetESV(esv)
+	return ctrl.AnnounceMessage(msg)
+}
+
+// SearchAllObjects searches all objects.
+func (ctrl *Controller) SearchAllObjects(esv protocol.ESV) error {
+	return ctrl.SearchAllObjectsWithESV(protocol.ESVReadRequest)
+}
+
+// SearchObjectWithESV searches a specified object.
+func (ctrl *Controller) SearchObjectWithESV(code byte, esv protocol.ESV) error {
+	msg := std.NewSearchMessage()
+	msg.SetESV(esv)
+	msg.SetDestinationObjectCode(code)
+	return ctrl.AnnounceMessage(msg)
+}
+
+// SearchObject searches a specified object.
+func (ctrl *Controller) SearchObject(code byte) error {
+	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
+
 }
