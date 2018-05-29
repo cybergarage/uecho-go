@@ -9,5 +9,17 @@ import (
 )
 
 func TestNewUnicastServerManager(t *testing.T) {
-	NewUnicastServerManager()
+	mgr := NewUnicastServerManager()
+
+	err := mgr.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = mgr.Stop()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }

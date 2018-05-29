@@ -56,8 +56,8 @@ type Message struct {
 	DEOJ      []byte
 	ESV       ESV
 	OPC       byte
-	Property  *Property
-	bytes     []byte
+	EP        []*Property
+	rawBytes  []byte
 	srcAddr   string
 	From      net.UDPAddr
 	Interface net.Interface
@@ -73,6 +73,7 @@ func NewMessage() *Message {
 		DEOJ: make([]byte, EOJSize),
 		ESV:  0,
 		OPC:  0,
+		EP:   make([]*Property, 0),
 	}
 	return msg
 }
@@ -84,6 +85,7 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+	msg.rawBytes = data
 	return msg, nil
 }
 
@@ -133,8 +135,13 @@ func (msg *Message) GetESV() ESV {
 }
 
 // SetOPC sets the specified OPC.
-func (msg *Message) SetOPC(value byte) {
+func (msg *Message) SetOPC(value byte) error {
 	msg.OPC = value
+	msg.EP = make([]*Property, msg.OPC)
+	for n := 0; n < int(msg.OPC); n++ {
+		msg.EP[n] = NewProperty()
+	}
+	return nil
 }
 
 // GetOPC returns the stored OPC.
@@ -142,11 +149,19 @@ func (msg *Message) GetOPC() byte {
 	return msg.OPC
 }
 
+// GetProperty returns the specified property.
+func (msg *Message) GetProperty(n int) *Property {
+	if (len(msg.EP) - 1) < n {
+		return nil
+	}
+	return msg.EP[n]
+}
+
 // Parse parses the specified bytes.
 func (msg *Message) Parse(data []byte) error {
-	msgLen := len(data)
-	if msgLen < MessageMinLen {
-		return fmt.Errorf(errorShortMessageLength, msgLen, MessageMinLen)
+	dataLen := len(data)
+	if dataLen < MessageMinLen {
+		return fmt.Errorf(errorShortMessageLength, dataLen, MessageMinLen)
 	}
 
 	// Check Headers
@@ -182,39 +197,48 @@ func (msg *Message) Parse(data []byte) error {
 
 	// OPC
 
-	msg.OPC = data[11]
+	err := msg.SetOPC(data[11])
+	if err != nil {
+		return err
+	}
 
-	/*
+	// EP
 
-		// EP
-
-		offset = 12;
-		for (n = 0; n<(int)(msg.OPC); n++) {
-		  prop = uecho_message_getproperty(msg, n);
-		  if (!prop)
-			return false;
-
-		  // EPC
-
-		  if ((dataLen - 1) < offset)
-			return false;
-		  uecho_property_setcode(prop, data[offset++]);
-
-		  // PDC
-
-		  if ((dataLen - 1) < offset)
-			return false;
-		  count = data[offset++];
-
-		  // EDT
-
-		  if ((dataLen - 1) < (offset + count - 1))
-			return false;
-		  if (!uecho_property_setdata(prop, (data + offset), count))
-			return false;
-		  offset += count;
+	offset := 12
+	for n := 0; n < int(msg.OPC); n++ {
+		prop := msg.GetProperty(n)
+		if prop == nil {
+			continue
 		}
-	*/
+
+		// EPC
+
+		if (dataLen - 1) < offset {
+			continue
+		}
+
+		prop.Code = data[offset]
+		offset++
+
+		// PDC
+
+		if (dataLen - 1) < offset {
+			continue
+		}
+
+		propSize := int(data[offset])
+		offset++
+
+		// EDT
+
+		if (dataLen - 1) < (offset + propSize - 1) {
+			continue
+		}
+
+		prop.Data = data[offset:(offset + propSize)]
+
+		offset += propSize
+	}
 
 	return nil
 }

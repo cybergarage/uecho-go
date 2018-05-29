@@ -5,8 +5,9 @@
 package transport
 
 const (
-	PORT              = 1900
-	ADDRESS           = "239.255.255.250"
-	MULTICAST_ADDRESS = "239.255.255.250:1900"
+	PORT              = 3610
+	UDP_PORT          = PORT
+	TCP_PORT          = PORT
+	MULTICAST_ADDRESS = "224.0.23.0:3610"
 	MAX_PACKET_SIZE   = 1024
 )

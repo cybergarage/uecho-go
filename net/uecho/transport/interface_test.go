@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package util
+package transport
 
 import (
 	"testing"
 )
 
-func TestNewMulticastServerManager(t *testing.T) {
+func TestGetAvailableInterfaces(t *testing.T) {
 	ifs, err := GetAvailableInterfaces()
 	if err != nil {
 		t.Error(err)

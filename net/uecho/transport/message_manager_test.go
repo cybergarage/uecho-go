@@ -9,5 +9,17 @@ import (
 )
 
 func TestNewMessageManager(t *testing.T) {
-	NewMessageManager()
+	mgr := NewMessageManager()
+
+	err := mgr.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = mgr.Stop()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }

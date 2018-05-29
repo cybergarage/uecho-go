@@ -4,10 +4,6 @@
 
 package transport
 
-import (
-	"github.com/cybergarage/uecho-go/net/uecho/util"
-)
-
 // A MulticastServerManager represents a multicast server list.
 type MulticastServerManager struct {
 	Listener MulticastListener
@@ -29,7 +25,7 @@ func (mgr *MulticastServerManager) Start() error {
 		return err
 	}
 
-	ifis, err := util.GetAvailableInterfaces()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		return err
 	}
