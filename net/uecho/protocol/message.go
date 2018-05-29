@@ -21,7 +21,7 @@ const (
 	EOJSize          = 3
 )
 
-type ESV int
+type ESV byte
 
 const (
 	ESVWriteRequest                      = 0x60
@@ -66,14 +66,15 @@ type Message struct {
 // NewMessage returns a new message.
 func NewMessage() *Message {
 	msg := &Message{
-		EHD1: EHD1,
-		EHD2: EHD2,
-		TID:  make([]byte, TIDSize),
-		SEOJ: make([]byte, EOJSize),
-		DEOJ: make([]byte, EOJSize),
-		ESV:  0,
-		OPC:  0,
-		EP:   make([]*Property, 0),
+		EHD1:     EHD1,
+		EHD2:     EHD2,
+		TID:      make([]byte, TIDSize),
+		SEOJ:     make([]byte, EOJSize),
+		DEOJ:     make([]byte, EOJSize),
+		ESV:      0,
+		OPC:      0,
+		EP:       make([]*Property, 0),
+		rawBytes: make([]byte, 0),
 	}
 	return msg
 }
@@ -241,4 +242,66 @@ func (msg *Message) Parse(data []byte) error {
 	}
 
 	return nil
+}
+
+// Size return the byte size.
+func (msg *Message) Size() int {
+
+	msgLen := MessageMinLen
+
+	for n := 0; n < int(msg.OPC); n++ {
+		prop := msg.GetProperty(n)
+		if prop == nil {
+			continue
+		}
+		msgLen += 2
+		msgLen += prop.Size()
+	}
+
+	return msgLen
+}
+
+// Bytes return the message bytes.
+func (msg *Message) Bytes() []byte {
+
+	msgBytes := make([]byte, msg.Size())
+
+	msgBytes[0] = msg.EHD1
+	msgBytes[1] = msg.EHD2
+	msgBytes[2] = msg.TID[0]
+	msgBytes[3] = msg.TID[1]
+	msgBytes[4] = msg.SEOJ[0]
+	msgBytes[5] = msg.SEOJ[1]
+	msgBytes[6] = msg.SEOJ[2]
+	msgBytes[7] = msg.DEOJ[0]
+	msgBytes[8] = msg.DEOJ[1]
+	msgBytes[9] = msg.DEOJ[2]
+	msgBytes[10] = byte(msg.ESV)
+	msgBytes[11] = msg.OPC
+
+	offset := 12
+	for n := 0; n < int(msg.OPC); n++ {
+		prop := msg.GetProperty(n)
+		if prop == nil {
+			continue
+		}
+		msgBytes[offset] = prop.GetCode()
+		offset++
+
+		propSize := int(prop.Size())
+		msgBytes[offset] = byte(propSize)
+		offset++
+		if propSize == 0 {
+			continue
+		}
+
+		propData := prop.GetData()
+		for i := 0; i < propSize; i++ {
+			msgBytes[offset+i] = propData[i]
+		}
+
+		offset += propSize
+	}
+
+	return msgBytes
 }

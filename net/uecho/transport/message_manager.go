@@ -4,6 +4,13 @@
 
 package transport
 
+import (
+	"net"
+	"time"
+
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
+)
+
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
 	multicastMgr *MulticastServerManager
@@ -19,6 +26,27 @@ func NewMessageManager() *MessageManager {
 	return mgr
 }
 
+// SendMulticastMessage send a message to the multicast address.
+func (mgr *MessageManager) SendMulticastMessage(msg protocol.Message) error {
+	addr, err := net.ResolveUDPAddr("udp", MULTICAST_ADDRESS)
+	if err != nil {
+		return err
+	}
+
+	c, err := net.DialUDP("udp", nil, addr)
+	if err != nil {
+		return err
+	}
+
+	
+	for {
+		c.Write([]byte("hello, world\n"))
+		time.Sleep(1 * time.Second)
+	}
+
+	return nil
+}
+
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
 	err := mgr.multicastMgr.Start()
@@ -32,7 +60,6 @@ func (mgr *MessageManager) Start() error {
 		mgr.Stop()
 		return err
 	}
-
 	return nil
 }
 

@@ -5,26 +5,28 @@
 package protocol
 
 import (
+	"bytes"
 	"testing"
 )
+
+var testMessageBytes = []byte{
+	EHD1,
+	EHD2,
+	0x00, 0x00,
+	0xA0, 0xB0, 0xC0,
+	0xD0, 0xE0, 0xF0,
+	ESVReadRequest,
+	3,
+	1, 1, 'a',
+	2, 2, 'b', 'c',
+	3, 3, 'c', 'd', 'e',
+}
 
 func TestNewMessage(t *testing.T) {
 	NewMessage()
 }
 
 func TestParseMessage(t *testing.T) {
-	testMessageBytes := []byte{
-		EHD1,
-		EHD2,
-		0x00, 0x00,
-		0xA0, 0xB0, 0xC0,
-		0xD0, 0xE0, 0xF0,
-		ESVReadRequest,
-		3,
-		1, 1, 'a',
-		2, 2, 'b', 'c',
-		3, 3, 'c', 'd', 'e',
-	}
 
 	msg := NewMessage()
 	err := msg.Parse(testMessageBytes)
@@ -70,5 +72,20 @@ func TestParseMessage(t *testing.T) {
 				t.Errorf("%d != %d", prop.Data[i], dataByte)
 			}
 		}
+	}
+}
+
+func TestEncodeMessage(t *testing.T) {
+
+	msg := NewMessage()
+	err := msg.Parse(testMessageBytes)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	msgBytes := msg.Bytes()
+	if bytes.Compare(testMessageBytes, msgBytes) != 0 {
+		t.Errorf("%s != %s", string(msgBytes), string(testMessageBytes))
 	}
 }
