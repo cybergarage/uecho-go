@@ -9,5 +9,17 @@ import (
 )
 
 func TestNewMulticastServerManager(t *testing.T) {
-	NewMulticastServerManager()
+	mgr := NewMulticastServerManager()
+
+	err := mgr.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = mgr.Stop()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 }

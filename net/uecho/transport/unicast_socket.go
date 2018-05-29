@@ -7,8 +7,7 @@ package transport
 import (
 	"fmt"
 	"net"
-
-	"github.com/cybergarage/uecho-go/net/uecho/util"
+	"syscall"
 )
 
 // A UnicastSocket represents a socket.
@@ -30,7 +29,7 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	addr, err := util.GetInterfaceAddress(ifi)
+	addr, err := GetInterfaceAddress(ifi)
 	if err != nil {
 		return err
 	}
@@ -41,6 +40,16 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 	}
 
 	sock.Conn, err = net.ListenUDP("udp", bindAddr)
+	if err != nil {
+		return err
+	}
+
+	fd, err := sock.GetFD()
+	if err != nil {
+		return err
+	}
+
+	err = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
 	if err != nil {
 		return err
 	}

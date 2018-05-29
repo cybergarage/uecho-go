@@ -4,10 +4,6 @@
 
 package transport
 
-import (
-	"github.com/cybergarage/uecho-go/net/uecho/util"
-)
-
 // A UnicastServerManager represents a packet of SSDP.
 type UnicastServerManager struct {
 	Listener UnicastListener
@@ -23,13 +19,13 @@ func NewUnicastServerManager() *UnicastServerManager {
 }
 
 // Start starts this server.
-func (mgr *UnicastServerManager) Start(port int) error {
+func (mgr *UnicastServerManager) Start() error {
 	err := mgr.Stop()
 	if err != nil {
 		return err
 	}
 
-	ifis, err := util.GetAvailableInterfaces()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		return err
 	}
@@ -40,7 +36,7 @@ func (mgr *UnicastServerManager) Start(port int) error {
 	for n, ifi := range ifis {
 		server := NewUnicastServer()
 		server.Listener = mgr.Listener
-		err := server.Start(ifi, port)
+		err := server.Start(ifi, UDP_PORT)
 		if err != nil {
 			lastErr = err
 		}
