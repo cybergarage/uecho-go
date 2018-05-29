@@ -4,27 +4,27 @@
 
 package transport
 
-// A MulticastServerManager represents a multicast server manager.
-type MulticastServerManager struct {
+// A MulticastManager represents a multicast server manager.
+type MulticastManager struct {
 	Listener MulticastListener
 	Servers  []*MulticastServer
 }
 
-// NewMulticastServerManager returns a new MulticastServerManager.
-func NewMulticastServerManager() *MulticastServerManager {
-	server := &MulticastServerManager{}
+// NewMulticastManager returns a new MulticastManager.
+func NewMulticastManager() *MulticastManager {
+	server := &MulticastManager{}
 	server.Servers = make([]*MulticastServer, 0)
 	server.Listener = nil
 	return server
 }
 
 // SetListener set a listener to all servers.
-func (mgr *MulticastServerManager) SetListener(l UnicastListener) {
+func (mgr *MulticastManager) SetListener(l UnicastListener) {
 	mgr.Listener = l
 }
 
 // Start starts this server.
-func (mgr *MulticastServerManager) Start() error {
+func (mgr *MulticastManager) Start() error {
 	err := mgr.Stop()
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (mgr *MulticastServerManager) Start() error {
 }
 
 // Stop stops this server.
-func (mgr *MulticastServerManager) Stop() error {
+func (mgr *MulticastManager) Stop() error {
 	var lastErr error = nil
 
 	for _, server := range mgr.Servers {

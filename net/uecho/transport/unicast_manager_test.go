@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestNewUnicastServerManager(t *testing.T) {
-	mgr := NewUnicastServerManager()
+func TestNewUnicastManager(t *testing.T) {
+	mgr := NewUnicastManager()
 
 	err := mgr.Start()
 	if err != nil {
