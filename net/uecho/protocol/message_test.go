@@ -26,6 +26,25 @@ func TestNewMessage(t *testing.T) {
 	NewMessage()
 }
 
+func TestMessageAddProperty(t *testing.T) {
+	msg := NewMessage()
+
+	if msg.GetOPC() != 0 {
+		t.Errorf("%d != %d", msg.GetOPC(), 0)
+	}
+
+	prop := NewProperty()
+	err := msg.AddProperty(prop)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if msg.GetOPC() != 1 {
+		t.Errorf("%d != %d", msg.GetOPC(), 1)
+	}
+}
+
 func TestParseMessage(t *testing.T) {
 
 	msg := NewMessage()
