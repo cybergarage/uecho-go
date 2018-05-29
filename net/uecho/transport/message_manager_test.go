@@ -5,10 +5,30 @@
 package transport
 
 import (
+	"bytes"
 	"testing"
+	"time"
 
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
+
+type testMessageManager struct {
+	*MessageManager
+	lastMessage *protocol.Message
+}
+
+// NewMessageManager returns a new message manager.
+func newTestMessageManager() *testMessageManager {
+	mgr := &testMessageManager{
+		MessageManager: NewMessageManager(),
+		lastMessage:    nil,
+	}
+	return mgr
+}
+
+func (mgr *testMessageManager) MessageReceived(msg *protocol.Message) {
+	mgr.lastMessage = msg
+}
 
 func newTestMessage() (*protocol.Message, error) {
 	testMessageBytes := []byte{
@@ -34,7 +54,8 @@ func TestNewMessageManager(t *testing.T) {
 		return
 	}
 
-	mgr := NewMessageManager()
+	mgr := newTestMessageManager()
+	mgr.SetMessageListener(mgr)
 
 	err = mgr.Start()
 	if err != nil {
@@ -45,6 +66,13 @@ func TestNewMessageManager(t *testing.T) {
 	err = mgr.SendMulticastMessage(msg)
 	if err != nil {
 		t.Error(err)
+	}
+	time.Sleep(time.Second)
+	if mgr.lastMessage == nil {
+		t.Error("")
+	}
+	if bytes.Compare(msg.Bytes(), mgr.lastMessage.Bytes()) != 0 {
+		t.Errorf("%s != %s", string(msg.Bytes()), string(mgr.lastMessage.Bytes()))
 	}
 
 	err = mgr.Stop()

@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestNewMulticastServerManager(t *testing.T) {
-	mgr := NewMulticastServerManager()
+func TestNewMulticastManager(t *testing.T) {
+	mgr := NewMulticastManager()
 
 	err := mgr.Start()
 	if err != nil {

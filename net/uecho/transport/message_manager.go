@@ -12,21 +12,21 @@ import (
 
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
-	multicastMgr *MulticastServerManager
-	unicastMgr   *UnicastServerManager
+	multicastMgr *MulticastManager
+	unicastMgr   *UnicastManager
 }
 
 // NewMessageManager returns a new message manager.
 func NewMessageManager() *MessageManager {
 	mgr := &MessageManager{
-		multicastMgr: NewMulticastServerManager(),
-		unicastMgr:   NewUnicastServerManager(),
+		multicastMgr: NewMulticastManager(),
+		unicastMgr:   NewUnicastManager(),
 	}
 	return mgr
 }
 
-// SetListener set a listener to all servers.
-func (mgr *MessageManager) SetListener(l UnicastListener) {
+// SetMessageListener set a listener to all managers.
+func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 	mgr.multicastMgr.SetListener(l)
 	mgr.unicastMgr.SetListener(l)
 }

@@ -4,27 +4,27 @@
 
 package transport
 
-// A UnicastServerManager represents a multicast server manager.
-type UnicastServerManager struct {
+// A UnicastManager represents a multicast server manager.
+type UnicastManager struct {
 	Listener UnicastListener
 	Servers  []*UnicastServer
 }
 
-// NewUnicastServerManager returns a new UnicastServerManager.
-func NewUnicastServerManager() *UnicastServerManager {
-	server := &UnicastServerManager{}
+// NewUnicastManager returns a new UnicastManager.
+func NewUnicastManager() *UnicastManager {
+	server := &UnicastManager{}
 	server.Servers = make([]*UnicastServer, 0)
 	server.Listener = nil
 	return server
 }
 
 // SetListener set a listener to all servers.
-func (mgr *UnicastServerManager) SetListener(l UnicastListener) {
+func (mgr *UnicastManager) SetListener(l UnicastListener) {
 	mgr.Listener = l
 }
 
 // Start starts this server.
-func (mgr *UnicastServerManager) Start() error {
+func (mgr *UnicastManager) Start() error {
 	err := mgr.Stop()
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (mgr *UnicastServerManager) Start() error {
 }
 
 // Stop stops this server.
-func (mgr *UnicastServerManager) Stop() error {
+func (mgr *UnicastManager) Stop() error {
 	var lastErr error = nil
 
 	for _, server := range mgr.Servers {
