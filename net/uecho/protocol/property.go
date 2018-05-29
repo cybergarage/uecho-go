@@ -32,3 +32,28 @@ func NewProperty() *Property {
 	}
 	return prop
 }
+
+// SetCode sets a code
+func (prop *Property) SetCode(code byte) {
+	prop.Code = code
+}
+
+// GetCode returns the code.
+func (prop *Property) GetCode() byte {
+	return prop.Code
+}
+
+// SetData sets a code
+func (prop *Property) SetData(data []byte) {
+	prop.Data = data
+}
+
+// GetData returns the data.
+func (prop *Property) GetData() []byte {
+	return prop.Data
+}
+
+// Size return the data size.
+func (prop *Property) Size() int {
+	return len(prop.Data)
+}
