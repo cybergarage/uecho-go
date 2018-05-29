@@ -23,7 +23,6 @@ GITHUB=${GITHUB_ROOT}/net/${PACKAGE_NAME}
 PACKAGE_ID=${GITHUB}
 PACKAGES=\
 	${PACKAGE_ID} \
-	${PACKAGE_ID}/util \
 	${PACKAGE_ID}/encoding \
 	${PACKAGE_ID}/protocol \
 	${PACKAGE_ID}/transport
