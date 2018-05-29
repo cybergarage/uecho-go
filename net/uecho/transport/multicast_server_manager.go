@@ -18,6 +18,11 @@ func NewMulticastServerManager() *MulticastServerManager {
 	return server
 }
 
+// SetListener set a listener to all servers.
+func (mgr *MulticastServerManager) SetListener(l UnicastListener) {
+	mgr.Listener = l
+}
+
 // Start starts this server.
 func (mgr *MulticastServerManager) Start() error {
 	err := mgr.Stop()

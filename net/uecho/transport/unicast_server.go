@@ -30,6 +30,11 @@ func NewUnicastServer() *UnicastServer {
 	return server
 }
 
+// SetListener set a listener.
+func (server *UnicastServer) SetListener(l UnicastListener) {
+	server.Listener = l
+}
+
 // Start starts this server.
 func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 	err := server.Socket.Bind(ifi, port)

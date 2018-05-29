@@ -30,6 +30,11 @@ func NewMulticastServer() *MulticastServer {
 	return server
 }
 
+// SetListener set a listener.
+func (server *MulticastServer) SetListener(l UnicastListener) {
+	server.Listener = l
+}
+
 // Start starts this server.
 func (server *MulticastServer) Start(ifi net.Interface) error {
 	err := server.Socket.Bind(ifi)
