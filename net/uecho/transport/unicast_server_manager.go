@@ -4,7 +4,7 @@
 
 package transport
 
-// A UnicastServerManager represents a packet of SSDP.
+// A UnicastServerManager represents a multicast server manager.
 type UnicastServerManager struct {
 	Listener UnicastListener
 	Servers  []*UnicastServer

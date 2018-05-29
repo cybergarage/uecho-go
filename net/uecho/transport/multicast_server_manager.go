@@ -4,7 +4,7 @@
 
 package transport
 
-// A MulticastServerManager represents a multicast server list.
+// A MulticastServerManager represents a multicast server manager.
 type MulticastServerManager struct {
 	Listener MulticastListener
 	Servers  []*MulticastServer

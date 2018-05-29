@@ -15,7 +15,7 @@ type UnicastListener interface {
 	MessageReceived(*protocol.Message)
 }
 
-// A UnicastServer represents a packet.
+// A UnicastServer represents a unicast server.
 type UnicastServer struct {
 	Socket    *UnicastSocket
 	Listener  UnicastListener

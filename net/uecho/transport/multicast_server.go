@@ -15,7 +15,7 @@ type MulticastListener interface {
 	MessageReceived(*protocol.Message)
 }
 
-// A MulticastServer represents a packet.
+// A MulticastServer represents a multicast server.
 type MulticastServer struct {
 	Socket    *MulticastSocket
 	Listener  MulticastListener
