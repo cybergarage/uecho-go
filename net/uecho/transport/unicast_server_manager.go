@@ -18,6 +18,11 @@ func NewUnicastServerManager() *UnicastServerManager {
 	return server
 }
 
+// SetListener set a listener to all servers.
+func (mgr *UnicastServerManager) SetListener(l UnicastListener) {
+	mgr.Listener = l
+}
+
 // Start starts this server.
 func (mgr *UnicastServerManager) Start() error {
 	err := mgr.Stop()

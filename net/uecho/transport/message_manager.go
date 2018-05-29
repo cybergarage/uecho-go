@@ -25,6 +25,12 @@ func NewMessageManager() *MessageManager {
 	return mgr
 }
 
+// SetListener set a listener to all servers.
+func (mgr *MessageManager) SetListener(l UnicastListener) {
+	mgr.multicastMgr.SetListener(l)
+	mgr.unicastMgr.SetListener(l)
+}
+
 // SendMulticastMessage send a message to the multicast address.
 func (mgr *MessageManager) SendMulticastMessage(msg *protocol.Message) error {
 	addr, err := net.ResolveUDPAddr("udp", MULTICAST_ADDRESS)
