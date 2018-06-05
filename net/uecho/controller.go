@@ -16,8 +16,10 @@ type ControllerListener interface {
 
 // Controller is an instance for Echonet controller.
 type Controller struct {
-	node     *Node
-	Nodes    []*Node
+	node  *Node
+	Nodes []*Node
+
+	lastTID  uint
 	listener ControllerListener
 }
 
@@ -26,6 +28,7 @@ func NewController() *Controller {
 	ctrl := &Controller{
 		node:     NewNode(),
 		Nodes:    make([]*Node, 0),
+		lastTID:  uEchoTIDMin,
 		listener: nil,
 	}
 	return ctrl
@@ -34,6 +37,52 @@ func NewController() *Controller {
 // SetListener sets a listener to receive the Echonet messages.
 func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.listener = l
+}
+
+// getNextTID returns a next TID.
+func (ctrl *Controller) getNextTID() uint {
+	if uEchoTIDMax <= ctrl.lastTID {
+		ctrl.lastTID = uEchoTIDMin
+	} else {
+		ctrl.lastTID++
+	}
+	return ctrl.lastTID
+}
+
+// AnnounceMessage announces a message.
+func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
+	nodeProfObj, err := ctrl.node.GetNodeProfileObject()
+	if err != nil {
+		return err
+	}
+	msg.SetTID(ctrl.getNextTID())
+	return nodeProfObj.AnnounceMessage(msg)
+}
+
+// SearchAllObjectsWithESV searches all specified objects.
+func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
+	msg := std.NewSearchMessage()
+	msg.SetESV(esv)
+	return ctrl.AnnounceMessage(msg)
+}
+
+// SearchAllObjects searches all objects.
+func (ctrl *Controller) SearchAllObjects(esv protocol.ESV) error {
+	return ctrl.SearchAllObjectsWithESV(protocol.ESVReadRequest)
+}
+
+// SearchObjectWithESV searches a specified object.
+func (ctrl *Controller) SearchObjectWithESV(code uint, esv protocol.ESV) error {
+	msg := std.NewSearchMessage()
+	msg.SetESV(esv)
+	msg.SetDestinationObjectCode(code)
+	return ctrl.AnnounceMessage(msg)
+}
+
+// SearchObject searches a specified object.
+func (ctrl *Controller) SearchObject(code uint) error {
+	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
+
 }
 
 // Start starts the controller.
@@ -54,43 +103,4 @@ func (ctrl *Controller) Stop() error {
 	}
 
 	return nil
-}
-
-// AnnounceMessage announces a message.
-func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
-	/*
-	      nodeProfObj = uecho_node_getnodeprofileclassobject(ctrl->node);
-	      if (!nodeProfObj)
-	   	 return false;
-
-	      uecho_message_settid(msg, uecho_controller_getnexttid(ctrl));
-
-	      return uecho_object_announcemessage(nodeProfObj, msg);
-	*/
-}
-
-// SearchAllObjectsWithESV searches all specified objects.
-func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
-	msg := std.NewSearchMessage()
-	msg.SetESV(esv)
-	return ctrl.AnnounceMessage(msg)
-}
-
-// SearchAllObjects searches all objects.
-func (ctrl *Controller) SearchAllObjects(esv protocol.ESV) error {
-	return ctrl.SearchAllObjectsWithESV(protocol.ESVReadRequest)
-}
-
-// SearchObjectWithESV searches a specified object.
-func (ctrl *Controller) SearchObjectWithESV(code byte, esv protocol.ESV) error {
-	msg := std.NewSearchMessage()
-	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(code)
-	return ctrl.AnnounceMessage(msg)
-}
-
-// SearchObject searches a specified object.
-func (ctrl *Controller) SearchObject(code byte) error {
-	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
-
 }

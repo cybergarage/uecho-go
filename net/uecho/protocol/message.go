@@ -91,7 +91,7 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 }
 
 // SetTID sets the specified TID.
-func (msg *Message) SetTID(value int) error {
+func (msg *Message) SetTID(value uint) error {
 	if TIDMax < value {
 		value %= TIDMax
 	}
@@ -101,8 +101,8 @@ func (msg *Message) SetTID(value int) error {
 }
 
 // GetTID returns the stored TID.
-func (msg *Message) GetTID() int {
-	return (((int)(msg.TID[0]) << 8) + (int)(msg.TID[1]))
+func (msg *Message) GetTID() uint {
+	return (((uint)(msg.TID[0]) << 8) + (uint)(msg.TID[1]))
 }
 
 // SetSourceObjectCode sets a source object code.

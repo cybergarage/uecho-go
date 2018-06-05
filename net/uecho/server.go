@@ -5,6 +5,7 @@
 package uecho
 
 import (
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 	"github.com/cybergarage/uecho-go/net/uecho/transport"
 )
 
@@ -19,6 +20,11 @@ func newServer() *server {
 		MessageManager: transport.NewMessageManager(),
 	}
 	return server
+}
+
+// PostAnnounce posts a message.
+func (server *server) PostAnnounce(msg *protocol.Message) error {
+	return server.SendMulticastMessage(msg)
 }
 
 // Start starts the server.
