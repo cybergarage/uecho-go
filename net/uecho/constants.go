@@ -13,8 +13,8 @@ const (
 	uEchoUDPPort = 3610
 	uEchoTCPPort = 3610
 
-	uEchoTidMin = 0
-	uEchoTidMax = 65535
+	uEchoTIDMin = 0
+	uEchoTIDMax = 65535
 
 	uEchoSpecifiedMessageFormat = 0x01
 	uEchoArbitraryMessageFormat = 0x02
