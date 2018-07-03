@@ -16,6 +16,7 @@ export GOPATH
 
 PACKAGE_NAME=uecho
 BIN_DUMP_NAME=uechodump
+BIN_SEARCH_NAME=uechosearch
 
 GITHUB_ROOT=github.com/cybergarage/uecho-go
 GITHUB=${GITHUB_ROOT}/net/${PACKAGE_NAME}
@@ -29,8 +30,9 @@ PACKAGES=\
 
 SOURCE_ROOT_DIR=src/${PACKAGE_ROOT}
 
-BINARY_DUMP=${GITHUB}/${BIN_DUMP_NAME}
-BINARIES=${BINARY_DUMP}
+BINARIES=\
+	${GITHUB}/${BIN_DUMP_NAME} \
+	${GITHUB}/${BIN_SEARCH_NAME}
 
 .PHONY: version clean
 
