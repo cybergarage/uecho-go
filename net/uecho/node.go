@@ -8,11 +8,11 @@ import (
 	"fmt"
 
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
-	"github.com/cybergarage/uecho-go/net/uecho/std"
 )
 
 const (
-	errorObjectNotFound = "Object (%d) not found"
+	errorObjectNotFound              = "Object (%d) not found"
+	errorObjectProfileObjectNotFound = "Object profile object not found"
 )
 
 // Node is an instance for Echonet node.
@@ -43,12 +43,7 @@ func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 
 // GetNodeProfileObject returns a specified object.
 func (node *Node) GetNodeProfileObject() (*Object, error) {
-	return node.GetObjectByCode(std.NodeProfileObject)
-}
-
-// AnnounceMessage announces a message.
-func (node *Node) AnnounceMessage(msg *protocol.Message) error {
-	return node.server.SendMulticastMessage(msg)
+	return node.GetObjectByCode(NodeProfileObject)
 }
 
 // Start starts the node.
@@ -69,4 +64,35 @@ func (node *Node) Stop() error {
 	}
 
 	return nil
+}
+
+// AnnounceMessage announces a message.
+func (node *Node) AnnounceMessage(msg *protocol.Message) error {
+	return node.server.SendMulticastMessage(msg)
+}
+
+// AnnounceProperty announces a specified property.
+func (node *Node) AnnounceProperty(prop *Property) error {
+	msg := protocol.NewMessage()
+	msg.SetESV(protocol.ESVNotification)
+	msg.SetSourceObjectCode(NodeProfileObject)
+	msg.SetDestinationObjectCode(NodeProfileObject)
+	msg.AddProperty(prop.toProtocolProperty())
+
+	return node.AnnounceMessage(msg)
+}
+
+// Announce announces the node
+func (node *Node) Announce() error {
+	nodePropObj, err := node.GetNodeProfileObject()
+	if err != nil {
+		return err
+	}
+
+	nodeProp, err := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
+	if err != nil {
+		return err
+	}
+
+	return node.AnnounceProperty(nodeProp)
 }

@@ -6,7 +6,6 @@ package uecho
 
 import (
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
-	"github.com/cybergarage/uecho-go/net/uecho/std"
 )
 
 // ControllerListener is a listener for Echonet messages.
@@ -66,7 +65,7 @@ func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
 
 // SearchAllObjectsWithESV searches all specified objects.
 func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
-	msg := std.NewSearchMessage()
+	msg := NewSearchMessage()
 	msg.SetESV(esv)
 	return ctrl.AnnounceMessage(msg)
 }
@@ -78,7 +77,7 @@ func (ctrl *Controller) SearchAllObjects() error {
 
 // SearchObjectWithESV searches a specified object.
 func (ctrl *Controller) SearchObjectWithESV(code uint, esv protocol.ESV) error {
-	msg := std.NewSearchMessage()
+	msg := NewSearchMessage()
 	msg.SetESV(esv)
 	msg.SetDestinationObjectCode(code)
 	return ctrl.AnnounceMessage(msg)
@@ -91,7 +90,7 @@ func (ctrl *Controller) SearchObject(code uint) error {
 
 // Clear clears all found nodes.
 func (ctrl *Controller) Clear() error {
-	ctrl.Nodes = make([]*Node, 0)
+	ctrl.foundNodes = make([]*Node, 0)
 	return nil
 }
 
