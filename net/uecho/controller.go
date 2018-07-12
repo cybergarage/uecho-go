@@ -16,8 +16,8 @@ type ControllerListener interface {
 
 // Controller is an instance for Echonet controller.
 type Controller struct {
-	node  *Node
-	Nodes []*Node
+	node       *Node
+	foundNodes []*Node
 
 	lastTID  uint
 	listener ControllerListener
@@ -26,10 +26,10 @@ type Controller struct {
 // NewController returns a new contorller.
 func NewController() *Controller {
 	ctrl := &Controller{
-		node:     NewNode(),
-		Nodes:    make([]*Node, 0),
-		lastTID:  uEchoTIDMin,
-		listener: nil,
+		node:       NewNode(),
+		foundNodes: make([]*Node, 0),
+		lastTID:    uEchoTIDMin,
+		listener:   nil,
 	}
 	return ctrl
 }
@@ -37,6 +37,11 @@ func NewController() *Controller {
 // SetListener sets a listener to receive the Echonet messages.
 func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.listener = l
+}
+
+// GetNodes returns found nodes
+func (ctrl *Controller) GetNodes() []*Node {
+	return ctrl.foundNodes
 }
 
 // getNextTID returns a next TID.
@@ -67,7 +72,7 @@ func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
 }
 
 // SearchAllObjects searches all objects.
-func (ctrl *Controller) SearchAllObjects(esv protocol.ESV) error {
+func (ctrl *Controller) SearchAllObjects() error {
 	return ctrl.SearchAllObjectsWithESV(protocol.ESVReadRequest)
 }
 
@@ -82,12 +87,22 @@ func (ctrl *Controller) SearchObjectWithESV(code uint, esv protocol.ESV) error {
 // SearchObject searches a specified object.
 func (ctrl *Controller) SearchObject(code uint) error {
 	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
+}
 
+// Clear clears all found nodes.
+func (ctrl *Controller) Clear() error {
+	ctrl.Nodes = make([]*Node, 0)
+	return nil
 }
 
 // Start starts the controller.
 func (ctrl *Controller) Start() error {
-	err := ctrl.node.Start()
+	err := ctrl.Clear()
+	if err != nil {
+		return err
+	}
+
+	err = ctrl.node.Start()
 	if err != nil {
 		return err
 	}
