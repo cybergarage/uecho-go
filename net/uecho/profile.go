@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package std
+package uecho
 
 const (
 	ProfileFaultStatus         = 0x88
@@ -70,3 +70,12 @@ const (
 	NodeProfileClassNotBooting          = 0x31
 	LowerCommunicationLayerProtocolType = 0xFE
 )
+
+// Profile is an instance for Echonet profile object.
+type Profile = Object
+
+// NewProfile returns a new profile object.
+func NewProfile() *Profile {
+	prop := NewObject()
+	return prop
+}

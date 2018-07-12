@@ -4,7 +4,16 @@
 
 package uecho
 
-const ()
+const (
+	ClassCodeMin = 0x0000
+	ClassCodeMax = 0xFFFF
+)
+
+const (
+	ClassGroupDeviceMin = 0x00
+	ClassGroupDeviceMax = 0x06
+	ClassGroupProfile   = 0x0E
+)
 
 // Class is an instance for Echonet class.
 type Class struct {
