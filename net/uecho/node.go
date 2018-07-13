@@ -89,9 +89,9 @@ func (node *Node) Announce() error {
 		return err
 	}
 
-	nodeProp, err := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
-	if err != nil {
-		return err
+	nodeProp, ok := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
+	if !ok {
+		return fmt.Errorf(errorObjectProfileObjectNotFound)
 	}
 
 	return node.AnnounceProperty(nodeProp)

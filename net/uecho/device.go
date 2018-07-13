@@ -93,22 +93,22 @@ func NewDevice() *Device {
  func (dev *Device) AddMandatoryProperties(dev *Device) error {
    // Operation Status
 
-   uecho_object_setproperty(obj, uEchoDeviceOperatingStatus, uEchoPropertyAttrReadAnno);
+   uecho_object_setproperty(obj, uEchoDeviceOperatingStatus, uEchoPropertyAttributeReadAnno);
    (dev *Device) setoperatingstatus(obj, true);
 
    // Installation Location
 
-   uecho_object_setproperty(obj, uEchoDeviceInstallationLocation, uEchoPropertyAttrReadAnno);
+   uecho_object_setproperty(obj, uEchoDeviceInstallationLocation, uEchoPropertyAttributeReadAnno);
    (dev *Device) setinstallationlocation(obj, uEchoDeviceInstallationLocationUnknown);
 
    // Standard Version Infomation
 
-   uecho_object_setproperty(obj, uEchoDeviceStandardVersion, uEchoPropertyAttrRead);
+   uecho_object_setproperty(obj, uEchoDeviceStandardVersion, uEchoPropertyAttributeRead);
    (dev *Device) setstandardversion(obj, uEchoDeviceDefaultVersionAppendix);
 
    // Fault Status
 
-   uecho_object_setproperty(obj, uEchoDeviceFaultStatus, uEchoPropertyAttrReadAnno);
+   uecho_object_setproperty(obj, uEchoDeviceFaultStatus, uEchoPropertyAttributeReadAnno);
    (dev *Device) setfaultstatus(obj, false);
 
    return true;
