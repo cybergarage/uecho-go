@@ -47,8 +47,8 @@ const (
 
 // Object is an instance for Echonet object.
 type Object struct {
+	*PropertyMap
 	Code             []byte
-	Properties       []*Property
 	annoPropMapSize  int
 	annoPropMapBytes []byte
 	setPropMapSize   int
@@ -62,28 +62,29 @@ type Object struct {
 // NewObject returns a new object.
 func NewObject() *Object {
 	obj := &Object{
-		Code:       make([]byte, 3),
-		Properties: make([]*Property, 0),
-		parentNode: nil,
+		PropertyMap: NewPropertyMap(),
+		Code:        make([]byte, 3),
+		parentNode:  nil,
 	}
+
+	obj.SetParentObject(obj)
+
 	return obj
 }
 
-// SetParentNode sets a parent node
-func (obj *Object) SetParentNode(node *Node) error {
+// SetParentNode sets a parent node.
+func (obj *Object) SetParentNode(node *Node) {
 	obj.parentNode = node
-	return nil
 }
 
-// GetParentNode returns a parent node
+// GetParentNode returns a parent node.
 func (obj *Object) GetParentNode() *Node {
 	return obj.parentNode
 }
 
 // SetCode sets a code to the object
-func (obj *Object) Setcode(code uint) error {
+func (obj *Object) SetCode(code uint) {
 	encoding.IntegerToByte(code, obj.Code)
-	return nil
 }
 
 // GetCode returns the code.
@@ -91,7 +92,7 @@ func (obj *Object) GetCode() uint {
 	return encoding.ByteToInteger(obj.Code)
 }
 
-// IsCode returns true when the object code is the specified code, otherwise false
+// IsCode returns true when the object code is the specified code, otherwise false.
 func (obj *Object) IsCode(code uint) bool {
 	if code != obj.GetCode() {
 		return false
@@ -99,40 +100,37 @@ func (obj *Object) IsCode(code uint) bool {
 	return true
 }
 
-// SetClassGroupCode sets a class group code to the object
-func (obj *Object) SetClassGroupCode(code byte) error {
+// SetClassGroupCode sets a class group code to the object.
+func (obj *Object) SetClassGroupCode(code byte) {
 	obj.Code[0] = code
-	return nil
 }
 
-// GetClassGroupCode returns the class group code
+// GetClassGroupCode returns the class group code.
 func (obj *Object) GetClassGroupCode() byte {
 	return obj.Code[0]
 }
 
-// SetClassCode sets a class code to the object
-func (obj *Object) SetClassCode(code byte) error {
+// SetClassCode sets a class code to the object.
+func (obj *Object) SetClassCode(code byte) {
 	obj.Code[1] = code
-	return nil
 }
 
-// GetClassCode returns the class group code
+// GetClassCode returns the class group code.
 func (obj *Object) GetClassCode() byte {
 	return obj.Code[1]
 }
 
-// SetInstanceCode sets a instance code to the object
-func (obj *Object) SetInstanceCode(code byte) error {
+// SetInstanceCode sets a instance code to the object.
+func (obj *Object) SetInstanceCode(code byte) {
 	obj.Code[2] = code
-	return nil
 }
 
-// GetInstanceCode returns the instance code
+// GetInstanceCode returns the instance code.
 func (obj *Object) GetInstanceCode() byte {
 	return obj.Code[2]
 }
 
-// IsDevice returns true when the class group code is the device code, otherwise false
+// IsDevice returns true when the class group code is the device code, otherwise false.
 func (obj *Object) IsDevice() bool {
 	if ClassGroupDeviceMax < obj.Code[0] {
 		return false
@@ -140,7 +138,7 @@ func (obj *Object) IsDevice() bool {
 	return true
 }
 
-// IsProfile returns true when the class group code is the profile code, otherwise false
+// IsProfile returns true when the class group code is the profile code, otherwise false.
 func (obj *Object) IsProfile() bool {
 	if ClassGroupProfile != obj.Code[0] {
 		return false
@@ -148,150 +146,9 @@ func (obj *Object) IsProfile() bool {
 	return true
 }
 
-// SetProperty sets a property to the object
 /*
-func (obj *Object) SetProperty(uEchoPropertyCode code, uEchoPropertyAttr attr)
- {
-   uEchoProperty *prop;
 
-   if (!obj)
-	 return false;
-
-   if (!uecho_propertylist_set(obj.properties, code, attr, NULL, 0))
-	 return false;
-
-   prop = func (obj *Object) _getproperty(obj, code);
-   if (!prop)
-	 return false;
-
-   if (!uecho_property_setparentobject(prop, obj))
-	 return false;
-
-   return func (obj *Object) _updatepropertymaps(obj);
- }
-
-
- bool func (obj *Object) _setpropertydata(uEchoObject *obj, uEchoPropertyCode code, byte *data, size_t dataLen)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_setdata(obj.properties, code, data, dataLen);
- }
-
- bool func (obj *Object) _setpropertyintegerdata(uEchoObject *obj, uEchoPropertyCode code, int data, size_t dataLen)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_setintegerdata(obj.properties, code, data, dataLen);
- }
-
- bool func (obj *Object) _setpropertybytedata(uEchoObject *obj, uEchoPropertyCode code, byte data)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_setbytedata(obj.properties, code, data);
- }
-
- bool func (obj *Object) _setpropertyattribute(uEchoObject *obj, uEchoPropertyCode code, uEchoPropertyAttr attr)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_setattribute(obj.properties, code, attr);
- }
-
- uEchoProperty *func (obj *Object) _getproperties(uEchoObject *obj)
- {
-   if (!obj)
-	 return NULL;
-
-   return uecho_propertylist_gets(obj.properties);
- }
-
- bool func (obj *Object) _hasproperty(uEchoObject *obj, uEchoPropertyCode code)
- {
-   if (!obj)
-	 return false;
-
-   return (func (obj *Object) _getproperty(obj, code) != NULL) ? true : false;
- }
-*/
-
-// GetProperty returns the specified property
-func (obj *Object) GetProperty(code int) (*Property, error) {
-	return nil, nil
-}
-
-/*
- uEchoProperty *func (obj *Object) _getpropertywait(uEchoObject *obj, uEchoPropertyCode code, clock_t waitMiliTime)
- {
-   uEchoProperty *prop;
-   int n;
-
-   for (n=0; n<uEchoWaitRetryCount; n++) {
-	 uecho_sleep(waitMiliTime / uEchoWaitRetryCount);
-	 prop = func (obj *Object) _getproperty(obj, code);
-	 if (prop)
-	   return prop;
-   }
-
-   return NULL;
- }
-
-
- size_t func (obj *Object) _getpropertycount(uEchoObject *obj)
- {
-   if (!obj)
-	 return 0;
-
-   return uecho_propertylist_size(obj.properties);
- }
- void func (obj *Object) _clearproperties(uEchoObject *obj)
- {
-   if (!obj)
-	 return;
-
-   uecho_propertylist_clear(obj.properties);
-   func (obj *Object) _clearpropertymapcaches(obj);
- }
-
- int func (obj *Object) _getpropertydatasize(uEchoObject *obj, uEchoPropertyCode code)
- {
-   if (!obj)
-	 return 0;
-
-   return uecho_propertylist_getdatasize(obj.properties, code);
- }
-
- byte *func (obj *Object) _getpropertydata(uEchoObject *obj, uEchoPropertyCode code)
- {
-   if (!obj)
-	 return NULL;
-
-   return uecho_propertylist_getdata(obj.properties, code);
- }
-
- bool func (obj *Object) _getpropertyintegerdata(uEchoObject *obj, uEchoPropertyCode code, size_t dataLen, int *data)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_getintegerdata(obj.properties, code, dataLen, data);
- }
-
- bool func (obj *Object) _getpropertybytedata(uEchoObject *obj, uEchoPropertyCode code, byte *data)
- {
-   if (!obj)
-	 return false;
-
-   return uecho_propertylist_getbytedata(obj.properties, code, data);
- }
-
-
- void func (obj *Object) _setmessagelistener(uEchoObject *obj, uEchoObjectMessageListener listener)
+ void func (obj *Object) _setmessagelistener(uEchoObjectMessageListener listener)
  {
    if (!obj)
 	 return;
@@ -299,7 +156,7 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
    obj.allMsgListener = listener;
  }
 
- uEchoObjectMessageListener func (obj *Object) _getmessagelistener(uEchoObject *obj)
+ uEchoObjectMessageListener func (obj *Object) _getmessagelistener()
  {
    if (!obj)
 	 return NULL;
@@ -308,7 +165,7 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
  }
 
 
- bool func (obj *Object) _hasmessagelistener(uEchoObject *obj)
+ bool func (obj *Object) _hasmessagelistener()
  {
    if (!obj)
 	 return false;
@@ -316,7 +173,7 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
    return obj.allMsgListener ? true : false;
  }
 
- bool func (obj *Object) _setpropertyrequestlistener(uEchoObject *obj, uEchoEsv esv, uEchoPropertyCode code, uEchoPropertyRequestListener listener)
+ bool func (obj *Object) _setpropertyrequestlistener(uEchoEsv esv, PropertyCode code, uEchoPropertyRequestListener listener)
  {
    if (!obj)
 	 return false;
@@ -324,7 +181,7 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
    return func (obj *Object) _property_observer_manager_setobserver(obj.propListenerMgr, esv, code, listener);
  }
 
- uEchoPropertyRequestListener func (obj *Object) _getpropertyrequestlistener(uEchoObject *obj, uEchoEsv esv, uEchoPropertyCode code)
+ uEchoPropertyRequestListener func (obj *Object) _getpropertyrequestlistener(uEchoEsv esv, PropertyCode code)
  {
    uEchoObjectPropertyObserver *obs;
 
@@ -338,12 +195,12 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
    return obs.listener;
  }
 
- bool func (obj *Object) _haspropertyrequestlistener(uEchoObject *obj, uEchoEsv esv, uEchoPropertyCode code)
+ bool func (obj *Object) _haspropertyrequestlistener(uEchoEsv esv, PropertyCode code)
  {
    return (func (obj *Object) _getpropertyrequestlistener(obj, esv, code) != NULL) ? true : false;
  }
 
- bool func (obj *Object) _setpropertywriterequestlistener(uEchoObject *obj, uEchoPropertyCode code, uEchoPropertyRequestListener listener)
+ bool func (obj *Object) _setpropertywriterequestlistener(PropertyCode code, uEchoPropertyRequestListener listener)
  {
    bool isSeccess = true;
 
@@ -354,7 +211,7 @@ func (obj *Object) GetProperty(code int) (*Property, error) {
    return isSeccess;
  }
 
- bool func (obj *Object) _setpropertyreadlistener(uEchoObject *obj, uEchoPropertyCode code, uEchoPropertyRequestListener listener)
+ bool func (obj *Object) _setpropertyreadlistener(PropertyCode code, uEchoPropertyRequestListener listener)
  {
    bool isSeccess = true;
 
@@ -382,7 +239,7 @@ func (obj *Object) SetPropertyMap(mapCode byte, propCodes byte[]) error
 
   if (propsCodeSize <= uEchoPropertyMapMaxLen) {
 	memcpy(propMap, propCodes, propsCodeSize);
-	func (obj *Object) _setproperty(obj, mapCode, uEchoPropertyAttrRead);
+	func (obj *Object) _setproperty(obj, mapCode, uEchoPropertyAttributeRead);
 	func (obj *Object) _setpropertydata(obj, mapCode, propMapData, (propsCodeSize + 1));
 	return true;
   }
@@ -392,13 +249,13 @@ func (obj *Object) SetPropertyMap(mapCode byte, propCodes byte[]) error
   for (n=0; n<propsCodeSize; n++) {
 	byte propCode;
 	propCode = propCodes[n];
-	if ((propCode < uEchoPropertyCodeMin) || (uEchoPropertyCodeMax < propCode))
+	if ((propCode < PropertyCodeMin) || (PropertyCodeMax < propCode))
 	  continue;
-	propByteIdx = (propCode - uEchoPropertyCodeMin) & 0x0F;
-	propMap[propByteIdx] |= (((propCode - uEchoPropertyCodeMin) & 0xF0) >> 8) & 0x0F;
+	propByteIdx = (propCode - PropertyCodeMin) & 0x0F;
+	propMap[propByteIdx] |= (((propCode - PropertyCodeMin) & 0xF0) >> 8) & 0x0F;
   }
 
-  func (obj *Object) _setproperty(obj, mapCode, uEchoPropertyAttrRead);
+  func (obj *Object) _setproperty(obj, mapCode, uEchoPropertyAttributeRead);
   func (obj *Object) _setpropertydata(obj, mapCode, propMapData, (uEchoPropertyMapMaxLen + 1));
 
   return nil
@@ -419,7 +276,7 @@ func (obj *Object) AnnounceMessage(msg *protocol.Message) error {
  ****************************************/
 
 /*
- bool func (obj *Object) _sendmessage(uEchoObject *obj, uEchoObject *dstObj, uEchoMessage *msg)
+ bool func (obj *Object) _sendmessage(uEchoObject *dstObj, uEchoMessage *msg)
  {
    uEchoNode *parentNode, *dstParentNode;
 
