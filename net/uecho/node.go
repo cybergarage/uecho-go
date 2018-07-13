@@ -89,10 +89,16 @@ func (node *Node) Announce() error {
 		return err
 	}
 
-	nodeProp, err := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
-	if err != nil {
-		return err
+	nodeProp, ok := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
+	if !ok {
+		return fmt.Errorf(errorObjectProfileObjectNotFound)
 	}
 
 	return node.AnnounceProperty(nodeProp)
+}
+
+// SendMessage send a message to the node
+func (node *Node) SendMessage(dstNode *Node, msg protocol.Message) error {
+	//return uecho_node_sendmessagebytes(node, uecho_node_getaddress(dstNode), uecho_message_getbytes(msg), uecho_message_size(msg));
+	return nil
 }
