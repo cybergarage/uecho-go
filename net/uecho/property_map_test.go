@@ -8,6 +8,6 @@ import (
 	"testing"
 )
 
-func TestNewPropertyMap(t *testing.T) {
-	NewPropertyMap()
+func TestNewProperty(t *testing.T) {
+	NewProperty()
 }

@@ -17,7 +17,9 @@ const (
 )
 
 const (
-	PropertyMapMaxLen = 16
+	PropertyMapFormat1MaxSize = 15
+	PropertyMapFormat2Size    = 18
+	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
 )
 
 const (
