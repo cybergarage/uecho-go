@@ -75,5 +75,7 @@ func (sock *UnicastSocket) Write(addr string, port int, b []byte) (int, error) {
 		return 0, err
 	}
 
+	defer conn.Close()
+
 	return conn.Write(b)
 }
