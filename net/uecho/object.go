@@ -165,7 +165,7 @@ func (obj *Object) setPropertyMapProperty(propMapCode PropertyCode, propCodes []
 			continue
 		}
 		propByteIdx := ((propCode - PropertyCodeMin) & 0x0F) + 1
-		propMapData[propByteIdx] |= byte((((propCode - PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
+		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
 	}
 
 	return nil

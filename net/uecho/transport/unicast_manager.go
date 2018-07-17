@@ -41,7 +41,7 @@ func (mgr *UnicastManager) Start() error {
 	for n, ifi := range ifis {
 		server := NewUnicastServer()
 		server.Listener = mgr.Listener
-		err := server.Start(ifi, UDP_PORT)
+		err := server.Start(ifi, UDPPort)
 		if err != nil {
 			lastErr = err
 		}

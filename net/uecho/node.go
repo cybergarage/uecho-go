@@ -31,6 +31,11 @@ func NewNode() *Node {
 	return node
 }
 
+// GetAddress returns a IP address of the node.
+func (node *Node) GetAddress() string {
+	return node.Address
+}
+
 // GetObjectByCode returns a specified object.
 func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 	for _, obj := range node.Objects {
@@ -46,29 +51,9 @@ func (node *Node) GetNodeProfileObject() (*Object, error) {
 	return node.GetObjectByCode(NodeProfileObject)
 }
 
-// Start starts the node.
-func (node *Node) Start() error {
-	err := node.server.Start()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Stop stop the node.
-func (node *Node) Stop() error {
-	err := node.server.Stop()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // AnnounceMessage announces a message.
 func (node *Node) AnnounceMessage(msg *protocol.Message) error {
-	return node.server.SendMulticastMessage(msg)
+	return node.server.SendMessageAll(msg)
 }
 
 // AnnounceProperty announces a specified property.
@@ -98,7 +83,26 @@ func (node *Node) Announce() error {
 }
 
 // SendMessage send a message to the node
-func (node *Node) SendMessage(dstNode *Node, msg protocol.Message) error {
-	//return uecho_node_sendmessagebytes(node, uecho_node_getaddress(dstNode), uecho_message_getbytes(msg), uecho_message_size(msg));
+func (node *Node) SendMessage(dstNode *Node, msg *protocol.Message) error {
+	return node.server.SendMessage(dstNode.GetAddress(), msg)
+}
+
+// Start starts the node.
+func (node *Node) Start() error {
+	err := node.server.Start()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Stop stop the node.
+func (node *Node) Stop() error {
+	err := node.server.Stop()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
