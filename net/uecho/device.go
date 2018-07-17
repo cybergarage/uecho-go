@@ -46,7 +46,7 @@ const (
 	DeviceCurrentLimitSettingSize                   = 1
 	DeviceFaultStatusSize                           = 1
 	DeviceFaultDescriptionSize                      = 2
-	DeviceManufacturerCodeSize                      = ObjectManufacturerCodeLen
+	DeviceManufacturerCodeSize                      = ObjectManufacturerCodeSize
 	DeviceBusinessFacilityCodeSize                  = 3
 	DeviceProductCodeSize                           = 12
 	DeviceProductionNumberSize                      = 12
@@ -57,9 +57,9 @@ const (
 	DeviceCurrentDateSettingSize                    = 4
 	DevicePowerLimitSettingSize                     = 2
 	DeviceCumulativeOperatingTimeSize               = 5
-	DeviceAnnoPropertyMapSize                       = ObjectAnnoPropertyMapMaxLen
-	DeviceSetPropertyMapSize                        = ObjectSetPropertyMapMaxLen
-	DeviceGetPropertyMapSize                        = ObjectGetPropertyMapMaxLen
+	DeviceAnnoPropertyMapSize                       = ObjectAnnoPropertyMapMaxSize
+	DeviceSetPropertyMapSize                        = ObjectSetPropertyMapMaxSize
+	DeviceGetPropertyMapSize                        = ObjectGetPropertyMapMaxSize
 )
 
 const (

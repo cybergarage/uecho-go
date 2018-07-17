@@ -32,11 +32,11 @@ const (
 )
 
 const (
-	ObjectManufacturerCodeLen   = 3
-	ObjectPropertyMapMaxLen     = 16
-	ObjectAnnoPropertyMapMaxLen = (ObjectPropertyMapMaxLen + 1)
-	ObjectSetPropertyMapMaxLen  = (ObjectPropertyMapMaxLen + 1)
-	ObjectGetPropertyMapMaxLen  = (ObjectPropertyMapMaxLen + 1)
+	ObjectManufacturerCodeSize  = 3
+	ObjectPropertyMapMaxSize     = 16
+	ObjectAnnoPropertyMapMaxSize = (ObjectPropertyMapMaxSize + 1)
+	ObjectSetPropertyMapMaxSize  = (ObjectPropertyMapMaxSize + 1)
+	ObjectGetPropertyMapMaxSize  = (ObjectPropertyMapMaxSize + 1)
 )
 
 const (
