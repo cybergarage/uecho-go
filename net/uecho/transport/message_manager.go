@@ -31,9 +31,9 @@ func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 	mgr.unicastMgr.SetListener(l)
 }
 
-// SendMulticastMessage send a message to the multicast address.
-func (mgr *MessageManager) SendMulticastMessage(msg *protocol.Message) error {
-	addr, err := net.ResolveUDPAddr("udp", MULTICAST_ADDRESS)
+// SendMessage send a message to the destination address.
+func (mgr *MessageManager) SendMessage(dstAddr string, msg *protocol.Message) error {
+	addr, err := net.ResolveUDPAddr("udp", dstAddr)
 	if err != nil {
 		return err
 	}
@@ -43,12 +43,19 @@ func (mgr *MessageManager) SendMulticastMessage(msg *protocol.Message) error {
 		return err
 	}
 
+	defer c.Close()
+
 	_, err = c.Write(msg.Bytes())
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// SendMessageAll send a message to the multicast address.
+func (mgr *MessageManager) SendMessageAll(msg *protocol.Message) error {
+	return mgr.SendMessage(MulticastAddress, msg)
 }
 
 // Start starts all transport managers.
@@ -59,13 +66,11 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
-	/* FIXME
 	err = mgr.unicastMgr.Start()
 	if err != nil {
 		mgr.Stop()
 		return err
 	}
-	*/
 
 	return nil
 }

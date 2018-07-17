@@ -63,7 +63,7 @@ func TestNewMessageManager(t *testing.T) {
 		return
 	}
 
-	err = mgr.SendMulticastMessage(msg)
+	err = mgr.SendMessageAll(msg)
 	if err != nil {
 		t.Error(err)
 	}
