@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	MessageHeaderLen = (1 + 1 + 2)
-	MessageMinLen    = (MessageHeaderLen + 3 + 3 + 1 + 1)
+	MessageHeaderSize = (1 + 1 + 2)
+	MessageMinSize    = (MessageHeaderSize + 3 + 3 + 1 + 1)
 	EHD1             = 0x10
 	EHD2             = 0x81
 	TIDSize          = 2
@@ -43,7 +43,7 @@ const (
 )
 
 const (
-	errorShortMessageLength   = "Short message length : %d < %d"
+	errorShortMessageSizegth   = "Short message length : %d < %d"
 	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
 )
 
@@ -167,9 +167,9 @@ func (msg *Message) GetProperty(n int) *Property {
 
 // Parse parses the specified bytes.
 func (msg *Message) Parse(data []byte) error {
-	dataLen := len(data)
-	if dataLen < MessageMinLen {
-		return fmt.Errorf(errorShortMessageLength, dataLen, MessageMinLen)
+	dataSize := len(data)
+	if dataSize < MessageMinSize {
+		return fmt.Errorf(errorShortMessageSizegth, dataSize, MessageMinSize)
 	}
 
 	// Check Headers
@@ -221,7 +221,7 @@ func (msg *Message) Parse(data []byte) error {
 
 		// EPC
 
-		if (dataLen - 1) < offset {
+		if (dataSize - 1) < offset {
 			continue
 		}
 
@@ -230,7 +230,7 @@ func (msg *Message) Parse(data []byte) error {
 
 		// PDC
 
-		if (dataLen - 1) < offset {
+		if (dataSize - 1) < offset {
 			continue
 		}
 
@@ -239,7 +239,7 @@ func (msg *Message) Parse(data []byte) error {
 
 		// EDT
 
-		if (dataLen - 1) < (offset + propSize - 1) {
+		if (dataSize - 1) < (offset + propSize - 1) {
 			continue
 		}
 
@@ -254,18 +254,18 @@ func (msg *Message) Parse(data []byte) error {
 // Size return the byte size.
 func (msg *Message) Size() int {
 
-	msgLen := MessageMinLen
+	msgSize := MessageMinSize
 
 	for n := 0; n < int(msg.OPC); n++ {
 		prop := msg.GetProperty(n)
 		if prop == nil {
 			continue
 		}
-		msgLen += 2
-		msgLen += prop.Size()
+		msgSize += 2
+		msgSize += prop.Size()
 	}
 
-	return msgLen
+	return msgSize
 }
 
 // Bytes return the message bytes.
