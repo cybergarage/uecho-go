@@ -62,9 +62,9 @@ const (
 	NodeProfileClassUniqueIdentifierDataSize           = 2
 	NodeProfileClassNumberOfSelfNodeInstancesSize      = 3
 	NodeProfileClassNumberOfSelfNodeClassesSize        = 2
-	NodeProfileClassSelfNodeInstanceListSMax          = 0xFF
-	NodeProfileClassSelfNodeClassListSMax             = 0xFF
-	NodeProfileClassInstanceListNotificationMax       = NodeProfileClassSelfNodeInstanceListSMax
+	NodeProfileClassSelfNodeInstanceListSMax           = 0xFF
+	NodeProfileClassSelfNodeClassListSMax              = 0xFF
+	NodeProfileClassInstanceListNotificationMax        = NodeProfileClassSelfNodeInstanceListSMax
 )
 
 const (
