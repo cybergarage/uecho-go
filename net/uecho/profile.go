@@ -23,15 +23,15 @@ const (
 )
 
 const (
-	ProfileFaultStatusLen         = 1
-	ProfileManufacturerCodeLen    = ObjectManufacturerCodeLen
-	ProfilePlaceOfBusinessCodeLen = 3
-	ProfileProductCodeLen         = 12
-	ProfileSerialNumberLen        = 12
-	ProfileDateOfManufactureLen   = 4
-	ProfileAnnoPropertyMapMaxLen  = ObjectAnnoPropertyMapMaxLen
-	ProfileSetPropertyMapMaxLen   = ObjectSetPropertyMap
-	ProfileGetPropertyMapMaxLen   = ObjectGetPropertyMap
+	ProfileFaultStatusSize         = 1
+	ProfileManufacturerCodeSize    = ObjectManufacturerCodeSize
+	ProfilePlaceOfBusinessCodeSize = 3
+	ProfileProductCodeSize         = 12
+	ProfileSerialNumberSize        = 12
+	ProfileDateOfManufactureSize   = 4
+	ProfileAnnoPropertyMapMaxSize  = ObjectAnnoPropertyMapMaxSize
+	ProfileSetPropertyMapMaxSize   = ObjectSetPropertyMap
+	ProfileGetPropertyMapMaxSize   = ObjectGetPropertyMap
 )
 
 const (
@@ -53,15 +53,15 @@ const (
 )
 
 const (
-	NodeProfileClassOperatingStatusLen                = 1
-	NodeProfileClassVersionInformationLen             = 4
-	NodeProfileClassIdentificationManufacturerCodeLen = 3
-	NodeProfileClassIdentificationUniqueIdLen         = 13
-	NodeProfileClassIdentificationNumberLen           = 1 + NodeProfileClassIdentificationManufacturerCodeLen + NodeProfileClassIdentificationUniqueIdLen
-	NodeProfileClassFaultContentLen                   = 2
-	NodeProfileClassUniqueIdentifierDataLen           = 2
-	NodeProfileClassNumberOfSelfNodeInstancesLen      = 3
-	NodeProfileClassNumberOfSelfNodeClassesLen        = 2
+	NodeProfileClassOperatingStatusSize                = 1
+	NodeProfileClassVersionInformationSize             = 4
+	NodeProfileClassIdentificationManufacturerCodeSize = 3
+	NodeProfileClassIdentificationUniqueIdSize         = 13
+	NodeProfileClassIdentificationNumberSize           = 1 + NodeProfileClassIdentificationManufacturerCodeSize + NodeProfileClassIdentificationUniqueIdSize
+	NodeProfileClassFaultContentSize                   = 2
+	NodeProfileClassUniqueIdentifierDataSize           = 2
+	NodeProfileClassNumberOfSelfNodeInstancesSize      = 3
+	NodeProfileClassNumberOfSelfNodeClassesSize        = 2
 	NodeProfileClassSelfNodeInstanceListSMax          = 0xFF
 	NodeProfileClassSelfNodeClassListSMax             = 0xFF
 	NodeProfileClassInstanceListNotificationMax       = NodeProfileClassSelfNodeInstanceListSMax
