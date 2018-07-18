@@ -14,11 +14,11 @@ import (
 const (
 	MessageHeaderSize = (1 + 1 + 2)
 	MessageMinSize    = (MessageHeaderSize + 3 + 3 + 1 + 1)
-	EHD1             = 0x10
-	EHD2             = 0x81
-	TIDSize          = 2
-	TIDMax           = 65535
-	EOJSize          = 3
+	EHD1              = 0x10
+	EHD2              = 0x81
+	TIDSize           = 2
+	TIDMax            = 65535
+	EOJSize           = 3
 )
 
 type ESV byte
@@ -43,7 +43,7 @@ const (
 )
 
 const (
-	errorShortMessageSizegth   = "Short message length : %d < %d"
+	errorShortMessageSizegth  = "Short message length : %d < %d"
 	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
 )
 

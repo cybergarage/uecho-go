@@ -4,6 +4,10 @@
 
 package uecho
 
+import (
+	"fmt"
+)
+
 /****************************************
  * Device Object Super Class
  ****************************************/
@@ -77,131 +81,189 @@ const (
 	DeviceFaultOccurred               = 0x41
 	DeviceNoFaultOccurred             = 0x42
 	DeviceInstallationLocationUnknown = 0x00
+	DeviceManufacturerUnknown         = 0xFFFFFF
 )
 
-// Device is an instance for Echonet device object.
+const (
+	errorDeviceInvalidDeviceStandardVersion = "Invalid Device Standard Version (%s)"
+)
+
+// Device is an instance for Echonet device Object.
 type Device = Object
 
-// NewDevice returns a new device object.
+// NewDevice returns a new device Object.
 func NewDevice() *Device {
 	dev := NewObject()
+	dev.addMandatoryProperties()
 	return dev
 }
 
-// AddMandatoryProperties sets mandatory properties for Echonet specification
-/*
- func (dev *Device) AddMandatoryProperties(dev *Device) error {
-   // Operation Status
+// CreateProperty creates a new property to the property map. (Override)
+func (dev *Device) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
+	dev.PropertyMap.CreateProperty(propCode, propAttr)
+	dev.updatePropertyMap()
+}
 
-   uecho_object_setproperty(obj, uEchoDeviceOperatingStatus, uEchoPropertyAttributeReadAnno);
-   (dev *Device) setoperatingstatus(obj, true);
+// addMandatoryProperties sets mandatory properties for Echonet specification
+func (dev *Device) addMandatoryProperties() error {
+	// Operation Status
+	dev.CreateProperty(DeviceOperatingStatus, PropertyAttributeReadAnno)
+	dev.SetOperatingStatus(true)
 
-   // Installation Location
+	// Installation Location
+	dev.CreateProperty(DeviceInstallationLocation, PropertyAttributeReadAnno)
+	dev.SetInstallationLocation(DeviceInstallationLocationUnknown)
 
-   uecho_object_setproperty(obj, uEchoDeviceInstallationLocation, uEchoPropertyAttributeReadAnno);
-   (dev *Device) setinstallationlocation(obj, uEchoDeviceInstallationLocationUnknown);
+	// Standard Version Infomation
+	dev.CreateProperty(DeviceStandardVersion, PropertyAttributeRead)
+	dev.SetStandardVersion(DeviceDefaultVersionAppendix)
 
-   // Standard Version Infomation
+	// Fault Status
+	dev.CreateProperty(DeviceFaultStatus, PropertyAttributeReadAnno)
+	dev.SetFaultStatus(false)
 
-   uecho_object_setproperty(obj, uEchoDeviceStandardVersion, uEchoPropertyAttributeRead);
-   (dev *Device) setstandardversion(obj, uEchoDeviceDefaultVersionAppendix);
+	// Manufacture Code
+	dev.CreateProperty(DeviceManufacturerCode, PropertyAttributeRead)
+	dev.SetManufacturerCode(DeviceManufacturerUnknown)
 
-   // Fault Status
+	return nil
+}
 
-   uecho_object_setproperty(obj, uEchoDeviceFaultStatus, uEchoPropertyAttributeReadAnno);
-   (dev *Device) setfaultstatus(obj, false);
+// SetOperatingStatus sets a operating status to the device.
+func (dev *Device) SetOperatingStatus(stats bool) error {
+	statsByte := byte(DeviceOperatingStatusOff)
+	if stats {
+		statsByte = DeviceOperatingStatusOn
+	}
+	return dev.SetPropertyByteData(DeviceOperatingStatus, statsByte)
+}
 
-   return true;
- }
+// GetOperatingStatus return the operating status of the device.
+func (dev *Device) GetOperatingStatus() (bool, error) {
+	statsByte, err := dev.GetPropertyByteData(DeviceOperatingStatus)
+	if err != nil {
+		return false, err
+	}
+	if statsByte == DeviceOperatingStatusOff {
+		return false, nil
+	}
+	return true, nil
+}
 
- bool (dev *Device) setoperatingstatus(dev *Device, bool stats)
- {
-   byte statsByte;
+// SetInstallationLocation sets a installation location to the device.
+func (dev *Device) SetInstallationLocation(locByte byte) error {
+	return dev.SetPropertyByteData(DeviceInstallationLocation, locByte)
+}
 
-   statsByte = stats ? uEchoDeviceOperatingStatusOn : uEchoDeviceOperatingStatusOff;
-   return uecho_object_setpropertydata(obj, uEchoDeviceOperatingStatus, &statsByte, uEchoDeviceOperatingStatusSize);
- }
+// GetInstallationLocation return the installation location of the device.
+func (dev *Device) GetInstallationLocation() (byte, error) {
+	return dev.GetPropertyByteData(DeviceInstallationLocation)
+}
 
- bool (dev *Device) isoperatingstatus(dev *Device)
- {
-   byte statsByte;
+// SetStandardVersion sets a standard version to the device.
+func (dev *Device) SetStandardVersion(ver byte) error {
+	verBytes := []byte{0x00, 0x00, ver, 0x00}
+	return dev.SetPropertyData(DeviceStandardVersion, verBytes)
+}
 
-   if (!uecho_object_getpropertybytedata(obj, uEchoDeviceOperatingStatus, &statsByte))
-	 return false;
+// GetStandardVersion return the standard version of the device.
+func (dev *Device) GetStandardVersion() (byte, error) {
+	verBytes, err := dev.GetPropertyData(DeviceStandardVersion)
+	if err != nil {
+		return 0, err
+	}
+	if len(verBytes) <= DeviceStandardVersionSize {
+		return 0, fmt.Errorf(errorDeviceInvalidDeviceStandardVersion, string(verBytes))
+	}
+	return verBytes[2], nil
+}
 
-   return (statsByte == uEchoDeviceOperatingStatusOn) ? true : false;
- }
+// SetFaultStatus sets a fault status to the device.
+func (dev *Device) SetFaultStatus(stats bool) error {
+	statsByte := byte(DeviceNoFaultOccurred)
+	if stats {
+		statsByte = DeviceFaultOccurred
+	}
+	return dev.SetPropertyByteData(DeviceFaultStatus, statsByte)
+}
 
- bool (dev *Device) setinstallationlocation(dev *Device, byte locByte)
- {
-   return uecho_object_setpropertydata(obj, uEchoDeviceInstallationLocation, &locByte, uEchoDeviceInstallationLocationSize);
- }
+// GetFaultStatus return the fault status of the device.
+func (dev *Device) GetFaultStatus() (bool, error) {
+	statsByte, err := dev.GetPropertyByteData(DeviceFaultStatus)
+	if err != nil {
+		return false, err
+	}
+	if statsByte == DeviceFaultOccurred {
+		return true, nil
+	}
+	return false, nil
+}
 
- byte (dev *Device) getinstallationlocation(dev *Device)
- {
-   byte locByte;
+// SetManufacturerCode sets a manufacture codes to the device.
+func (dev *Device) SetManufacturerCode(code uint) error {
+	return dev.SetPropertyIntegerData(DeviceManufacturerCode, code, DeviceManufacturerCodeSize)
+}
 
-   if (!uecho_object_getpropertybytedata(obj, uEchoDeviceInstallationLocation, &locByte))
-	 return uEchoDeviceInstallationLocationUnknown;
+// GetManufacturerCode return the manufacture codes of the device.
+func (dev *Device) GetManufacturerCode() (uint, error) {
+	return dev.GetPropertyIntegerData(DeviceManufacturerCode)
+}
 
-   return locByte;
- }
+// setPropertyMapProperty sets a specified property map to the device.
+func (dev *Device) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
+	if !dev.HasProperty(propMapCode) {
+		dev.PropertyMap.CreateProperty(propMapCode, PropertyAttributeRead)
+	}
 
- bool (dev *Device) setstandardversion(dev *Device, char ver)
- {
-   byte verBytes[uEchoDeviceStandardVersionSize];
+	// Description Format 1
 
-   verBytes[0] = 0x00;
-   verBytes[1] = 0x00;
-   verBytes[2] = ver;
-   verBytes[3] = 0x00;
-   return uecho_object_setpropertydata(obj, uEchoDeviceStandardVersion, verBytes, uEchoDeviceStandardVersionSize);
- }
+	if len(propCodes) <= PropertyMapFormat1MaxSize {
+		propMapData := make([]byte, len(propCodes)+1)
+		propMapData[0] = byte(len(propCodes))
+		for n, propCode := range propCodes {
+			propMapData[n+1] = byte(propCode)
+		}
+		dev.SetPropertyData(propMapCode, propMapData)
+		return nil
+	}
 
- char (dev *Device) getstandardversion(dev *Device)
- {
-   uEchoProperty *prop;
-   byte *verBytes;
+	// Description Format 2
 
-   prop = uecho_object_getproperty(obj, uEchoDeviceStandardVersion);
-   if (!prop)
-	 return uEchoDeviceVersionUnknown;
+	propMapData := make([]byte, PropertyMapFormat2Size)
+	propMapData[0] = byte(len(propCodes))
 
-   if (uecho_property_getdatasize(prop) != uEchoDeviceStandardVersionSize)
-	 return uEchoDeviceVersionUnknown;
+	for _, propCode := range propCodes {
+		if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
+			continue
+		}
+		propByteIdx := ((propCode - PropertyCodeMin) & 0x0F) + 1
+		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
+	}
 
-   verBytes = uecho_property_getdata(prop);
-   if (!verBytes)
-	 return uEchoDeviceVersionUnknown;
+	return nil
+}
 
-   return verBytes[2];
- }
+// updatePropertyMaps updates property maps  in the device.
+func (dev *Device) updatePropertyMap() error {
+	getPropMapCodes := make([]PropertyCode, 0)
+	setPropMapCodes := make([]PropertyCode, 0)
+	annoPropMapCodes := make([]PropertyCode, 0)
 
- bool (dev *Device) setfaultstatus(dev *Device, bool stats)
- {
-   byte faultByte;
+	for _, prop := range dev.properties {
+		if prop.IsReadable() {
+			getPropMapCodes = append(getPropMapCodes, prop.GetCode())
+		}
+		if prop.IsWritable() {
+			setPropMapCodes = append(setPropMapCodes, prop.GetCode())
+		}
+		if prop.IsAnnouncement() {
+			annoPropMapCodes = append(annoPropMapCodes, prop.GetCode())
+		}
+	}
 
-   faultByte = stats ? uEchoDeviceFaultOccurred : uEchoDeviceNoFaultOccurred;
-   return uecho_object_setpropertydata(obj, uEchoDeviceFaultStatus, &faultByte, uEchoDeviceFaultStatusSize);
- }
+	dev.setPropertyMapProperty(ProfileGetPropertyMap, getPropMapCodes)
+	dev.setPropertyMapProperty(ProfileSetPropertyMap, setPropMapCodes)
+	dev.setPropertyMapProperty(ProfileAnnoPropertyMap, annoPropMapCodes)
 
- bool (dev *Device) isfaultstatus(dev *Device)
- {
-   byte statsByte;
-
-   if (!uecho_object_getpropertybytedata(obj, uEchoDeviceFaultStatus, &statsByte))
-	 return false;
-
-   return (statsByte == uEchoDeviceFaultOccurred) ? true : false;
- }
-
- bool (dev *Device) setmanufacturercode(dev *Device, uEchoManufacturerCode code)
- {
-   return uecho_object_setmanufacturercode(obj, code);
- }
-
- uEchoManufacturerCode (dev *Device) getmanufacturercode(dev *Device)
- {
-   return uecho_object_getmanufacturercode(obj);
- }
-*/
+	return nil
+}

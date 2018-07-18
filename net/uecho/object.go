@@ -32,7 +32,7 @@ const (
 )
 
 const (
-	ObjectManufacturerCodeSize  = 3
+	ObjectManufacturerCodeSize   = 3
 	ObjectPropertyMapMaxSize     = 16
 	ObjectAnnoPropertyMapMaxSize = (ObjectPropertyMapMaxSize + 1)
 	ObjectSetPropertyMapMaxSize  = (ObjectPropertyMapMaxSize + 1)
@@ -137,63 +137,6 @@ func (obj *Object) IsProfile() bool {
 		return false
 	}
 	return true
-}
-
-// setPropertyMapProperty sets a specified property map.
-func (obj *Object) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
-	obj.CreateProperty(propMapCode, PropertyAttributeRead)
-
-	// Description Format 1
-
-	if len(propCodes) <= PropertyMapFormat1MaxSize {
-		propMapData := make([]byte, len(propCodes)+1)
-		propMapData[0] = byte(len(propCodes))
-		for n, propCode := range propCodes {
-			propMapData[n+1] = byte(propCode)
-		}
-		obj.SetPropertyByteData(propMapCode, propMapData)
-		return nil
-	}
-
-	// Description Format 2
-
-	propMapData := make([]byte, PropertyMapFormat2Size)
-	propMapData[0] = byte(len(propCodes))
-
-	for _, propCode := range propCodes {
-		if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
-			continue
-		}
-		propByteIdx := ((propCode - PropertyCodeMin) & 0x0F) + 1
-		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
-	}
-
-	return nil
-}
-
-// updatePropertyMaps updates property maps.
-func (obj *Object) updatePropertyMap() error {
-	getPropMapCodes := make([]PropertyCode, 0)
-	setPropMapCodes := make([]PropertyCode, 0)
-	annoPropMapCodes := make([]PropertyCode, 0)
-
-	for _, prop := range obj.properties {
-		if prop.IsReadable() {
-			getPropMapCodes = append(getPropMapCodes, prop.GetCode())
-		}
-		if prop.IsWritable() {
-			setPropMapCodes = append(setPropMapCodes, prop.GetCode())
-		}
-		if prop.IsAnnouncement() {
-			annoPropMapCodes = append(annoPropMapCodes, prop.GetCode())
-		}
-	}
-
-	obj.setPropertyMapProperty(ProfileGetPropertyMap, getPropMapCodes)
-	obj.setPropertyMapProperty(ProfileSetPropertyMap, setPropMapCodes)
-	obj.setPropertyMapProperty(ProfileAnnoPropertyMap, annoPropMapCodes)
-
-	return nil
 }
 
 // AnnounceMessage announces a message.

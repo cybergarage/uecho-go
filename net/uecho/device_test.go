@@ -8,6 +8,27 @@ import (
 	"testing"
 )
 
+const (
+	errorMandatoryPropertyNotFound = "Mandatory Property (%0X) Not Found"
+)
+
 func TestNewDevice(t *testing.T) {
-	NewDevice()
+	dev := NewDevice()
+
+	mandatoryPropertyCodes := []PropertyCode{
+		DeviceOperatingStatus,
+		DeviceInstallationLocation,
+		DeviceStandardVersion,
+		DeviceFaultStatus,
+		DeviceManufacturerCode,
+		ProfileGetPropertyMap,
+		ProfileSetPropertyMap,
+		ProfileAnnoPropertyMap,
+	}
+
+	for _, propCode := range mandatoryPropertyCodes {
+		if !dev.HasProperty(propCode) {
+			t.Errorf(errorMandatoryPropertyNotFound, propCode)
+		}
+	}
 }
