@@ -13,7 +13,7 @@ import (
  ****************************************/
 
 const (
-	DeviceOperatingStatus                       = 0x80
+	DeviceOperatingStatus                       = ObjectOperatingStatus
 	DeviceInstallationLocation                  = 0x81
 	DeviceStandardVersion                       = 0x82
 	DeviceIdentificationNumber                  = 0x83
@@ -40,7 +40,6 @@ const (
 )
 
 const (
-	DeviceOperatingStatusSize                       = 1
 	DeviceInstallationLocationSize                  = 1
 	DeviceStandardVersionSize                       = 4
 	DeviceIdentificationNumberSize                  = 9
@@ -67,8 +66,8 @@ const (
 )
 
 const (
-	DeviceOperatingStatusOn           = 0x30
-	DeviceOperatingStatusOff          = 0x31
+	DeviceOperatingStatusOn           = ObjectOperatingStatusOn
+	DeviceOperatingStatusOff          = ObjectOperatingStatusOff
 	DeviceVersionAppendixA            = 'A'
 	DeviceVersionAppendixB            = 'B'
 	DeviceVersionAppendixC            = 'C'
@@ -94,20 +93,14 @@ type Device = Object
 // NewDevice returns a new device Object.
 func NewDevice() *Device {
 	dev := NewObject()
-	dev.addMandatoryProperties()
+	dev.addDeviceMandatoryProperties()
 	return dev
 }
 
-// CreateProperty creates a new property to the property map. (Override)
-func (dev *Device) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
-	dev.PropertyMap.CreateProperty(propCode, propAttr)
-	dev.updatePropertyMap()
-}
-
-// addMandatoryProperties sets mandatory properties for Echonet specification
-func (dev *Device) addMandatoryProperties() error {
+// addDeviceMandatoryProperties sets mandatory properties for device object.
+func (dev *Device) addDeviceMandatoryProperties() error {
 	// Operation Status
-	dev.CreateProperty(DeviceOperatingStatus, PropertyAttributeReadAnno)
+	dev.CreateProperty(ObjectOperatingStatus, PropertyAttributeReadAnno)
 	dev.SetOperatingStatus(true)
 
 	// Installation Location
@@ -127,27 +120,6 @@ func (dev *Device) addMandatoryProperties() error {
 	dev.SetManufacturerCode(DeviceManufacturerUnknown)
 
 	return nil
-}
-
-// SetOperatingStatus sets a operating status to the device.
-func (dev *Device) SetOperatingStatus(stats bool) error {
-	statsByte := byte(DeviceOperatingStatusOff)
-	if stats {
-		statsByte = DeviceOperatingStatusOn
-	}
-	return dev.SetPropertyByteData(DeviceOperatingStatus, statsByte)
-}
-
-// GetOperatingStatus return the operating status of the device.
-func (dev *Device) GetOperatingStatus() (bool, error) {
-	statsByte, err := dev.GetPropertyByteData(DeviceOperatingStatus)
-	if err != nil {
-		return false, err
-	}
-	if statsByte == DeviceOperatingStatusOff {
-		return false, nil
-	}
-	return true, nil
 }
 
 // SetInstallationLocation sets a installation location to the device.
@@ -261,9 +233,9 @@ func (dev *Device) updatePropertyMap() error {
 		}
 	}
 
-	dev.setPropertyMapProperty(ProfileGetPropertyMap, getPropMapCodes)
-	dev.setPropertyMapProperty(ProfileSetPropertyMap, setPropMapCodes)
-	dev.setPropertyMapProperty(ProfileAnnoPropertyMap, annoPropMapCodes)
+	dev.setPropertyMapProperty(ObjectGetPropertyMap, getPropMapCodes)
+	dev.setPropertyMapProperty(ObjectSetPropertyMap, setPropMapCodes)
+	dev.setPropertyMapProperty(ObjectAnnoPropertyMap, annoPropMapCodes)
 
 	return nil
 }
