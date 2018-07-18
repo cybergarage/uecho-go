@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-const (
-	errorMandatoryPropertyNotFound = "Mandatory Property (%0X) Not Found"
-)
-
 func TestNewDevice(t *testing.T) {
 	dev := NewDevice()
 
@@ -21,9 +17,9 @@ func TestNewDevice(t *testing.T) {
 		DeviceStandardVersion,
 		DeviceFaultStatus,
 		DeviceManufacturerCode,
-		ProfileGetPropertyMap,
-		ProfileSetPropertyMap,
-		ProfileAnnoPropertyMap,
+		ObjectGetPropertyMap,
+		ObjectSetPropertyMap,
+		ObjectAnnoPropertyMap,
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {

@@ -19,30 +19,6 @@ const (
 	ObjectCodeMin     = 0x000000
 	ObjectCodeMax     = 0xFFFFFF
 	ObjectCodeUnknown = ObjectCodeMin
-
-	NodeProfileObject         = 0x0EF001
-	NodeProfileObjectReadOnly = 0x0EF002
-)
-
-const (
-	ObjectManufacturerCode = 0x8A
-	ObjectAnnoPropertyMap  = 0x9D
-	ObjectSetPropertyMap   = 0x9E
-	ObjectGetPropertyMap   = 0x9F
-)
-
-const (
-	ObjectManufacturerCodeSize   = 3
-	ObjectPropertyMapMaxSize     = 16
-	ObjectAnnoPropertyMapMaxSize = (ObjectPropertyMapMaxSize + 1)
-	ObjectSetPropertyMapMaxSize  = (ObjectPropertyMapMaxSize + 1)
-	ObjectGetPropertyMapMaxSize  = (ObjectPropertyMapMaxSize + 1)
-)
-
-const (
-	ManufacturerCodeMin    = 0xFFFFF0
-	ManufacturerCodeMax    = 0xFFFFFF
-	ManufactureCodeDefault = ManufacturerCodeMin
 )
 
 // Object is an instance for Echonet object.
@@ -125,7 +101,7 @@ func (obj *Object) GetInstanceCode() byte {
 
 // IsDevice returns true when the class group code is the device code, otherwise false.
 func (obj *Object) IsDevice() bool {
-	if ClassGroupDeviceMax < obj.Code[0] {
+	if obj.IsProfile() {
 		return false
 	}
 	return true
@@ -133,10 +109,18 @@ func (obj *Object) IsDevice() bool {
 
 // IsProfile returns true when the class group code is the profile code, otherwise false.
 func (obj *Object) IsProfile() bool {
-	if ClassGroupProfile != obj.Code[0] {
+	if obj.Code[0] != NodeProfileClassGroupCode {
 		return false
 	}
 	return true
+}
+
+// CreateProperty creates a new property to the property map. (Override function for PropertyMap)
+func (obj *Object) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
+	obj.PropertyMap.CreateProperty(propCode, propAttr)
+	if obj.IsDevice() {
+		obj.updatePropertyMap()
+	}
 }
 
 // AnnounceMessage announces a message.

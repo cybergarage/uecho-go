@@ -16,6 +16,10 @@ const (
 	PropertyCodeMin = 0x80
 	PropertyCodeMax = 0xFF
 
+	PropertyMapFormat1MaxSize = 15
+	PropertyMapFormat2Size    = 18
+	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
+
 	PropertyAttributeNone      = 0x00
 	PropertyAttributeRead      = 0x01
 	PropertyAttributeWrite     = 0x02
