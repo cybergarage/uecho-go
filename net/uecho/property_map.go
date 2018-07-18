@@ -122,12 +122,17 @@ func (propMap *PropertyMap) SetPropertyData(propCode PropertyCode, propData []by
 	return nil
 }
 
-// SetPropertyByteData is an alias of SetPropertyData.
-func (propMap *PropertyMap) SetPropertyByteData(propCode PropertyCode, propData []byte) error {
-	return propMap.SetPropertyData(propCode, propData)
+// SetPropertyByteData sets a byte to the existing property.
+func (propMap *PropertyMap) SetPropertyByteData(propCode PropertyCode, propData byte) error {
+	prop, ok := propMap.GetProperty(propCode)
+	if !ok {
+		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
+	}
+	prop.SetData([]byte{propData})
+	return nil
 }
 
-// SetPropertyIntegerData sets a data to the existing property.
+// SetPropertyIntegerData sets a integer to the existing property.
 func (propMap *PropertyMap) SetPropertyIntegerData(propCode PropertyCode, propData uint, propSize uint) error {
 	prop, ok := propMap.GetProperty(propCode)
 	if !ok {
@@ -161,9 +166,13 @@ func (propMap *PropertyMap) GetPropertyData(propCode PropertyCode) ([]byte, erro
 	return prop.GetData(), nil
 }
 
-// GetPropertyByteData is an alias of GetPropertyData.
-func (propMap *PropertyMap) GetPropertyByteData(propCode PropertyCode) ([]byte, error) {
-	return propMap.GetPropertyData(propCode)
+// GetPropertyByteData return the specified property byte data in the property map.
+func (propMap *PropertyMap) GetPropertyByteData(propCode PropertyCode) (byte, error) {
+	prop, ok := propMap.GetProperty(propCode)
+	if !ok {
+		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
+	}
+	return prop.GetByteData()
 }
 
 // GetPropertyIntegerData return the specified property integer data in the property map.
@@ -172,5 +181,5 @@ func (propMap *PropertyMap) GetPropertyIntegerData(propCode PropertyCode) (uint,
 	if !ok {
 		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return prop.GetIntegerData(), nil
+	return prop.GetIntegerData()
 }

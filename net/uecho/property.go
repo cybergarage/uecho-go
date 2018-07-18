@@ -26,6 +26,7 @@ const (
 
 const (
 	errorPropertyNoParentNode = "Property has no parent node"
+	errorPropertyNoData       = "Property has no data"
 )
 
 // PropertyCode is a type for property code.
@@ -190,14 +191,20 @@ func (prop *Property) GetData() []byte {
 	return prop.Data
 }
 
-// GetByteData is an alias of GetData.
-func (prop *Property) GetByteData() []byte {
-	return prop.GetData()
+// GetByteData returns a byte value of the property data.
+func (prop *Property) GetByteData() (byte, error) {
+	if len(prop.Data) <= 0 {
+		return 0, fmt.Errorf(errorPropertyNoData)
+	}
+	return prop.Data[0], nil
 }
 
 // GetIntegerData returns a integer value of the property data.
-func (prop *Property) GetIntegerData() uint {
-	return encoding.ByteToInteger(prop.GetData())
+func (prop *Property) GetIntegerData() (uint, error) {
+	if len(prop.Data) <= 0 {
+		return 0, fmt.Errorf(errorPropertyNoData)
+	}
+	return encoding.ByteToInteger(prop.GetData()), nil
 }
 
 // Announce announces the property.
