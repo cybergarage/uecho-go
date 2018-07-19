@@ -18,6 +18,7 @@ const (
 // Node is an instance for Echonet node.
 type Node struct {
 	Classes []*Class
+	devices []*Device
 	Objects []*Object
 	Address string
 	server  *server
@@ -26,17 +27,28 @@ type Node struct {
 // NewNode returns a new object.
 func NewNode() *Node {
 	node := &Node{
-		server: newServer(),
+		devices: make([]*Device, 0),
+		server:  newServer(),
 	}
 	return node
 }
 
-// GetAddress returns a IP address of the node.
-func (node *Node) GetAddress() string {
-	return node.Address
+// GetDevices returns all devices.
+func (node *Node) GetDevices() []*Device {
+	return node.devices
 }
 
-// GetObjectByCode returns a specified object.
+// GetDeviceByCode returns a specified device.
+func (node *Node) GetDeviceByCode(code uint) (*Device, error) {
+	for _, obj := range node.devices {
+		if obj.GetCode() == code {
+			return obj, nil
+		}
+	}
+	return nil, fmt.Errorf(errorObjectNotFound, code)
+}
+
+// GetObjectByCode returns a specified device.
 func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 	for _, obj := range node.Objects {
 		if obj.GetCode() == code {
@@ -44,6 +56,11 @@ func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 		}
 	}
 	return nil, fmt.Errorf(errorObjectNotFound, code)
+}
+
+// GetAddress returns a IP address of the node.
+func (node *Node) GetAddress() string {
+	return node.Address
 }
 
 // GetNodeProfileObject returns a specified object.
