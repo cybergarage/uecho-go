@@ -17,9 +17,9 @@ func TestNewDevice(t *testing.T) {
 		DeviceStandardVersion,
 		DeviceFaultStatus,
 		DeviceManufacturerCode,
-		ObjectGetPropertyMap,
-		ObjectSetPropertyMap,
-		ObjectAnnoPropertyMap,
+		DeviceGetPropertyMap,
+		DeviceSetPropertyMap,
+		DeviceAnnoPropertyMap,
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {

@@ -11,3 +11,8 @@ const (
 	MulticastAddress = "224.0.23.0:3610"
 	MaxPacketSize    = 1024
 )
+
+const (
+	MessageFormatSpecified = 0x01
+	MessageFormatArbitrary = 0x02
+)

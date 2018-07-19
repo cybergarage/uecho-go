@@ -109,7 +109,7 @@ func (obj *Object) IsDevice() bool {
 
 // IsProfile returns true when the class group code is the profile code, otherwise false.
 func (obj *Object) IsProfile() bool {
-	if obj.Code[0] != NodeProfileClassGroupCode {
+	if obj.Code[0] != ProfileClassGroupCode {
 		return false
 	}
 	return true

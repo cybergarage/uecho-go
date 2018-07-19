@@ -76,7 +76,7 @@ const (
 	DeviceFaultOccurred               = 0x41
 	DeviceNoFaultOccurred             = 0x42
 	DeviceInstallationLocationUnknown = 0x00
-	DeviceManufacturerUnknown         = 0xFFFFFF
+	DeviceManufacturerUnknown         = ObjectManufacturerEvaluationCodeMin
 )
 
 const (
@@ -85,13 +85,13 @@ const (
 
 // Device represents an instance for a device object of Echonet.
 type Device struct {
-	*Object
+	*SuperObject
 }
 
 // NewDevice returns a new device Object.
 func NewDevice() *Device {
 	dev := &Device{
-		Object: NewObject(),
+		SuperObject: NewSuperObject(),
 	}
 	dev.addDeviceMandatoryProperties()
 	return dev
@@ -118,71 +118,6 @@ func (dev *Device) addDeviceMandatoryProperties() error {
 	// Manufacture Code
 	dev.CreateProperty(DeviceManufacturerCode, PropertyAttributeRead)
 	dev.SetManufacturerCode(DeviceManufacturerUnknown)
-
-	return nil
-}
-
-// CreateProperty creates a new property to the property map. (Override function for PropertyMap)
-func (dev *Device) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
-	dev.PropertyMap.CreateProperty(propCode, propAttr)
-	dev.updatePropertyMap()
-}
-
-// setPropertyMapProperty sets a specified property map to the device.
-func (dev *Device) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
-	if !dev.HasProperty(propMapCode) {
-		dev.PropertyMap.CreateProperty(propMapCode, PropertyAttributeRead)
-	}
-
-	// Description Format 1
-
-	if len(propCodes) <= PropertyMapFormat1MaxSize {
-		propMapData := make([]byte, len(propCodes)+1)
-		propMapData[0] = byte(len(propCodes))
-		for n, propCode := range propCodes {
-			propMapData[n+1] = byte(propCode)
-		}
-		dev.SetPropertyData(propMapCode, propMapData)
-		return nil
-	}
-
-	// Description Format 2
-
-	propMapData := make([]byte, PropertyMapFormat2Size)
-	propMapData[0] = byte(len(propCodes))
-
-	for _, propCode := range propCodes {
-		if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
-			continue
-		}
-		propByteIdx := ((propCode - PropertyCodeMin) & 0x0F) + 1
-		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
-	}
-
-	return nil
-}
-
-// updatePropertyMaps updates property maps  in the device.
-func (dev *Device) updatePropertyMap() error {
-	getPropMapCodes := make([]PropertyCode, 0)
-	setPropMapCodes := make([]PropertyCode, 0)
-	annoPropMapCodes := make([]PropertyCode, 0)
-
-	for _, prop := range dev.properties {
-		if prop.IsReadable() {
-			getPropMapCodes = append(getPropMapCodes, prop.GetCode())
-		}
-		if prop.IsWritable() {
-			setPropMapCodes = append(setPropMapCodes, prop.GetCode())
-		}
-		if prop.IsAnnouncement() {
-			annoPropMapCodes = append(annoPropMapCodes, prop.GetCode())
-		}
-	}
-
-	dev.setPropertyMapProperty(ObjectGetPropertyMap, getPropMapCodes)
-	dev.setPropertyMapProperty(ObjectSetPropertyMap, setPropMapCodes)
-	dev.setPropertyMapProperty(ObjectAnnoPropertyMap, annoPropMapCodes)
 
 	return nil
 }
@@ -234,14 +169,4 @@ func (dev *Device) GetFaultStatus() (bool, error) {
 		return true, nil
 	}
 	return false, nil
-}
-
-// SetManufacturerCode sets a manufacture codes to the device.
-func (dev *Device) SetManufacturerCode(code uint) error {
-	return dev.SetPropertyIntegerData(DeviceManufacturerCode, code, DeviceManufacturerCodeSize)
-}
-
-// GetManufacturerCode return the manufacture codes of the device.
-func (dev *Device) GetManufacturerCode() (uint, error) {
-	return dev.GetPropertyIntegerData(DeviceManufacturerCode)
 }

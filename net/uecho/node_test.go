@@ -9,5 +9,10 @@ import (
 )
 
 func TestNewNode(t *testing.T) {
-	NewNode()
+	node := NewNode()
+
+	_, err := node.GetNodeProfileObject()
+	if err != nil {
+		t.Error(err)
+	}
 }
