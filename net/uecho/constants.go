@@ -5,19 +5,6 @@
 package uecho
 
 const (
-	uEchoMulticastAddr = "224.0.23.0"
-
-	uEchoMajorVersion = 0x02
-	uEchoMinorVersion = 0x0A
-
-	uEchoUDPPort = 3610
-	uEchoTCPPort = 3610
-
-	uEchoTIDMin = 0
-	uEchoTIDMax = 65535
-
-	uEchoSpecifiedMessageFormat = 0x01
-	uEchoArbitraryMessageFormat = 0x02
-
-	uechoMaxPacketSize = 1024
+	MajorVersion = 0x02
+	MinorVersion = 0x0A
 )

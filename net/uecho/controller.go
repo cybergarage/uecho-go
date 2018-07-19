@@ -8,6 +8,11 @@ import (
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
+const (
+	TIDMin = 0
+	TIDMax = 65535
+)
+
 // ControllerListener is a listener for Echonet messages.
 type ControllerListener interface {
 	ControllerMessageReceived(msg *protocol.Message)
@@ -27,7 +32,7 @@ func NewController() *Controller {
 	ctrl := &Controller{
 		node:       NewNode(),
 		foundNodes: make([]*Node, 0),
-		lastTID:    uEchoTIDMin,
+		lastTID:    TIDMin,
 		listener:   nil,
 	}
 	return ctrl
@@ -45,8 +50,8 @@ func (ctrl *Controller) GetNodes() []*Node {
 
 // getNextTID returns a next TID.
 func (ctrl *Controller) getNextTID() uint {
-	if uEchoTIDMax <= ctrl.lastTID {
-		ctrl.lastTID = uEchoTIDMin
+	if TIDMax <= ctrl.lastTID {
+		ctrl.lastTID = TIDMin
 	} else {
 		ctrl.lastTID++
 	}

@@ -8,18 +8,28 @@ import (
 	"testing"
 )
 
-func TestNewProfile(t *testing.T) {
-	prop := NewProfile()
+func TestNewNodeProfile(t *testing.T) {
+	prop := NewNodeProfile()
 
 	if !prop.IsProfile() {
 		t.Errorf(errorInvalidGroupClassCode, prop.GetClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{
+		// Profile
 		ProfileManufacturerCode,
 		ProfileGetPropertyMap,
 		ProfileSetPropertyMap,
 		ProfileAnnoPropertyMap,
+		// Node Profile
+		NodeProfileClassOperatingStatus,
+		NodeProfileClassVersionInformation,
+		NodeProfileClassIdentificationNumber,
+		NodeProfileClassNumberOfSelfNodeInstances,
+		NodeProfileClassNumberOfSelfNodeClasses,
+		NodeProfileClassInstanceListNotification,
+		NodeProfileClassSelfNodeInstanceListS,
+		NodeProfileClassSelfNodeClassListS,
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {
