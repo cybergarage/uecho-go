@@ -115,14 +115,6 @@ func (obj *Object) IsProfile() bool {
 	return true
 }
 
-// CreateProperty creates a new property to the property map. (Override function for PropertyMap)
-func (obj *Object) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
-	obj.PropertyMap.CreateProperty(propCode, propAttr)
-	if obj.IsDevice() {
-		obj.updatePropertyMap()
-	}
-}
-
 // AnnounceMessage announces a message.
 func (obj *Object) AnnounceMessage(msg *protocol.Message) error {
 	if obj.parentNode == nil {
