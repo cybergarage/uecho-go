@@ -113,16 +113,66 @@ func (prof *Profile) SetID(manufactureCode uint) error {
 	return prof.SetPropertyData(NodeProfileClassIdentificationNumber, append(manufactureCodeBytes, uniqID...))
 }
 
+// SetInstanceCount sets a instance count in a node.
+func (prof *Profile) SetInstanceCount(count uint) error {
+	return prof.SetPropertyIntegerData(NodeProfileClassNumberOfSelfNodeInstances, count, NodeProfileClassNumberOfSelfNodeInstancesSize)
+}
+
+// SetInstanceList sets a instance list in a node.
+func (prof *Profile) SetInstanceList(devices []*Device) error {
+	instanceList := make([]byte, 1)
+	instanceCount := len(devices)
+	if instanceCount <= (NodeProfileClassSelfNodeInstanceListSMax - 1) {
+		instanceList[0] = byte(instanceCount)
+	} else {
+		instanceList[0] = NodeProfileClassSelfNodeInstanceListSMax
+	}
+
+	for _, dev := range devices {
+		instanceList = append(instanceList, dev.GetCodes()...)
+	}
+
+	err := prof.SetPropertyData(NodeProfileClassInstanceListNotification, instanceList)
+	if err != nil {
+		return err
+	}
+
+	err = prof.SetPropertyData(NodeProfileClassSelfNodeInstanceListS, instanceList)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SetClassCount sets a class count in a node.
+func (prof *Profile) SetClassCount(count uint) error {
+	return prof.SetPropertyIntegerData(NodeProfileClassNumberOfSelfNodeClasses, count, NodeProfileClassNumberOfSelfNodeClassesSize)
+}
+
+// SetClassList sets a class list in a node.
+func (prof *Profile) SetClassList(classes []*Class) error {
+	classList := make([]byte, 1)
+	classCount := len(classes)
+	if classCount <= (NodeProfileClassSelfNodeClassListSMax - 1) {
+		classList[0] = byte(classCount)
+	} else {
+		classList[0] = NodeProfileClassSelfNodeClassListSMax
+	}
+
+	for _, class := range classes {
+		classList = append(classList, class.GetCodes()...)
+	}
+
+	return prof.SetPropertyData(NodeProfileClassSelfNodeClassListS, classList)
+}
+
 /*
   bool _nodeprofileclass_setclasscount(Object *obj, int count)
  {
    return _object_setpropertyintegerdata(obj, NodeProfileClassNumberOfSelfNodeClasses, count, NodeProfileClassNumberOfSelfNodeClassesLen);
  }
 
- bool _nodeprofileclass_setinstancecount(Object *obj, int count)
- {
-   return _object_setpropertyintegerdata(obj, NodeProfileClassNumberOfSelfNodeInstances, count, NodeProfileClassNumberOfSelfNodeInstancesLen);
- }
 
  bool _nodeprofileclass_setclasslist(Object *obj, int listCnt, byte *listBytes)
  {

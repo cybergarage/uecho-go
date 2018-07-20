@@ -60,12 +60,12 @@ func (ctrl *Controller) getNextTID() uint {
 
 // AnnounceMessage announces a message.
 func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
-	nodeProfObj, err := ctrl.node.GetNodeProfileObject()
+	nodeProf, err := ctrl.node.GetNodeProfile()
 	if err != nil {
 		return err
 	}
 	msg.SetTID(ctrl.getNextTID())
-	return nodeProfObj.AnnounceMessage(msg)
+	return nodeProf.AnnounceMessage(msg)
 }
 
 // SearchAllObjectsWithESV searches all specified objects.

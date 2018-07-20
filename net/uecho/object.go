@@ -61,12 +61,22 @@ func (obj *Object) GetCode() uint {
 	return encoding.ByteToInteger(obj.Code)
 }
 
+// GetCodes returns the code byte array.
+func (obj *Object) GetCodes() []byte {
+	return obj.Code
+}
+
 // IsCode returns true when the object code is the specified code, otherwise false.
 func (obj *Object) IsCode(code uint) bool {
 	if code != obj.GetCode() {
 		return false
 	}
 	return true
+}
+
+// GetClass returns the class of the object.
+func (obj *Object) GetClass() *Class {
+	return NewClassWithCodes(obj.Code)
 }
 
 // SetClassGroupCode sets a class group code to the object.
