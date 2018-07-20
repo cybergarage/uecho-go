@@ -11,7 +11,7 @@ import (
 func TestNewNode(t *testing.T) {
 	node := NewNode()
 
-	_, err := node.GetNodeProfileObject()
+	_, err := node.GetNodeProfile()
 	if err != nil {
 		t.Error(err)
 	}

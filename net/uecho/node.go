@@ -77,8 +77,8 @@ func (node *Node) GetProfilesByCode(code uint) (*Profile, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetNodeProfileObject returns a specified object.
-func (node *Node) GetNodeProfileObject() (*Profile, error) {
+// GetNodeProfile returns a node profile in the node.
+func (node *Node) GetNodeProfile() (*Profile, error) {
 	return node.GetProfilesByCode(NodeProfileObject)
 }
 
@@ -105,7 +105,7 @@ func (node *Node) AnnounceProperty(prop *Property) error {
 
 // Announce announces the node
 func (node *Node) Announce() error {
-	nodePropObj, err := node.GetNodeProfileObject()
+	nodePropObj, err := node.GetNodeProfile()
 	if err != nil {
 		return err
 	}
@@ -145,72 +145,61 @@ func (node *Node) Stop() error {
 
 // updateNodeProfile updates the node profile in the node.
 func (node *Node) updateNodeProfile() error {
-	/*
-		   Node *node;
-		   Class *nodeCls;
-		   Object *nodeObj;
-		   byte *nodeClassList, *nodeInstanceList;
-		   int nodeClassListCnt, nodeInstanceListCnt;
-		   int nodeClassCnt, nodeInstanceCnt;
-		   int idx;
+	nodeProf, err := node.GetNodeProfile()
+	if err != nil {
+		return err
+	}
 
-		   if(!obj)
-			 return false;
+	// Check the current all objects
 
-		   node = _object_getparentnode(obj);
-		   if (!node)
-			 return false;
+	classes := make([]*Class, 0)
 
-		   // Class Properties
+	for _, dev := range node.devices {
+		devClass := dev.GetClass()
+		hasSameClass := false
+		for _, class := range classes {
+			if class.Equals(devClass) {
+				hasSameClass = true
+				break
+			}
+		}
+		if hasSameClass {
+			continue
+		}
+		classes = append(classes, devClass)
+	}
 
-		   nodeClassList = (byte *)realloc(NULL, 1);
-		   nodeClassListCnt = 0;
-		   nodeClassCnt = 0;
+	for _, prof := range node.profiles {
+		profClass := prof.GetClass()
+		hasSameClass := false
+		for _, class := range classes {
+			if class.Equals(profClass) {
+				hasSameClass = true
+				break
+			}
+		}
+		if hasSameClass {
+			continue
+		}
+		classes = append(classes, profClass)
+	}
 
-		   for (nodeCls = _node_getclasses(node); nodeCls; nodeCls = _class_next(nodeCls)) {
-			 nodeClassCnt++;
+	// Number of self-node instances
 
-			 if (_class_isprofile(nodeCls))
-			   continue;
+	instanceCount := uint(len(node.devices))
+	nodeProf.SetInstanceCount(instanceCount)
 
-			 nodeClassListCnt++;
-			 nodeClassList = (byte *)realloc(nodeClassList, ((2 * nodeClassListCnt) + 1));
-			 idx = (2 * (nodeClassListCnt - 1)) + 1;
-			 nodeClassList[idx + 0] = _class_getclassgroupcode(nodeCls);
-			 nodeClassList[idx + 1] = _class_getclasscode(nodeCls);
-		   }
+	// Number of self-node classes
 
-		   _nodeprofileclass_setclasscount(obj, nodeClassCnt);
-		   _nodeprofileclass_setclasslist(obj, nodeClassListCnt, nodeClassList);
+	nodeProf.SetClassCount(uint(len(classes)))
 
-		   free(nodeClassList);
+	// Self-node instance list S and Instance list notification
 
-		   // Instance Properties
+	nodeProf.SetInstanceList(node.devices)
 
-		   nodeInstanceList = (byte *)realloc(NULL, 1);
-		   nodeInstanceListCnt = 0;
-		   nodeInstanceCnt = 0;
+	// Self-node class list S
 
-		   for (nodeObj = _node_getobjects(node); nodeObj; nodeObj = _object_next(nodeObj)) {
-			 if (_object_isprofile(nodeObj))
-			   continue;
+	nodeProf.SetClassList(classes)
 
-			 nodeInstanceCnt++;
-
-			 nodeInstanceListCnt++;
-			 nodeInstanceList = (byte *)realloc(nodeInstanceList, ((3 * nodeInstanceListCnt) + 1));
-			 idx = (3 * (nodeInstanceListCnt - 1)) + 1;
-			 nodeInstanceList[idx + 0] = _object_getclassgroupcode(nodeObj);
-			 nodeInstanceList[idx + 1] = _object_getclasscode(nodeObj);
-			 nodeInstanceList[idx + 2] = _object_getinstancecode(nodeObj);
-		   }
-
-		   _nodeprofileclass_setinstancecount(obj, nodeInstanceCnt);
-		   _nodeprofileclass_setinstancelist(obj, nodeInstanceListCnt, nodeInstanceList);
-
-		   free(nodeInstanceList);
-
-		   return true;
-	*/
 	return nil
 }
