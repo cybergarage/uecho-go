@@ -31,6 +31,7 @@ func NewNode() *Node {
 	}
 
 	node.AddProfile(NewNodeProfile())
+	node.server.SetMessageListener(node)
 
 	return node
 }
