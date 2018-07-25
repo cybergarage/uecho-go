@@ -19,7 +19,7 @@ func NewMulticastManager() *MulticastManager {
 }
 
 // SetListener set a listener to all servers.
-func (mgr *MulticastManager) SetListener(l UnicastListener) {
+func (mgr *MulticastManager) SetListener(l MulticastListener) {
 	mgr.Listener = l
 }
 

@@ -5,12 +5,13 @@
 package protocol
 
 const (
-	PropertyAttributeNone      = 0x00
-	PropertyAttributeRead      = 0x01
-	PropertyAttributeWrite     = 0x02
-	PropertyAttributeAnno      = 0x10
-	PropertyAttributeReadWrite = PropertyAttributeRead | PropertyAttributeWrite
-	PropertyAttributeReadAnno  = PropertyAttributeRead | PropertyAttributeAnno
+	PropertyAttributeNone          = 0x00
+	PropertyAttributeRead          = 0x01
+	PropertyAttributeWrite         = 0x02
+	PropertyAttributeAnno          = 0x10
+	PropertyAttributeReadWrite     = PropertyAttributeRead | PropertyAttributeWrite
+	PropertyAttributeReadAnno      = PropertyAttributeRead | PropertyAttributeAnno
+	PropertyAttributeReadWriteAnno = PropertyAttributeRead | PropertyAttributeWrite | PropertyAttributeAnno
 )
 
 // Property is an instance for Echonet property.
