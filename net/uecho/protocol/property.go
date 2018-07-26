@@ -14,6 +14,12 @@ const (
 	PropertyAttributeReadWriteAnno = PropertyAttributeRead | PropertyAttributeWrite | PropertyAttributeAnno
 )
 
+// PropertyCode is a type for property code.
+type PropertyCode byte
+
+// PropertyAttribute is a type for property attribute.
+type PropertyAttribute uint
+
 // Property is an instance for Echonet property.
 type Property struct {
 	Code byte
@@ -53,7 +59,8 @@ func (prop *Property) GetAttribute() uint {
 
 // SetData sets a code to the property
 func (prop *Property) SetData(data []byte) {
-	prop.Data = data
+	prop.Data = make([]byte, len(data))
+	copy(prop.Data, data)
 }
 
 // GetData returns the property data.
@@ -64,4 +71,15 @@ func (prop *Property) GetData() []byte {
 // Size return the property data size.
 func (prop *Property) Size() int {
 	return len(prop.Data)
+}
+
+// Copy returns a copy property of the property.
+func Copy(prop *Property) *Property {
+	copyProp := &Property{
+		Code: prop.Code,
+		Attr: prop.Attr,
+		Data: make([]byte, len(prop.Data)),
+	}
+	copy(copyProp.Data, prop.Data)
+	return copyProp
 }

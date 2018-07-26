@@ -10,5 +10,5 @@ import (
 
 // PropertyRequestListener is an instance for Echonet requests.
 type PropertyRequestListener interface {
-	PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *Property)
+	PropertyRequestReceived(obj *Object, prop *Property, esv protocol.ESV) error
 }

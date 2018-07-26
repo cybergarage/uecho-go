@@ -17,9 +17,6 @@ const (
 	errorPropertyNotFound = "Property (%02X) Not Found"
 )
 
-// PropertyMap is an instance for property map.
-//type PropertyMap map[PropertyCode]*Property
-
 // PropertyMap represents a property map.
 type PropertyMap struct {
 	properties   map[PropertyCode]*Property

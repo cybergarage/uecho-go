@@ -34,10 +34,10 @@ const (
 )
 
 // PropertyCode is a type for property code.
-type PropertyCode byte
+type PropertyCode = protocol.PropertyCode
 
 // PropertyAttribute is a type for property attribute.
-type PropertyAttribute uint
+type PropertyAttribute = protocol.PropertyAttribute
 
 // Property is an instance for Echonet property.
 type Property struct {
@@ -157,25 +157,53 @@ func (prop *Property) IsAnnouncement() bool {
 	return true
 }
 
-// AddData adds a specified data to the property.
-func (prop *Property) AddData(data []byte) {
-	if len(data) <= 0 {
-		return
+// IsAvailableService returns true whether the specified service can execute, otherwise false
+func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
+	switch esv {
+	case protocol.ESVWriteRequest:
+		if prop.IsWritable() {
+			return true
+		}
+		return false
+	case protocol.ESVWriteRequestResponseRequired:
+		if prop.IsWritable() {
+			return true
+		}
+		return false
+	case protocol.ESVReadRequest:
+		if prop.IsReadable() {
+			return true
+		}
+		return false
+	case protocol.ESVNotificationRequest:
+		if prop.IsAnnouncement() {
+			return true
+		}
+		return false
+	case protocol.ESVWriteReadRequest:
+		if prop.IsWritable() && prop.IsReadable() {
+			return true
+		}
+		return false
+	case protocol.ESVNotificationResponseRequired:
+		if prop.IsAnnouncement() {
+			return true
+		}
+		return false
 	}
+	return false
+}
 
-	prop.Data = append(prop.Data, data...)
+// SetData sets a specified data to the property.
+func (prop *Property) SetData(data []byte) {
+	prop.Data = make([]byte, len(data))
+	copy(prop.Data, data)
 
 	// (D) Basic sequence for autonomous notification.
 
 	if prop.IsAnnouncement() {
 		prop.Announce()
 	}
-}
-
-// SetData sets a specified data to the property.
-func (prop *Property) SetData(data []byte) {
-	prop.ClearData()
-	prop.AddData(data)
 }
 
 // SetByteData is an alias of SetData.

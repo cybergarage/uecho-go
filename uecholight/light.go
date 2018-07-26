@@ -5,6 +5,7 @@ package main
 
 import (
 	"github.com/cybergarage/uecho-go/net/uecho"
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 const (
@@ -14,8 +15,17 @@ const (
 	LightPropertyPowerOff  = 0x31
 )
 
+type Light struct {
+	*uecho.Node
+}
+
 // NewLight returns a new light device.
-func NewLight() *uecho.Device {
+func NewLight() (*Light, error) {
+
+	light := &Light{
+		Node: uecho.NewNode(),
+	}
+
 	dev := uecho.NewDevice()
 
 	// TODO : Set your manufacture code
@@ -23,8 +33,16 @@ func NewLight() *uecho.Device {
 
 	dev.SetCode(LightObjectCode)
 
-	dev.CreateProperty(LightPropertyPowerCode, uecho.PropertyAttributeReadWriteAnno)
+	dev.CreateProperty(LightPropertyPowerCode, protocol.PropertyAttributeReadWriteAnno)
 	dev.SetPropertyIntegerData(LightPropertyPowerCode, LightPropertyPowerOn, 1)
 
-	return dev
+	light.AddDevice(dev)
+	dev.AddListener(light)
+
+	return light, nil
+}
+
+// PropertyRequestReceived is a listener for Echonet requests.
+func (light *Light) PropertyRequestReceived(obj *uecho.Object, prop *uecho.Property, esv protocol.ESV) error {
+	return nil
 }
