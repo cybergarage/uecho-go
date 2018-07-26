@@ -90,6 +90,35 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 	return msg, nil
 }
 
+// NewResponseMessageWithMessage returns a response message of the specified message withtout the properties.
+func NewResponseMessageWithMessage(reqMsg *Message) *Message {
+	msg := NewMessage()
+	msg.SetTID(reqMsg.GetTID())
+	msg.SetSourceObjectCode(reqMsg.GetDestinationObjectCode())
+	msg.SetDestinationObjectCode(reqMsg.GetSourceObjectCode())
+
+	switch reqMsg.GetESV() {
+	case ESVWriteRequest:
+		msg.SetESV(ESVWriteResponse)
+	case ESVWriteRequestResponseRequired:
+		msg.SetESV(ESVWriteResponse)
+	case ESVReadRequest:
+		msg.SetESV(ESVReadResponse)
+	case ESVNotificationRequest:
+		msg.SetESV(ESVNotificationResponse)
+	case ESVWriteReadRequest:
+		msg.SetESV(ESVWriteReadResponse)
+	case ESVNotificationResponseRequired:
+		msg.SetESV(ESVNotificationResponse)
+	default:
+		msg.SetESV(0)
+	}
+
+	msg.SetOPC(reqMsg.GetOPC())
+
+	return msg
+}
+
 // NewImpossibleMessageWithMessage returns a impossible message of the specified message.
 func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
 	msg := NewMessage()
