@@ -15,6 +15,9 @@ func (node *Node) MessageReceived(msg *protocol.Message) {
 
 // postImpossibleResponse returns an individual response to the source node.
 func (node *Node) postImpossibleResponse(msg *protocol.Message) {
+	if !msg.IsResponseRequired() {
+		return
+	}
 	msg = protocol.NewImpossibleMessageWithMessage(msg)
 	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), msg)
 }
@@ -77,7 +80,7 @@ func (node *Node) executeObjectControl(msg *protocol.Message) {
 		if msgProp == nil {
 			continue
 		}
-		_, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
 		if !ok {
 			continue
 		}
