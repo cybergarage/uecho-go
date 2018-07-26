@@ -80,7 +80,24 @@ func (node *Node) executeObjectControl(msg *protocol.Message) {
 		if msgProp == nil {
 			continue
 		}
-		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		dstObj.notifyPropertyRequest(msgESV, msgProp)
+	}
+
+	if !msg.IsResponseRequired() {
+		return
+	}
+
+	resMsg := protocol.NewResponseMessageWithMessage(msg)
+
+	for n := 0; n < msgOPC; n++ {
+		msgProp := msg.GetProperty(n)
+		if msgProp == nil {
+			continue
+		}
+
+		dstObj.notifyPropertyRequest(msgESV, msgProp)
+
+		_, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
 		if !ok {
 			continue
 		}

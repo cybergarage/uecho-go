@@ -137,6 +137,13 @@ func (obj *Object) GetListeners() []ObjectListener {
 	return obj.listeners
 }
 
+// notifyPropertyRequest notifies a request to the listeners.
+func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Property) {
+	for _, l := range obj.listeners {
+		l.PropertyRequestReceived(obj, esv, prop)
+	}
+}
+
 // AnnounceMessage announces a message.
 func (obj *Object) AnnounceMessage(msg *protocol.Message) error {
 	if obj.parentNode == nil {
