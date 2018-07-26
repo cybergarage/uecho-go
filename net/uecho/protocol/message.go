@@ -90,6 +90,39 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 	return msg, nil
 }
 
+// NewImpossibleMessageWithMessage returns a impossible message of the specified message.
+func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
+	msg := NewMessage()
+	msg.SetTID(reqMsg.GetTID())
+	msg.SetSourceObjectCode(reqMsg.GetDestinationObjectCode())
+	msg.SetDestinationObjectCode(reqMsg.GetSourceObjectCode())
+
+	switch reqMsg.GetESV() {
+	case ESVWriteRequest:
+		msg.SetESV(ESVWriteRequestError)
+	case ESVWriteRequestResponseRequired:
+		msg.SetESV(ESVWriteRequestResponseRequiredError)
+	case ESVReadRequest:
+		msg.SetESV(ESVReadRequestError)
+	case ESVNotificationRequest:
+		msg.SetESV(ESVNotificationRequestError)
+	case ESVWriteReadRequest:
+		msg.SetESV(ESVWriteReadRequestError)
+	case ESVNotificationResponseRequired:
+		msg.SetESV(ESVNotificationRequestError)
+	default:
+		msg.SetESV(0)
+	}
+
+	reqMsgOPC := reqMsg.GetOPC()
+	msg.SetOPC(reqMsgOPC)
+	for n := 0; n < reqMsgOPC; n++ {
+		reqProp := msg.GetProperty(n)
+		msg.AddProperty(reqProp)
+	}
+	return msg
+}
+
 // SetTID sets the specified TID.
 func (msg *Message) SetTID(value uint) error {
 	if TIDMax < value {
@@ -133,6 +166,21 @@ func (msg *Message) SetESV(value ESV) {
 // GetESV returns the stored ESV.
 func (msg *Message) GetESV() ESV {
 	return msg.ESV
+}
+
+// IsResponseRequired returns true whether the ESV requires the response, otherwise false.
+func (msg *Message) IsResponseRequired() bool {
+	switch msg.ESV {
+	case ESVWriteRequestResponseRequired:
+		return true
+	case ESVNotificationResponseRequired:
+		return true
+	case ESVReadResponse:
+		return true
+	case ESVWriteReadResponse:
+		return true
+	}
+	return false
 }
 
 // SetOPC sets the specified OPC.
@@ -249,39 +297,6 @@ func (msg *Message) Parse(data []byte) error {
 	}
 
 	return nil
-}
-
-// NewImpossibleMessageWithMessage returns a impossible message of the specified message.
-func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
-	msg := NewMessage()
-	msg.SetTID(reqMsg.GetTID())
-	msg.SetSourceObjectCode(reqMsg.GetDestinationObjectCode())
-	msg.SetDestinationObjectCode(reqMsg.GetSourceObjectCode())
-
-	switch reqMsg.GetESV() {
-	case ESVWriteRequest:
-		msg.SetESV(ESVWriteRequestError)
-	case ESVWriteRequestResponseRequired:
-		msg.SetESV(ESVWriteRequestResponseRequiredError)
-	case ESVReadRequest:
-		msg.SetESV(ESVReadRequestError)
-	case ESVNotificationRequest:
-		msg.SetESV(ESVNotificationRequestError)
-	case ESVWriteReadRequest:
-		msg.SetESV(ESVWriteReadRequestError)
-	case ESVNotificationResponseRequired:
-		msg.SetESV(ESVNotificationRequestError)
-	default:
-		msg.SetESV(0)
-	}
-
-	reqMsgOPC := reqMsg.GetOPC()
-	msg.SetOPC(reqMsgOPC)
-	for n := 0; n < reqMsgOPC; n++ {
-		reqProp := msg.GetProperty(n)
-		msg.AddProperty(reqProp)
-	}
-	return msg
 }
 
 // Size return the byte size.
