@@ -21,27 +21,6 @@ const (
 	EOJSize           = 3
 )
 
-type ESV byte
-
-const (
-	ESVWriteRequest                      = 0x60
-	ESVWriteRequestResponseRequired      = 0x61
-	ESVReadRequest                       = 0x62
-	ESVNotificationRequest               = 0x63
-	ESVWriteReadRequest                  = 0x6E
-	ESVWriteResponse                     = 0x71
-	ESVReadResponse                      = 0x72
-	ESVNotification                      = 0x73
-	ESVNotificationResponseRequired      = 0x74
-	ESVNotificationResponse              = 0x7A
-	ESVWriteReadResponse                 = 0x7E
-	ESVWriteRequestError                 = 0x50
-	ESVWriteRequestResponseRequiredError = 0x51
-	ESVReadRequestError                  = 0x52
-	ESVNotificationRequestError          = 0x53
-	ESVWriteReadRequestError             = 0x5E
-)
-
 const (
 	errorShortMessageSizegth  = "Short message length : %d < %d"
 	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
@@ -195,19 +174,24 @@ func (msg *Message) GetESV() ESV {
 	return msg.ESV
 }
 
+// IsWriteRequest returns true whether the message is a write request type, otherwise false.
+func (msg *Message) IsWriteRequest() bool {
+	return IsWriteRequest(msg.ESV)
+}
+
+// IsReadRequest returns true whether the message is a read request type, otherwise false.
+func (msg *Message) IsReadRequest() bool {
+	return IsReadRequest(msg.ESV)
+}
+
+// IsNotificationRequest returns true whether the message is a notification request type, otherwise false.
+func (msg *Message) IsNotificationRequest() bool {
+	return IsNotificationRequest(msg.ESV)
+}
+
 // IsResponseRequired returns true whether the ESV requires the response, otherwise false.
 func (msg *Message) IsResponseRequired() bool {
-	switch msg.ESV {
-	case ESVWriteRequestResponseRequired:
-		return true
-	case ESVNotificationResponseRequired:
-		return true
-	case ESVReadResponse:
-		return true
-	case ESVWriteReadResponse:
-		return true
-	}
-	return false
+	return IsResponseRequired(msg.ESV)
 }
 
 // SetOPC sets the specified OPC.
