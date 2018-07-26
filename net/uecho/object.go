@@ -25,6 +25,7 @@ const (
 type Object struct {
 	*PropertyMap
 	Code       []byte
+	listeners  []ObjectListener
 	parentNode *Node
 }
 
@@ -33,22 +34,13 @@ func NewObject() *Object {
 	obj := &Object{
 		PropertyMap: NewPropertyMap(),
 		Code:        make([]byte, 3),
+		listeners:   make([]ObjectListener, 0),
 		parentNode:  nil,
 	}
 
 	obj.SetParentObject(obj)
 
 	return obj
-}
-
-// SetParentNode sets a parent node.
-func (obj *Object) SetParentNode(node *Node) {
-	obj.parentNode = node
-}
-
-// GetParentNode returns a parent node.
-func (obj *Object) GetParentNode() *Node {
-	return obj.parentNode
 }
 
 // SetCode sets a code to the object
@@ -123,6 +115,26 @@ func (obj *Object) IsProfile() bool {
 		return false
 	}
 	return true
+}
+
+// SetParentNode sets a parent node.
+func (obj *Object) SetParentNode(node *Node) {
+	obj.parentNode = node
+}
+
+// GetParentNode returns a parent node.
+func (obj *Object) GetParentNode() *Node {
+	return obj.parentNode
+}
+
+// AddListener add the specified listener to the node.
+func (obj *Object) AddListener(l ObjectListener) {
+	obj.listeners = append(obj.listeners, l)
+}
+
+// GetListeners returns all listeners of the node.
+func (obj *Object) GetListeners() []ObjectListener {
+	return obj.listeners
 }
 
 // AnnounceMessage announces a message.

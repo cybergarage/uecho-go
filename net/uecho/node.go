@@ -39,6 +39,7 @@ func NewNode() *Node {
 // AddDevice adds a new device into the node.
 func (node *Node) AddDevice(dev *Device) error {
 	node.devices = append(node.devices, dev)
+	dev.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
@@ -60,6 +61,7 @@ func (node *Node) GetDeviceByCode(code uint) (*Device, error) {
 // AddProfile adds a new profile object into the node.
 func (node *Node) AddProfile(prof *Profile) error {
 	node.profiles = append(node.profiles, prof)
+	prof.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
@@ -68,8 +70,8 @@ func (node *Node) GetProfiles() []*Profile {
 	return node.profiles
 }
 
-// GetProfilesByCode returns a specified profile object.
-func (node *Node) GetProfilesByCode(code uint) (*Profile, error) {
+// GetProfileByCode returns a specified profile object.
+func (node *Node) GetProfileByCode(code uint) (*Profile, error) {
 	for _, prof := range node.profiles {
 		if prof.GetCode() == code {
 			return prof, nil
@@ -80,7 +82,22 @@ func (node *Node) GetProfilesByCode(code uint) (*Profile, error) {
 
 // GetNodeProfile returns a node profile in the node.
 func (node *Node) GetNodeProfile() (*Profile, error) {
-	return node.GetProfilesByCode(NodeProfileObject)
+	return node.GetProfileByCode(NodeProfileObject)
+}
+
+// GetObjectByCode returns a specified object.
+func (node *Node) GetObjectByCode(code uint) (*Object, error) {
+	dev, err := node.GetDeviceByCode(code)
+	if err != nil {
+		return dev.Object, nil
+	}
+
+	prof, err := node.GetProfileByCode(code)
+	if err != nil {
+		return prof.Object, nil
+	}
+
+	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
 // AnnounceMessage announces a message.

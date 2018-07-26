@@ -10,5 +10,76 @@ import (
 
 // MessageReceived is a listener for the server
 func (node *Node) MessageReceived(msg *protocol.Message) {
+	node.executeObjectControl(msg)
+}
 
+// postImpossibleResponse returns an individual response to the source node.
+func (node *Node) postImpossibleResponse(msg *protocol.Message) {
+	msg = protocol.NewImpossibleMessageWithMessage(msg)
+	node.SendMessage(nil, msg)
+}
+
+// executeObjectControl executes the specified message based on the Echonet specification (4.2.2 Basic Sequences for Object Control in General)
+func (node *Node) executeObjectControl(msg *protocol.Message) {
+	//4.2.2 Basic Sequences for Object Control in General
+
+	msgDstObjCode := msg.GetDestinationObjectCode()
+	msgESV := msg.GetESV()
+	msgOPC := msg.GetOPC()
+
+	// (A) Processing when the controlled object does not exist
+
+	dstObj, err := node.GetObjectByCode(msgDstObjCode)
+	if err != nil {
+		return
+	}
+
+	// (B) Processing when the controlled object exists, except when ESV = 0x60 to 0x63, 0x6E and 0x74
+
+	switch msgESV {
+	case protocol.ESVWriteRequest:
+	case protocol.ESVWriteRequestResponseRequired:
+	case protocol.ESVReadRequest:
+	case protocol.ESVNotificationRequest:
+	case protocol.ESVWriteReadRequest:
+	case protocol.ESVNotificationResponseRequired:
+	default:
+		return
+	}
+
+	for n := 0; n < msgOPC; n++ {
+		msgProp := msg.GetProperty(n)
+		if msgProp == nil {
+			continue
+		}
+		// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
+		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		if !ok {
+			node.postImpossibleResponse(msg)
+			return
+		}
+		// (D) Processing when the controlled property exists but the stipulated service processing functions are not available
+		if !prop.IsAvailableService(msgESV) {
+			node.postImpossibleResponse(msg)
+			return
+		}
+		// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
+		if msgProp.Size() != prop.Size() {
+			node.postImpossibleResponse(msg)
+			return
+		}
+	}
+
+	// (F) Processing when the controlled property exists, the stipulated service processing functions are available and also the EDT size matches
+
+	for n := 0; n < msgOPC; n++ {
+		msgProp := msg.GetProperty(n)
+		if msgProp == nil {
+			continue
+		}
+		_, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		if !ok {
+			continue
+		}
+	}
 }
