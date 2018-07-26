@@ -6,6 +6,7 @@ package uecho
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
@@ -19,15 +20,16 @@ const (
 type Node struct {
 	devices  []*Device
 	profiles []*Profile
-	Address  string
+	Address  net.IP
 	server   *server
 }
 
-// NewNode returns a new object.
+// NewNode returns a new node.
 func NewNode() *Node {
 	node := &Node{
-		devices: make([]*Device, 0),
-		server:  newServer(),
+		devices:  make([]*Device, 0),
+		profiles: make([]*Profile, 0),
+		server:   newServer(),
 	}
 
 	node.AddProfile(NewNodeProfile())
@@ -105,8 +107,13 @@ func (node *Node) AnnounceMessage(msg *protocol.Message) error {
 	return node.server.SendMessageAll(msg)
 }
 
+// SetAddress set an address to the node.
+func (node *Node) SetAddress(addr net.IP) {
+	node.Address = addr
+}
+
 // GetAddress returns a IP address of the node.
-func (node *Node) GetAddress() string {
+func (node *Node) GetAddress() net.IP {
 	return node.Address
 }
 
@@ -138,7 +145,7 @@ func (node *Node) Announce() error {
 
 // SendMessage send a message to the node
 func (node *Node) SendMessage(dstNode *Node, msg *protocol.Message) error {
-	return node.server.SendMessage(dstNode.GetAddress(), msg)
+	return node.server.SendMessage(string(dstNode.GetAddress()), msg)
 }
 
 // Start starts the node.

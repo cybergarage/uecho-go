@@ -16,7 +16,7 @@ func (node *Node) MessageReceived(msg *protocol.Message) {
 // postImpossibleResponse returns an individual response to the source node.
 func (node *Node) postImpossibleResponse(msg *protocol.Message) {
 	msg = protocol.NewImpossibleMessageWithMessage(msg)
-	node.SendMessage(nil, msg)
+	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), msg)
 }
 
 // executeObjectControl executes the specified message based on the Echonet specification (4.2.2 Basic Sequences for Object Control in General)
