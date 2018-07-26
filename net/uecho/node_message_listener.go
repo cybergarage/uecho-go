@@ -18,8 +18,8 @@ func (node *Node) postImpossibleResponse(msg *protocol.Message) {
 	if !msg.IsResponseRequired() {
 		return
 	}
-	msg = protocol.NewImpossibleMessageWithMessage(msg)
-	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), msg)
+	resMsg := protocol.NewImpossibleMessageWithMessage(msg)
+	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
 }
 
 // executeObjectControl executes the specified message based on the Echonet specification (4.2.2 Basic Sequences for Object Control in General)
@@ -87,17 +87,17 @@ func (node *Node) executeObjectControl(msg *protocol.Message) {
 		return
 	}
 
-	//resMsg := protocol.NewResponseMessageWithMessage(msg)
-
+	resMsg := protocol.NewResponseMessageWithMessage(msg)
 	for n := 0; n < msgOPC; n++ {
 		msgProp := msg.GetProperty(n)
 		if msgProp == nil {
 			continue
 		}
-
-		_, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
 		if !ok {
 			continue
 		}
+		resMsg.AddProperty(prop.toProtocolProperty())
 	}
+	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
 }
