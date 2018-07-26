@@ -34,10 +34,10 @@ const (
 )
 
 // PropertyCode is a type for property code.
-type PropertyCode = protocol.PropertyCode
+type PropertyCode byte
 
 // PropertyAttribute is a type for property attribute.
-type PropertyAttribute = protocol.PropertyAttribute
+type PropertyAttribute uint
 
 // Property is an instance for Echonet property.
 type Property struct {
@@ -252,7 +252,6 @@ func (prop *Property) Announce() error {
 func (prop *Property) toProtocolProperty() *protocol.Property {
 	newProp := protocol.NewProperty()
 	newProp.SetCode(byte(prop.GetCode()))
-	newProp.SetAttribute(uint(prop.GetAttribute()))
 	newProp.SetData(prop.GetData())
 	return newProp
 }
