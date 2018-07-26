@@ -114,8 +114,6 @@ func NewResponseMessageWithMessage(reqMsg *Message) *Message {
 		msg.SetESV(0)
 	}
 
-	msg.SetOPC(reqMsg.GetOPC())
-
 	return msg
 }
 
