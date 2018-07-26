@@ -43,6 +43,17 @@ func NewLight() (*Light, error) {
 }
 
 // PropertyRequestReceived is a listener for Echonet requests.
-func (light *Light) PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error {}
+func (light *Light) PropertyRequestReceived(obj *uecho.Object, esv protocol.ESV, reqProp *protocol.Property) error {
+	if !protocol.IsWriteRequest(esv) {
+		return nil
+	}
+
+	prop, ok := obj.GetProperty(reqProp.GetCode())
+	if !ok {
+		return nil
+	}
+
+	prop.SetData(reqProp.GetData())
+
 	return nil
 }
