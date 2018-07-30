@@ -4,18 +4,34 @@
 
 package transport
 
+import (
+	"fmt"
+)
+
+const (
+	errorServerNotRunning = "Unicast erver is not running"
+)
+
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
-	Listener UnicastListener
+	Port     int
 	Servers  []*UnicastServer
+	Listener UnicastListener
 }
 
 // NewUnicastManager returns a new UnicastManager.
 func NewUnicastManager() *UnicastManager {
-	server := &UnicastManager{}
-	server.Servers = make([]*UnicastServer, 0)
-	server.Listener = nil
-	return server
+	mgr := &UnicastManager{
+		Port:     UDPPort,
+		Servers:  make([]*UnicastServer, 0),
+		Listener: nil,
+	}
+	return mgr
+}
+
+// SetPort sets a listen port.
+func (mgr *UnicastManager) SetPort(port int) {
+	mgr.Port = port
 }
 
 // SetListener set a listener to all servers.
@@ -35,13 +51,13 @@ func (mgr *UnicastManager) Start() error {
 		return err
 	}
 
-	var lastErr error = nil
+	var lastErr error
 
 	mgr.Servers = make([]*UnicastServer, len(ifis))
 	for n, ifi := range ifis {
 		server := NewUnicastServer()
 		server.Listener = mgr.Listener
-		err := server.Start(ifi, UDPPort)
+		err := server.Start(ifi, mgr.Port)
 		if err != nil {
 			lastErr = err
 		}
@@ -65,4 +81,12 @@ func (mgr *UnicastManager) Stop() error {
 	mgr.Servers = make([]*UnicastServer, 0)
 
 	return lastErr
+}
+
+func (mgr *UnicastManager) Write(addr string, port int, b []byte) (int, error) {
+	if 0 < len(mgr.Servers) {
+		server := mgr.Servers[0]
+		return server.Socket.Write(addr, port, b)
+	}
+	return 0, fmt.Errorf(errorServerNotRunning)
 }

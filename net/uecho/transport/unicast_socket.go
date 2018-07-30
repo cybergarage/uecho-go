@@ -17,8 +17,9 @@ type UnicastSocket struct {
 
 // NewUnicastSocket returns a new UnicastSocket.
 func NewUnicastSocket() *UnicastSocket {
-	sock := &UnicastSocket{}
-	sock.UDPSocket = NewUDPSocket()
+	sock := &UnicastSocket{
+		UDPSocket: NewUDPSocket(),
+	}
 	return sock
 }
 

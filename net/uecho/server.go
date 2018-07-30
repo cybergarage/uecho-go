@@ -24,12 +24,12 @@ func newServer() *server {
 
 // PostAnnounce posts a message.
 func (server *server) PostAnnounce(msg *protocol.Message) error {
-	return server.SendMessageAll(msg)
+	return server.NofityMessage(msg)
 }
 
 // PostResponse posts a message to the specified node.
 func (server *server) PostResponse(msg *protocol.Message) error {
-	return server.SendMessageAll(msg)
+	return server.NofityMessage(msg)
 }
 
 // Start starts the server.

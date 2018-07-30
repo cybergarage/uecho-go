@@ -48,22 +48,22 @@ func newTestMessage() (*protocol.Message, error) {
 }
 
 func TestNewMessageManager(t *testing.T) {
+	mgr := newTestMessageManager()
+	mgr.SetMessageListener(mgr)
+
+	err := mgr.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	msg, err := newTestMessage()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	mgr := newTestMessageManager()
-	mgr.SetMessageListener(mgr)
-
-	err = mgr.Start()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = mgr.SendMessageAll(msg)
+	err = mgr.NofityMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -79,5 +79,33 @@ func TestNewMessageManager(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 		return
+	}
+}
+
+func TestNewMessageManagers(t *testing.T) {
+	mgrs := []*testMessageManager{
+		newTestMessageManager(),
+		newTestMessageManager(),
+	}
+
+	for n, mgr := range mgrs {
+		mgr.SetPort(UDPPort + n)
+		mgr.SetMessageListener(mgr)
+	}
+
+	for _, mgr := range mgrs {
+		err := mgr.Start()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}
+
+	for _, mgr := range mgrs {
+		err := mgr.Stop()
+		if err != nil {
+			t.Error(err)
+			return
+		}
 	}
 }
