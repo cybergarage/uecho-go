@@ -5,13 +5,12 @@
 package transport
 
 import (
-	"net"
-
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
+	Port         uint
 	multicastMgr *MulticastManager
 	unicastMgr   *UnicastManager
 }
@@ -19,10 +18,16 @@ type MessageManager struct {
 // NewMessageManager returns a new message manager.
 func NewMessageManager() *MessageManager {
 	mgr := &MessageManager{
+		Port:         UDPPort,
 		multicastMgr: NewMulticastManager(),
 		unicastMgr:   NewUnicastManager(),
 	}
 	return mgr
+}
+
+// SetPort sets a listen port.
+func (mgr *MessageManager) SetPort(port int) {
+	mgr.unicastMgr.SetPort(port)
 }
 
 // SetMessageListener set a listener to all managers.
@@ -32,30 +37,14 @@ func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 }
 
 // SendMessage send a message to the destination address.
-func (mgr *MessageManager) SendMessage(dstAddr string, msg *protocol.Message) error {
-	addr, err := net.ResolveUDPAddr("udp", dstAddr)
-	if err != nil {
-		return err
-	}
-
-	c, err := net.DialUDP("udp", nil, addr)
-	if err != nil {
-		return err
-	}
-
-	defer c.Close()
-
-	_, err = c.Write(msg.Bytes())
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (mgr *MessageManager) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
+	return mgr.unicastMgr.Write(addr, port, msg.Bytes())
 }
 
-// SendMessageAll send a message to the multicast address.
-func (mgr *MessageManager) SendMessageAll(msg *protocol.Message) error {
-	return mgr.SendMessage(MulticastAddress, msg)
+// NofityMessage sends a message to the multicast address.
+func (mgr *MessageManager) NofityMessage(msg *protocol.Message) error {
+	_, err := mgr.SendMessage(MulticastAddress, UDPPort, msg)
+	return err
 }
 
 // Start starts all transport managers.

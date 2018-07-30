@@ -8,7 +8,7 @@ const (
 	Port             = 3610
 	UDPPort          = Port
 	TCPPort          = Port
-	MulticastAddress = "224.0.23.0:3610"
+	MulticastAddress = "224.0.23.0"
 	MaxPacketSize    = 1024
 )
 

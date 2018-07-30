@@ -24,9 +24,10 @@ type UnicastServer struct {
 
 // NewUnicastServer returns a new UnicastServer.
 func NewUnicastServer() *UnicastServer {
-	server := &UnicastServer{}
-	server.Socket = NewUnicastSocket()
-	server.Listener = nil
+	server := &UnicastServer{
+		Socket:   NewUnicastSocket(),
+		Listener: nil,
+	}
 	return server
 }
 
