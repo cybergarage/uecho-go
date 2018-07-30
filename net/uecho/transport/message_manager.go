@@ -60,13 +60,13 @@ func (mgr *MessageManager) SendMessageAll(msg *protocol.Message) error {
 
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
-	err := mgr.multicastMgr.Start()
+	err := mgr.unicastMgr.Start()
 	if err != nil {
 		mgr.Stop()
 		return err
 	}
 
-	err = mgr.unicastMgr.Start()
+	err = mgr.multicastMgr.Start()
 	if err != nil {
 		mgr.Stop()
 		return err
