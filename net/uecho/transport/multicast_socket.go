@@ -50,6 +50,11 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 		return err
 	}
 
+	_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 1)
+	if err != nil {
+		return err
+	}
+
 	sock.Interface = ifi
 
 	return nil
