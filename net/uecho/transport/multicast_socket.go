@@ -30,7 +30,7 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 		return err
 	}
 
-	addr, err := net.ResolveUDPAddr("udp", MulticastAddress)
+	addr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", MulticastAddress, UDPPort))
 	if err != nil {
 		return err
 	}
