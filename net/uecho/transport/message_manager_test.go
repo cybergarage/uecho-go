@@ -63,7 +63,7 @@ func TestNewMessageManager(t *testing.T) {
 		return
 	}
 
-	err = mgr.NofityMessage(msg)
+	err = mgr.NotifyMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
