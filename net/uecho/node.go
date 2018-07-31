@@ -104,7 +104,7 @@ func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 
 // AnnounceMessage announces a message.
 func (node *Node) AnnounceMessage(msg *protocol.Message) error {
-	return node.server.NofityMessage(msg)
+	return node.server.NotifyMessage(msg)
 }
 
 // SetAddress set an address to the node.
