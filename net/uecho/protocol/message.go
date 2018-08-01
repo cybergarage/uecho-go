@@ -194,6 +194,33 @@ func (msg *Message) IsResponseRequired() bool {
 	return IsResponseRequired(msg.ESV)
 }
 
+// GetSourceAddress returns the source address of the message.
+func (msg *Message) GetSourceAddress() string {
+	return msg.srcAddr
+}
+
+// GetSourceHost returns the source host of the message.
+func (msg *Message) GetSourceHost() (string, error) {
+	var host string
+	var port int
+	_, err := fmt.Sscanf(msg.srcAddr, "%s:%d", &host, &port)
+	if err != nil {
+		return "", err
+	}
+	return host, nil
+}
+
+// GetSourcePort returns the source address of the message.
+func (msg *Message) GetSourcePort() (int, error) {
+	var host string
+	var port int
+	_, err := fmt.Sscanf(msg.srcAddr, "%s:%d", &host, &port)
+	if err != nil {
+		return 0, err
+	}
+	return port, nil
+}
+
 // SetOPC sets the specified OPC.
 func (msg *Message) SetOPC(value int) error {
 	msg.OPC = byte(value & 0xFF)
