@@ -34,6 +34,11 @@ func (mgr *UnicastManager) SetPort(port int) {
 	mgr.Port = port
 }
 
+// GetPort returns the listen port.
+func (mgr *UnicastManager) GetPort() int {
+	return mgr.Port
+}
+
 // SetListener set a listener to all servers.
 func (mgr *UnicastManager) SetListener(l UnicastListener) {
 	mgr.Listener = l
