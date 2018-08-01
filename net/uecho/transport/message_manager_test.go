@@ -128,6 +128,8 @@ func TestNewMessageManagers(t *testing.T) {
 
 	time.Sleep(time.Second)
 
+	// Check the received message
+
 	if dstMgr.lastMessage == nil {
 		t.Error("")
 	}
@@ -136,8 +138,14 @@ func TestNewMessageManagers(t *testing.T) {
 		t.Errorf("%s != %s", string(msg.Bytes()), string(dstMgr.lastMessage.Bytes()))
 	}
 
-	//srcPort := srcMgr.GetPort()
-	//msgPort := msg.Parse
+	// Check the message source
+
+	srcPort := srcMgr.GetPort()
+	msgPort := msg.GetSourcePort()
+
+	if srcPort != msgPort {
+		t.Errorf("%d != %d", srcPort, msgPort)
+	}
 
 	// Stop managers
 

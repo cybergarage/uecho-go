@@ -24,9 +24,10 @@ type MulticastServer struct {
 
 // NewMulticastServer returns a new MulticastServer.
 func NewMulticastServer() *MulticastServer {
-	server := &MulticastServer{}
-	server.Socket = NewMulticastSocket()
-	server.Listener = nil
+	server := &MulticastServer{
+		Socket:   NewMulticastSocket(),
+		Listener: nil,
+	}
 	return server
 }
 
