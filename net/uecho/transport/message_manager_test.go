@@ -136,6 +136,9 @@ func TestNewMessageManagers(t *testing.T) {
 		t.Errorf("%s != %s", string(msg.Bytes()), string(dstMgr.lastMessage.Bytes()))
 	}
 
+	//srcPort := srcMgr.GetPort()
+	//msgPort := msg.Parse
+
 	// Stop managers
 
 	for _, mgr := range mgrs {
