@@ -30,6 +30,11 @@ func (mgr *MessageManager) SetPort(port int) {
 	mgr.unicastMgr.SetPort(port)
 }
 
+// GetPort returns the listen port.
+func (mgr *MessageManager) GetPort() int {
+	return mgr.unicastMgr.GetPort()
+}
+
 // SetMessageListener set a listener to all managers.
 func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 	mgr.multicastMgr.SetListener(l)

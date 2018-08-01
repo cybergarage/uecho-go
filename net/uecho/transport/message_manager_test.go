@@ -63,14 +63,19 @@ func TestNewMessageManager(t *testing.T) {
 		return
 	}
 
+	// Send a test message
+
 	err = mgr.NotifyMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
+
 	time.Sleep(time.Second)
+
 	if mgr.lastMessage == nil {
 		t.Error("")
 	}
+
 	if bytes.Compare(msg.Bytes(), mgr.lastMessage.Bytes()) != 0 {
 		t.Errorf("%s != %s", string(msg.Bytes()), string(mgr.lastMessage.Bytes()))
 	}
@@ -90,8 +95,15 @@ func TestNewMessageManagers(t *testing.T) {
 
 	for n, mgr := range mgrs {
 		mgr.SetPort(UDPPort + n)
-		mgr.SetMessageListener(mgr)
 	}
+
+	// Set the test listener only to the destination managers, mgrs[1]
+
+	srcMgr := mgrs[0]
+	dstMgr := mgrs[1]
+	dstMgr.SetMessageListener(dstMgr)
+
+	// Start managers
 
 	for _, mgr := range mgrs {
 		err := mgr.Start()
@@ -100,6 +112,31 @@ func TestNewMessageManagers(t *testing.T) {
 			return
 		}
 	}
+
+	// Send a test message from mgrs[0] to mgrs[1]
+
+	msg, err := newTestMessage()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = srcMgr.NotifyMessage(msg)
+	if err != nil {
+		t.Error(err)
+	}
+
+	time.Sleep(time.Second)
+
+	if dstMgr.lastMessage == nil {
+		t.Error("")
+	}
+
+	if bytes.Compare(msg.Bytes(), dstMgr.lastMessage.Bytes()) != 0 {
+		t.Errorf("%s != %s", string(msg.Bytes()), string(dstMgr.lastMessage.Bytes()))
+	}
+
+	// Stop managers
 
 	for _, mgr := range mgrs {
 		err := mgr.Stop()
