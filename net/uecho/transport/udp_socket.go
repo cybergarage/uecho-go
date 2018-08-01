@@ -24,8 +24,9 @@ type UDPSocket struct {
 
 // NewUDPSocket returns a new UDPSocket.
 func NewUDPSocket() *UDPSocket {
-	sock := &UDPSocket{}
-	sock.readBuf = make([]byte, MaxPacketSize)
+	sock := &UDPSocket{
+		readBuf: make([]byte, MaxPacketSize),
+	}
 	return sock
 }
 

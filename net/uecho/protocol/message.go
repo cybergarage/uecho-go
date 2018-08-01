@@ -37,7 +37,6 @@ type Message struct {
 	OPC       byte
 	EP        []*Property
 	rawBytes  []byte
-	srcAddr   string
 	From      net.UDPAddr
 	Interface net.Interface
 }
@@ -194,31 +193,14 @@ func (msg *Message) IsResponseRequired() bool {
 	return IsResponseRequired(msg.ESV)
 }
 
-// GetSourceAddress returns the source address of the message.
-func (msg *Message) GetSourceAddress() string {
-	return msg.srcAddr
-}
-
-// GetSourceHost returns the source host of the message.
-func (msg *Message) GetSourceHost() (string, error) {
-	var host string
-	var port int
-	_, err := fmt.Sscanf(msg.srcAddr, "%s:%d", &host, &port)
-	if err != nil {
-		return "", err
-	}
-	return host, nil
+// GetSourceIP returns the source address of the message.
+func (msg *Message) GetSourceIP() net.IP {
+	return msg.From.IP
 }
 
 // GetSourcePort returns the source address of the message.
-func (msg *Message) GetSourcePort() (int, error) {
-	var host string
-	var port int
-	_, err := fmt.Sscanf(msg.srcAddr, "%s:%d", &host, &port)
-	if err != nil {
-		return 0, err
-	}
-	return port, nil
+func (msg *Message) GetSourcePort() int {
+	return msg.From.Port
 }
 
 // SetOPC sets the specified OPC.

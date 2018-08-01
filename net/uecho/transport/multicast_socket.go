@@ -18,8 +18,9 @@ type MulticastSocket struct {
 
 // NewMulticastSocket returns a new MulticastSocket.
 func NewMulticastSocket() *MulticastSocket {
-	sock := &MulticastSocket{}
-	sock.UDPSocket = NewUDPSocket()
+	sock := &MulticastSocket{
+		UDPSocket: NewUDPSocket(),
+	}
 	return sock
 }
 
