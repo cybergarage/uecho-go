@@ -4,6 +4,8 @@
 
 package transport
 
+import "net"
+
 // A MulticastManager represents a multicast server manager.
 type MulticastManager struct {
 	Servers  []*MulticastServer
@@ -22,6 +24,24 @@ func NewMulticastManager() *MulticastManager {
 // SetListener set a listener to all servers.
 func (mgr *MulticastManager) SetListener(l MulticastListener) {
 	mgr.Listener = l
+}
+
+// GetBoundAddresses returns the listen addresses.
+func (mgr *MulticastManager) GetBoundAddresses() []net.Addr {
+	boundAddrs := make([]net.Addr, 0)
+	for _, server := range mgr.Servers {
+		boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
+	}
+	return boundAddrs
+}
+
+// GetBoundInterfaces returns the listen interfaces.
+func (mgr *MulticastManager) GetBoundInterfaces() []net.Interface {
+	boundIfs := make([]net.Interface, 0)
+	for _, server := range mgr.Servers {
+		boundIfs = append(boundIfs, server.Interface)
+	}
+	return boundIfs
 }
 
 // Start starts this server.

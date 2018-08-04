@@ -6,9 +6,11 @@ package transport
 
 import (
 	"bytes"
+	"math/rand"
 	"testing"
 	"time"
 
+	"github.com/cybergarage/uecho-go/net/uecho/encoding"
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
@@ -30,11 +32,14 @@ func (mgr *testMessageManager) MessageReceived(msg *protocol.Message) {
 	mgr.lastMessage = msg
 }
 
-func newTestMessage() (*protocol.Message, error) {
+func newTestMessage(tid uint) (*protocol.Message, error) {
+	tidBytes := make([]byte, 2)
+	encoding.IntegerToByte(tid, tidBytes)
+
 	testMessageBytes := []byte{
 		protocol.EHD1,
 		protocol.EHD2,
-		0x00, 0x00,
+		tidBytes[0], tidBytes[1],
 		0xA0, 0xB0, 0xC0,
 		0xD0, 0xE0, 0xF0,
 		protocol.ESVReadRequest,
@@ -57,7 +62,7 @@ func TestNewMessageManager(t *testing.T) {
 		return
 	}
 
-	msg, err := newTestMessage()
+	msg, err := newTestMessage(0)
 	if err != nil {
 		t.Error(err)
 		return
@@ -87,7 +92,7 @@ func TestNewMessageManager(t *testing.T) {
 	}
 }
 
-func TestNewMessageManagers(t *testing.T) {
+func TestMulticastMessaging(t *testing.T) {
 	mgrs := []*testMessageManager{
 		newTestMessageManager(),
 		newTestMessageManager(),
@@ -95,13 +100,8 @@ func TestNewMessageManagers(t *testing.T) {
 
 	for n, mgr := range mgrs {
 		mgr.SetPort(UDPPort + n)
+		mgr.SetMessageListener(mgr)
 	}
-
-	// Set the test listener only to the destination managers, mgrs[1]
-
-	srcMgr := mgrs[0]
-	dstMgr := mgrs[1]
-	dstMgr.SetMessageListener(dstMgr)
 
 	// Start managers
 
@@ -113,38 +113,89 @@ func TestNewMessageManagers(t *testing.T) {
 		}
 	}
 
-	// Send a test message from mgrs[0] to mgrs[1]
+	// Send multicast messages, and check the received message
 
-	msg, err := newTestMessage()
-	if err != nil {
-		t.Error(err)
-		return
+	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
+	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
+
+	for n := 0; n < len(srcMgrs); n++ {
+		srcMgr := srcMgrs[n]
+		dstMgr := dstMgrs[n]
+
+		msg, err := newTestMessage(uint(rand.Uint32()))
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		err = srcMgr.NotifyMessage(msg)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+
+		time.Sleep(time.Second)
+
+		dstMsg := dstMgr.lastMessage
+		if dstMsg == nil {
+			t.Error("")
+		}
+
+		if bytes.Compare(msg.Bytes(), dstMsg.Bytes()) != 0 {
+			t.Errorf("%s != %s", string(msg.Bytes()), string(dstMsg.Bytes()))
+		}
+
+		srcPort := srcMgr.GetPort()
+		msgPort := dstMsg.GetSourcePort()
+
+		if srcPort != msgPort {
+			t.Errorf("%d != %d", srcPort, msgPort)
+		}
 	}
 
-	err = srcMgr.NotifyMessage(msg)
-	if err != nil {
-		t.Error(err)
-	}
+	// Send unicast messages, and check the received message
 
-	time.Sleep(time.Second)
+	for n := 0; n < len(srcMgrs); n++ {
+		srcMgr := srcMgrs[n]
+		dstMgr := dstMgrs[n]
 
-	// Check the received message
+		msg, err := newTestMessage(uint(rand.Uint32()))
+		if err != nil {
+			t.Error(err)
+			continue
+		}
 
-	if dstMgr.lastMessage == nil {
-		t.Error("")
-	}
+		dstPort := dstMgr.GetPort()
+		dstAddrs := dstMgr.GetBoundAddresses()
+		if len(dstAddrs) <= 0 {
+			t.Errorf("Not found available interfaces ")
+			continue
+		}
 
-	if bytes.Compare(msg.Bytes(), dstMgr.lastMessage.Bytes()) != 0 {
-		t.Errorf("%s != %s", string(msg.Bytes()), string(dstMgr.lastMessage.Bytes()))
-	}
+		dstAddr := dstAddrs[0]
+		_, err = srcMgr.SendMessage(dstAddr.String(), dstPort, msg)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
 
-	// Check the message source
+		time.Sleep(time.Second)
 
-	srcPort := srcMgr.GetPort()
-	msgPort := msg.GetSourcePort()
+		dstMsg := dstMgr.lastMessage
+		if dstMsg == nil {
+			t.Error("")
+		}
 
-	if srcPort != msgPort {
-		t.Errorf("%d != %d", srcPort, msgPort)
+		if bytes.Compare(msg.Bytes(), dstMsg.Bytes()) != 0 {
+			t.Errorf("%s != %s", string(msg.Bytes()), string(dstMsg.Bytes()))
+		}
+
+		srcPort := srcMgr.GetPort()
+		msgPort := dstMsg.GetSourcePort()
+
+		if srcPort != msgPort {
+			t.Errorf("%d != %d", srcPort, msgPort)
+		}
 	}
 
 	// Stop managers
