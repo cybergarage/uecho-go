@@ -17,14 +17,15 @@ type MulticastListener interface {
 
 // A MulticastServer represents a multicast server.
 type MulticastServer struct {
-	Socket    *MulticastSocket
-	Listener  MulticastListener
-	Interface net.Interface
+	*Server
+	Socket   *MulticastSocket
+	Listener MulticastListener
 }
 
 // NewMulticastServer returns a new MulticastServer.
 func NewMulticastServer() *MulticastServer {
 	server := &MulticastServer{
+		Server:   NewServer(),
 		Socket:   NewMulticastSocket(),
 		Listener: nil,
 	}

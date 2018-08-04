@@ -5,6 +5,8 @@
 package transport
 
 import (
+	"net"
+
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
@@ -39,6 +41,20 @@ func (mgr *MessageManager) GetPort() int {
 func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 	mgr.multicastMgr.SetListener(l)
 	mgr.unicastMgr.SetListener(l)
+}
+
+// GetBoundAddresses returns the listen addresses.
+func (mgr *MessageManager) GetBoundAddresses() []net.Addr {
+	boundAddrs := make([]net.Addr, 0)
+	boundAddrs = append(boundAddrs, mgr.unicastMgr.GetBoundAddresses()...)
+	return boundAddrs
+}
+
+// GetBoundInterfaces returns the listen interfaces.
+func (mgr *MessageManager) GetBoundInterfaces() []net.Interface {
+	boundIfs := make([]net.Interface, 0)
+	boundIfs = append(boundIfs, mgr.unicastMgr.GetBoundInterfaces()...)
+	return boundIfs
 }
 
 // SendMessage send a message to the destination address.

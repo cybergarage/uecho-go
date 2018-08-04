@@ -17,14 +17,15 @@ type UnicastListener interface {
 
 // A UnicastServer represents a unicast server.
 type UnicastServer struct {
-	Socket    *UnicastSocket
-	Listener  UnicastListener
-	Interface net.Interface
+	*Server
+	Socket   *UnicastSocket
+	Listener UnicastListener
 }
 
 // NewUnicastServer returns a new UnicastServer.
 func NewUnicastServer() *UnicastServer {
 	server := &UnicastServer{
+		Server:   NewServer(),
 		Socket:   NewUnicastSocket(),
 		Listener: nil,
 	}

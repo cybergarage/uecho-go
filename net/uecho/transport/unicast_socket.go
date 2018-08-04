@@ -35,12 +35,12 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	bindAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
+	boundAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
 	if err != nil {
 		return err
 	}
 
-	sock.Conn, err = net.ListenUDP("udp", bindAddr)
+	sock.Conn, err = net.ListenUDP("udp", boundAddr)
 	if err != nil {
 		return err
 	}
