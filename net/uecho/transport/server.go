@@ -30,12 +30,12 @@ func (server *Server) GetBoundInterface() net.Interface {
 }
 
 // GetBoundAddresses returns the listen addresses.
-func (server *Server) GetBoundAddresses() []net.Addr {
-	boundAddrs := make([]net.Addr, 0)
-	ifAddrs, err := server.Interface.Addrs()
+func (server *Server) GetBoundAddresses() []string {
+	boundAddrs := make([]string, 0)
+	ifAddr, err := GetInterfaceAddress(server.Interface)
 	if err != nil {
 		return boundAddrs
 	}
-	boundAddrs = append(boundAddrs, ifAddrs...)
+	boundAddrs = append(boundAddrs, ifAddr)
 	return boundAddrs
 }

@@ -173,7 +173,7 @@ func TestMulticastMessaging(t *testing.T) {
 		}
 
 		dstAddr := dstAddrs[0]
-		_, err = srcMgr.SendMessage(dstAddr.String(), dstPort, msg)
+		_, err = srcMgr.SendMessage(dstAddr, dstPort, msg)
 		if err != nil {
 			t.Error(err)
 			continue

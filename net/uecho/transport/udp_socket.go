@@ -37,6 +37,7 @@ func (sock *UDPSocket) GetFD() (uintptr, error) {
 		return 0, err
 	}
 	return f.Fd(), nil
+
 }
 
 // Close closes the current opened socket.

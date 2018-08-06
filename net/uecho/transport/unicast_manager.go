@@ -46,8 +46,8 @@ func (mgr *UnicastManager) SetListener(l UnicastListener) {
 }
 
 // GetBoundAddresses returns the listen addresses.
-func (mgr *UnicastManager) GetBoundAddresses() []net.Addr {
-	boundAddrs := make([]net.Addr, 0)
+func (mgr *UnicastManager) GetBoundAddresses() []string {
+	boundAddrs := make([]string, 0)
 	for _, server := range mgr.Servers {
 		boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
 	}

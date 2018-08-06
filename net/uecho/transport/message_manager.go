@@ -44,8 +44,8 @@ func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 }
 
 // GetBoundAddresses returns the listen addresses.
-func (mgr *MessageManager) GetBoundAddresses() []net.Addr {
-	boundAddrs := make([]net.Addr, 0)
+func (mgr *MessageManager) GetBoundAddresses() []string {
+	boundAddrs := make([]string, 0)
 	boundAddrs = append(boundAddrs, mgr.unicastMgr.GetBoundAddresses()...)
 	return boundAddrs
 }
