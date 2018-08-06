@@ -92,7 +92,7 @@ func TestNewMessageManager(t *testing.T) {
 	}
 }
 
-func TestMulticastMessaging(t *testing.T) {
+func TestMulticastAndUnicastMessaging(t *testing.T) {
 	mgrs := []*testMessageManager{
 		newTestMessageManager(),
 		newTestMessageManager(),
