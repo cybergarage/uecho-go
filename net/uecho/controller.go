@@ -30,7 +30,7 @@ type Controller struct {
 // NewController returns a new contorller.
 func NewController() *Controller {
 	ctrl := &Controller{
-		node:       NewNode(),
+		node:       NewLocalNode(),
 		foundNodes: make([]*Node, 0),
 		lastTID:    TIDMin,
 		listener:   nil,

@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestNewNode(t *testing.T) {
-	node := NewNode()
+func TestNewLocalNode(t *testing.T) {
+	node := NewLocalNode()
 
 	_, err := node.GetNodeProfile()
 	if err != nil {

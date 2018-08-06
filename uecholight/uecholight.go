@@ -21,22 +21,20 @@ package main
 
 import (
 	"os"
+
 	"github.com/cybergarage/uecho-go/net/uecho"
 )
 
 // See : APPENDIX Detailed Requirements for ECHONET Device objects
 //       3.3.29 Requirements for mono functional lighting class
 
-
 import (
-	"fmt"
-
 	"github.com/cybergarage/uecho-go/net/uecho"
 )
 
 func main() {
 
-	node := uecho.NewNode()
+	node := uecho.NewLocalNode()
 
 	dev := NewLight()
 	err := node.AddDevice(dev)
@@ -56,4 +54,3 @@ func main() {
 
 	os.Exit(EXIT_SUCCESS)
 }
-

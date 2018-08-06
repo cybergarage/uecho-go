@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestNewNodeProfile(t *testing.T) {
-	prop := NewNodeProfile()
+func TestNewLocalNodeProfile(t *testing.T) {
+	prop := NewLocalNodeProfile()
 
 	if !prop.IsProfile() {
 		t.Errorf(errorInvalidGroupClassCode, prop.GetClassGroupCode())

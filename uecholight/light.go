@@ -23,7 +23,7 @@ type Light struct {
 func NewLight() (*Light, error) {
 
 	light := &Light{
-		Node: uecho.NewNode(),
+		Node: uecho.NewLocalNode(),
 	}
 
 	dev := uecho.NewDevice()

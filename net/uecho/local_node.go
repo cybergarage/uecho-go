@@ -16,42 +16,42 @@ const (
 	errorObjectProfileObjectNotFound = "Object profile object not found"
 )
 
-// Node is an instance for Echonet node.
-type Node struct {
+// LocalNode is an instance for Echonet node.
+type LocalNode struct {
 	devices  []*Device
 	profiles []*Profile
 	Address  net.IP
 	server   *server
 }
 
-// NewNode returns a new node.
-func NewNode() *Node {
+// NewLocalNode returns a new node.
+func NewLocalNode() *Node {
 	node := &Node{
 		devices:  make([]*Device, 0),
 		profiles: make([]*Profile, 0),
 		server:   newServer(),
 	}
 
-	node.AddProfile(NewNodeProfile())
+	node.AddProfile(NewLocalNodeProfile())
 	node.server.SetMessageListener(node)
 
 	return node
 }
 
 // AddDevice adds a new device into the node.
-func (node *Node) AddDevice(dev *Device) error {
+func (node *LocalNode) AddDevice(dev *Device) error {
 	node.devices = append(node.devices, dev)
 	dev.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
 // GetDevices returns all device objects.
-func (node *Node) GetDevices() []*Device {
+func (node *LocalNode) GetDevices() []*Device {
 	return node.devices
 }
 
 // GetDeviceByCode returns a specified device object.
-func (node *Node) GetDeviceByCode(code uint) (*Device, error) {
+func (node *LocalNode) GetDeviceByCode(code uint) (*Device, error) {
 	for _, obj := range node.devices {
 		if obj.GetCode() == code {
 			return obj, nil
@@ -61,19 +61,19 @@ func (node *Node) GetDeviceByCode(code uint) (*Device, error) {
 }
 
 // AddProfile adds a new profile object into the node.
-func (node *Node) AddProfile(prof *Profile) error {
+func (node *LocalNode) AddProfile(prof *Profile) error {
 	node.profiles = append(node.profiles, prof)
 	prof.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
 // GetProfiles returns all profile objects.
-func (node *Node) GetProfiles() []*Profile {
+func (node *LocalNode) GetProfiles() []*Profile {
 	return node.profiles
 }
 
 // GetProfileByCode returns a specified profile object.
-func (node *Node) GetProfileByCode(code uint) (*Profile, error) {
+func (node *LocalNode) GetProfileByCode(code uint) (*Profile, error) {
 	for _, prof := range node.profiles {
 		if prof.GetCode() == code {
 			return prof, nil
@@ -83,12 +83,12 @@ func (node *Node) GetProfileByCode(code uint) (*Profile, error) {
 }
 
 // GetNodeProfile returns a node profile in the node.
-func (node *Node) GetNodeProfile() (*Profile, error) {
+func (node *LocalNode) GetNodeProfile() (*Profile, error) {
 	return node.GetProfileByCode(NodeProfileObject)
 }
 
 // GetObjectByCode returns a specified object.
-func (node *Node) GetObjectByCode(code uint) (*Object, error) {
+func (node *LocalNode) GetObjectByCode(code uint) (*Object, error) {
 	dev, err := node.GetDeviceByCode(code)
 	if err != nil {
 		return dev.Object, nil
@@ -103,22 +103,22 @@ func (node *Node) GetObjectByCode(code uint) (*Object, error) {
 }
 
 // AnnounceMessage announces a message.
-func (node *Node) AnnounceMessage(msg *protocol.Message) error {
+func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 	return node.server.NotifyMessage(msg)
 }
 
 // SetAddress set an address to the node.
-func (node *Node) SetAddress(addr net.IP) {
+func (node *LocalNode) SetAddress(addr net.IP) {
 	node.Address = addr
 }
 
 // GetAddress returns a IP address of the node.
-func (node *Node) GetAddress() net.IP {
+func (node *LocalNode) GetAddress() net.IP {
 	return node.Address
 }
 
 // AnnounceProperty announces a specified property.
-func (node *Node) AnnounceProperty(prop *Property) error {
+func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
 	msg.SetSourceObjectCode(NodeProfileObject)
@@ -129,7 +129,7 @@ func (node *Node) AnnounceProperty(prop *Property) error {
 }
 
 // Announce announces the node
-func (node *Node) Announce() error {
+func (node *LocalNode) Announce() error {
 	nodePropObj, err := node.GetNodeProfile()
 	if err != nil {
 		return err
@@ -144,12 +144,12 @@ func (node *Node) Announce() error {
 }
 
 // SendMessage send a message to the node
-func (node *Node) SendMessage(dstNode *Node, msg *protocol.Message) error {
-	return node.server.SendMessage(string(dstNode.GetAddress()), msg)
+func (node *LocalNode) SendMessage(dstnode *LocalNode, msg *protocol.Message) error {
+	return node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
 }
 
 // Start starts the node.
-func (node *Node) Start() error {
+func (node *LocalNode) Start() error {
 	err := node.server.Start()
 	if err != nil {
 		return err
@@ -159,7 +159,7 @@ func (node *Node) Start() error {
 }
 
 // Stop stop the node.
-func (node *Node) Stop() error {
+func (node *LocalNode) Stop() error {
 	err := node.server.Stop()
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func (node *Node) Stop() error {
 }
 
 // updateNodeProfile updates the node profile in the node.
-func (node *Node) updateNodeProfile() error {
+func (node *LocalNode) updateNodeProfile() error {
 	nodeProf, err := node.GetNodeProfile()
 	if err != nil {
 		return err
