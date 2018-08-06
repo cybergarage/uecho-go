@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	errorServerNotRunning = "Unicast erver is not running"
+	errorServerNotRunning = "Unicast server is not running"
 )
 
 // A UnicastManager represents a multicast server manager.
@@ -77,15 +77,26 @@ func (mgr *UnicastManager) Start() error {
 
 	var lastErr error
 
-	mgr.Servers = make([]*UnicastServer, len(ifis))
-	for n, ifi := range ifis {
-		server := NewUnicastServer()
-		server.Listener = mgr.Listener
-		err := server.Start(ifi, mgr.Port)
-		if err != nil {
-			lastErr = err
+	for port := mgr.GetPort(); (UDPPortMin <= port) && (port <= UDPPortMax); port++ {
+		mgr.Servers = make([]*UnicastServer, len(ifis))
+		mgr.SetPort(port)
+
+		for n, ifi := range ifis {
+			server := NewUnicastServer()
+			server.Listener = mgr.Listener
+			lastErr = server.Start(ifi, mgr.Port)
+
+			if lastErr == nil {
+				mgr.Servers[n] = server
+			} else {
+				mgr.Stop()
+				break
+			}
 		}
-		mgr.Servers[n] = server
+
+		if lastErr == nil {
+			break
+		}
 	}
 
 	return lastErr
@@ -93,9 +104,12 @@ func (mgr *UnicastManager) Start() error {
 
 // Stop stops this server.
 func (mgr *UnicastManager) Stop() error {
-	var lastErr error = nil
+	var lastErr error
 
 	for _, server := range mgr.Servers {
+		if server == nil {
+			continue
+		}
 		err := server.Stop()
 		if err != nil {
 			lastErr = err

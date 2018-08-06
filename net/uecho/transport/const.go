@@ -12,6 +12,12 @@ const (
 	MaxPacketSize    = 1024
 )
 
+//  Extention for Echonet Lite
+const (
+	UDPPortMin = UDPPort
+	UDPPortMax = UDPPort + 80
+)
+
 const (
 	MessageFormatSpecified = 0x01
 	MessageFormatArbitrary = 0x02
