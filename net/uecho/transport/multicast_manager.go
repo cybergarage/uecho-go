@@ -27,8 +27,8 @@ func (mgr *MulticastManager) SetListener(l MulticastListener) {
 }
 
 // GetBoundAddresses returns the listen addresses.
-func (mgr *MulticastManager) GetBoundAddresses() []net.Addr {
-	boundAddrs := make([]net.Addr, 0)
+func (mgr *MulticastManager) GetBoundAddresses() []string {
+	boundAddrs := make([]string, 0)
 	for _, server := range mgr.Servers {
 		boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
 	}
