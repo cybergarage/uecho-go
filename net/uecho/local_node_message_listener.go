@@ -9,12 +9,12 @@ import (
 )
 
 // MessageReceived is a listener for the server
-func (node *Node) MessageReceived(msg *protocol.Message) {
+func (node *LocalNode) MessageReceived(msg *protocol.Message) {
 	node.executeObjectControl(msg)
 }
 
 // postImpossibleResponse returns an individual response to the source node.
-func (node *Node) postImpossibleResponse(msg *protocol.Message) {
+func (node *LocalNode) postImpossibleResponse(msg *protocol.Message) {
 	if !msg.IsResponseRequired() {
 		return
 	}
@@ -23,7 +23,7 @@ func (node *Node) postImpossibleResponse(msg *protocol.Message) {
 }
 
 // executeObjectControl executes the specified message based on the Echonet specification (4.2.2 Basic Sequences for Object Control in General)
-func (node *Node) executeObjectControl(msg *protocol.Message) {
+func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 	//4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.GetDestinationObjectCode()

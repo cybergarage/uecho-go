@@ -26,7 +26,7 @@ type Object struct {
 	*PropertyMap
 	Code       []byte
 	listeners  []ObjectListener
-	parentNode *Node
+	parentNode *LocalNode
 }
 
 // NewObject returns a new object.
@@ -118,12 +118,12 @@ func (obj *Object) IsProfile() bool {
 }
 
 // SetParentNode sets a parent node.
-func (obj *Object) SetParentNode(node *Node) {
+func (obj *Object) SetParentNode(node *LocalNode) {
 	obj.parentNode = node
 }
 
 // GetParentNode returns a parent node.
-func (obj *Object) GetParentNode() *Node {
+func (obj *Object) GetParentNode() *LocalNode {
 	return obj.parentNode
 }
 
