@@ -50,8 +50,8 @@ const (
 	LowerCommunicationLayerProtocolType = 0xFE
 )
 
-// NewNodeProfile returns a new node profile object.
-func NewNodeProfile() *Profile {
+// NewLocalNodeProfile returns a new node profile object.
+func NewLocalNodeProfile() *Profile {
 	prof := NewProfile()
 
 	prof.SetCode(NodeProfileObjectReadOnly)
