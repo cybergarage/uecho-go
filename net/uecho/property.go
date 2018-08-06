@@ -69,7 +69,7 @@ func (prop *Property) GetParentObject() *Object {
 }
 
 // GetNode returns a parent node of the parent object.
-func (prop *Property) GetNode() *Node {
+func (prop *Property) GetNode() *LocalNode {
 	parentObj := prop.GetParentObject()
 	if parentObj == nil {
 		return nil

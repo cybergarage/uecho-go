@@ -20,8 +20,8 @@ type ControllerListener interface {
 
 // Controller is an instance for Echonet controller.
 type Controller struct {
-	node       *Node
-	foundNodes []*Node
+	node       *LocalNode
+	foundNodes []Node
 
 	lastTID  uint
 	listener ControllerListener
@@ -31,7 +31,7 @@ type Controller struct {
 func NewController() *Controller {
 	ctrl := &Controller{
 		node:       NewLocalNode(),
-		foundNodes: make([]*Node, 0),
+		foundNodes: make([]Node, 0),
 		lastTID:    TIDMin,
 		listener:   nil,
 	}
@@ -44,7 +44,7 @@ func (ctrl *Controller) SetListener(l ControllerListener) {
 }
 
 // GetNodes returns found nodes
-func (ctrl *Controller) GetNodes() []*Node {
+func (ctrl *Controller) GetNodes() []Node {
 	return ctrl.foundNodes
 }
 
@@ -95,7 +95,7 @@ func (ctrl *Controller) SearchObject(code uint) error {
 
 // Clear clears all found nodes.
 func (ctrl *Controller) Clear() error {
-	ctrl.foundNodes = make([]*Node, 0)
+	ctrl.foundNodes = make([]Node, 0)
 	return nil
 }
 

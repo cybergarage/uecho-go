@@ -6,29 +6,20 @@ package uecho
 
 import (
 	"fmt"
-	"net"
 
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
-const (
-	errorObjectNotFound              = "Object (%d) not found"
-	errorObjectProfileObjectNotFound = "Object profile object not found"
-)
-
 // LocalNode is an instance for Echonet node.
 type LocalNode struct {
-	devices  []*Device
-	profiles []*Profile
-	Address  net.IP
-	server   *server
+	*baseNode
+	server *server
 }
 
 // NewLocalNode returns a new node.
-func NewLocalNode() *Node {
-	node := &Node{
-		devices:  make([]*Device, 0),
-		profiles: make([]*Profile, 0),
+func NewLocalNode() *LocalNode {
+	node := &LocalNode{
+		baseNode: newBaseNode(),
 		server:   newServer(),
 	}
 
@@ -40,81 +31,41 @@ func NewLocalNode() *Node {
 
 // AddDevice adds a new device into the node.
 func (node *LocalNode) AddDevice(dev *Device) error {
-	node.devices = append(node.devices, dev)
+	err := node.baseNode.AddDevice(dev)
+	if err != nil {
+		return err
+	}
 	dev.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
-// GetDevices returns all device objects.
-func (node *LocalNode) GetDevices() []*Device {
-	return node.devices
-}
-
-// GetDeviceByCode returns a specified device object.
-func (node *LocalNode) GetDeviceByCode(code uint) (*Device, error) {
-	for _, obj := range node.devices {
-		if obj.GetCode() == code {
-			return obj, nil
-		}
-	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
-}
-
 // AddProfile adds a new profile object into the node.
 func (node *LocalNode) AddProfile(prof *Profile) error {
-	node.profiles = append(node.profiles, prof)
+	err := node.baseNode.AddProfile(prof)
+	if err != nil {
+		return err
+	}
 	prof.SetParentNode(node)
 	return node.updateNodeProfile()
 }
 
-// GetProfiles returns all profile objects.
-func (node *LocalNode) GetProfiles() []*Profile {
-	return node.profiles
+// GetAddress returns the bound address.
+func (node *LocalNode) GetAddress() string {
+	addrs := node.server.GetBoundAddresses()
+	if len(addrs) <= 0 {
+		return ""
+	}
+	return addrs[0]
 }
 
-// GetProfileByCode returns a specified profile object.
-func (node *LocalNode) GetProfileByCode(code uint) (*Profile, error) {
-	for _, prof := range node.profiles {
-		if prof.GetCode() == code {
-			return prof, nil
-		}
-	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
-}
-
-// GetNodeProfile returns a node profile in the node.
-func (node *LocalNode) GetNodeProfile() (*Profile, error) {
-	return node.GetProfileByCode(NodeProfileObject)
-}
-
-// GetObjectByCode returns a specified object.
-func (node *LocalNode) GetObjectByCode(code uint) (*Object, error) {
-	dev, err := node.GetDeviceByCode(code)
-	if err != nil {
-		return dev.Object, nil
-	}
-
-	prof, err := node.GetProfileByCode(code)
-	if err != nil {
-		return prof.Object, nil
-	}
-
-	return nil, fmt.Errorf(errorObjectNotFound, code)
+// GetPort returns the bound address.
+func (node *LocalNode) GetPort() int {
+	return node.server.GetPort()
 }
 
 // AnnounceMessage announces a message.
 func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 	return node.server.NotifyMessage(msg)
-}
-
-// SetAddress set an address to the node.
-func (node *LocalNode) SetAddress(addr net.IP) {
-	node.Address = addr
-}
-
-// GetAddress returns a IP address of the node.
-func (node *LocalNode) GetAddress() net.IP {
-	return node.Address
 }
 
 // AnnounceProperty announces a specified property.
@@ -144,8 +95,9 @@ func (node *LocalNode) Announce() error {
 }
 
 // SendMessage send a message to the node
-func (node *LocalNode) SendMessage(dstnode *LocalNode, msg *protocol.Message) error {
-	return node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
+func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
+	_, err := node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
+	return err
 }
 
 // Start starts the node.
