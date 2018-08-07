@@ -25,6 +25,10 @@ const (
 	ObjectGetPropertyMapMaxSize         = (ObjectPropertyMapMaxSize + 1)
 )
 
+const (
+	ObjectManufacturerUnknown = ObjectManufacturerEvaluationCodeMin
+)
+
 // SuperObject represents a super object of Echonet device and profile objects.
 type SuperObject struct {
 	*Object
@@ -44,7 +48,7 @@ func (obj *SuperObject) CreateProperty(propCode PropertyCode, propAttr PropertyA
 	obj.updatePropertyMap()
 }
 
-// setPropertyMapProperty sets a specified property map to the Object.
+// setPropertyMapProperty sets a specified property map to the object.
 func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
 	if !obj.HasProperty(propMapCode) {
 		obj.PropertyMap.CreateProperty(propMapCode, PropertyAttributeRead)
@@ -78,7 +82,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 	return nil
 }
 
-// updatePropertyMaps updates property maps  in the Object.
+// updatePropertyMaps updates property maps  in the object.
 func (obj *SuperObject) updatePropertyMap() error {
 	getPropMapCodes := make([]PropertyCode, 0)
 	setPropMapCodes := make([]PropertyCode, 0)
@@ -103,7 +107,7 @@ func (obj *SuperObject) updatePropertyMap() error {
 	return nil
 }
 
-// SetOperatingStatus sets a operating status to the Object.
+// SetOperatingStatus sets a operating status to the object.
 func (obj *SuperObject) SetOperatingStatus(stats bool) error {
 	statsByte := byte(ObjectOperatingStatusOff)
 	if stats {
@@ -112,7 +116,7 @@ func (obj *SuperObject) SetOperatingStatus(stats bool) error {
 	return obj.SetPropertyByteData(ObjectOperatingStatus, statsByte)
 }
 
-// GetOperatingStatus return the operating status of the Object.
+// GetOperatingStatus return the operating status of the object.
 func (obj *SuperObject) GetOperatingStatus() (bool, error) {
 	statsByte, err := obj.GetPropertyByteData(ObjectOperatingStatus)
 	if err != nil {
@@ -124,12 +128,12 @@ func (obj *SuperObject) GetOperatingStatus() (bool, error) {
 	return true, nil
 }
 
-// SetManufacturerCode sets a manufacture codes to the Object.
+// SetManufacturerCode sets a manufacture codes to the object.
 func (obj *SuperObject) SetManufacturerCode(code uint) error {
 	return obj.SetPropertyIntegerData(ObjectManufacturerCode, code, ObjectManufacturerCodeSize)
 }
 
-// GetManufacturerCode return the manufacture codes of the Object.
+// GetManufacturerCode return the manufacture codes of the object.
 func (obj *SuperObject) GetManufacturerCode() (uint, error) {
 	return obj.GetPropertyIntegerData(ObjectManufacturerCode)
 }
