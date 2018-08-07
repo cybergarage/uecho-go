@@ -4,6 +4,10 @@
 
 package uecho
 
+const (
+	NodeManufacturerUnknown = ObjectManufacturerUnknown
+)
+
 // Node is an interface for Echonet node.
 type Node interface {
 	// AddDevice adds a new device into the node.

@@ -13,14 +13,16 @@ import (
 // LocalNode is an instance for Echonet node.
 type LocalNode struct {
 	*baseNode
-	server *server
+	manufacturerCode uint
+	server           *server
 }
 
 // NewLocalNode returns a new node.
 func NewLocalNode() *LocalNode {
 	node := &LocalNode{
-		baseNode: newBaseNode(),
-		server:   newServer(),
+		baseNode:         newBaseNode(),
+		server:           newServer(),
+		manufacturerCode: NodeManufacturerUnknown,
 	}
 
 	node.AddProfile(NewLocalNodeProfile())
@@ -29,23 +31,39 @@ func NewLocalNode() *LocalNode {
 	return node
 }
 
-// AddDevice adds a new device into the node.
+// SetManufacturerCode sets a manufacture codes to the node.
+func (node *LocalNode) SetManufacturerCode(code uint) {
+	node.manufacturerCode = code
+}
+
+// GetManufacturerCode return the manufacture codes of the node.
+func (node *LocalNode) GetManufacturerCode() uint {
+	return node.manufacturerCode
+}
+
+// AddDevice adds a new device into the node, and set the node profile and manufacture code.
 func (node *LocalNode) AddDevice(dev *Device) error {
 	err := node.baseNode.AddDevice(dev)
 	if err != nil {
 		return err
 	}
+
+	dev.SetManufacturerCode(node.manufacturerCode)
 	dev.SetParentNode(node)
+
 	return node.updateNodeProfile()
 }
 
-// AddProfile adds a new profile object into the node.
+// AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
 func (node *LocalNode) AddProfile(prof *Profile) error {
 	err := node.baseNode.AddProfile(prof)
 	if err != nil {
 		return err
 	}
+
+	prof.SetManufacturerCode(node.manufacturerCode)
 	prof.SetParentNode(node)
+
 	return node.updateNodeProfile()
 }
 
