@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	errorObjectNotFound              = "Object (%d) not found"
+	errorObjectNotFound              = "Object (%X) not found"
 	errorObjectProfileObjectNotFound = "Object profile object not found"
 )
 
@@ -63,7 +63,8 @@ func (node *baseNode) GetProfiles() []*Profile {
 // GetProfileByCode returns a specified profile object.
 func (node *baseNode) GetProfileByCode(code uint) (*Profile, error) {
 	for _, prof := range node.profiles {
-		if prof.GetCode() == code {
+		objCode := prof.GetCode()
+		if objCode == code {
 			return prof, nil
 		}
 	}
@@ -72,7 +73,11 @@ func (node *baseNode) GetProfileByCode(code uint) (*Profile, error) {
 
 // GetNodeProfile returns a node profile in the node.
 func (node *baseNode) GetNodeProfile() (*Profile, error) {
-	return node.GetProfileByCode(NodeProfileObject)
+	prof, err := node.GetProfileByCode(NodeProfileObject)
+	if err == nil {
+		return prof, nil
+	}
+	return node.GetProfileByCode(NodeProfileObjectReadOnly)
 }
 
 // GetObjectByCode returns a specified object.

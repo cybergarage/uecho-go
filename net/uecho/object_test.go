@@ -6,6 +6,8 @@ package uecho
 
 import (
 	"testing"
+
+	"github.com/cybergarage/uecho-go/net/uecho/encoding"
 )
 
 const (
@@ -15,4 +17,19 @@ const (
 
 func TestNewObject(t *testing.T) {
 	NewObject()
+}
+
+func TestObjectCodes(t *testing.T) {
+	objCodes := []uint{
+		NodeProfileObject,
+		NodeProfileObjectReadOnly,
+	}
+
+	objCodeBytes := make([]byte, 3)
+	for n, objCode := range objCodes {
+		encoding.IntegerToByte(objCode, objCodeBytes)
+		if objCode != encoding.ByteToInteger(objCodeBytes) {
+			t.Errorf("[%d] : %X != %X", n, encoding.ByteToInteger(objCodeBytes), objCode)
+		}
+	}
 }
