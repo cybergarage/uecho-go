@@ -13,8 +13,9 @@ import (
 // LocalNode is an instance for Echonet node.
 type LocalNode struct {
 	*baseNode
+	*server
+	lastTID          uint
 	manufacturerCode uint
-	server           *server
 }
 
 // NewLocalNode returns a new node.
@@ -23,6 +24,7 @@ func NewLocalNode() *LocalNode {
 		baseNode:         newBaseNode(),
 		server:           newServer(),
 		manufacturerCode: NodeManufacturerUnknown,
+		lastTID:          TIDMin,
 	}
 
 	node.AddProfile(NewLocalNodeProfile())
@@ -39,6 +41,16 @@ func (node *LocalNode) SetManufacturerCode(code uint) {
 // GetManufacturerCode return the manufacture codes of the node.
 func (node *LocalNode) GetManufacturerCode() uint {
 	return node.manufacturerCode
+}
+
+// getNextTID returns a next TID.
+func (node *LocalNode) getNextTID() uint {
+	if TIDMax <= node.lastTID {
+		node.lastTID = TIDMin
+	} else {
+		node.lastTID++
+	}
+	return node.lastTID
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
@@ -83,6 +95,7 @@ func (node *LocalNode) GetPort() int {
 
 // AnnounceMessage announces a message.
 func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
+	msg.SetTID(node.getNextTID())
 	return node.server.NotifyMessage(msg)
 }
 
