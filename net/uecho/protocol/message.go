@@ -380,3 +380,8 @@ func (msg *Message) Bytes() []byte {
 
 	return msgBytes
 }
+
+// String return the string .
+func (msg *Message) String() string {
+	return string(msg.Bytes())
+}
