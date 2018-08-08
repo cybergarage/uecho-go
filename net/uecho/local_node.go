@@ -90,7 +90,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
-	msg.SetSourceObjectCode(NodeProfileObject)
+	msg.SetSourceObjectCode(NodeProfileObjectReadOnly)
 	msg.SetDestinationObjectCode(NodeProfileObject)
 	msg.AddProperty(prop.toProtocolProperty())
 
@@ -121,6 +121,11 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 // Start starts the node.
 func (node *LocalNode) Start() error {
 	err := node.server.Start()
+	if err != nil {
+		return err
+	}
+
+	err = node.Announce()
 	if err != nil {
 		return err
 	}

@@ -43,6 +43,13 @@ func newTestSampleNode() (*testSampleNode, error) {
 }
 
 func TestNewSampleNode(t *testing.T) {
+	ctrl := NewController()
+	err := ctrl.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	node, err := newTestSampleNode()
 	if err != nil {
 		t.Error(err)
@@ -52,10 +59,19 @@ func TestNewSampleNode(t *testing.T) {
 	err = node.Start()
 	if err != nil {
 		t.Error(err)
+		err = ctrl.Stop()
+		if err != nil {
+			t.Error(err)
+		}
 		return
 	}
 
 	err = node.Stop()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = ctrl.Stop()
 	if err != nil {
 		t.Error(err)
 	}
