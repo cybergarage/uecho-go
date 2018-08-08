@@ -41,9 +41,10 @@ func (node *baseNode) GetDevices() []*Device {
 
 // GetDeviceByCode returns a specified device object.
 func (node *baseNode) GetDeviceByCode(code uint) (*Device, error) {
-	for _, obj := range node.devices {
-		if obj.GetCode() == code {
-			return obj, nil
+	for _, dev := range node.devices {
+		objCode := dev.GetCode()
+		if objCode == code {
+			return dev, nil
 		}
 	}
 	return nil, fmt.Errorf(errorObjectNotFound, code)
@@ -83,12 +84,12 @@ func (node *baseNode) GetNodeProfile() (*Profile, error) {
 // GetObjectByCode returns a specified object.
 func (node *baseNode) GetObjectByCode(code uint) (*Object, error) {
 	dev, err := node.GetDeviceByCode(code)
-	if err != nil {
+	if err == nil {
 		return dev.Object, nil
 	}
 
 	prof, err := node.GetProfileByCode(code)
-	if err != nil {
+	if err == nil {
 		return prof.Object, nil
 	}
 
