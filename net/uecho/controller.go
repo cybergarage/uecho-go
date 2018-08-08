@@ -20,19 +20,17 @@ type ControllerListener interface {
 
 // Controller is an instance for Echonet controller.
 type Controller struct {
-	node       *LocalNode
+	*LocalNode
 	foundNodes []Node
 
-	lastTID  uint
 	listener ControllerListener
 }
 
 // NewController returns a new contorller.
 func NewController() *Controller {
 	ctrl := &Controller{
-		node:       NewLocalNode(),
+		LocalNode:  NewLocalNode(),
 		foundNodes: make([]Node, 0),
-		lastTID:    TIDMin,
 		listener:   nil,
 	}
 	return ctrl
@@ -46,26 +44,6 @@ func (ctrl *Controller) SetListener(l ControllerListener) {
 // GetNodes returns found nodes
 func (ctrl *Controller) GetNodes() []Node {
 	return ctrl.foundNodes
-}
-
-// getNextTID returns a next TID.
-func (ctrl *Controller) getNextTID() uint {
-	if TIDMax <= ctrl.lastTID {
-		ctrl.lastTID = TIDMin
-	} else {
-		ctrl.lastTID++
-	}
-	return ctrl.lastTID
-}
-
-// AnnounceMessage announces a message.
-func (ctrl *Controller) AnnounceMessage(msg *protocol.Message) error {
-	nodeProf, err := ctrl.node.GetNodeProfile()
-	if err != nil {
-		return err
-	}
-	msg.SetTID(ctrl.getNextTID())
-	return nodeProf.AnnounceMessage(msg)
 }
 
 // SearchAllObjectsWithESV searches all specified objects.
@@ -106,7 +84,7 @@ func (ctrl *Controller) Start() error {
 		return err
 	}
 
-	err = ctrl.node.Start()
+	err = ctrl.LocalNode.Start()
 	if err != nil {
 		return err
 	}
@@ -116,7 +94,7 @@ func (ctrl *Controller) Start() error {
 
 // Stop stop the controller.
 func (ctrl *Controller) Stop() error {
-	err := ctrl.node.Stop()
+	err := ctrl.LocalNode.Stop()
 	if err != err {
 		return nil
 	}
