@@ -5,7 +5,13 @@
 package uecho
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
+)
+
+const (
+	errorInvalidNotificationMessage = "Invalid Notification Message : %s"
 )
 
 // RemoteNode is an instance for Echonet node.
@@ -31,6 +37,58 @@ func NewRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
 	node := NewRemoteNode()
 	node.SetAddress(msg.From.String())
 	return node
+}
+
+// NewRemoteNodeWithNotificationMessage returns a new node with the specified notification message.
+func NewRemoteNodeWithNotificationMessage(msg *protocol.Message) (*RemoteNode, error) {
+	msgOPC := msg.GetOPC()
+	if msgOPC < 1 {
+		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+	}
+
+	prop := msg.GetProperty(0)
+	if prop == nil {
+		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+	}
+
+	if prop.GetCode() != NodeProfileClassInstanceListNotification {
+		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+	}
+
+	propData := prop.GetData()
+	propSize := len(propData)
+	if propSize <= 0 {
+		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+	}
+
+	instanceCount := int(propData[0])
+	if propSize < ((instanceCount * ObjectCodeSize) + 1) {
+		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+	}
+
+	// Create a new remote Node
+
+	node := NewRemoteNode()
+	node.SetAddress(msg.From.String())
+
+	for n := 0; n < instanceCount; n++ {
+		objCodes := make([]byte, ObjectCodeSize)
+		copy(objCodes, propData[((n*ObjectCodeSize)+1):])
+		obj, err := NewObjectWithCodes(objCodes)
+		if err != nil {
+			return nil, err
+		}
+		switch obj.(type) {
+		case (*Device):
+			dev, _ := obj.(*Device)
+			node.AddDevice(dev)
+		case (*Profile):
+			prof, _ := obj.(*Profile)
+			node.AddProfile(prof)
+		}
+	}
+
+	return node, nil
 }
 
 // SetAddress set the address to the node.
