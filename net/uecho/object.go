@@ -31,14 +31,6 @@ type Object struct {
 	parentNode *LocalNode
 }
 
-// isProfileObjectCode returns true when the class group code is the profile code, otherwise false.
-func isProfileObjectCode(code byte) bool {
-	if code != ProfileClassGroupCode {
-		return false
-	}
-	return true
-}
-
 // NewObject returns a new object.
 func NewObject() *Object {
 	obj := &Object{
