@@ -30,6 +30,8 @@ func IsWriteRequest(esv ESV) bool {
 	switch esv {
 	case ESVWriteRequest:
 		return true
+	case ESVWriteRequestResponseRequired:
+		return true
 	case ESVWriteReadRequest:
 		return true
 	}
@@ -39,7 +41,7 @@ func IsWriteRequest(esv ESV) bool {
 // IsReadRequest returns true whether the message is a read request type, otherwise false.
 func IsReadRequest(esv ESV) bool {
 	switch esv {
-	case ESVReadResponse:
+	case ESVReadRequest:
 		return true
 	case ESVWriteReadRequest:
 		return true
@@ -52,7 +54,40 @@ func IsNotificationRequest(esv ESV) bool {
 	switch esv {
 	case ESVNotificationRequest:
 		return true
+	}
+	return false
+}
+
+// IsWriteResponse returns true whether the message is a write response type, otherwise false.
+func IsWriteResponse(esv ESV) bool {
+	switch esv {
+	case ESVWriteResponse:
+		return true
+	case ESVWriteReadResponse:
+		return true
+	}
+	return false
+}
+
+// IsReadResponse returns true whether the message is a read response type, otherwise false.
+func IsReadResponse(esv ESV) bool {
+	switch esv {
+	case ESVReadResponse:
+		return true
+	case ESVWriteReadResponse:
+		return true
+	}
+	return false
+}
+
+// IsNotificationResponse returns true whether the message is a notification response type, otherwise false.
+func IsNotificationResponse(esv ESV) bool {
+	switch esv {
 	case ESVNotification:
+		return true
+	case ESVNotificationResponseRequired:
+		return true
+	case ESVNotificationResponse:
 		return true
 	}
 	return false
@@ -63,13 +98,11 @@ func IsResponseRequired(esv ESV) bool {
 	switch esv {
 	case ESVReadRequest:
 		return true
+	case ESVWriteReadRequest:
+		return true
 	case ESVWriteRequestResponseRequired:
 		return true
 	case ESVNotificationResponseRequired:
-		return true
-	case ESVReadResponse:
-		return true
-	case ESVWriteReadResponse:
 		return true
 	}
 	return false

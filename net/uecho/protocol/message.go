@@ -188,6 +188,21 @@ func (msg *Message) IsNotificationRequest() bool {
 	return IsNotificationRequest(msg.ESV)
 }
 
+// IsWriteResponse returns true whether the message is a write response type, otherwise false.
+func (msg *Message) IsWriteResponse() bool {
+	return IsWriteResponse(msg.ESV)
+}
+
+// IsReadResponse returns true whether the message is a read response type, otherwise false.
+func (msg *Message) IsReadResponse() bool {
+	return IsReadResponse(msg.ESV)
+}
+
+// IsNotificationResponse returns true whether the message is a notification response type, otherwise false.
+func (msg *Message) IsNotificationResponse() bool {
+	return IsNotificationResponse(msg.ESV)
+}
+
 // IsResponseRequired returns true whether the ESV requires the response, otherwise false.
 func (msg *Message) IsResponseRequired() bool {
 	return IsResponseRequired(msg.ESV)
@@ -195,7 +210,7 @@ func (msg *Message) IsResponseRequired() bool {
 
 // GetSourceAddress returns the source address of the message.
 func (msg *Message) GetSourceAddress() string {
-	return string(msg.From.IP)
+	return msg.From.IP.String()
 }
 
 // GetSourcePort returns the source address of the message.
