@@ -61,6 +61,8 @@ func IsNotificationRequest(esv ESV) bool {
 // IsResponseRequired returns true whether the ESV requires the response, otherwise false.
 func IsResponseRequired(esv ESV) bool {
 	switch esv {
+	case ESVReadRequest:
+		return true
 	case ESVWriteRequestResponseRequired:
 		return true
 	case ESVNotificationResponseRequired:
