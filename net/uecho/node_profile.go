@@ -54,7 +54,7 @@ const (
 func NewLocalNodeProfile() *Profile {
 	prof := NewProfile()
 
-	prof.SetCode(NodeProfileObjectReadOnly)
+	prof.SetCode(NodeProfileObject)
 
 	prof.addNodeProfileMandatoryProperties()
 
