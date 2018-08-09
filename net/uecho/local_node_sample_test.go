@@ -17,6 +17,10 @@ const (
 	testLightPropertyPowerOff  = 0x31
 )
 
+const (
+	errorNodeNotFound = "Node Not Found : %s:%d"
+)
+
 type testSampleNode struct {
 	*LocalNode
 }
@@ -74,6 +78,16 @@ func TestNewSampleNode(t *testing.T) {
 	// Check device
 
 	time.Sleep(time.Second)
+
+	foundNodes := ctrl.GetNodes()
+	if len(foundNodes) <= 0 {
+		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
+	}
+
+	foundNode := foundNodes[0]
+	if !node.Equals(foundNode) {
+		t.Errorf(errorNodeNotFound, foundNode.GetAddress(), foundNode.GetPort())
+	}
 
 	_, err = ctrl.GetObject(testLightDeviceCode)
 	if err != nil {

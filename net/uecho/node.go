@@ -31,4 +31,18 @@ type Node interface {
 	GetAddress() string
 	// GetPort returns the bound address.
 	GetPort() int
+
+	// Equals returns true whether the specified node is same, otherwise false.
+	Equals(Node) bool
+}
+
+// nodeEquals returns true whether the specified node is same, otherwise false.
+func nodeEquals(node1, node2 Node) bool {
+	if node1.GetPort() != node2.GetPort() {
+		return false
+	}
+	if node1.GetAddress() != node2.GetAddress() {
+		return false
+	}
+	return true
 }

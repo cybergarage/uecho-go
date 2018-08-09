@@ -113,12 +113,6 @@ func (node *RemoteNode) GetPort() int {
 }
 
 // Equals returns true whether the specified node is same, otherwise false.
-func (node *RemoteNode) Equals(otherNode *RemoteNode) bool {
-	if node.GetPort() != otherNode.GetPort() {
-		return true
-	}
-	if node.GetAddress() != otherNode.GetAddress() {
-		return true
-	}
-	return false
+func (node *RemoteNode) Equals(otherNode Node) bool {
+	return nodeEquals(node, otherNode)
 }
