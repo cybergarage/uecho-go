@@ -35,7 +35,7 @@ func NewRemoteNode() *RemoteNode {
 // NewRemoteNodeWithRequestMessage returns a new node with the specified request message.
 func NewRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
 	node := NewRemoteNode()
-	node.SetAddress(msg.From.String())
+	node.SetAddress(msg.From.IP.String())
 	node.SetPort(msg.From.Port)
 	return node
 }
