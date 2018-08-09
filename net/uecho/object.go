@@ -12,12 +12,14 @@ import (
 )
 
 const (
+	errorInvalidObjectCodes = "Invalid Object Code : %s"
 	errorParentNodeNotFound = "Parent node not found"
 )
 
 const (
 	ObjectCodeMin     = 0x000000
 	ObjectCodeMax     = 0xFFFFFF
+	ObjectCodeSize    = 3
 	ObjectCodeUnknown = ObjectCodeMin
 )
 
@@ -29,11 +31,19 @@ type Object struct {
 	parentNode *LocalNode
 }
 
+// isProfileObjectCode returns true when the class group code is the profile code, otherwise false.
+func isProfileObjectCode(code byte) bool {
+	if code != ProfileClassGroupCode {
+		return false
+	}
+	return true
+}
+
 // NewObject returns a new object.
 func NewObject() *Object {
 	obj := &Object{
 		PropertyMap: NewPropertyMap(),
-		Code:        make([]byte, 3),
+		Code:        make([]byte, ObjectCodeSize),
 		listeners:   make([]ObjectListener, 0),
 		parentNode:  nil,
 	}
@@ -41,6 +51,23 @@ func NewObject() *Object {
 	obj.SetParentObject(obj)
 
 	return obj
+}
+
+// NewObjectWithCodes returns a new object of the specified object codes.
+func NewObjectWithCodes(codes []byte) (interface{}, error) {
+	if len(codes) != ObjectCodeSize {
+		return nil, fmt.Errorf(errorInvalidObjectCodes, string(codes))
+	}
+
+	if isProfileObjectCode(codes[0]) {
+		obj := NewProfile()
+		obj.SetCodes(codes)
+		return obj, nil
+	}
+
+	obj := NewDevice()
+	obj.SetCodes(codes)
+	return obj, nil
 }
 
 // SetCode sets a code to the object
@@ -51,6 +78,11 @@ func (obj *Object) SetCode(code uint) {
 // GetCode returns the code.
 func (obj *Object) GetCode() uint {
 	return encoding.ByteToInteger(obj.Code)
+}
+
+// SetCodes sets codes to the object
+func (obj *Object) SetCodes(codes []byte) {
+	copy(obj.Code, codes)
 }
 
 // GetCodes returns the code byte array.
@@ -111,10 +143,7 @@ func (obj *Object) IsDevice() bool {
 
 // IsProfile returns true when the class group code is the profile code, otherwise false.
 func (obj *Object) IsProfile() bool {
-	if obj.Code[0] != ProfileClassGroupCode {
-		return false
-	}
-	return true
+	return isProfileObjectCode(obj.Code[0])
 }
 
 // SetParentNode sets a parent node.

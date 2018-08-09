@@ -4,7 +4,10 @@
 
 package uecho
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 const (
 	testNodeManufacturerCode   = NodeManufacturerUnknown + 1
@@ -44,13 +47,16 @@ func newTestSampleNode() (*testSampleNode, error) {
 
 func TestNewSampleNode(t *testing.T) {
 	ctrl := NewController()
-	err := ctrl.Start()
+
+	node, err := newTestSampleNode()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	node, err := newTestSampleNode()
+	// Start
+
+	err = ctrl.Start()
 	if err != nil {
 		t.Error(err)
 		return
@@ -65,6 +71,16 @@ func TestNewSampleNode(t *testing.T) {
 		}
 		return
 	}
+	// Check device
+
+	time.Sleep(time.Second)
+
+	_, err = ctrl.GetObject(testLightDeviceCode)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Finalize
 
 	err = node.Stop()
 	if err != nil {
@@ -75,4 +91,5 @@ func TestNewSampleNode(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 }

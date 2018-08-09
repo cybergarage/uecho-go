@@ -69,7 +69,8 @@ func NewRemoteNodeWithNotificationMessage(msg *protocol.Message) (*RemoteNode, e
 	// Create a new remote Node
 
 	node := NewRemoteNode()
-	node.SetAddress(msg.From.String())
+	node.SetAddress(msg.GetSourceAddress())
+	node.SetPort(msg.GetSourcePort())
 
 	for n := 0; n < instanceCount; n++ {
 		objCodes := make([]byte, ObjectCodeSize)
@@ -109,4 +110,15 @@ func (node *RemoteNode) SetPort(port int) {
 // GetPort returns the port of the node.
 func (node *RemoteNode) GetPort() int {
 	return node.Port
+}
+
+// Equals returns true whether the specified node is same, otherwise false.
+func (node *RemoteNode) Equals(otherNode *RemoteNode) bool {
+	if node.GetPort() != otherNode.GetPort() {
+		return true
+	}
+	if node.GetAddress() != otherNode.GetAddress() {
+		return true
+	}
+	return false
 }

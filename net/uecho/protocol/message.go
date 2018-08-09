@@ -193,9 +193,9 @@ func (msg *Message) IsResponseRequired() bool {
 	return IsResponseRequired(msg.ESV)
 }
 
-// GetSourceIP returns the source address of the message.
-func (msg *Message) GetSourceIP() net.IP {
-	return msg.From.IP
+// GetSourceAddress returns the source address of the message.
+func (msg *Message) GetSourceAddress() string {
+	return string(msg.From.IP)
 }
 
 // GetSourcePort returns the source address of the message.

@@ -32,7 +32,7 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 
 	// (A) Processing when the controlled object does not exist
 
-	dstObj, err := node.GetObjectByCode(msgDstObjCode)
+	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
 		return
 	}

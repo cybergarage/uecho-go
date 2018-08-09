@@ -39,8 +39,8 @@ func (node *baseNode) GetDevices() []*Device {
 	return node.devices
 }
 
-// GetDeviceByCode returns a specified device object.
-func (node *baseNode) GetDeviceByCode(code uint) (*Device, error) {
+// GetDevice returns a specified device object.
+func (node *baseNode) GetDevice(code uint) (*Device, error) {
 	for _, dev := range node.devices {
 		objCode := dev.GetCode()
 		if objCode == code {
@@ -61,8 +61,8 @@ func (node *baseNode) GetProfiles() []*Profile {
 	return node.profiles
 }
 
-// GetProfileByCode returns a specified profile object.
-func (node *baseNode) GetProfileByCode(code uint) (*Profile, error) {
+// GetProfile returns a specified profile object.
+func (node *baseNode) GetProfile(code uint) (*Profile, error) {
 	for _, prof := range node.profiles {
 		objCode := prof.GetCode()
 		if objCode == code {
@@ -74,21 +74,21 @@ func (node *baseNode) GetProfileByCode(code uint) (*Profile, error) {
 
 // GetNodeProfile returns a node profile in the node.
 func (node *baseNode) GetNodeProfile() (*Profile, error) {
-	prof, err := node.GetProfileByCode(NodeProfileObject)
+	prof, err := node.GetProfile(NodeProfileObject)
 	if err == nil {
 		return prof, nil
 	}
-	return node.GetProfileByCode(NodeProfileObjectReadOnly)
+	return node.GetProfile(NodeProfileObjectReadOnly)
 }
 
-// GetObjectByCode returns a specified object.
-func (node *baseNode) GetObjectByCode(code uint) (*Object, error) {
-	dev, err := node.GetDeviceByCode(code)
+// GetObject returns a specified object.
+func (node *baseNode) GetObject(code uint) (*Object, error) {
+	dev, err := node.GetDevice(code)
 	if err == nil {
 		return dev.Object, nil
 	}
 
-	prof, err := node.GetProfileByCode(code)
+	prof, err := node.GetProfile(code)
 	if err == nil {
 		return prof.Object, nil
 	}

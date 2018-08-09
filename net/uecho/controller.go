@@ -5,6 +5,8 @@
 package uecho
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
@@ -21,7 +23,7 @@ type ControllerListener interface {
 // Controller is an instance for Echonet controller.
 type Controller struct {
 	*LocalNode
-	foundNodes []Node
+	foundNodes []*RemoteNode
 
 	listener ControllerListener
 }
@@ -30,9 +32,12 @@ type Controller struct {
 func NewController() *Controller {
 	ctrl := &Controller{
 		LocalNode:  NewLocalNode(),
-		foundNodes: make([]Node, 0),
+		foundNodes: make([]*RemoteNode, 0),
 		listener:   nil,
 	}
+
+	ctrl.SetMessageListener(ctrl)
+
 	return ctrl
 }
 
@@ -41,9 +46,55 @@ func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.listener = l
 }
 
+// addNode adds a specified node if the node is not added.
+func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
+	for _, node := range ctrl.foundNodes {
+		if notifyNode.Equals(node) {
+			return false
+		}
+	}
+
+	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
+
+	return true
+}
+
 // GetNodes returns found nodes
-func (ctrl *Controller) GetNodes() []Node {
+func (ctrl *Controller) GetNodes() []*RemoteNode {
 	return ctrl.foundNodes
+}
+
+// GetObject returns the specified object.
+func (ctrl *Controller) GetObject(code uint) (*Object, error) {
+	for _, node := range ctrl.GetNodes() {
+		obj, err := node.GetObject(code)
+		if err == nil {
+			return obj, nil
+		}
+	}
+	return nil, fmt.Errorf(errorObjectNotFound, code)
+}
+
+// GetDevice returns the specified device object.
+func (ctrl *Controller) GetDevice(code uint) (*Device, error) {
+	for _, node := range ctrl.GetNodes() {
+		dev, err := node.GetDevice(code)
+		if err == nil {
+			return dev, nil
+		}
+	}
+	return nil, fmt.Errorf(errorObjectNotFound, code)
+}
+
+// GetProfile returns the specified profile object.
+func (ctrl *Controller) GetProfile(code uint) (*Profile, error) {
+	for _, node := range ctrl.GetNodes() {
+		prof, err := node.GetProfile(code)
+		if err == nil {
+			return prof, nil
+		}
+	}
+	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
 // SearchAllObjectsWithESV searches all specified objects.
@@ -73,7 +124,7 @@ func (ctrl *Controller) SearchObject(code uint) error {
 
 // Clear clears all found nodes.
 func (ctrl *Controller) Clear() error {
-	ctrl.foundNodes = make([]Node, 0)
+	ctrl.foundNodes = make([]*RemoteNode, 0)
 	return nil
 }
 
@@ -100,4 +151,22 @@ func (ctrl *Controller) Stop() error {
 	}
 
 	return nil
+}
+
+// MessageReceived is an override message listener of LocalNode to get the announce messages.
+func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
+	msgESV := msg.GetESV()
+	switch msgESV {
+	case protocol.ESVNotification:
+		ctrl.parseNotificationMessage(msg)
+	}
+}
+
+// parseNotificationMessage parses the specified message to check new objects.
+func (ctrl *Controller) parseNotificationMessage(msg *protocol.Message) {
+	node, err := NewRemoteNodeWithNotificationMessage(msg)
+	if err != nil {
+		return
+	}
+	ctrl.addNode(node)
 }
