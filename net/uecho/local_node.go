@@ -158,6 +158,11 @@ func (node *LocalNode) Stop() error {
 	return nil
 }
 
+// Equals returns true whether the specified node is same, otherwise false.
+func (node *LocalNode) Equals(otherNode Node) bool {
+	return nodeEquals(node, otherNode)
+}
+
 // updateNodeProfile updates the node profile in the node.
 func (node *LocalNode) updateNodeProfile() error {
 	nodeProf, err := node.GetNodeProfile()
