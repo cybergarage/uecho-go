@@ -46,19 +46,6 @@ func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.listener = l
 }
 
-// addNode adds a specified node if the node is not added.
-func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
-	for _, node := range ctrl.foundNodes {
-		if notifyNode.Equals(node) {
-			return false
-		}
-	}
-
-	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
-
-	return true
-}
-
 // GetNodes returns found nodes
 func (ctrl *Controller) GetNodes() []*RemoteNode {
 	return ctrl.foundNodes
@@ -168,5 +155,23 @@ func (ctrl *Controller) parseNotificationMessage(msg *protocol.Message) {
 	if err != nil {
 		return
 	}
+
+	if node.Equals(ctrl) {
+		return
+	}
+
 	ctrl.addNode(node)
+}
+
+// addNode adds a specified node if the node is not added.
+func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
+	for _, node := range ctrl.foundNodes {
+		if notifyNode.Equals(node) {
+			return false
+		}
+	}
+
+	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
+
+	return true
 }
