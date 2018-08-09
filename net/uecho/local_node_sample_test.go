@@ -4,11 +4,6 @@
 
 package uecho
 
-import (
-	"testing"
-	"time"
-)
-
 const (
 	testNodeManufacturerCode   = NodeManufacturerUnknown + 1
 	testLightDeviceCode        = 0x029101
@@ -47,63 +42,4 @@ func newTestSampleNode() (*testSampleNode, error) {
 	}
 
 	return node, nil
-}
-
-func TestNewSampleNode(t *testing.T) {
-	ctrl := NewController()
-
-	node, err := newTestSampleNode()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	// Start
-
-	err = ctrl.Start()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = node.Start()
-	if err != nil {
-		t.Error(err)
-		err = ctrl.Stop()
-		if err != nil {
-			t.Error(err)
-		}
-		return
-	}
-	// Check device
-
-	time.Sleep(time.Second)
-
-	foundNodes := ctrl.GetNodes()
-	if len(foundNodes) <= 0 {
-		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
-	}
-
-	foundNode := foundNodes[0]
-	if !node.Equals(foundNode) {
-		t.Errorf(errorNodeNotFound, foundNode.GetAddress(), foundNode.GetPort())
-	}
-
-	_, err = ctrl.GetObject(testLightDeviceCode)
-	if err != nil {
-		t.Error(err)
-	}
-
-	// Finalize
-
-	err = node.Stop()
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = ctrl.Stop()
-	if err != nil {
-		t.Error(err)
-	}
-
 }

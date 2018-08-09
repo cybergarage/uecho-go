@@ -139,39 +139,3 @@ func (ctrl *Controller) Stop() error {
 
 	return nil
 }
-
-// MessageReceived is an override message listener of LocalNode to get the announce messages.
-func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
-	msgESV := msg.GetESV()
-	switch msgESV {
-	case protocol.ESVNotification:
-		ctrl.parseNotificationMessage(msg)
-	}
-}
-
-// parseNotificationMessage parses the specified message to check new objects.
-func (ctrl *Controller) parseNotificationMessage(msg *protocol.Message) {
-	node, err := NewRemoteNodeWithNotificationMessage(msg)
-	if err != nil {
-		return
-	}
-
-	if node.Equals(ctrl) {
-		return
-	}
-
-	ctrl.addNode(node)
-}
-
-// addNode adds a specified node if the node is not added.
-func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
-	for _, node := range ctrl.foundNodes {
-		if notifyNode.Equals(node) {
-			return false
-		}
-	}
-
-	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
-
-	return true
-}

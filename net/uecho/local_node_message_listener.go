@@ -67,9 +67,11 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 			return
 		}
 		// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
-		if msgProp.Size() != prop.Size() {
-			node.postImpossibleResponse(msg)
-			return
+		if protocol.IsWriteRequest(msgESV) {
+			if msgProp.Size() != prop.Size() {
+				node.postImpossibleResponse(msg)
+				return
+			}
 		}
 	}
 
