@@ -103,7 +103,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
-	msg.SetSourceObjectCode(NodeProfileObjectReadOnly)
+	msg.SetSourceObjectCode(prop.GetParentObject().GetCode())
 	msg.SetDestinationObjectCode(NodeProfileObject)
 	msg.AddProperty(prop.toProtocolProperty())
 
@@ -112,6 +112,8 @@ func (node *LocalNode) AnnounceProperty(prop *Property) error {
 
 // Announce announces the node
 func (node *LocalNode) Announce() error {
+	//4.3.1 Basic Sequence for ECHONET Lite Node Startup
+
 	nodePropObj, err := node.GetNodeProfile()
 	if err != nil {
 		return err
