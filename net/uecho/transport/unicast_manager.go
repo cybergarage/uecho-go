@@ -122,9 +122,16 @@ func (mgr *UnicastManager) Stop() error {
 }
 
 func (mgr *UnicastManager) Write(addr string, port int, b []byte) (int, error) {
-	if 0 < len(mgr.Servers) {
-		server := mgr.Servers[0]
-		return server.Socket.Write(addr, port, b)
+	var lastErr error
+	for _, server := range mgr.Servers {
+		n, err := server.Socket.Write(addr, port, b)
+		if err == nil {
+			return n, nil
+		}
+		lastErr = err
+	}
+	if lastErr != nil {
+		return 0, lastErr
 	}
 	return 0, fmt.Errorf(errorServerNotRunning)
 }
