@@ -95,6 +95,7 @@ func (mgr *UnicastManager) Start() error {
 		}
 
 		if lastErr == nil {
+			mgr.SetPort(port)
 			break
 		}
 	}
