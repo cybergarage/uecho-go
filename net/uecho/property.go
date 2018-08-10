@@ -58,6 +58,13 @@ func NewProperty() *Property {
 	return prop
 }
 
+// NewPropertyWithCode returns a new property.
+func NewPropertyWithCode(code PropertyCode) *Property {
+	prop := NewProperty()
+	prop.SetCode(code)
+	return prop
+}
+
 // SetParentObject sets a parent object into the property.
 func (prop *Property) SetParentObject(obj *Object) {
 	prop.ParentObject = obj
