@@ -28,7 +28,7 @@ type Object struct {
 	*PropertyMap
 	Code       []byte
 	listeners  []ObjectListener
-	parentNode *LocalNode
+	parentNode Node
 }
 
 // NewObject returns a new object.
@@ -139,12 +139,12 @@ func (obj *Object) IsProfile() bool {
 }
 
 // SetParentNode sets a parent node.
-func (obj *Object) SetParentNode(node *LocalNode) {
+func (obj *Object) SetParentNode(node Node) {
 	obj.parentNode = node
 }
 
 // GetParentNode returns a parent node.
-func (obj *Object) GetParentNode() *LocalNode {
+func (obj *Object) GetParentNode() Node {
 	return obj.parentNode
 }
 
@@ -163,28 +163,4 @@ func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Proper
 	for _, l := range obj.listeners {
 		l.PropertyRequestReceived(obj, esv, prop)
 	}
-}
-
-// AnnounceMessage announces a message.
-func (obj *Object) AnnounceMessage(msg *protocol.Message) error {
-	if obj.parentNode == nil {
-		return fmt.Errorf(errorParentNodeNotFound)
-	}
-	msg.SetSourceObjectCode(obj.GetCode())
-	return obj.parentNode.AnnounceMessage(msg)
-}
-
-// SendMessage send a message to the node of the destination object.
-func (obj *Object) SendMessage(dstObj *Object, msg *protocol.Message) error {
-	parentNode := obj.GetParentNode()
-	dstParentNode := dstObj.GetParentNode()
-
-	if parentNode == nil || dstParentNode == nil {
-		return nil
-	}
-
-	msg.SetSourceObjectCode(obj.GetCode())
-	msg.SetDestinationObjectCode(dstObj.GetCode())
-
-	return parentNode.SendMessage(dstParentNode, msg)
 }
