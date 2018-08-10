@@ -76,7 +76,7 @@ func (prop *Property) GetParentObject() *Object {
 }
 
 // GetNode returns a parent node of the parent object.
-func (prop *Property) GetNode() *LocalNode {
+func (prop *Property) GetNode() Node {
 	parentObj := prop.GetParentObject()
 	if parentObj == nil {
 		return nil
@@ -209,7 +209,7 @@ func (prop *Property) SetData(data []byte) {
 	// (D) Basic sequence for autonomous notification.
 
 	if prop.IsAnnouncement() {
-		prop.Announce()
+		prop.announce()
 	}
 }
 
@@ -246,10 +246,10 @@ func (prop *Property) GetIntegerData() (uint, error) {
 	return encoding.ByteToInteger(prop.GetData()), nil
 }
 
-// Announce announces the property.
-func (prop *Property) Announce() error {
-	parentNode := prop.GetNode()
-	if parentNode == nil {
+// announce announces the property.
+func (prop *Property) announce() error {
+	parentNode, ok := prop.GetNode().(*LocalNode)
+	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
 	}
 	return parentNode.AnnounceProperty(prop)

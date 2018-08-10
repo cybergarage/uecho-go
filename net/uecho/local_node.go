@@ -5,15 +5,14 @@
 package uecho
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/uecho-go/net/uecho/protocol"
+	"sync"
 )
 
 // LocalNode is an instance for Echonet node.
 type LocalNode struct {
 	*baseNode
 	*server
+	*sync.Mutex
 	lastTID          uint
 	manufacturerCode uint
 }
@@ -23,6 +22,7 @@ func NewLocalNode() *LocalNode {
 	node := &LocalNode{
 		baseNode:         newBaseNode(),
 		server:           newServer(),
+		Mutex:            new(sync.Mutex),
 		manufacturerCode: NodeManufacturerUnknown,
 		lastTID:          TIDMin,
 	}
@@ -91,46 +91,6 @@ func (node *LocalNode) GetAddress() string {
 // GetPort returns the bound address.
 func (node *LocalNode) GetPort() int {
 	return node.server.GetPort()
-}
-
-// AnnounceMessage announces a message.
-func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
-	msg.SetTID(node.getNextTID())
-	return node.server.NotifyMessage(msg)
-}
-
-// AnnounceProperty announces a specified property.
-func (node *LocalNode) AnnounceProperty(prop *Property) error {
-	msg := protocol.NewMessage()
-	msg.SetESV(protocol.ESVNotification)
-	msg.SetSourceObjectCode(prop.GetParentObject().GetCode())
-	msg.SetDestinationObjectCode(NodeProfileObject)
-	msg.AddProperty(prop.toProtocolProperty())
-
-	return node.AnnounceMessage(msg)
-}
-
-// Announce announces the node
-func (node *LocalNode) Announce() error {
-	//4.3.1 Basic Sequence for ECHONET Lite Node Startup
-
-	nodePropObj, err := node.GetNodeProfile()
-	if err != nil {
-		return err
-	}
-
-	nodeProp, ok := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
-	if !ok {
-		return fmt.Errorf(errorObjectProfileObjectNotFound)
-	}
-
-	return node.AnnounceProperty(nodeProp)
-}
-
-// SendMessage send a message to the node
-func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
-	_, err := node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
-	return err
 }
 
 // Start starts the node.
