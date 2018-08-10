@@ -6,6 +6,8 @@ package uecho
 
 import (
 	"sync"
+
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 // LocalNode is an instance for Echonet node.
@@ -15,6 +17,7 @@ type LocalNode struct {
 	*sync.Mutex
 	lastTID          uint
 	manufacturerCode uint
+	responseCh       chan *protocol.Message
 }
 
 // NewLocalNode returns a new node.
@@ -25,6 +28,7 @@ func NewLocalNode() *LocalNode {
 		Mutex:            new(sync.Mutex),
 		manufacturerCode: NodeManufacturerUnknown,
 		lastTID:          TIDMin,
+		responseCh:       nil,
 	}
 
 	node.AddProfile(NewLocalNodeProfile())
