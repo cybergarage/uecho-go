@@ -4,7 +4,14 @@
 
 package transport
 
-import "net"
+import (
+	"fmt"
+	"net"
+)
+
+const (
+	errorMulticastServerNoAvailableInterface = "No available interface"
+)
 
 // A MulticastManager represents a multicast server manager.
 type MulticastManager struct {
@@ -56,20 +63,28 @@ func (mgr *MulticastManager) Start() error {
 		return err
 	}
 
-	var lastErr error
+	mgr.Servers = make([]*MulticastServer, 0)
 
-	mgr.Servers = make([]*MulticastServer, len(ifis))
-	for n, ifi := range ifis {
+	var lastErr error
+	for _, ifi := range ifis {
 		server := NewMulticastServer()
 		server.Listener = mgr.Listener
 		err := server.Start(ifi)
 		if err != nil {
 			lastErr = err
 		}
-		mgr.Servers[n] = server
+		mgr.Servers = append(mgr.Servers, server)
 	}
 
-	return lastErr
+	if lastErr != nil {
+		return lastErr
+	}
+
+	if len(mgr.Servers) <= 0 {
+		return fmt.Errorf(errorMulticastServerNoAvailableInterface)
+	}
+
+	return nil
 }
 
 // Stop stops this server.
