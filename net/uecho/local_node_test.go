@@ -7,6 +7,8 @@ package uecho
 import (
 	"testing"
 	"time"
+
+	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
 func TestNewLocalNode(t *testing.T) {
@@ -61,7 +63,20 @@ func TestNewSampleNode(t *testing.T) {
 
 	// Check a found device
 
-	_, err = ctrl.GetObject(testLightDeviceCode)
+	dev, err := ctrl.GetObject(testLightDeviceCode)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Send requests
+
+	prop := NewPropertyWithCode(testLightPropertyPowerCode)
+	err = ctrl.SendRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
 	if err != nil {
 		t.Error(err)
 	}

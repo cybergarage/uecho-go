@@ -10,6 +10,9 @@ import (
 
 // MessageReceived is a listener for the server
 func (node *LocalNode) MessageReceived(msg *protocol.Message) {
+	if node.responseCh != nil {
+		node.responseCh <- msg
+	}
 	node.executeObjectControl(msg)
 }
 
@@ -101,5 +104,5 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 		}
 		resMsg.AddProperty(prop.toProtocolProperty())
 	}
-	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+	node.responseMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
 }
