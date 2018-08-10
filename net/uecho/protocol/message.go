@@ -5,6 +5,7 @@
 package protocol
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net"
 
@@ -398,5 +399,5 @@ func (msg *Message) Bytes() []byte {
 
 // String return the string .
 func (msg *Message) String() string {
-	return string(msg.Bytes())
+	return hex.EncodeToString(msg.Bytes())
 }
