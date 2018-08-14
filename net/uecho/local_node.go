@@ -5,9 +5,15 @@
 package uecho
 
 import (
+	"fmt"
 	"sync"
+	"time"
 
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
+)
+
+const (
+	DefaultLocalNodeRequestTimeout = time.Second * 30
 )
 
 // LocalNode is an instance for Echonet node.
@@ -15,9 +21,11 @@ type LocalNode struct {
 	*baseNode
 	*server
 	*sync.Mutex
-	lastTID          uint
 	manufacturerCode uint
-	responseCh       chan *protocol.Message
+	lastTID          uint
+	postResponseCh   chan *protocol.Message
+	postRequestMsg   *protocol.Message
+	requestTimeout   time.Duration
 }
 
 // NewLocalNode returns a new node.
@@ -28,7 +36,9 @@ func NewLocalNode() *LocalNode {
 		Mutex:            new(sync.Mutex),
 		manufacturerCode: NodeManufacturerUnknown,
 		lastTID:          TIDMin,
-		responseCh:       nil,
+		postResponseCh:   nil,
+		postRequestMsg:   nil,
+		requestTimeout:   DefaultLocalNodeRequestTimeout,
 	}
 
 	node.AddProfile(NewLocalNodeProfile())
@@ -45,6 +55,16 @@ func (node *LocalNode) SetManufacturerCode(code uint) {
 // GetManufacturerCode return the manufacture codes of the node.
 func (node *LocalNode) GetManufacturerCode() uint {
 	return node.manufacturerCode
+}
+
+// SetRequestTimeout sets a request timeoutto the node.
+func (node *LocalNode) SetRequestTimeout(d time.Duration) {
+	node.requestTimeout = d
+}
+
+// GetRequestTimeout return the request timeout of the node.
+func (node *LocalNode) GetRequestTimeout() time.Duration {
+	return node.requestTimeout
 }
 
 // getNextTID returns a next TID.
@@ -186,4 +206,9 @@ func (node *LocalNode) updateNodeProfile() error {
 	nodeProf.SetClassList(classes)
 
 	return nil
+}
+
+// String returns the node string representation.
+func (node *LocalNode) String() string {
+	return fmt.Sprintf("%s:%d", node.GetAddress(), node.GetPort())
 }

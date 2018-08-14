@@ -10,8 +10,10 @@ import (
 
 // MessageReceived is a listener for the server
 func (node *LocalNode) MessageReceived(msg *protocol.Message) {
-	if node.responseCh != nil {
-		node.responseCh <- msg
+	if node.isResponseMessageWaiting() {
+		if node.isResponseMessage(msg) {
+			node.setResponseMessage(msg)
+		}
 	}
 	node.executeObjectControl(msg)
 }
