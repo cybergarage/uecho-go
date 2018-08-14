@@ -11,12 +11,38 @@ import (
 	"github.com/cybergarage/uecho-go/net/uecho/protocol"
 )
 
+const (
+	errorLocalNodeTestInvalidResponse     = "Invalid Respose : %s"
+	errorLocalNodeTestInvalidPropertyData = "Invalid Respose Status : %X != %X"
+)
+
 func TestNewLocalNode(t *testing.T) {
 	node := NewLocalNode()
 
 	_, err := node.GetNodeProfile()
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Message, powerStatus byte) {
+	resOpc := resMsg.GetOPC()
+	if resOpc == 1 {
+		resProp := resMsg.GetProperty(0)
+		if resProp != nil || (resProp.GetCode() == testLightPropertyPowerCode) {
+			resData := resProp.GetData()
+			if len(resData) == 1 {
+				if resData[0] != powerStatus {
+					t.Errorf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
+				}
+			} else {
+				t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+			}
+		} else {
+			t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		}
+	} else {
+		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 }
 
@@ -82,7 +108,7 @@ func TestNewSampleNode(t *testing.T) {
 		t.Error(err)
 	}
 
-	// Send requests
+	// Send read request
 
 	prop := NewPropertyWithCode(testLightPropertyPowerCode)
 	err = ctrl.SendRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
@@ -90,8 +116,32 @@ func TestNewSampleNode(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+	// Send read request (post)
+
+	prop = NewPropertyWithCode(testLightPropertyPowerCode)
+	resMsg, err := ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+	if err == nil {
+		localNodeCheckResponseMessagePowerStatus(t, resMsg, testLightPropertyInitialPowerStatus)
+	} else {
+		t.Error(err)
+	}
+
+	// Send write request (off -> on)
+
+	prop = NewPropertyWithCode(testLightPropertyPowerCode)
+	prop.SetData([]byte{testLightPropertyPowerOn})
+	err = ctrl.SendRequest(dev.GetParentNode(), dev, protocol.ESVWriteRequest, []*Property{prop})
 	if err != nil {
+		t.Error(err)
+	}
+
+	// Send read request (post)
+
+	prop = NewPropertyWithCode(testLightPropertyPowerCode)
+	resMsg, err = ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+	if err == nil {
+		localNodeCheckResponseMessagePowerStatus(t, resMsg, testLightPropertyPowerOn)
+	} else {
 		t.Error(err)
 	}
 
