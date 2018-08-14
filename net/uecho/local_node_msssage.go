@@ -32,7 +32,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 // AnnounceProperty announces a specified property.
 func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
-	msg.SetESV(protocol.ESVNotificationRequest)
+	msg.SetESV(protocol.ESVNotification)
 	msg.SetSourceObjectCode(prop.GetParentObject().GetCode())
 	msg.AddProperty(prop.toProtocolProperty())
 	return node.AnnounceMessage(msg)

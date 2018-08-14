@@ -62,6 +62,7 @@ func TestNewSampleNode(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer ctrl.Stop()
 
 	ctrlAddr := ctrl.GetAddress()
 	ctrlPort := ctrl.GetPort()
@@ -75,6 +76,7 @@ func TestNewSampleNode(t *testing.T) {
 		}
 		return
 	}
+	defer node.Stop()
 
 	nodeAddr := node.GetAddress()
 	nodePort := node.GetPort()
@@ -99,6 +101,7 @@ func TestNewSampleNode(t *testing.T) {
 		}
 	} else {
 		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
+		return
 	}
 
 	// Check a found device
@@ -106,6 +109,7 @@ func TestNewSampleNode(t *testing.T) {
 	dev, err := ctrl.GetObject(testLightDeviceCode)
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	// Send read request
