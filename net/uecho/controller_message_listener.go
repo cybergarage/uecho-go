@@ -17,6 +17,8 @@ func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
 			ctrl.parseNodeProfileMessage(msg)
 		}
 	}
+
+	ctrl.LocalNode.MessageReceived(msg)
 }
 
 // parseNodeProfileMessage parses the specified message to check new objects.
