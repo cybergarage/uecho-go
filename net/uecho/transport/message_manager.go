@@ -109,3 +109,16 @@ func (mgr *MessageManager) Stop() error {
 
 	return nil
 }
+
+// IsRunning returns true whether the local managers are running, otherwise false.
+func (mgr *MessageManager) IsRunning() bool {
+	if !mgr.unicastMgr.IsRunning() {
+		return false
+	}
+
+	if !mgr.multicastMgr.IsRunning() {
+		return false
+	}
+
+	return true
+}
