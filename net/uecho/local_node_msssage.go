@@ -97,7 +97,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	var resMsg *protocol.Message
 	select {
 	case resMsg = <-node.responseCh:
-	case <-time.After(1 * time.Second):
+	case <-time.After(1 * time.Minute):
 		err = fmt.Errorf(errorNodeRequestTimeout, msg)
 	}
 
