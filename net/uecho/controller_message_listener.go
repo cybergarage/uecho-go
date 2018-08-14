@@ -29,7 +29,7 @@ func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
 
 // parseNodeProfileMessage parses the specified message to check new objects.
 func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
-	node, err := NewRemoteNodeWithNotificationMessage(msg)
+	node, err := NewRemoteNodeWithInstanceListMessage(msg)
 	if err != nil {
 		return
 	}
