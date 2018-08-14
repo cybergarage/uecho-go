@@ -76,6 +76,8 @@ func TestControllerSearch(t *testing.T) {
 
 	// Finalize
 
+	time.Sleep(time.Second)
+
 	err = node.Stop()
 	if err != nil {
 		t.Error(err)
