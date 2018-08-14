@@ -50,6 +50,20 @@ func newTestSampleNode() (*testSampleNode, error) {
 
 // MessageReceived is an override message listener of LocalNode to get the announce messages.
 func (node *testSampleNode) MessageReceived(msg *protocol.Message) {
+	dev, err := node.GetDevice(testLightDeviceCode)
+	if err != nil {
+		return
+	}
+
 	if msg.IsWriteRequest() {
+		for _, msgProp := range msg.GetProperties() {
+			switch msgProp.GetCode() {
+			case testLightPropertyPowerCode:
+				prop, ok := dev.GetProperty(testLightPropertyPowerCode)
+				if ok {
+					prop.SetData(msgProp.GetData())
+				}
+			}
+		}
 	}
 }
