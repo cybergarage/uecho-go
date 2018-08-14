@@ -137,3 +137,8 @@ func (node *RemoteNode) AddProfile(prof *Profile) error {
 func (node *RemoteNode) Equals(otherNode Node) bool {
 	return nodeEquals(node, otherNode)
 }
+
+// String returns the node string representation.
+func (node *RemoteNode) String() string {
+	return fmt.Sprintf("%s:%d", node.GetAddress(), node.GetPort())
+}

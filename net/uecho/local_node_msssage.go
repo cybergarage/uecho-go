@@ -16,10 +16,14 @@ const (
 	errorNodeRequestInvalidDestinationNode   = "Invalid Destination Node : %v"
 	errorNodeRequestInvalidDestinationObject = "Invalid Destination Object : %v"
 	errorNodeRequestTimeout                  = "Request Timeout : %v"
+	errorNodeIsNotRunning                    = "Node (%s) is not running "
 )
 
 // AnnounceMessage announces a message.
 func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
+	if !node.IsRunning() {
+		return fmt.Errorf(errorNodeIsNotRunning, node)
+	}
 	msg.SetTID(node.getNextTID())
 	msg.SetESV(protocol.ESVNotification)
 	msg.SetDestinationObjectCode(NodeProfileObject)
@@ -53,6 +57,10 @@ func (node *LocalNode) Announce() error {
 
 // SendMessage sends a new specified message to the node
 func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
+	if !node.IsRunning() {
+		return fmt.Errorf(errorNodeIsNotRunning, node)
+	}
+
 	msg.SetTID(node.getNextTID())
 
 	// SEOJ
@@ -74,11 +82,12 @@ func (node *LocalNode) responseMessage(dstNode Node, msg *protocol.Message) erro
 
 // closeResponseChannel closes the response channel.
 func (node *LocalNode) closeResponseChannel() {
-	if node.responseCh == nil {
+	if node.postResponseCh == nil {
 		return
 	}
-	close(node.responseCh)
-	node.responseCh = nil
+	close(node.postResponseCh)
+	node.postResponseCh = nil
+	node.postRequestMsg = nil
 }
 
 // PostMessage posts a message to the node, and wait the response message.
@@ -87,7 +96,8 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	defer node.Unlock()
 	defer node.closeResponseChannel()
 
-	node.responseCh = make(chan *protocol.Message)
+	node.postResponseCh = make(chan *protocol.Message)
+	node.postRequestMsg = msg
 
 	err := node.SendMessage(dstNode, msg)
 	if err != nil {
@@ -96,7 +106,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 
 	var resMsg *protocol.Message
 	select {
-	case resMsg = <-node.responseCh:
+	case resMsg = <-node.postResponseCh:
 	case <-time.After(1 * time.Minute):
 		err = fmt.Errorf(errorNodeRequestTimeout, msg)
 	}
