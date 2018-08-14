@@ -10,6 +10,12 @@ import (
 
 // MessageReceived is an override message listener of LocalNode to get the announce messages.
 func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
+	// Ignore own messages
+	msgNode := NewRemoteNodeWithRequestMessage(msg)
+	if msgNode.Equals(ctrl) {
+		return
+	}
+
 	// NodeProfile message ?
 	if msg.IsNotificationResponse() || msg.IsReadResponse() {
 		msgDsgObj := msg.GetDestinationObjectCode()
