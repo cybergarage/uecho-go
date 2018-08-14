@@ -82,7 +82,7 @@ func TestNewMessageManager(t *testing.T) {
 	}
 
 	if bytes.Compare(msg.Bytes(), mgr.lastMessage.Bytes()) != 0 {
-		t.Errorf("%s != %s", string(msg.Bytes()), string(mgr.lastMessage.Bytes()))
+		t.Errorf("%s != %s", msg, mgr.lastMessage)
 	}
 
 	err = mgr.Stop()
@@ -187,7 +187,7 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 		}
 
 		if bytes.Compare(msg.Bytes(), dstMsg.Bytes()) != 0 {
-			t.Errorf("%s != %s", string(msg.Bytes()), string(dstMsg.Bytes()))
+			t.Errorf("%s != %s", msg, dstMsg)
 		}
 
 		srcPort := srcMgr.GetPort()
