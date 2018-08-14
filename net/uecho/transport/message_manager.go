@@ -76,6 +76,8 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
+	mgr.SetPort(mgr.unicastMgr.GetPort())
+
 	err = mgr.multicastMgr.Start()
 	if err != nil {
 		mgr.Stop()
