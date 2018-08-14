@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	errorShortMessageSizegth  = "Short message length : %d < %d"
+	errorShortMessageSize     = "Short message length : %d < %d"
 	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
 )
 
@@ -249,11 +249,16 @@ func (msg *Message) GetProperty(n int) *Property {
 	return msg.EP[n]
 }
 
+// GetProperties returns the all properties.
+func (msg *Message) GetProperties() []*Property {
+	return msg.EP
+}
+
 // Parse parses the specified bytes.
 func (msg *Message) Parse(data []byte) error {
 	dataSize := len(data)
 	if dataSize < MessageMinSize {
-		return fmt.Errorf(errorShortMessageSizegth, dataSize, MessageMinSize)
+		return fmt.Errorf(errorShortMessageSize, dataSize, MessageMinSize)
 	}
 
 	// Check Headers
