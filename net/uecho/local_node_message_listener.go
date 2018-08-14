@@ -85,8 +85,6 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 				node.postImpossibleResponse(msg)
 				return
 			}
-			// FIXME : Check whether user approve the write request
-			prop.SetData(msgProp.GetData())
 		}
 	}
 
