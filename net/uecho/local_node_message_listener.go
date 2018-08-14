@@ -10,6 +10,12 @@ import (
 
 // MessageReceived is a listener for the server
 func (node *LocalNode) MessageReceived(msg *protocol.Message) {
+	// Ignore own messages
+	msgNode := NewRemoteNodeWithRequestMessage(msg)
+	if msgNode.Equals(node) {
+		return
+	}
+
 	if node.isResponseMessageWaiting() {
 		if node.isResponseMessage(msg) {
 			node.setResponseMessage(msg)
