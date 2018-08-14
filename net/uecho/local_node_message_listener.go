@@ -16,6 +16,11 @@ func (node *LocalNode) MessageReceived(msg *protocol.Message) {
 		}
 	}
 	node.executeObjectControl(msg)
+
+	l := node.GetListener()
+	if l != nil {
+		l.MessageReceived(msg)
+	}
 }
 
 // postImpossibleResponse returns an individual response to the source node.
@@ -73,10 +78,15 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 		}
 		// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
 		if protocol.IsWriteRequest(msgESV) {
+			if !prop.IsWritable() {
+				node.postImpossibleResponse(msg)
+			}
 			if msgProp.Size() != prop.Size() {
 				node.postImpossibleResponse(msg)
 				return
 			}
+			// FIXME : Check whether user approve the write request
+			prop.SetData(msgProp.GetData())
 		}
 	}
 

@@ -4,12 +4,15 @@
 
 package uecho
 
+import "github.com/cybergarage/uecho-go/net/uecho/protocol"
+
 const (
-	testNodeManufacturerCode   = NodeManufacturerUnknown + 1
-	testLightDeviceCode        = 0x029101
-	testLightPropertyPowerCode = 0x80
-	testLightPropertyPowerOn   = 0x30
-	testLightPropertyPowerOff  = 0x31
+	testNodeManufacturerCode            = NodeManufacturerUnknown + 1
+	testLightDeviceCode                 = 0x029101
+	testLightPropertyPowerCode          = 0x80
+	testLightPropertyPowerOn            = 0x30
+	testLightPropertyPowerOff           = 0x31
+	testLightPropertyInitialPowerStatus = testLightPropertyPowerOff
 )
 
 const (
@@ -27,11 +30,12 @@ func newTestSampleNode() (*testSampleNode, error) {
 	}
 
 	node.SetManufacturerCode(testNodeManufacturerCode)
+	node.SetListener(node)
 
 	dev := NewDevice()
 	dev.SetCode(testLightDeviceCode)
 	dev.CreateProperty(testLightPropertyPowerCode, PropertyAttributeReadWrite)
-	powerData := []byte{testLightPropertyPowerOff}
+	powerData := []byte{testLightPropertyInitialPowerStatus}
 	err := dev.SetPropertyData(testLightPropertyPowerCode, powerData)
 	if err != nil {
 		return nil, err
@@ -42,4 +46,10 @@ func newTestSampleNode() (*testSampleNode, error) {
 	}
 
 	return node, nil
+}
+
+// MessageReceived is an override message listener of LocalNode to get the announce messages.
+func (node *testSampleNode) MessageReceived(msg *protocol.Message) {
+	if msg.IsWriteRequest() {
+	}
 }

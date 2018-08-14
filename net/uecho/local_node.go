@@ -26,6 +26,7 @@ type LocalNode struct {
 	postResponseCh   chan *protocol.Message
 	postRequestMsg   *protocol.Message
 	requestTimeout   time.Duration
+	listener         protocol.MessageListener
 }
 
 // NewLocalNode returns a new node.
@@ -39,6 +40,7 @@ func NewLocalNode() *LocalNode {
 		postResponseCh:   nil,
 		postRequestMsg:   nil,
 		requestTimeout:   DefaultLocalNodeRequestTimeout,
+		listener:         nil,
 	}
 
 	node.AddProfile(NewLocalNodeProfile())
@@ -65,6 +67,16 @@ func (node *LocalNode) SetRequestTimeout(d time.Duration) {
 // GetRequestTimeout return the request timeout of the node.
 func (node *LocalNode) GetRequestTimeout() time.Duration {
 	return node.requestTimeout
+}
+
+// SetListener set a listener to the node.
+func (node *LocalNode) SetListener(l LocalNodeListener) {
+	node.listener = l
+}
+
+// GetListener returns the listener of the node.
+func (node *LocalNode) GetListener() LocalNodeListener {
+	return node.listener
 }
 
 // getNextTID returns a next TID.
