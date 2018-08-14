@@ -127,6 +127,14 @@ func (mgr *UnicastManager) Stop() error {
 	return lastErr
 }
 
+// IsRunning returns true whether the local servers are running, otherwise false.
+func (mgr *UnicastManager) IsRunning() bool {
+	if len(mgr.Servers) <= 0 {
+		return false
+	}
+	return true
+}
+
 func (mgr *UnicastManager) Write(addr string, port int, b []byte) (int, error) {
 	var lastErr error
 	for _, server := range mgr.Servers {
