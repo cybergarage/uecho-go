@@ -80,6 +80,38 @@ func (node *LocalNode) responseMessage(dstNode Node, msg *protocol.Message) erro
 	return err
 }
 
+// isResponseMessageWaiting returns true when the node is waiting the response message, otherwise false.
+func (node *LocalNode) isResponseMessageWaiting() bool {
+	if node.postRequestMsg == nil {
+		return false
+	}
+	if node.postResponseCh == nil {
+		return false
+	}
+	return true
+}
+
+// isResponseMessage returns true when it is the response message, otherwise false.
+func (node *LocalNode) isResponseMessage(msg *protocol.Message) bool {
+	// TODO : Check the response message more strictly
+	if !node.isResponseMessageWaiting() {
+		return false
+	}
+	if msg.GetTID() != node.postRequestMsg.GetTID() {
+		return false
+	}
+	return true
+}
+
+// setResponseMessage sets a message to the response channel.
+func (node *LocalNode) setResponseMessage(msg *protocol.Message) bool {
+	if !node.isResponseMessageWaiting() {
+		return false
+	}
+	node.postResponseCh <- msg
+	return true
+}
+
 // closeResponseChannel closes the response channel.
 func (node *LocalNode) closeResponseChannel() {
 	if node.postResponseCh == nil {
@@ -107,7 +139,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	var resMsg *protocol.Message
 	select {
 	case resMsg = <-node.postResponseCh:
-	case <-time.After(1 * time.Minute):
+	case <-time.After(node.GetRequestTimeout()):
 		err = fmt.Errorf(errorNodeRequestTimeout, msg)
 	}
 
