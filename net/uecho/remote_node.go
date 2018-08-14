@@ -40,8 +40,8 @@ func NewRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
 	return node
 }
 
-// NewRemoteNodeWithNotificationMessage returns a new node with the specified notification message.
-func NewRemoteNodeWithNotificationMessage(msg *protocol.Message) (*RemoteNode, error) {
+// NewRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
+func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, error) {
 	msgOPC := msg.GetOPC()
 	if msgOPC < 1 {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
@@ -52,7 +52,7 @@ func NewRemoteNodeWithNotificationMessage(msg *protocol.Message) (*RemoteNode, e
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 
-	if prop.GetCode() != NodeProfileClassInstanceListNotification {
+	if prop.GetCode() != NodeProfileClassInstanceListNotification && prop.GetCode() != NodeProfileClassSelfNodeInstanceListS {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 
