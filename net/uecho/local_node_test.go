@@ -37,6 +37,9 @@ func TestNewSampleNode(t *testing.T) {
 		return
 	}
 
+	ctrlAddr := ctrl.GetAddress()
+	ctrlPort := ctrl.GetPort()
+
 	err = node.Start()
 	if err != nil {
 		t.Error(err)
@@ -45,6 +48,17 @@ func TestNewSampleNode(t *testing.T) {
 			t.Error(err)
 		}
 		return
+	}
+
+	nodeAddr := node.GetAddress()
+	nodePort := node.GetPort()
+
+	if ctrlAddr == nodeAddr {
+		//t.Errorf("%s == %s", ctrlAddr, nodeAddr)
+	}
+
+	if ctrlPort == nodePort {
+		t.Errorf("%d == %d", ctrlPort, nodePort)
 	}
 
 	time.Sleep(time.Second)
@@ -82,6 +96,8 @@ func TestNewSampleNode(t *testing.T) {
 	}
 
 	// Finalize
+
+	time.Sleep(time.Second)
 
 	err = node.Stop()
 	if err != nil {

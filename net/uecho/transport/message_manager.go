@@ -12,17 +12,19 @@ import (
 
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
-	Port         uint
-	multicastMgr *MulticastManager
-	unicastMgr   *UnicastManager
+	Port            uint
+	messageListener protocol.MessageListener
+	multicastMgr    *MulticastManager
+	unicastMgr      *UnicastManager
 }
 
 // NewMessageManager returns a new message manager.
 func NewMessageManager() *MessageManager {
 	mgr := &MessageManager{
-		Port:         UDPPort,
-		multicastMgr: NewMulticastManager(),
-		unicastMgr:   NewUnicastManager(),
+		Port:            UDPPort,
+		messageListener: nil,
+		multicastMgr:    NewMulticastManager(),
+		unicastMgr:      NewUnicastManager(),
 	}
 	return mgr
 }
@@ -41,6 +43,12 @@ func (mgr *MessageManager) GetPort() int {
 func (mgr *MessageManager) SetMessageListener(l protocol.MessageListener) {
 	mgr.multicastMgr.SetListener(l)
 	mgr.unicastMgr.SetListener(l)
+	mgr.messageListener = l
+}
+
+// GetMessageListener returns the listener of the manager.
+func (mgr *MessageManager) GetMessageListener() protocol.MessageListener {
+	return mgr.messageListener
 }
 
 // GetBoundAddresses returns the listen addresses.
