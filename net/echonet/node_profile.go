@@ -4,7 +4,7 @@
 
 package echonet
 
-import "github.com/cybergarage/echonet-go/net/echonet/encoding"
+import "github.com/cybergarage/uecho-go/net/echonet/encoding"
 
 const (
 	NodeProfileObject                       = 0x0EF001
