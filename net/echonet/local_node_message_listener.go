@@ -21,25 +21,29 @@ func (node *LocalNode) MessageReceived(msg *protocol.Message) {
 			node.setResponseMessage(msg)
 		}
 	}
-	node.executeObjectControl(msg)
 
-	l := node.GetListener()
-	if l != nil {
-		l.MessageReceived(msg)
+	if !node.validateRequestMessage(msg) {
+		if msg.IsResponseRequired() {
+			node.postImpossibleResponse(msg)
+		}
+		return
+	}
+
+	node.execiteMessageListeners(msg)
+
+	if msg.IsResponseRequired() {
+		node.postResponseMessage(msg)
 	}
 }
 
 // postImpossibleResponse returns an individual response to the source node.
 func (node *LocalNode) postImpossibleResponse(msg *protocol.Message) {
-	if !msg.IsResponseRequired() {
-		return
-	}
 	resMsg := protocol.NewImpossibleMessageWithMessage(msg)
 	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
 }
 
-// executeObjectControl executes the specified message based on the Echonet specification (4.2.2 Basic Sequences for Object Control in General)
-func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
+// validateRequestMessage checks whether the message is a valid request.
+func (node *LocalNode) validateRequestMessage(msg *protocol.Message) bool {
 	//4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.GetDestinationObjectCode()
@@ -50,7 +54,7 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 
 	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
-		return
+		return false
 	}
 
 	// (B) Processing when the controlled object exists, except when ESV = 0x60 to 0x63, 0x6E and 0x74
@@ -63,7 +67,7 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 	case protocol.ESVWriteReadRequest:
 	case protocol.ESVNotificationResponseRequired:
 	default:
-		return
+		return false
 	}
 
 	for n := 0; n < msgOPC; n++ {
@@ -74,27 +78,45 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 		// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
 		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
 		if !ok {
-			node.postImpossibleResponse(msg)
-			return
+			return false
 		}
 		// (D) Processing when the controlled property exists but the stipulated service processing functions are not available
 		if !prop.IsAvailableService(msgESV) {
-			node.postImpossibleResponse(msg)
-			return
+			return false
 		}
 		// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
 		if protocol.IsWriteRequest(msgESV) {
 			if !prop.IsWritable() {
-				node.postImpossibleResponse(msg)
+				return false
 			}
 			if msgProp.Size() != prop.Size() {
-				node.postImpossibleResponse(msg)
-				return
+				return false
 			}
 		}
 	}
 
-	// (F) Processing when the controlled property exists, the stipulated service processing functions are available and also the EDT size matches
+	return true
+}
+
+// execiteMessageListeners post the received message to the listeners.
+func (node *LocalNode) execiteMessageListeners(msg *protocol.Message) bool {
+	msgDstObjCode := msg.GetDestinationObjectCode()
+	dstObj, err := node.GetObject(msgDstObjCode)
+	if err != nil {
+		return false
+	}
+
+	msgESV := msg.GetESV()
+	msgOPC := msg.GetOPC()
+
+	// Message Listener
+
+	l := node.GetListener()
+	if l != nil {
+		l.MessageReceived(msg)
+	}
+
+	// Object Listener
 
 	for n := 0; n < msgOPC; n++ {
 		msgProp := msg.GetProperty(n)
@@ -104,9 +126,18 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 		dstObj.notifyPropertyRequest(msgESV, msgProp)
 	}
 
-	if !msg.IsResponseRequired() {
-		return
+	return true
+}
+
+// postResponseMessage posts the response message to the destination node.
+func (node *LocalNode) postResponseMessage(msg *protocol.Message) bool {
+	msgDstObjCode := msg.GetDestinationObjectCode()
+	dstObj, err := node.GetObject(msgDstObjCode)
+	if err != nil {
+		return false
 	}
+
+	msgOPC := msg.GetOPC()
 
 	resMsg := protocol.NewResponseMessageWithMessage(msg)
 	for n := 0; n < msgOPC; n++ {
@@ -121,4 +152,6 @@ func (node *LocalNode) executeObjectControl(msg *protocol.Message) {
 		resMsg.AddProperty(prop.toProtocolProperty())
 	}
 	node.responseMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+
+	return true
 }
