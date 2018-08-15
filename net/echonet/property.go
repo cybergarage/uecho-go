@@ -58,11 +58,20 @@ func NewProperty() *Property {
 	return prop
 }
 
-// NewPropertyWithCode returns a new property.
+// NewPropertyWithCode returns a new property with the specified property code.
 func NewPropertyWithCode(code PropertyCode) *Property {
 	prop := NewProperty()
 	prop.SetCode(code)
 	return prop
+}
+
+// NewPropertiesWithCodes returns a new properties with the specified property codes.
+func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
+	props := make([]*Property, len(codes))
+	for n, code := range codes {
+		props[n] = NewPropertyWithCode(code)
+	}
+	return props
 }
 
 // SetParentObject sets a parent object into the property.
