@@ -4,7 +4,7 @@
 
 package echonet
 
-import "github.com/cybergarage/echonet-go/net/echonet/protocol"
+import "github.com/cybergarage/uecho-go/net/echonet/protocol"
 
 const (
 	testNodeManufacturerCode            = NodeManufacturerUnknown + 1

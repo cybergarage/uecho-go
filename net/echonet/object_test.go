@@ -7,7 +7,7 @@ package echonet
 import (
 	"testing"
 
-	"github.com/cybergarage/echonet-go/net/echonet/encoding"
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
 const (

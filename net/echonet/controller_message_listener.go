@@ -5,7 +5,7 @@
 package echonet
 
 import (
-	"github.com/cybergarage/echonet-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 // MessageReceived is an override message listener of LocalNode to get the announce messages.

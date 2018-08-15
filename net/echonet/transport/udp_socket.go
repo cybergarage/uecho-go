@@ -8,7 +8,7 @@ import (
 	"errors"
 	"net"
 
-	"github.com/cybergarage/echonet-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (

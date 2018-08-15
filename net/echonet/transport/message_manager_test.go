@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cybergarage/echonet-go/net/echonet/encoding"
-	"github.com/cybergarage/echonet-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 type testMessageManager struct {

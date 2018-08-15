@@ -5,7 +5,7 @@
 package echonet
 
 import (
-	"github.com/cybergarage/echonet-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 // PropertyRequestListener is an instance for Echonet requests.

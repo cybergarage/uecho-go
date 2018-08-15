@@ -7,7 +7,7 @@ package transport
 import (
 	"net"
 
-	"github.com/cybergarage/echonet-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 // A MessageManager represents a multicast server list.
