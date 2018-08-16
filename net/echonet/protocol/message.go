@@ -241,6 +241,17 @@ func (msg *Message) AddProperty(prop *Property) error {
 	return nil
 }
 
+// AddProperties adds a properties.
+func (msg *Message) AddProperties(props []*Property) error {
+	for _, prop := range props {
+		err := msg.AddProperty(prop)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // GetProperty returns the specified property.
 func (msg *Message) GetProperty(n int) *Property {
 	if (len(msg.EP) - 1) < n {
