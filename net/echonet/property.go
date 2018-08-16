@@ -247,7 +247,12 @@ func (prop *Property) GetByteData() (byte, error) {
 	return prop.Data[0], nil
 }
 
-// GetIntegerData returns a integer value of the property data.
+// GetStringData returns a byte value of the property string data.
+func (prop *Property) GetStringData() (string, error) {
+	return string(prop.Data), nil
+}
+
+// GetIntegerData returns a integer value of the property integer data.
 func (prop *Property) GetIntegerData() (uint, error) {
 	if len(prop.Data) <= 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
