@@ -12,11 +12,25 @@ type Property struct {
 
 // NewProperty returns a new property.
 func NewProperty() *Property {
+	return NewPropertyWithCode(0)
+}
+
+// NewPropertyWithCode returns a new property with the specified code.
+func NewPropertyWithCode(code byte) *Property {
 	prop := &Property{
-		Code: 0,
+		Code: code,
 		Data: make([]byte, 0),
 	}
 	return prop
+}
+
+// NewPropertiesWithCodes returns a new properties with the specified codes.
+func NewPropertiesWithCodes(codes []byte) []*Property {
+	props := make([]*Property, len(codes))
+	for n, code := range codes {
+		props[n] = NewPropertyWithCode(code)
+	}
+	return props
 }
 
 // SetCode sets a code to the property
