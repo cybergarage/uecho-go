@@ -15,25 +15,20 @@ const (
 	TIDMax = 65535
 )
 
-// ControllerListener is a listener for Echonet messages.
-type ControllerListener interface {
-	ControllerMessageReceived(msg *protocol.Message)
-}
-
 // Controller is an instance for Echonet controller.
 type Controller struct {
 	*LocalNode
 	foundNodes []*RemoteNode
 
-	listener ControllerListener
+	controllerListener ControllerListener
 }
 
 // NewController returns a new contorller.
 func NewController() *Controller {
 	ctrl := &Controller{
-		LocalNode:  NewLocalNode(),
-		foundNodes: make([]*RemoteNode, 0),
-		listener:   nil,
+		LocalNode:          NewLocalNode(),
+		foundNodes:         make([]*RemoteNode, 0),
+		controllerListener: nil,
 	}
 
 	ctrl.SetMessageListener(ctrl)
@@ -43,7 +38,7 @@ func NewController() *Controller {
 
 // SetListener sets a listener to receive the Echonet messages.
 func (ctrl *Controller) SetListener(l ControllerListener) {
-	ctrl.listener = l
+	ctrl.controllerListener = l
 }
 
 // GetNodes returns found nodes

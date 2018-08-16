@@ -9,6 +9,24 @@ import (
 	"time"
 )
 
+type testController struct {
+	*Controller
+	addedNewNodeCount int
+}
+
+func newTestController() *testController {
+	ctrl := &testController{
+		Controller:        NewController(),
+		addedNewNodeCount: 0,
+	}
+	ctrl.SetListener(ctrl)
+	return ctrl
+}
+
+func (ctrl *testController) addedNewNode(node *RemoteNode) {
+	ctrl.addedNewNodeCount++
+}
+
 func TestNewController(t *testing.T) {
 	ctrl := NewController()
 
@@ -40,7 +58,7 @@ func TestControllerSearch(t *testing.T) {
 
 	// Start a controller
 
-	ctrl := NewController()
+	ctrl := newTestController()
 	err = ctrl.Start()
 	if err != nil {
 		node.Stop()
@@ -72,6 +90,12 @@ func TestControllerSearch(t *testing.T) {
 	_, err = ctrl.GetObject(testLightDeviceCode)
 	if err != nil {
 		t.Error(err)
+	}
+
+	// Check a found device by the listener
+
+	if ctrl.addedNewNodeCount < 1 {
+		t.Errorf("%d < %d", ctrl.addedNewNodeCount, 1)
 	}
 
 	// Finalize
