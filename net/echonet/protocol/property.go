@@ -58,7 +58,12 @@ func (prop *Property) GetData() []byte {
 	return prop.Data
 }
 
-// GetIntegerData returns the property data.
+// GetStringData returns the property string data.
+func (prop *Property) GetStringData() string {
+	return string(prop.Data)
+}
+
+// GetIntegerData returns the property integer data.
 func (prop *Property) GetIntegerData() uint {
 	return encoding.ByteToInteger(prop.Data)
 }
