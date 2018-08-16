@@ -4,6 +4,10 @@
 
 package protocol
 
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+)
+
 // Property is an instance for Echonet property.
 type Property struct {
 	Code byte
@@ -52,6 +56,11 @@ func (prop *Property) SetData(data []byte) {
 // GetData returns the property data.
 func (prop *Property) GetData() []byte {
 	return prop.Data
+}
+
+// GetIntegerData returns the property data.
+func (prop *Property) GetIntegerData() uint {
+	return encoding.ByteToInteger(prop.Data)
 }
 
 // Size return the property data size.
