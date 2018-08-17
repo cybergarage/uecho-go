@@ -24,6 +24,6 @@ const (
 )
 
 const (
-	logSocketWriteFormat = "S : %s -> %s (%d): %s"
-	logSocketReadFormat  = "R : %s -> %s (%d): %s"
+	logSocketWriteFormat = "W : %s -> %s (%d): %s"
+	logSocketReadFormat  = "R : %s <- %s (%d): %s"
 )
