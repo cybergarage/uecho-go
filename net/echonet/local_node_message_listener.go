@@ -22,14 +22,12 @@ func (node *LocalNode) MessageReceived(msg *protocol.Message) {
 		}
 	}
 
-	if !node.validateRequestMessage(msg) {
-		if msg.IsResponseRequired() {
-			node.postImpossibleResponse(msg)
-		}
+	if !node.validateReceivedMessage(msg) {
+		node.postImpossibleResponse(msg)
 		return
 	}
 
-	node.execiteMessageListeners(msg)
+	node.executeMessageListeners(msg)
 
 	if msg.IsResponseRequired() {
 		node.postResponseMessage(msg)
@@ -42,8 +40,8 @@ func (node *LocalNode) postImpossibleResponse(msg *protocol.Message) {
 	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
 }
 
-// validateRequestMessage checks whether the message is a valid request.
-func (node *LocalNode) validateRequestMessage(msg *protocol.Message) bool {
+// validateReceivedMessage checks whether the received message is a valid message.
+func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 	//4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.GetDestinationObjectCode()
@@ -54,43 +52,41 @@ func (node *LocalNode) validateRequestMessage(msg *protocol.Message) bool {
 
 	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
+		// TODO : Check the DEOJ code based on Echonet specification
 		return false
 	}
 
 	// (B) Processing when the controlled object exists, except when ESV = 0x60 to 0x63, 0x6E and 0x74
 
-	switch msgESV {
-	case protocol.ESVWriteRequest:
-	case protocol.ESVWriteRequestResponseRequired:
-	case protocol.ESVReadRequest:
-	case protocol.ESVNotificationRequest:
-	case protocol.ESVWriteReadRequest:
-	case protocol.ESVNotificationResponseRequired:
-	default:
+	if !msg.IsValidESV() { // Check only whether the ESV is valid
 		return false
 	}
 
-	for n := 0; n < msgOPC; n++ {
-		msgProp := msg.GetProperty(n)
-		if msgProp == nil {
-			continue
-		}
-		// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
-		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
-		if !ok {
-			return false
-		}
-		// (D) Processing when the controlled property exists but the stipulated service processing functions are not available
-		if !prop.IsAvailableService(msgESV) {
-			return false
-		}
-		// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
-		if protocol.IsWriteRequest(msgESV) {
-			if !prop.IsWritable() {
+	// (C), (D), (E)
+
+	if msg.IsReadRequest() || msg.IsWriteRequest() {
+		for n := 0; n < msgOPC; n++ {
+			msgProp := msg.GetProperty(n)
+			if msgProp == nil {
+				continue
+			}
+			// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
+			prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+			if !ok {
 				return false
 			}
-			if msgProp.Size() != prop.Size() {
+			// (D) Processing when the controlled property exists but the stipulated service processing functions are not available
+			if !prop.IsAvailableService(msgESV) {
 				return false
+			}
+			// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
+			if protocol.IsWriteRequest(msgESV) {
+				if !prop.IsWritable() {
+					return false
+				}
+				if msgProp.Size() != prop.Size() {
+					return false
+				}
 			}
 		}
 	}
@@ -98,8 +94,8 @@ func (node *LocalNode) validateRequestMessage(msg *protocol.Message) bool {
 	return true
 }
 
-// execiteMessageListeners post the received message to the listeners.
-func (node *LocalNode) execiteMessageListeners(msg *protocol.Message) bool {
+// executeMessageListeners post the received message to the listeners.
+func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
 	msgDstObjCode := msg.GetDestinationObjectCode()
 	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
