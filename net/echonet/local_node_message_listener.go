@@ -151,7 +151,11 @@ func (node *LocalNode) postResponseMessage(msg *protocol.Message) bool {
 		}
 		resMsg.AddProperty(prop.toProtocolProperty())
 	}
-	node.responseMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+
+	err = node.responseMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+	if err != nil {
+		return false
+	}
 
 	return true
 }
