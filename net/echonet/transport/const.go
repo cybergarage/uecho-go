@@ -22,3 +22,8 @@ const (
 	MessageFormatSpecified = 0x01
 	MessageFormatArbitrary = 0x02
 )
+
+const (
+	logSocketWriteFormat = "S : %s -> %s (%d): %s"
+	logSocketReadFormat  = "R : %s -> %s (%d): %s"
+)

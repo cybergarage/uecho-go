@@ -6,8 +6,10 @@ package transport
 
 import (
 	"errors"
+	"fmt"
 	"net"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -88,6 +90,10 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 
 	msg.From = *from
 	msg.Interface = sock.Interface
+
+	if msg != nil && sock.Conn != nil {
+		log.Trace(fmt.Sprintf(logSocketReadFormat, msg.From.String(), sock.Conn.LocalAddr().String(), msg.Size(), msg.String()))
+	}
 
 	return msg, nil
 }
