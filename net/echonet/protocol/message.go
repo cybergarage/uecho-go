@@ -174,6 +174,11 @@ func (msg *Message) GetESV() ESV {
 	return msg.ESV
 }
 
+// IsValidESV returns true whether the specified code is valid, otherwise false.
+func (msg *Message) IsValidESV() bool {
+	return IsValidESV(msg.ESV)
+}
+
 // IsWriteRequest returns true whether the message is a write request type, otherwise false.
 func (msg *Message) IsWriteRequest() bool {
 	return IsWriteRequest(msg.ESV)
