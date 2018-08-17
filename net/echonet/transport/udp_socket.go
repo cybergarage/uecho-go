@@ -92,7 +92,7 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	msg.Interface = sock.Interface
 
 	if msg != nil && sock.Conn != nil {
-		log.Trace(fmt.Sprintf(logSocketReadFormat, msg.From.String(), sock.Conn.LocalAddr().String(), msg.Size(), msg.String()))
+		log.Trace(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), msg.From.String(), msg.Size(), msg.String()))
 	}
 
 	return msg, nil
