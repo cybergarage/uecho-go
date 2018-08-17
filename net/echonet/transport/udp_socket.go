@@ -5,6 +5,7 @@
 package transport
 
 import (
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"net"
@@ -85,6 +86,9 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 
 	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
 	if err != nil {
+		if sock.Conn != nil {
+			log.Error(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), (*from).String(), n, hex.EncodeToString(sock.readBuf[:n])))
+		}
 		return nil, err
 	}
 
