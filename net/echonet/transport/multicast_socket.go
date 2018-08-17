@@ -5,7 +5,6 @@
 package transport
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"syscall"
@@ -61,6 +60,7 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 	return nil
 }
 
+/*
 // Write sends the specified bytes.
 func (sock *MulticastSocket) Write(b []byte) (int, error) {
 	if sock.Conn == nil {
@@ -80,3 +80,4 @@ func (sock *MulticastSocket) Write(b []byte) (int, error) {
 
 	return conn.Write(b)
 }
+*/
