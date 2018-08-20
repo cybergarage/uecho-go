@@ -5,9 +5,12 @@
 package transport
 
 import (
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"net"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -83,11 +86,18 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 
 	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
 	if err != nil {
+		if sock.Conn != nil {
+			log.Error(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), (*from).String(), n, hex.EncodeToString(sock.readBuf[:n])))
+		}
 		return nil, err
 	}
 
 	msg.From = *from
 	msg.Interface = sock.Interface
+
+	if msg != nil && sock.Conn != nil {
+		log.Trace(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), msg.From.String(), msg.Size(), msg.String()))
+	}
 
 	return msg, nil
 }
