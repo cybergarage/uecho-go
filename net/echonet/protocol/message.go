@@ -69,6 +69,11 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 	return msg, nil
 }
 
+// NewMessageWithMessage copies the specified message.
+func NewMessageWithMessage(msg *Message) (*Message, error) {
+	return NewMessageWithBytes(msg.Bytes())
+}
+
 // NewResponseMessageWithMessage returns a response message of the specified message withtout the properties.
 func NewResponseMessageWithMessage(reqMsg *Message) *Message {
 	msg := NewMessage()
@@ -172,6 +177,11 @@ func (msg *Message) SetESV(value ESV) {
 // GetESV returns the stored ESV.
 func (msg *Message) GetESV() ESV {
 	return msg.ESV
+}
+
+// IsValidESV returns true whether the specified code is valid, otherwise false.
+func (msg *Message) IsValidESV() bool {
+	return IsValidESV(msg.ESV)
 }
 
 // IsWriteRequest returns true whether the message is a write request type, otherwise false.
