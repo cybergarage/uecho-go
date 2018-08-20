@@ -5,9 +5,12 @@
 package transport
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net"
 	"syscall"
+
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 // A UnicastSocket represents a socket.
@@ -72,16 +75,24 @@ func (sock *UnicastSocket) Write(addr string, port int, b []byte) (int, error) {
 		return 0, err
 	}
 
+	// Send from binding port
+
 	if sock.Conn != nil {
-		return sock.Conn.WriteToUDP(b, toAddr)
+		n, err := sock.Conn.WriteToUDP(b, toAddr)
+		log.Trace(fmt.Sprintf(logSocketWriteFormat, sock.Conn.LocalAddr().String(), toAddr.String(), n, hex.EncodeToString(b)))
+		return n, err
 	}
+
+	// Send from no binding port
 
 	conn, err := net.DialUDP("udp", nil, toAddr)
 	if err != nil {
 		return 0, err
 	}
 
-	defer conn.Close()
+	n, err := conn.Write(b)
+	log.Trace(fmt.Sprintf(logSocketWriteFormat, conn.LocalAddr().String(), toAddr.String(), n, hex.EncodeToString(b)))
+	conn.Close()
 
-	return conn.Write(b)
+	return n, err
 }

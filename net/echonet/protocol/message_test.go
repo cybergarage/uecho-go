@@ -23,7 +23,11 @@ var testMessageBytes = []byte{
 }
 
 func TestNewMessage(t *testing.T) {
-	NewMessage()
+	msg := NewMessage()
+	_, err := NewMessageWithMessage(msg)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestMessageAddProperty(t *testing.T) {
