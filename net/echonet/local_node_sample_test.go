@@ -19,13 +19,13 @@ const (
 	errorNodeNotFound = "Node Not Found : %s:%d"
 )
 
-type testSampleNode struct {
+type testLocalNode struct {
 	*LocalNode
 }
 
 // newTestSampleNode returns a test node.
-func newTestSampleNode() (*testSampleNode, error) {
-	node := &testSampleNode{
+func newTestSampleNode() (*testLocalNode, error) {
+	node := &testLocalNode{
 		LocalNode: NewLocalNode(),
 	}
 
@@ -49,7 +49,7 @@ func newTestSampleNode() (*testSampleNode, error) {
 }
 
 // MessageReceived is an override message listener of LocalNode to get the announce messages.
-func (node *testSampleNode) MessageReceived(msg *protocol.Message) {
+func (node *testLocalNode) MessageReceived(msg *protocol.Message) {
 	dev, err := node.GetDevice(testLightDeviceCode)
 	if err != nil {
 		return
