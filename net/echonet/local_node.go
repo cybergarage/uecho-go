@@ -59,7 +59,7 @@ func (node *LocalNode) GetManufacturerCode() uint {
 	return node.manufacturerCode
 }
 
-// SetRequestTimeout sets a request timeoutto the node.
+// SetRequestTimeout sets a request timeout the node.
 func (node *LocalNode) SetRequestTimeout(d time.Duration) {
 	node.requestTimeout = d
 }
