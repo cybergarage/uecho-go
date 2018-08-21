@@ -79,6 +79,11 @@ func (node *LocalNode) GetListener() LocalNodeListener {
 	return node.listener
 }
 
+// GetLastTID returns a last sent TID.
+func (node *LocalNode) GetLastTID() uint {
+	return node.lastTID
+}
+
 // getNextTID returns a next TID.
 func (node *LocalNode) getNextTID() uint {
 	if TIDMax <= node.lastTID {
