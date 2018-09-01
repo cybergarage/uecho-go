@@ -58,10 +58,11 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 1)
-	if err != nil {
-		return err
-	}
+	// Disable for Linux platrorms
+	//_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 1)
+	//if err != nil {
+	//	return err
+	//}
 
 	sock.Interface = ifi
 
