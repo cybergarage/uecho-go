@@ -88,7 +88,7 @@ func TestControllerSearch(t *testing.T) {
 		t.Error(err)
 	}
 
-	time.Sleep(time.Millisecond * 100 * testControllerNodeCount) 
+	time.Sleep(time.Millisecond * 100 * testControllerNodeCount)
 
 	// Check a found device by the listener
 
