@@ -81,6 +81,23 @@ func (node *baseNode) GetNodeProfile() (*Profile, error) {
 	return node.GetProfile(NodeProfileObjectReadOnly)
 }
 
+// GetObjects returns all objects.
+func (node *baseNode) GetObjects() []*Object {
+	objs := make([]*Object, 0)
+
+	devs := node.GetDevices()
+	for _, dev := range devs {
+		objs = append(objs, dev.Object)
+	}
+
+	profs := node.GetProfiles()
+	for _, prof := range profs {
+		objs = append(objs, prof.Object)
+	}
+
+	return objs
+}
+
 // GetObject returns a specified object.
 func (node *baseNode) GetObject(code uint) (*Object, error) {
 	dev, err := node.GetDevice(code)
