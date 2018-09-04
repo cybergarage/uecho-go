@@ -21,12 +21,13 @@ package main
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/cybergarage/uecho-go/net/uecho"
+	"github.com/cybergarage/uecho-go/net/echonet"
 )
 
 func main() {
-	ctrl := uecho.NewController()
+	ctrl := echonet.NewController()
 
 	err := ctrl.Start()
 	if err != nil {
@@ -38,6 +39,8 @@ func main() {
 		return
 	}
 
+	time.Sleep(time.Second)
+
 	for _, node := range ctrl.GetNodes() {
 		objs := node.GetObjects()
 		if len(objs) <= 0 {
@@ -45,7 +48,7 @@ func main() {
 			continue
 		}
 		for _, obj := range objs {
-			fmt.Printf("%s %06X\n", node.GetAddress(), obj.getCode())
+			fmt.Printf("%s %06X\n", node.GetAddress(), obj.GetCode())
 		}
 	}
 
