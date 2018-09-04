@@ -34,7 +34,7 @@ const (
 )
 
 // PropertyCode is a type for property code.
-type PropertyCode byte
+type PropertyCode = protocol.PropertyCode
 
 // PropertyAttribute is a type for property attribute.
 type PropertyAttribute uint
@@ -272,7 +272,7 @@ func (prop *Property) announce() error {
 // toProtocolProperty returns the new property of the property.
 func (prop *Property) toProtocolProperty() *protocol.Property {
 	newProp := protocol.NewProperty()
-	newProp.SetCode(byte(prop.GetCode()))
+	newProp.SetCode(prop.GetCode())
 	newProp.SetData(prop.GetData())
 	return newProp
 }
