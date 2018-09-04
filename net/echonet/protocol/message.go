@@ -335,7 +335,7 @@ func (msg *Message) Parse(data []byte) error {
 			continue
 		}
 
-		prop.Code = data[offset]
+		prop.Code = PropertyCode(data[offset])
 		offset++
 
 		// PDC
@@ -402,7 +402,7 @@ func (msg *Message) Bytes() []byte {
 		if prop == nil {
 			continue
 		}
-		msgBytes[offset] = prop.GetCode()
+		msgBytes[offset] = byte(prop.GetCode())
 		offset++
 
 		propSize := int(prop.Size())

@@ -33,7 +33,7 @@ func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol
 	}
 
 	propCode := reqProp.GetCode()
-	prop, ok := obj.GetProperty(echonet.PropertyCode(propCode))
+	prop, ok := obj.GetProperty(propCode)
 	if !ok {
 		return nil
 	}
