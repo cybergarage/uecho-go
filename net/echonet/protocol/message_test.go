@@ -83,7 +83,7 @@ func TestParseMessage(t *testing.T) {
 		if prop == nil {
 			t.Errorf("%d", n)
 		}
-		if prop.Code != byte(n) {
+		if prop.Code != PropertyCode(n) {
 			t.Errorf("%d != %d", prop.Code, n)
 		}
 		if len(prop.Data) != n {

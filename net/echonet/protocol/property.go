@@ -8,9 +8,12 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
+// PropertyCode is a type for property code.
+type PropertyCode byte
+
 // Property is an instance for Echonet property.
 type Property struct {
-	Code byte
+	Code PropertyCode
 	Data []byte
 }
 
@@ -20,7 +23,7 @@ func NewProperty() *Property {
 }
 
 // NewPropertyWithCode returns a new property with the specified code.
-func NewPropertyWithCode(code byte) *Property {
+func NewPropertyWithCode(code PropertyCode) *Property {
 	prop := &Property{
 		Code: code,
 		Data: make([]byte, 0),
@@ -29,7 +32,7 @@ func NewPropertyWithCode(code byte) *Property {
 }
 
 // NewPropertiesWithCodes returns a new properties with the specified codes.
-func NewPropertiesWithCodes(codes []byte) []*Property {
+func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 	props := make([]*Property, len(codes))
 	for n, code := range codes {
 		props[n] = NewPropertyWithCode(code)
@@ -38,12 +41,12 @@ func NewPropertiesWithCodes(codes []byte) []*Property {
 }
 
 // SetCode sets a code to the property
-func (prop *Property) SetCode(code byte) {
+func (prop *Property) SetCode(code PropertyCode) {
 	prop.Code = code
 }
 
 // GetCode returns the property code.
-func (prop *Property) GetCode() byte {
+func (prop *Property) GetCode() PropertyCode {
 	return prop.Code
 }
 
