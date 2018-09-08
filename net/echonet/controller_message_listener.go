@@ -27,7 +27,7 @@ func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
 	ctrl.LocalNode.MessageReceived(msg)
 
 	if ctrl.controllerListener != nil {
-		ctrl.controllerListener.NewMessageReceived(msg)
+		ctrl.controllerListener.MessageRequestReceived(msg)
 	}
 }
 
