@@ -5,22 +5,25 @@
 package main
 
 import (
-	"os"
 	"testing"
 )
 
-func TestLightNode(t *testing.T) {
-	node := NewLightNode()
-
-	err := node.Start()
+func TestDumpController(t *testing.T) {
+	ctrl := NewDumpController()
+	err := ctrl.Start()
 	if err != nil {
-		os.Exit(EXIT_FAILURE)
+		t.Error(err)
+		return
 	}
 
-	err = node.Stop()
+	err = ctrl.SearchAllObjects()
 	if err != nil {
-		os.Exit(EXIT_FAILURE)
+		t.Error(err)
 	}
 
-	os.Exit(EXIT_SUCCESS)
+	err = ctrl.Stop()
+	if err != nil {
+		t.Error(err)
+	}
+
 }

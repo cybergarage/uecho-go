@@ -28,19 +28,17 @@ import (
 
 func main() {
 
-	NewLightNode()
+	node := NewLightNode()
 
-	/*
-		err := node.Start()
-		if err != nil {
-			os.Exit(EXIT_FAILURE)
-		}
+	err := node.Start()
+	if err != nil {
+		os.Exit(EXIT_FAILURE)
+	}
 
-		err = node.Stop()
-		if err != nil {
-			os.Exit(EXIT_FAILURE)
-		}
-	*/
+	err = node.Stop()
+	if err != nil {
+		os.Exit(EXIT_FAILURE)
+	}
 
 	os.Exit(EXIT_SUCCESS)
 }

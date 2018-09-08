@@ -9,14 +9,14 @@ import (
 )
 
 type LightNode struct {
-	echonet.Node
+	*echonet.LocalNode
 }
 
 // NewLightNode returns a new light device.
 func NewLightNode() *LightNode {
 
 	node := &LightNode{
-		Node: echonet.NewLocalNode(),
+		LocalNode: echonet.NewLocalNode(),
 	}
 
 	dev := NewLightDevice()
@@ -26,7 +26,9 @@ func NewLightNode() *LightNode {
 	return node
 }
 
-// PropertyRequestReceived is a listener for Echonet requests.
+func (node *LightNode) MessageRequestReceived(*protocol.Message) {
+}
+
 func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
 	if !protocol.IsWriteRequest(esv) {
 		return nil
