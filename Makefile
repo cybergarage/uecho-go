@@ -14,14 +14,10 @@ PREFIX?=$(shell pwd)
 GOPATH:=$(shell pwd)
 export GOPATH
 
-BIN_DUMP_NAME=uechodump
-BIN_SEARCH_NAME=uechosearch
-BIN_LIGHT_NAME=uecholight
-
 GITHUB_ROOT=github.com/cybergarage/uecho-go
-GITHUB=${GITHUB_ROOT}/net/echonet
+PACKAGE_ROOT=${GITHUB_ROOT}/net/echonet
 
-PACKAGE_ID=${GITHUB}
+PACKAGE_ID=${PACKAGE_ROOT}
 PACKAGES=\
 	${PACKAGE_ID} \
 	${PACKAGE_ID}/encoding \
@@ -30,10 +26,12 @@ PACKAGES=\
 
 SOURCE_ROOT_DIR=src/${PACKAGE_ROOT}
 
+EXSAMPLE_ROOT=${GITHUB_ROOT}/examples
+
 BINARIES=\
-	${GITHUB}/${BIN_DUMP_NAME} \
-	${GITHUB}/${BIN_SEARCH_NAME} \
-	${GITHUB}/${BIN_LIGHT_NAME}
+	${EXSAMPLE_ROOT}/uechodump \
+	${EXSAMPLE_ROOT}/uechosearch \
+	${EXSAMPLE_ROOT}/uecholight
 
 .PHONY: version clean
 
@@ -47,7 +45,7 @@ ${VERSION_GO}: ${SOURCE_ROOT_DIR}/version.gen
 version: ${VERSION_GO}
 
 format:
-	gofmt -w src/${GITHUB}
+	gofmt -w src/${PACKAGE_ROOT}
 
 vet: format
 	go vet ${PACKAGES}
