@@ -27,7 +27,7 @@ func newTestController() *testController {
 	return ctrl
 }
 
-func (ctrl *testController) addedNewNode(node *RemoteNode) {
+func (ctrl *testController) NewNodeAdded(node *RemoteNode) {
 	_, err := node.GetObject(testLightDeviceCode)
 	if err != nil {
 		return

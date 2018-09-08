@@ -52,7 +52,7 @@ func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
 	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
 
 	if ctrl.controllerListener != nil {
-		ctrl.controllerListener.addedNewNode(notifyNode)
+		ctrl.controllerListener.NewNodeAdded(notifyNode)
 	}
 
 	return true

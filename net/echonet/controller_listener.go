@@ -6,5 +6,5 @@ package echonet
 
 // ControllerListener is a listener for Echonet messages.
 type ControllerListener interface {
-	addedNewNode(*RemoteNode)
+	NewNodeAdded(*RemoteNode)
 }
