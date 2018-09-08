@@ -23,39 +23,17 @@ import (
 	"flag"
 	"fmt"
 	"time"
-
-	"github.com/cybergarage/uecho-go/net/echonet"
 )
 
-void uecho_search_print_messages(uEchoController *ctrl, uEchoMessage *msg)
-{
-  uEchoProperty *prop;
-  size_t opc, n;
-  
-  opc = uecho_message_getopc(msg);
-  printf("%s %1X %1X %02X %03X %03X %02X %ld ",
-         uecho_message_getsourceaddress(msg),
-         uecho_message_getehd1(msg),
-         uecho_message_getehd2(msg),
-         uecho_message_gettid(msg),
-         uecho_message_getsourceobjectcode(msg),
-         uecho_message_getdestinationobjectcode(msg),
-         uecho_message_getesv(msg),
-         opc);
-  
-  for (n=0; n<opc; n++) {
-    prop = uecho_message_getproperty(msg, n);
-    printf("%02X", uecho_property_getcode(prop));
-  }
-  
-  printf("\n");
-}
-
 func main() {
-	flag.Bool("v", false, "verbose")
+	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
 
-	ctrl := echonet.NewController()
+	ctrl := NewSearchController()
+
+	if *verbose {
+		ctrl.SetListener(ctrl)
+	}
 
 	err := ctrl.Start()
 	if err != nil {
