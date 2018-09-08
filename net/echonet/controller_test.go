@@ -7,6 +7,8 @@ package echonet
 import (
 	"testing"
 	"time"
+
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
@@ -25,6 +27,10 @@ func newTestController() *testController {
 	}
 	ctrl.SetListener(ctrl)
 	return ctrl
+}
+
+func (ctrl *testController) NewMessageReceived(*protocol.Message) {
+
 }
 
 func (ctrl *testController) NewNodeAdded(node *RemoteNode) {
