@@ -23,7 +23,7 @@ func NewDumpController() *DumpController {
 	return c
 }
 
-func (ctrl *DumpController) MessageRequestReceived(msg *protocol.Message) {
+func (ctrl *DumpController) RequestMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 

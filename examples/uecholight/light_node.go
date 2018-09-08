@@ -26,7 +26,7 @@ func NewLightNode() *LightNode {
 	return node
 }
 
-func (node *LightNode) MessageRequestReceived(*protocol.Message) {
+func (node *LightNode) RequestMessageReceived(*protocol.Message) {
 }
 
 func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {

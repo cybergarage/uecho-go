@@ -10,6 +10,6 @@ import (
 
 // ObjectListener is an interface for Echonet requests.
 type ObjectListener interface {
-	MessageRequestReceived(*protocol.Message)
+	RequestMessageReceived(*protocol.Message)
 	PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
 }

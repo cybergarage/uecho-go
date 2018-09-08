@@ -23,7 +23,7 @@ func NewSearchController() *SearchController {
 	return c
 }
 
-func (ctrl *SearchController) MessageRequestReceived(msg *protocol.Message) {
+func (ctrl *SearchController) RequestMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
