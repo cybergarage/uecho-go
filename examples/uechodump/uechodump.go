@@ -19,5 +19,36 @@ uechodump is a dump utility for Echonet Lite.
 */
 package main
 
+import (
+	"os"
+	"os/signal"
+)
+
 func main() {
+	ctrl := NewDumpController()
+
+	err := ctrl.Start()
+	if err != nil {
+		return
+	}
+
+	err = ctrl.SearchAllObjects()
+	if err != nil {
+		return
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		select {
+		case <-c:
+			ctrl.Stop()
+			os.Exit(0)
+		}
+	}()
+
+	err = ctrl.Stop()
+	if err != nil {
+		return
+	}
 }
