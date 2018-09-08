@@ -4,7 +4,12 @@
 
 package echonet
 
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+)
+
 // ControllerListener is a listener for Echonet messages.
 type ControllerListener interface {
+	NewMessageReceived(*protocol.Message)
 	NewNodeAdded(*RemoteNode)
 }
