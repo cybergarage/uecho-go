@@ -4,7 +4,12 @@
 
 package echonet
 
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+)
+
 // ObjectListener is an interface for Echonet requests.
 type ObjectListener interface {
-	PropertyRequestListener
+	MessageRequestReceived(*protocol.Message)
+	PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
 }
