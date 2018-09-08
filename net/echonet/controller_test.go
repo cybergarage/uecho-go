@@ -29,7 +29,7 @@ func newTestController() *testController {
 	return ctrl
 }
 
-func (ctrl *testController) NewMessageReceived(*protocol.Message) {
+func (ctrl *testController) MessageRequestReceived(*protocol.Message) {
 
 }
 
