@@ -33,7 +33,7 @@ func (ctrl *testController) NewMessageReceived(*protocol.Message) {
 
 }
 
-func (ctrl *testController) NewNodeAdded(node *RemoteNode) {
+func (ctrl *testController) NewNodeFound(node *RemoteNode) {
 	_, err := node.GetObject(testLightDeviceCode)
 	if err != nil {
 		return
