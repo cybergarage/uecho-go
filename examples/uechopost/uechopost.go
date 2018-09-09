@@ -25,7 +25,7 @@ import (
 )
 
 func main() {
-	ctrl := NewDumpController()
+	ctrl := NewPostController()
 
 	err := ctrl.Start()
 	if err != nil {
