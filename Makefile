@@ -29,7 +29,7 @@ SOURCE_ROOT_DIR=src/${PACKAGE_ROOT}
 EXSAMPLE_ROOT=${GITHUB_ROOT}/examples
 
 BINARIES=\
-	${EXSAMPLE_ROOT}/uechodump \
+	${EXSAMPLE_ROOT}/uechopost \
 	${EXSAMPLE_ROOT}/uechosearch \
 	${EXSAMPLE_ROOT}/uecholight
 
