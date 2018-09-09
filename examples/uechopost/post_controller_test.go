@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-func TestDumpController(t *testing.T) {
-	ctrl := NewDumpController()
+func TestPostController(t *testing.T) {
+	ctrl := NewPostController()
 	err := ctrl.Start()
 	if err != nil {
 		t.Error(err)
