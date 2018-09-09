@@ -12,21 +12,21 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-type DumpController struct {
+type PostController struct {
 	*echonet.Controller
 }
 
-func NewDumpController() *DumpController {
-	c := &DumpController{
+func NewPostController() *PostController {
+	c := &PostController{
 		Controller: echonet.NewController(),
 	}
 	return c
 }
 
-func (ctrl *DumpController) MessageRequestReceived(msg *protocol.Message) {
+func (ctrl *PostController) RequestMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
-func (ctrl *DumpController) NewNodeFound(*echonet.RemoteNode) {
+func (ctrl *PostController) NewNodeFound(*echonet.RemoteNode) {
 
 }
