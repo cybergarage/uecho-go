@@ -40,7 +40,7 @@ func (node *baseNode) GetDevices() []*Device {
 }
 
 // GetDevice returns a specified device object.
-func (node *baseNode) GetDevice(code uint) (*Device, error) {
+func (node *baseNode) GetDevice(code ObjectCode) (*Device, error) {
 	for _, dev := range node.devices {
 		objCode := dev.GetCode()
 		if objCode == code {
@@ -62,7 +62,7 @@ func (node *baseNode) GetProfiles() []*Profile {
 }
 
 // GetProfile returns a specified profile object.
-func (node *baseNode) GetProfile(code uint) (*Profile, error) {
+func (node *baseNode) GetProfile(code ObjectCode) (*Profile, error) {
 	for _, prof := range node.profiles {
 		objCode := prof.GetCode()
 		if objCode == code {
@@ -99,7 +99,7 @@ func (node *baseNode) GetObjects() []*Object {
 }
 
 // GetObject returns a specified object.
-func (node *baseNode) GetObject(code uint) (*Object, error) {
+func (node *baseNode) GetObject(code ObjectCode) (*Object, error) {
 	dev, err := node.GetDevice(code)
 	if err == nil {
 		return dev.Object, nil

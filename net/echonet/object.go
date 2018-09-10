@@ -23,6 +23,9 @@ const (
 	ObjectCodeUnknown = ObjectCodeMin
 )
 
+// ObjectCode is a type for object code.
+type ObjectCode = protocol.ObjectCode
+
 // Object is an instance for Echonet object.
 type Object struct {
 	*PropertyMap
@@ -63,13 +66,13 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 }
 
 // SetCode sets a code to the object
-func (obj *Object) SetCode(code uint) {
-	encoding.IntegerToByte(code, obj.Code)
+func (obj *Object) SetCode(code ObjectCode) {
+	encoding.IntegerToByte(uint(code), obj.Code)
 }
 
 // GetCode returns the code.
-func (obj *Object) GetCode() uint {
-	return encoding.ByteToInteger(obj.Code)
+func (obj *Object) GetCode() ObjectCode {
+	return ObjectCode(encoding.ByteToInteger(obj.Code))
 }
 
 // SetCodes sets codes to the object
@@ -83,7 +86,7 @@ func (obj *Object) GetCodes() []byte {
 }
 
 // IsCode returns true when the object code is the specified code, otherwise false.
-func (obj *Object) IsCode(code uint) bool {
+func (obj *Object) IsCode(code ObjectCode) bool {
 	if code != obj.GetCode() {
 		return false
 	}

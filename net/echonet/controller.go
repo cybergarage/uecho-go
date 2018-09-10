@@ -47,7 +47,7 @@ func (ctrl *Controller) GetNodes() []*RemoteNode {
 }
 
 // GetObject returns the specified object.
-func (ctrl *Controller) GetObject(code uint) (*Object, error) {
+func (ctrl *Controller) GetObject(code ObjectCode) (*Object, error) {
 	for _, node := range ctrl.GetNodes() {
 		obj, err := node.GetObject(code)
 		if err == nil {
@@ -58,7 +58,7 @@ func (ctrl *Controller) GetObject(code uint) (*Object, error) {
 }
 
 // GetDevice returns the specified device object.
-func (ctrl *Controller) GetDevice(code uint) (*Device, error) {
+func (ctrl *Controller) GetDevice(code ObjectCode) (*Device, error) {
 	for _, node := range ctrl.GetNodes() {
 		dev, err := node.GetDevice(code)
 		if err == nil {
@@ -69,7 +69,7 @@ func (ctrl *Controller) GetDevice(code uint) (*Device, error) {
 }
 
 // GetProfile returns the specified profile object.
-func (ctrl *Controller) GetProfile(code uint) (*Profile, error) {
+func (ctrl *Controller) GetProfile(code ObjectCode) (*Profile, error) {
 	for _, node := range ctrl.GetNodes() {
 		prof, err := node.GetProfile(code)
 		if err == nil {
@@ -92,7 +92,7 @@ func (ctrl *Controller) SearchAllObjects() error {
 }
 
 // SearchObjectWithESV searches a specified object.
-func (ctrl *Controller) SearchObjectWithESV(code uint, esv protocol.ESV) error {
+func (ctrl *Controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) error {
 	msg := NewSearchMessage()
 	msg.SetESV(esv)
 	msg.SetDestinationObjectCode(code)
@@ -100,7 +100,7 @@ func (ctrl *Controller) SearchObjectWithESV(code uint, esv protocol.ESV) error {
 }
 
 // SearchObject searches a specified object.
-func (ctrl *Controller) SearchObject(code uint) error {
+func (ctrl *Controller) SearchObject(code ObjectCode) error {
 	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
 }
 
