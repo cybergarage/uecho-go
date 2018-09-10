@@ -49,10 +49,13 @@ func (sock *UDPSocket) Close() error {
 		return nil
 	}
 
-	err := sock.Conn.Close()
-	if err != nil {
-		return err
-	}
+	// FIXE : Hung up on go1.11 darwin/amd64
+	/*
+		err := sock.Conn.Close()
+		if err != nil {
+			return err
+		}
+	*/
 
 	sock.Conn = nil
 	sock.Interface = net.Interface{}
