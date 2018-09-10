@@ -49,7 +49,7 @@ func isProfileObjectCode(code byte) bool {
 }
 
 // isNodeProfileObjectCode returns true when the code is the node profile code, otherwise false.
-func isNodeProfileObjectCode(code uint) bool {
+func isNodeProfileObjectCode(code ObjectCode) bool {
 	if code == NodeProfileObject {
 		return true
 	}

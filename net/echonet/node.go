@@ -13,21 +13,21 @@ type Node interface {
 	// GetObjects returns all objects.
 	GetObjects() []*Object
 	// GetObject returns the specified object.
-	GetObject(code uint) (*Object, error)
+	GetObject(code ObjectCode) (*Object, error)
 
 	// AddDevice adds a new device into the node.
 	AddDevice(dev *Device) error
 	// GetDevices returns all device objects.
 	GetDevices() []*Device
 	// GetDevice returns the specified device object.
-	GetDevice(code uint) (*Device, error)
+	GetDevice(code ObjectCode) (*Device, error)
 
 	// AddProfile adds a new profile object into the node.
 	AddProfile(prof *Profile) error
 	// GetProfiles returns all profile objects.
 	GetProfiles() []*Profile
 	// GetProfile returns the specified profile object.
-	GetProfile(code uint) (*Profile, error)
+	GetProfile(code ObjectCode) (*Profile, error)
 
 	// GetAddress returns the bound address.
 	GetAddress() string
