@@ -65,7 +65,7 @@ func handleUnicastConnection(server *UnicastServer) {
 		}
 
 		if server.Listener != nil {
-			server.Listener.MessageReceived(msg)
+			server.Listener.ProtocolMessageReceived(msg)
 		}
 	}
 }

@@ -29,11 +29,11 @@ func newTestController() *testController {
 	return ctrl
 }
 
-func (ctrl *testController) RequestMessageReceived(*protocol.Message) {
+func (ctrl *testController) ControllerMessageReceived(*protocol.Message) {
 
 }
 
-func (ctrl *testController) NewNodeFound(node *RemoteNode) {
+func (ctrl *testController) ControllerNewNodeFound(node *RemoteNode) {
 	_, err := node.GetObject(testLightDeviceCode)
 	if err != nil {
 		return

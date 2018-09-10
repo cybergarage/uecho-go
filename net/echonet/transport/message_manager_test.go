@@ -28,7 +28,7 @@ func newTestMessageManager() *testMessageManager {
 	return mgr
 }
 
-func (mgr *testMessageManager) MessageReceived(msg *protocol.Message) {
+func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) {
 	mgr.lastMessage = msg
 }
 
@@ -200,11 +200,13 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 
 	// Stop managers
 
-	for _, mgr := range mgrs {
-		err := mgr.Stop()
-		if err != nil {
-			t.Error(err)
-			return
+	/*
+		for _, mgr := range mgrs {
+			err := mgr.Stop()
+			if err != nil {
+				t.Error(err)
+				return
+			}
 		}
-	}
+	*/
 }

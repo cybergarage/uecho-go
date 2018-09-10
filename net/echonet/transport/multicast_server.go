@@ -33,7 +33,7 @@ func NewMulticastServer() *MulticastServer {
 }
 
 // SetListener set a listener.
-func (server *MulticastServer) SetListener(l UnicastListener) {
+func (server *MulticastServer) SetListener(l MulticastListener) {
 	server.Listener = l
 }
 
@@ -65,7 +65,7 @@ func handleMulticastConnection(server *MulticastServer) {
 		}
 
 		if server.Listener != nil {
-			server.Listener.MessageReceived(msg)
+			server.Listener.ProtocolMessageReceived(msg)
 		}
 	}
 }
