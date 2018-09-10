@@ -48,6 +48,7 @@ func (sock *UDPSocket) Close() error {
 	if sock.Conn == nil {
 		return nil
 	}
+
 	err := sock.Conn.Close()
 	if err != nil {
 		return err

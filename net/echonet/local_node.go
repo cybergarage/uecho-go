@@ -26,7 +26,7 @@ type LocalNode struct {
 	postResponseCh   chan *protocol.Message
 	postRequestMsg   *protocol.Message
 	requestTimeout   time.Duration
-	listener         protocol.MessageListener
+	listener         LocalNodeListener
 }
 
 // NewLocalNode returns a new node.

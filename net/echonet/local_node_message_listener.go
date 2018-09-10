@@ -8,12 +8,16 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// MessageReceived is a listener for the server
-func (node *LocalNode) MessageReceived(msg *protocol.Message) {
+// ProtocolMessageReceived is a listener for the server
+func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	if msgNode.Equals(node) {
 		return
+	}
+
+	if node.listener != nil {
+		node.listener.NodeMessageReceived(msg)
 	}
 
 	if node.isResponseMessageWaiting() {
@@ -109,7 +113,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
 
 	l := node.GetListener()
 	if l != nil {
-		l.MessageReceived(msg)
+		l.NodeMessageReceived(msg)
 	}
 
 	// Object Listener

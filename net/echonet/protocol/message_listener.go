@@ -6,5 +6,5 @@ package protocol
 
 // A MessageListener represents a listener for message.
 type MessageListener interface {
-	MessageReceived(*Message)
+	ProtocolMessageReceived(*Message)
 }

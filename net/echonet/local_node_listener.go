@@ -10,5 +10,5 @@ import (
 
 // LocalNodeListener is an instance of the listner.
 type LocalNodeListener interface {
-	protocol.MessageListener
+	NodeMessageReceived(*protocol.Message)
 }
