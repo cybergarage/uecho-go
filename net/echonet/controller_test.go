@@ -102,6 +102,31 @@ func TestControllerSearch(t *testing.T) {
 		t.Errorf("%d < %d", ctrl.foundTestNodeCount, testControllerNodeCount)
 	}
 
+	// Send read / write request (post)
+
+	for _, node := range ctrl.GetNodes() {
+		for n := 0; n < testNodeRequestCount; n++ {
+			var lastLightPowerStatus byte
+			if (n % 2) == 0 {
+				lastLightPowerStatus = testLightPropertyPowerOn
+			} else {
+
+				lastLightPowerStatus = testLightPropertyPowerOff
+			}
+
+			// Write / Read
+
+			prop := NewPropertyWithCode(testLightPropertyPowerCode)
+			prop.SetData([]byte{lastLightPowerStatus})
+			resMsg, err := ctrl.PostRequest(node, testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
+			if err == nil {
+				localNodeCheckResponseMessagePowerStatus(t, resMsg, lastLightPowerStatus)
+			} else {
+				t.Error(err)
+			}
+		}
+	}
+
 	// Finalize
 
 	err = ctrl.Stop()
