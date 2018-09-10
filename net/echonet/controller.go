@@ -31,7 +31,7 @@ func NewController() *Controller {
 		controllerListener: nil,
 	}
 
-	ctrl.SetMessageListener(ctrl)
+	ctrl.LocalNode.SetListener(ctrl)
 
 	return ctrl
 }

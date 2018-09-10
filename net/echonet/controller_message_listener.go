@@ -8,8 +8,8 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// MessageReceived is an override message listener of LocalNode to get the announce messages.
-func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
+// NodeMessageReceived is a listener of the local node
+func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	if msgNode.Equals(ctrl) {
@@ -24,10 +24,8 @@ func (ctrl *Controller) MessageReceived(msg *protocol.Message) {
 		}
 	}
 
-	ctrl.LocalNode.MessageReceived(msg)
-
 	if ctrl.controllerListener != nil {
-		ctrl.controllerListener.RequestMessageReceived(msg)
+		ctrl.controllerListener.ControllerMessageReceived(msg)
 	}
 }
 
@@ -56,7 +54,7 @@ func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
 	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
 
 	if ctrl.controllerListener != nil {
-		ctrl.controllerListener.NewNodeFound(notifyNode)
+		ctrl.controllerListener.ControllerNewNodeFound(notifyNode)
 	}
 
 	return true
