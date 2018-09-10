@@ -16,10 +16,6 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) {
 		return
 	}
 
-	if node.listener != nil {
-		node.listener.NodeMessageReceived(msg)
-	}
-
 	if node.isResponseMessageWaiting() {
 		if node.isResponseMessage(msg) {
 			node.setResponseMessage(msg)
