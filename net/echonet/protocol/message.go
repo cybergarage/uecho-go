@@ -150,23 +150,23 @@ func (msg *Message) GetTID() uint {
 }
 
 // SetSourceObjectCode sets a source object code.
-func (msg *Message) SetSourceObjectCode(code uint) {
-	encoding.IntegerToByte(code, msg.SEOJ)
+func (msg *Message) SetSourceObjectCode(code ObjectCode) {
+	encoding.IntegerToByte(uint(code), msg.SEOJ)
 }
 
 // GetSourceObjectCode returns the source object code.
-func (msg *Message) GetSourceObjectCode() uint {
-	return encoding.ByteToInteger(msg.SEOJ)
+func (msg *Message) GetSourceObjectCode() ObjectCode {
+	return ObjectCode(encoding.ByteToInteger(msg.SEOJ))
 }
 
 // SetDestinationObjectCode sets a source object code.
-func (msg *Message) SetDestinationObjectCode(code uint) {
-	encoding.IntegerToByte(code, msg.DEOJ)
+func (msg *Message) SetDestinationObjectCode(code ObjectCode) {
+	encoding.IntegerToByte(uint(code), msg.DEOJ)
 }
 
 // GetDestinationObjectCode returns the source object code.
-func (msg *Message) GetDestinationObjectCode() uint {
-	return encoding.ByteToInteger(msg.DEOJ)
+func (msg *Message) GetDestinationObjectCode() ObjectCode {
+	return ObjectCode(encoding.ByteToInteger(msg.DEOJ))
 }
 
 // SetESV sets the specified ESV.
