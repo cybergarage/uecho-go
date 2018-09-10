@@ -147,17 +147,14 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 }
 
 // createRequestMessage creates a message with the specified parameters
-func (node *LocalNode) createRequestMessage(dstNode Node, dstObj *Object, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
+func (node *LocalNode) createRequestMessage(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
 	if dstNode == nil || reflect.ValueOf(dstNode).IsNil() {
 		return nil, fmt.Errorf(errorNodeRequestInvalidDestinationNode, dstNode)
-	}
-	if dstObj == nil {
-		return nil, fmt.Errorf(errorNodeRequestInvalidDestinationObject, dstObj)
 	}
 
 	msg := protocol.NewMessage()
 	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(dstObj.GetCode())
+	msg.SetDestinationObjectCode(objCode)
 	for _, prop := range props {
 		msg.AddProperty(prop.toProtocolProperty())
 	}
@@ -165,8 +162,8 @@ func (node *LocalNode) createRequestMessage(dstNode Node, dstObj *Object, esv pr
 }
 
 // SendRequest sends a specified request to the object.
-func (node *LocalNode) SendRequest(dstNode Node, dstObj *Object, esv protocol.ESV, props []*Property) error {
-	msg, err := node.createRequestMessage(dstNode, dstObj, esv, props)
+func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
+	msg, err := node.createRequestMessage(dstNode, objCode, esv, props)
 	if err != nil {
 		return err
 	}
@@ -174,8 +171,8 @@ func (node *LocalNode) SendRequest(dstNode Node, dstObj *Object, esv protocol.ES
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *LocalNode) PostRequest(dstNode Node, dstObj *Object, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
-	msg, err := node.createRequestMessage(dstNode, dstObj, esv, props)
+func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
+	msg, err := node.createRequestMessage(dstNode, objCode, esv, props)
 	if err != nil {
 		return nil, err
 	}

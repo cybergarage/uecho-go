@@ -122,7 +122,7 @@ func TestNewSampleNode(t *testing.T) {
 
 	prop := NewPropertyWithCode(testLightPropertyPowerCode)
 	for n := 0; n < testNodeRequestCount; n++ {
-		err = ctrl.SendRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+		err = ctrl.SendRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
 		if err != nil {
 			t.Error(err)
 		}
@@ -132,7 +132,7 @@ func TestNewSampleNode(t *testing.T) {
 
 	prop = NewPropertyWithCode(testLightPropertyPowerCode)
 	for n := 0; n < testNodeRequestCount; n++ {
-		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
 		if err == nil {
 			localNodeCheckResponseMessagePowerStatus(t, resMsg, testLightPropertyInitialPowerStatus)
 		} else {
@@ -156,7 +156,7 @@ func TestNewSampleNode(t *testing.T) {
 
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
-		err = ctrl.SendRequest(dev.GetParentNode(), dev, protocol.ESVWriteRequest, []*Property{prop})
+		err = ctrl.SendRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVWriteRequest, []*Property{prop})
 		if err != nil {
 			t.Error(err)
 		}
@@ -164,7 +164,7 @@ func TestNewSampleNode(t *testing.T) {
 		// Read
 
 		prop = NewPropertyWithCode(testLightPropertyPowerCode)
-		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVReadRequest, []*Property{prop})
+		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
 		if err == nil {
 			localNodeCheckResponseMessagePowerStatus(t, resMsg, lastLightPowerStatus)
 		} else {
@@ -187,7 +187,7 @@ func TestNewSampleNode(t *testing.T) {
 
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
-		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), dev, protocol.ESVWriteReadRequest, []*Property{prop})
+		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
 		if err == nil {
 			localNodeCheckResponseMessagePowerStatus(t, resMsg, lastLightPowerStatus)
 		} else {
