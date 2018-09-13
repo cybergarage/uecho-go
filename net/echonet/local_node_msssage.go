@@ -9,7 +9,13 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+)
+
+const (
+	logLocalNodeSendMessageFormat = "LocalNode::SendMessage : %s (%d)"
+	logLocalNodePostMessageFormat = "LocalNode::PostMessage : %s"
 )
 
 const (
@@ -70,7 +76,10 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 	}
 	msg.SetSourceObjectCode(nodeProp.GetParentObject().GetCode())
 
-	_, err = node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
+	n, err := node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
+
+	log.Trace(fmt.Sprintf(logLocalNodeSendMessageFormat, msg.String(), n))
+
 	return err
 }
 
@@ -130,6 +139,8 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 
 	node.postResponseCh = make(chan *protocol.Message)
 	node.postRequestMsg = msg
+
+	log.Trace(fmt.Sprintf(logLocalNodePostMessageFormat, msg.String()))
 
 	err := node.SendMessage(dstNode, msg)
 	if err != nil {
