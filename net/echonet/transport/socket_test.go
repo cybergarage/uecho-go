@@ -8,6 +8,6 @@ import (
 	"testing"
 )
 
-func TestNewUnicastSocket(t *testing.T) {
-	NewUnicastSocket()
+func TestNewSocket(t *testing.T) {
+	NewUDPSocket()
 }

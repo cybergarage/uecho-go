@@ -18,7 +18,7 @@ type UnicastListener interface {
 // A UnicastServer represents a unicast server.
 type UnicastServer struct {
 	*Server
-	Socket   *UnicastSocket
+	Socket   *UnicastUDPSocket
 	Listener UnicastListener
 }
 
@@ -26,7 +26,7 @@ type UnicastServer struct {
 func NewUnicastServer() *UnicastServer {
 	server := &UnicastServer{
 		Server:   NewServer(),
-		Socket:   NewUnicastSocket(),
+		Socket:   NewUnicastUDPSocket(),
 		Listener: nil,
 	}
 	return server
