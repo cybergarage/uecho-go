@@ -37,8 +37,8 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 	encoding.IntegerToByte(tid, tidBytes)
 
 	testMessageBytes := []byte{
-		protocol.EHD1,
-		protocol.EHD2,
+		protocol.EHD1Echonet,
+		protocol.EHD2Format1,
 		tidBytes[0], tidBytes[1],
 		0xA0, 0xB0, 0xC0,
 		0xD0, 0xE0, 0xF0,
