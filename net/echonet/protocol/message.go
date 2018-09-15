@@ -40,7 +40,7 @@ type Message struct {
 	OPC         byte
 	EP          []*Property
 	rawBytes    []byte
-	From        net.UDPAddr
+	From        *RemoteAddr
 	Interface   net.Interface
 }
 
@@ -55,6 +55,7 @@ func NewMessage() *Message {
 		ESV:         0,
 		OPC:         0,
 		EP:          make([]*Property, 0),
+		From:        NewRemoteAddr(),
 	}
 	return msg
 }
