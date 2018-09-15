@@ -5,7 +5,8 @@
 package echonet
 
 import (
-	"fmt"
+	"net"
+	"strconv"
 	"sync"
 	"time"
 
@@ -227,5 +228,5 @@ func (node *LocalNode) updateNodeProfile() error {
 
 // String returns the node string representation.
 func (node *LocalNode) String() string {
-	return fmt.Sprintf("%s:%d", node.GetAddress(), node.GetPort())
+	return net.JoinHostPort(node.GetAddress(), strconv.Itoa(node.GetPort()))
 }

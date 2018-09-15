@@ -14,10 +14,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	errorSocketIsClosed = "Socket is closed"
-)
-
 // A UDPSocket represents a socket for UDP.
 type UDPSocket struct {
 	Conn      *net.UDPConn
@@ -82,7 +78,8 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 		return nil, err
 	}
 
-	msg.From = *from
+	msg.From.IP = (*from).IP
+	msg.From.Port = (*from).Port
 	msg.Interface = sock.Interface
 
 	if msg != nil && sock.Conn != nil {

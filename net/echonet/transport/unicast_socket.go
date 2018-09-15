@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net"
+	"strconv"
 	"syscall"
 
 	"github.com/cybergarage/uecho-go/net/echonet/log"
@@ -38,7 +39,7 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	boundAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
+	boundAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		return err
 	}
@@ -71,7 +72,7 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 
 // Write sends the specified bytes.
 func (sock *UnicastSocket) Write(addr string, port int, b []byte) (int, error) {
-	toAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", addr, port))
+	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		return 0, err
 	}
