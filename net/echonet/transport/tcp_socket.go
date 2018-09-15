@@ -5,7 +5,7 @@
 package transport
 
 import (
-	"encoding/hex"
+	"bufio"
 	"errors"
 	"fmt"
 	"net"
@@ -14,16 +14,16 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// A UDPSocket represents a socket for UDP.
-type UDPSocket struct {
+// A TCPSocket represents a socket for TCP.
+type TCPSocket struct {
 	*Socket
-	Conn    *net.UDPConn
+	Conn    *net.TCPConn
 	readBuf []byte
 }
 
-// NewUDPSocket returns a new UDPSocket.
-func NewUDPSocket() *UDPSocket {
-	sock := &UDPSocket{
+// NewTCPSocket returns a new TCPSocket.
+func NewTCPSocket() *TCPSocket {
+	sock := &TCPSocket{
 		Socket:  NewSocket(),
 		readBuf: make([]byte, MaxPacketSize),
 	}
@@ -31,27 +31,25 @@ func NewUDPSocket() *UDPSocket {
 }
 
 // GetFD returns the file descriptor.
-func (sock *UDPSocket) GetFD() (uintptr, error) {
+func (sock *TCPSocket) GetFD() (uintptr, error) {
 	f, err := sock.Conn.File()
 	if err != nil {
 		return 0, err
 	}
 	return f.Fd(), nil
+
 }
 
 // Close closes the current opened socket.
-func (sock *UDPSocket) Close() error {
+func (sock *TCPSocket) Close() error {
 	if sock.Conn == nil {
 		return nil
 	}
 
-	// FIXE : Hung up on go1.11 darwin/amd64
-	/*
-		err := sock.Conn.Close()
-		if err != nil {
-			return err
-		}
-	*/
+	err := sock.Conn.Close()
+	if err != nil {
+		return err
+	}
 
 	sock.Conn = nil
 	sock.Interface = net.Interface{}
@@ -60,30 +58,29 @@ func (sock *UDPSocket) Close() error {
 }
 
 // ReadMessage reads a message from the current opened socket.
-func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
+func (sock *TCPSocket) ReadMessage() (*protocol.Message, error) {
 	if sock.Conn == nil {
 		return nil, errors.New(errorSocketIsClosed)
 	}
 
-	n, from, err := sock.Conn.ReadFromUDP(sock.readBuf)
-	if err != nil {
-		return nil, err
-	}
+	retemoAddr := sock.Conn.RemoteAddr()
 
-	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
+	reader := bufio.NewReader(sock.Conn)
+	msg, err := protocol.NewMessageWithReader(reader)
 	if err != nil {
 		if sock.Conn != nil {
-			log.Error(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), (*from).String(), n, hex.EncodeToString(sock.readBuf[:n])))
+			log.Error(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), retemoAddr, 0, ""))
 		}
 		return nil, err
 	}
 
-	msg.From.IP = (*from).IP
-	msg.From.Port = (*from).Port
-	msg.Interface = sock.Interface
+	err = msg.From.ParseString(retemoAddr.String())
+	if err != nil {
+		return nil, err
+	}
 
 	if msg != nil && sock.Conn != nil {
-		log.Trace(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), msg.From.String(), msg.Size(), msg.String()))
+		log.Trace(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), retemoAddr, msg.Size(), msg.String()))
 	}
 
 	return msg, nil

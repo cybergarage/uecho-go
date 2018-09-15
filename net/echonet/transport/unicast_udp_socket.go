@@ -9,26 +9,25 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"syscall"
 
 	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
-// A UnicastSocket represents a socket.
-type UnicastSocket struct {
+// A UnicastUDPSocket represents a socket.
+type UnicastUDPSocket struct {
 	*UDPSocket
 }
 
-// NewUnicastSocket returns a new UnicastSocket.
-func NewUnicastSocket() *UnicastSocket {
-	sock := &UnicastSocket{
+// NewUnicastUDPSocket returns a new UnicastUDPSocket.
+func NewUnicastUDPSocket() *UnicastUDPSocket {
+	sock := &UnicastUDPSocket{
 		UDPSocket: NewUDPSocket(),
 	}
 	return sock
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
+func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
 	err := sock.Close()
 	if err != nil {
 		return err
@@ -49,29 +48,13 @@ func (sock *UnicastSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	fd, err := sock.GetFD()
-	if err != nil {
-		return err
-	}
-
-	err = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
-	if err != nil {
-		return err
-	}
-
-	// Disable for Linux platrorms
-	//_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 1)
-	//if err != nil {
-	//	return err
-	//}
-
 	sock.Interface = ifi
 
 	return nil
 }
 
 // Write sends the specified bytes.
-func (sock *UnicastSocket) Write(addr string, port int, b []byte) (int, error) {
+func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error) {
 	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		return 0, err

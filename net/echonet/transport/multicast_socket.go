@@ -61,25 +61,3 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 
 	return nil
 }
-
-/*
-// Write sends the specified bytes.
-func (sock *MulticastSocket) Write(b []byte) (int, error) {
-	if sock.Conn == nil {
-		return 0, errors.New(errorSocketIsClosed)
-	}
-
-	addr, err := net.ResolveUDPAddr("udp", MulticastAddress)
-	if err != nil {
-		return 0, err
-	}
-
-	conn, err := net.DialUDP("udp", nil, addr)
-	if err != nil {
-		return 0, err
-	}
-	defer conn.Close()
-
-	return conn.Write(b)
-}
-*/
