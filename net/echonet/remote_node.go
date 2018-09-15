@@ -6,6 +6,8 @@ package echonet
 
 import (
 	"fmt"
+	"net"
+	"strconv"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -140,5 +142,5 @@ func (node *RemoteNode) Equals(otherNode Node) bool {
 
 // String returns the node string representation.
 func (node *RemoteNode) String() string {
-	return fmt.Sprintf("%s:%d", node.GetAddress(), node.GetPort())
+	return net.JoinHostPort(node.GetAddress(), strconv.Itoa(node.GetPort()))
 }

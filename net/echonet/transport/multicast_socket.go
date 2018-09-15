@@ -7,6 +7,7 @@ package transport
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"syscall"
 )
 
@@ -30,7 +31,7 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 		return err
 	}
 
-	addr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", MulticastAddress, UDPPort))
+	addr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(MulticastAddress, strconv.Itoa(UDPPort)))
 	if err != nil {
 		return err
 	}
