@@ -6,20 +6,22 @@ package protocol
 
 import (
 	"encoding/hex"
-	"fmt"
+	"io"
 	"net"
 
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
 const (
-	MessageHeaderSize = (1 + 1 + 2)
-	MessageMinSize    = (MessageHeaderSize + 3 + 3 + 1 + 1)
-	EHD1              = 0x10
-	EHD2              = 0x81
-	TIDSize           = 2
-	TIDMax            = 65535
-	EOJSize           = 3
+	FrameHeaderSize           = (1 + 1 + 2)
+	Format1HeaderSize         = (3 + 3 + 1 + 1)
+	Format1MinSize            = (FrameHeaderSize + Format1HeaderSize)
+	Format1PropertyHeaderSize = 2
+	EHD1Echonet               = 0x10
+	EHD2Format1               = 0x81
+	TIDSize                   = 2
+	TIDMax                    = 65535
+	EOJSize                   = 3
 )
 
 const (
@@ -29,43 +31,51 @@ const (
 
 // Message is an instance for Echonet message.
 type Message struct {
-	EHD1      byte
-	EHD2      byte
-	TID       []byte
-	SEOJ      []byte
-	DEOJ      []byte
-	ESV       ESV
-	OPC       byte
-	EP        []*Property
-	rawBytes  []byte
-	From      net.UDPAddr
-	Interface net.Interface
+	EHD1Echonet byte
+	EHD2Format1 byte
+	TID         []byte
+	SEOJ        []byte
+	DEOJ        []byte
+	ESV         ESV
+	OPC         byte
+	EP          []*Property
+	rawBytes    []byte
+	From        net.UDPAddr
+	Interface   net.Interface
 }
 
 // NewMessage returns a new message.
 func NewMessage() *Message {
 	msg := &Message{
-		EHD1:     EHD1,
-		EHD2:     EHD2,
-		TID:      make([]byte, TIDSize),
-		SEOJ:     make([]byte, EOJSize),
-		DEOJ:     make([]byte, EOJSize),
-		ESV:      0,
-		OPC:      0,
-		EP:       make([]*Property, 0),
-		rawBytes: make([]byte, 0),
+		EHD1Echonet: EHD1Echonet,
+		EHD2Format1: EHD2Format1,
+		TID:         make([]byte, TIDSize),
+		SEOJ:        make([]byte, EOJSize),
+		DEOJ:        make([]byte, EOJSize),
+		ESV:         0,
+		OPC:         0,
+		EP:          make([]*Property, 0),
 	}
 	return msg
+}
+
+// NewMessageWithReader returns a new message with the specified reader.
+func NewMessageWithReader(reader io.Reader) (*Message, error) {
+	msg := NewMessage()
+	err := msg.ParseReader(reader)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
 }
 
 // NewMessageWithBytes returns a new message of the specified bytes.
 func NewMessageWithBytes(data []byte) (*Message, error) {
 	msg := NewMessage()
-	err := msg.Parse(data)
+	err := msg.ParseBytes(data)
 	if err != nil {
 		return nil, err
 	}
-	msg.rawBytes = data
 	return msg, nil
 }
 
@@ -275,96 +285,9 @@ func (msg *Message) GetProperties() []*Property {
 	return msg.EP
 }
 
-// Parse parses the specified bytes.
-func (msg *Message) Parse(data []byte) error {
-	dataSize := len(data)
-	if dataSize < MessageMinSize {
-		return fmt.Errorf(errorShortMessageSize, dataSize, MessageMinSize)
-	}
-
-	// Check Headers
-
-	if data[0] != EHD1 {
-		return fmt.Errorf(errorInvalidMessageHeader, 0, data[0], EHD1)
-	}
-
-	if data[1] != EHD2 {
-		return fmt.Errorf(errorInvalidMessageHeader, 1, data[1], EHD2)
-	}
-
-	// TID
-
-	msg.TID[0] = data[2]
-	msg.TID[1] = data[3]
-
-	// SEOJ
-
-	msg.SEOJ[0] = data[4]
-	msg.SEOJ[1] = data[5]
-	msg.SEOJ[2] = data[6]
-
-	// DEOJ
-
-	msg.DEOJ[0] = data[7]
-	msg.DEOJ[1] = data[8]
-	msg.DEOJ[2] = data[9]
-
-	// ESV
-
-	msg.ESV = ESV(data[10])
-
-	// OPC
-
-	err := msg.SetOPC(int(data[11]))
-	if err != nil {
-		return err
-	}
-
-	// EP
-
-	offset := 12
-	for n := 0; n < int(msg.OPC); n++ {
-		prop := msg.GetProperty(n)
-		if prop == nil {
-			continue
-		}
-
-		// EPC
-
-		if (dataSize - 1) < offset {
-			continue
-		}
-
-		prop.Code = PropertyCode(data[offset])
-		offset++
-
-		// PDC
-
-		if (dataSize - 1) < offset {
-			continue
-		}
-
-		propSize := int(data[offset])
-		offset++
-
-		// EDT
-
-		if (dataSize - 1) < (offset + propSize - 1) {
-			continue
-		}
-
-		prop.Data = data[offset:(offset + propSize)]
-
-		offset += propSize
-	}
-
-	return nil
-}
-
 // Size return the byte size.
 func (msg *Message) Size() int {
-
-	msgSize := MessageMinSize
+	msgSize := Format1MinSize
 
 	for n := 0; n < int(msg.OPC); n++ {
 		prop := msg.GetProperty(n)
@@ -383,8 +306,8 @@ func (msg *Message) Bytes() []byte {
 
 	msgBytes := make([]byte, msg.Size())
 
-	msgBytes[0] = msg.EHD1
-	msgBytes[1] = msg.EHD2
+	msgBytes[0] = msg.EHD1Echonet
+	msgBytes[1] = msg.EHD2Format1
 	msgBytes[2] = msg.TID[0]
 	msgBytes[3] = msg.TID[1]
 	msgBytes[4] = msg.SEOJ[0]
