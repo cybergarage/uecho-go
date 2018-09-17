@@ -99,15 +99,15 @@ func TestNewSampleNode(t *testing.T) {
 
 	// Check a found node
 
-	foundNodes := ctrl.GetNodes()
-	if 0 < len(foundNodes) {
-		foundNode := foundNodes[0]
+	for _, foundNode := range ctrl.GetNodes() {
+		// Skip other Echonet nodes
+		_, err := foundNode.GetDevice(testLightDeviceCode)
+		if err != nil {
+			continue
+		}
 		if !node.Equals(foundNode) {
 			t.Errorf(errorNodeNotFound, foundNode.GetAddress(), foundNode.GetPort())
 		}
-	} else {
-		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
-		return
 	}
 
 	// Check a found device
