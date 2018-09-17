@@ -48,6 +48,7 @@ func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
+	sock.Port = port
 	sock.Interface = ifi
 
 	return nil

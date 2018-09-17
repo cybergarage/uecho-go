@@ -54,6 +54,7 @@ func (sock *UDPSocket) Close() error {
 	*/
 
 	sock.Conn = nil
+	sock.Port = 0
 	sock.Interface = net.Interface{}
 
 	return nil
