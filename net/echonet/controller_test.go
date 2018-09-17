@@ -105,6 +105,11 @@ func TestControllerSearch(t *testing.T) {
 	// Send read / write request (post)
 
 	for _, node := range ctrl.GetNodes() {
+		// Skip other Echonet nodes
+		_, err := node.GetDevice(testLightDeviceCode)
+		if err != nil {
+			continue
+		}
 		for n := 0; n < testNodeRequestCount; n++ {
 			var lastLightPowerStatus byte
 			if (n % 2) == 0 {
