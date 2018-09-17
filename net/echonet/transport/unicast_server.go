@@ -18,16 +18,18 @@ type UnicastListener interface {
 // A UnicastServer represents a unicast server.
 type UnicastServer struct {
 	*Server
-	Socket   *UnicastUDPSocket
-	Listener UnicastListener
+	TCPSocket *UnicastTCPSocket
+	UDPSocket *UnicastUDPSocket
+	Listener  UnicastListener
 }
 
 // NewUnicastServer returns a new UnicastServer.
 func NewUnicastServer() *UnicastServer {
 	server := &UnicastServer{
-		Server:   NewServer(),
-		Socket:   NewUnicastUDPSocket(),
-		Listener: nil,
+		Server:    NewServer(),
+		TCPSocket: NewUnicastTCPSocket(),
+		UDPSocket: NewUnicastUDPSocket(),
+		Listener:  nil,
 	}
 	return server
 }
@@ -39,30 +41,72 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 
 // Start starts this server.
 func (server *UnicastServer) Start(ifi net.Interface, port int) error {
-	err := server.Socket.Bind(ifi, port)
+	err := server.TCPSocket.Bind(ifi, port)
 	if err != nil {
 		return err
 	}
+
+	err = server.UDPSocket.Bind(ifi, port)
+	if err != nil {
+		server.TCPSocket.Close()
+		return err
+	}
+
 	server.Interface = ifi
-	go handleUnicastConnection(server)
+	go handleUnicastUDPConnection(server)
+
 	return nil
 }
 
 // Stop stops this server.
 func (server *UnicastServer) Stop() error {
-	err := server.Socket.Close()
+	var lastErr error
+
+	err := server.TCPSocket.Close()
 	if err != nil {
-		return err
+		lastErr = err
 	}
-	return nil
+
+	err = server.UDPSocket.Close()
+	if err != nil {
+		lastErr = err
+	}
+
+	return lastErr
 }
 
-func handleUnicastConnection(server *UnicastServer) {
+func handleUnicastUDPConnection(server *UnicastServer) {
 	for {
-		msg, err := server.Socket.ReadMessage()
+		msg, err := server.UDPSocket.ReadMessage()
 		if err != nil {
 			break
 		}
+
+		if server.Listener != nil {
+			server.Listener.ProtocolMessageReceived(msg)
+		}
+	}
+}
+
+func handleUnicastTCPListener(server *UnicastServer) {
+	for {
+		conn, err := server.TCPSocket.Listener.Accept()
+		if err != nil {
+			break
+		}
+
+		go handleUnicastTCPConnection(server, conn)
+	}
+}
+
+func handleUnicastTCPConnection(server *UnicastServer, conn net.Conn) {
+	for {
+		msg, err := server.TCPSocket.ReadMessage(conn)
+		if err != nil {
+			break
+		}
+
+		conn.Close()
 
 		if server.Listener != nil {
 			server.Listener.ProtocolMessageReceived(msg)
