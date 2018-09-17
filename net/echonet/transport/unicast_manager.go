@@ -138,7 +138,7 @@ func (mgr *UnicastManager) IsRunning() bool {
 func (mgr *UnicastManager) Write(addr string, port int, b []byte) (int, error) {
 	var lastErr error
 	for _, server := range mgr.Servers {
-		n, err := server.Socket.Write(addr, port, b)
+		n, err := server.UDPSocket.Write(addr, port, b)
 		if err == nil {
 			return n, nil
 		}

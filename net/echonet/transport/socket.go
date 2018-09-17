@@ -11,10 +11,13 @@ import (
 // A Socket represents a socket.
 type Socket struct {
 	Interface net.Interface
+	Port      int
 }
 
 // NewSocket returns a new UDPSocket.
 func NewSocket() *Socket {
-	sock := &Socket{}
+	sock := &Socket{
+		Port: 0,
+	}
 	return sock
 }
