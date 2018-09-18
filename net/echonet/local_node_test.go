@@ -70,7 +70,6 @@ func TestNewSampleNode(t *testing.T) {
 	}
 	defer ctrl.Stop()
 
-	ctrlAddr := ctrl.GetAddress()
 	ctrlPort := ctrl.GetPort()
 
 	err = node.Start()
@@ -84,13 +83,7 @@ func TestNewSampleNode(t *testing.T) {
 	}
 	defer node.Stop()
 
-	nodeAddr := node.GetAddress()
 	nodePort := node.GetPort()
-
-	if ctrlAddr == nodeAddr {
-		//t.Errorf("%s == %s", ctrlAddr, nodeAddr)
-	}
-
 	if ctrlPort == nodePort {
 		t.Errorf("%d == %d", ctrlPort, nodePort)
 	}
@@ -99,17 +92,21 @@ func TestNewSampleNode(t *testing.T) {
 
 	// Check a found node
 
-	for _, foundNode := range ctrl.GetNodes() {
+	var foundNode *RemoteNode
+	for _, ctrlNode := range ctrl.GetNodes() {
 		// Skip other Echonet nodes
-		_, err := foundNode.GetDevice(testLightDeviceCode)
+		_, err := ctrlNode.GetDevice(testLightDeviceCode)
 		if err != nil {
 			continue
 		}
-		if !node.Equals(foundNode) {
-			t.Errorf(errorNodeNotFound, foundNode.GetAddress(), foundNode.GetPort())
-		}
+		foundNode = ctrlNode
+		break
 	}
 
+	if foundNode == nil {
+		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
+		return
+	}
 	// Check a found device
 
 	dev, err := ctrl.GetObject(testLightDeviceCode)
