@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"net"
 	"strconv"
 
@@ -91,6 +90,45 @@ func (sock *TCPSocket) Close() error {
 	return nil
 }
 
+func (sock *TCPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg string, msgSize int) {
+	if sock.Conn == nil {
+		return
+	}
+	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionRead, msgFrom, sock.Conn.LocalAddr().String(), msg, msgSize)
+}
+
+// ReadMessage reads a message from the current opened socket.
+func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, error) {
+	if sock.Conn == nil {
+		return nil, errors.New(errorSocketIsClosed)
+	}
+
+	retemoAddr := clientConn.RemoteAddr()
+
+	reader := bufio.NewReader(clientConn)
+	msg, err := protocol.NewMessageWithReader(reader)
+	if err != nil {
+		sock.outputReadLog(log.LoggerLevelError, retemoAddr.String(), "", 0)
+		return nil, err
+	}
+
+	err = msg.From.ParseString(retemoAddr.String())
+	if err != nil {
+		return nil, err
+	}
+
+	sock.outputReadLog(log.LoggerLevelTrace, retemoAddr.String(), msg.String(), msg.Size())
+
+	return msg, nil
+}
+
+func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
+	if sock.Conn == nil {
+		return
+	}
+	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionRead, sock.Conn.LocalAddr().String(), msgTo, msg, msgSize)
+}
+
 // Write sends the specified bytes.
 func (sock *TCPSocket) Write(addr string, port int, b []byte) (int, error) {
 	toAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
@@ -106,37 +144,8 @@ func (sock *TCPSocket) Write(addr string, port int, b []byte) (int, error) {
 	}
 
 	n, err := conn.Write(b)
-	log.Trace(fmt.Sprintf(logSocketWriteFormat, conn.LocalAddr().String(), toAddr.String(), n, hex.EncodeToString(b)))
+	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 	conn.Close()
 
 	return n, err
-}
-
-// ReadMessage reads a message from the current opened socket.
-func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, error) {
-	if sock.Conn == nil {
-		return nil, errors.New(errorSocketIsClosed)
-	}
-
-	retemoAddr := clientConn.RemoteAddr()
-
-	reader := bufio.NewReader(clientConn)
-	msg, err := protocol.NewMessageWithReader(reader)
-	if err != nil {
-		if sock.Conn != nil {
-			log.Error(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), retemoAddr, 0, ""))
-		}
-		return nil, err
-	}
-
-	err = msg.From.ParseString(retemoAddr.String())
-	if err != nil {
-		return nil, err
-	}
-
-	if msg != nil && sock.Conn != nil {
-		log.Trace(fmt.Sprintf(logSocketReadFormat, sock.Conn.LocalAddr().String(), retemoAddr, msg.Size(), msg.String()))
-	}
-
-	return msg, nil
 }
