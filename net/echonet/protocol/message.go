@@ -160,6 +160,14 @@ func (msg *Message) GetTID() uint {
 	return (((uint)(msg.TID[0]) << 8) + (uint)(msg.TID[1]))
 }
 
+// IsTID returns true whether the specified value equals the message TID, otherwise false.
+func (msg *Message) IsTID(tid uint) bool {
+	if msg.GetTID() != tid {
+		return false
+	}
+	return true
+}
+
 // SetSourceObjectCode sets a source object code.
 func (msg *Message) SetSourceObjectCode(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), msg.SEOJ)
@@ -168,6 +176,14 @@ func (msg *Message) SetSourceObjectCode(code ObjectCode) {
 // GetSourceObjectCode returns the source object code.
 func (msg *Message) GetSourceObjectCode() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.SEOJ))
+}
+
+// IsSourceObjectCode returns true whether the specified value equals the message source object code, otherwise false.
+func (msg *Message) IsSourceObjectCode(code ObjectCode) bool {
+	if msg.GetSourceObjectCode() != code {
+		return false
+	}
+	return true
 }
 
 // SetDestinationObjectCode sets a source object code.
@@ -180,6 +196,14 @@ func (msg *Message) GetDestinationObjectCode() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.DEOJ))
 }
 
+// IsDestinationObjectCode returns true whether the specified value equals the message destination object code, otherwise false.
+func (msg *Message) IsDestinationObjectCode(code ObjectCode) bool {
+	if msg.GetDestinationObjectCode() != code {
+		return false
+	}
+	return true
+}
+
 // SetESV sets the specified ESV.
 func (msg *Message) SetESV(value ESV) {
 	msg.ESV = value
@@ -188,6 +212,14 @@ func (msg *Message) SetESV(value ESV) {
 // GetESV returns the stored ESV.
 func (msg *Message) GetESV() ESV {
 	return msg.ESV
+}
+
+// IsESV returns true whether the specified code equals the message ESV, otherwise false.
+func (msg *Message) IsESV(esv ESV) bool {
+	if msg.ESV != esv {
+		return false
+	}
+	return true
 }
 
 // IsValidESV returns true whether the specified code is valid, otherwise false.
