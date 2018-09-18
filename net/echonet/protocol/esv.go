@@ -110,13 +110,20 @@ func IsReadResponse(esv ESV) bool {
 	return false
 }
 
-// IsNotificationResponse returns true whether the specified code is a notification response type, otherwise false.
-func IsNotificationResponse(esv ESV) bool {
+// IsNotification returns true whether the specified code is a notification type, otherwise false.
+func IsNotification(esv ESV) bool {
 	switch esv {
 	case ESVNotification:
 		return true
 	case ESVNotificationResponseRequired:
 		return true
+	}
+	return false
+}
+
+// IsNotificationResponse returns true whether the specified code is a notification response type, otherwise false.
+func IsNotificationResponse(esv ESV) bool {
+	switch esv {
 	case ESVNotificationResponse:
 		return true
 	}
