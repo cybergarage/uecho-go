@@ -6,7 +6,6 @@ package transport
 
 import (
 	"encoding/hex"
-	"fmt"
 	"net"
 	"strconv"
 
@@ -54,6 +53,13 @@ func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
 	return nil
 }
 
+func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
+	if sock.Conn == nil {
+		return
+	}
+	outputSocketLog(logLevel, logSocketTypeUDP, logSocketDirectionRead, sock.Conn.LocalAddr().String(), msgTo, msg, msgSize)
+}
+
 // Write sends the specified bytes.
 func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error) {
 	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
@@ -65,7 +71,7 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 
 	if sock.Conn != nil {
 		n, err := sock.Conn.WriteToUDP(b, toAddr)
-		log.Trace(fmt.Sprintf(logSocketWriteFormat, sock.Conn.LocalAddr().String(), toAddr.String(), n, hex.EncodeToString(b)))
+		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 		return n, err
 	}
 
@@ -77,7 +83,7 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 	}
 
 	n, err := conn.Write(b)
-	log.Trace(fmt.Sprintf(logSocketWriteFormat, conn.LocalAddr().String(), toAddr.String(), n, hex.EncodeToString(b)))
+	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 	conn.Close()
 
 	return n, err
