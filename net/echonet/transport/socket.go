@@ -21,3 +21,11 @@ func NewSocket() *Socket {
 	}
 	return sock
 }
+
+// IsBound returns truen whether the socket is bound, otherwise false.
+func (sock *Socket) IsBound() bool {
+	if sock.Port <= 0 {
+		return false
+	}
+	return true
+}
