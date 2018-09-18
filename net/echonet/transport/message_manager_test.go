@@ -16,20 +16,24 @@ import (
 
 type testMessageManager struct {
 	*MessageManager
-	lastMessage *protocol.Message
+	lastNotificationMessage *protocol.Message
 }
 
 // NewMessageManager returns a new message manager.
 func newTestMessageManager() *testMessageManager {
 	mgr := &testMessageManager{
-		MessageManager: NewMessageManager(),
-		lastMessage:    nil,
+		MessageManager:          NewMessageManager(),
+		lastNotificationMessage: nil,
 	}
 	return mgr
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) {
-	mgr.lastMessage = msg
+	//if msg 0xA0, 0xB0, 0xC0)
+	if msg.ESV != protocol.ESVNotification {
+		return
+	}
+	mgr.lastNotificationMessage = msg
 }
 
 func newTestMessage(tid uint) (*protocol.Message, error) {
@@ -42,7 +46,7 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 		tidBytes[0], tidBytes[1],
 		0xA0, 0xB0, 0xC0,
 		0xD0, 0xE0, 0xF0,
-		protocol.ESVReadRequest,
+		protocol.ESVNotification,
 		3,
 		1, 1, 'a',
 		2, 2, 'b', 'c',
@@ -77,12 +81,12 @@ func TestNewMessageManager(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	if mgr.lastMessage == nil {
+	if mgr.lastNotificationMessage == nil {
 		t.Error("")
 	}
 
-	if bytes.Compare(msg.Bytes(), mgr.lastMessage.Bytes()) != 0 {
-		t.Errorf("%s != %s", msg, mgr.lastMessage)
+	if bytes.Compare(msg.Bytes(), mgr.lastNotificationMessage.Bytes()) != 0 {
+		t.Errorf("%s != %s", msg, mgr.lastNotificationMessage)
 	}
 
 	err = mgr.Stop()
@@ -136,7 +140,7 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 
 		time.Sleep(time.Second)
 
-		dstMsg := dstMgr.lastMessage
+		dstMsg := dstMgr.lastNotificationMessage
 		if dstMsg == nil {
 			t.Error("")
 		}
@@ -181,7 +185,7 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 
 		time.Sleep(time.Second)
 
-		dstMsg := dstMgr.lastMessage
+		dstMsg := dstMgr.lastNotificationMessage
 		if dstMsg == nil {
 			t.Error("")
 		}
