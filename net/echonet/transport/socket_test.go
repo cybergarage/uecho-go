@@ -9,5 +9,6 @@ import (
 )
 
 func TestNewSocket(t *testing.T) {
-	NewUDPSocket()
+	sock := NewUDPSocket()
+	sock.IsBound()
 }
