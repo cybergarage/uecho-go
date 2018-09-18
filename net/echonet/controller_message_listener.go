@@ -26,7 +26,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
 	log.Trace(fmt.Sprintf(logControllerListenerFormat, msg.String()))
 
 	// NodeProfile message ?
-	if msg.IsNotificationResponse() || msg.IsReadResponse() {
+	if msg.IsNotification() || msg.IsReadResponse() {
 		msgDsgObj := msg.GetDestinationObjectCode()
 		if isNodeProfileObjectCode(msgDsgObj) {
 			ctrl.parseNodeProfileMessage(msg)

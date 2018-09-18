@@ -252,6 +252,11 @@ func (msg *Message) IsReadResponse() bool {
 	return IsReadResponse(msg.ESV)
 }
 
+// IsNotification returns true whether the message is a notification type, otherwise false.
+func (msg *Message) IsNotification() bool {
+	return IsNotification(msg.ESV)
+}
+
 // IsNotificationResponse returns true whether the message is a notification response type, otherwise false.
 func (msg *Message) IsNotificationResponse() bool {
 	return IsNotificationResponse(msg.ESV)
