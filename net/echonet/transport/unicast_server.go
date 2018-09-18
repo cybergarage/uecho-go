@@ -100,16 +100,14 @@ func handleUnicastTCPListener(server *UnicastServer) {
 }
 
 func handleUnicastTCPConnection(server *UnicastServer, conn net.Conn) {
-	for {
-		msg, err := server.TCPSocket.ReadMessage(conn)
-		if err != nil {
-			break
-		}
+	msg, err := server.TCPSocket.ReadMessage(conn)
+	if err != nil {
+		return
+	}
 
-		conn.Close()
+	conn.Close()
 
-		if server.Listener != nil {
-			server.Listener.ProtocolMessageReceived(msg)
-		}
+	if server.Listener != nil {
+		server.Listener.ProtocolMessageReceived(msg)
 	}
 }
