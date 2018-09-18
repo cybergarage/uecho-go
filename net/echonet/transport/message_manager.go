@@ -70,8 +70,8 @@ func (mgr *MessageManager) SendMessage(addr string, port int, msg *protocol.Mess
 	return mgr.unicastMgr.Write(addr, port, msg.Bytes())
 }
 
-// NotifyMessage sends a message to the multicast address.
-func (mgr *MessageManager) NotifyMessage(msg *protocol.Message) error {
+// AnnounceMessage sends a message to the multicast address.
+func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
 	_, err := mgr.SendMessage(MulticastAddress, UDPPort, msg)
 	return err
 }
