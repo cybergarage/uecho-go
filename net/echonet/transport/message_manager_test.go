@@ -29,8 +29,7 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) {
-	//if msg 0xA0, 0xB0, 0xC0)
-	if msg.ESV != protocol.ESVNotification {
+	if !msg.IsESV(protocol.ESVNotification) {
 		return
 	}
 	mgr.lastNotificationMessage = msg
@@ -81,12 +80,12 @@ func TestNewMessageManager(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	if mgr.lastNotificationMessage == nil {
+	if mgr.lastNotificationMessage != nil {
+		if bytes.Compare(msg.Bytes(), mgr.lastNotificationMessage.Bytes()) != 0 {
+			t.Errorf("%s != %s", msg, mgr.lastNotificationMessage)
+		}
+	} else {
 		t.Error("")
-	}
-
-	if bytes.Compare(msg.Bytes(), mgr.lastNotificationMessage.Bytes()) != 0 {
-		t.Errorf("%s != %s", msg, mgr.lastNotificationMessage)
 	}
 
 	err = mgr.Stop()
