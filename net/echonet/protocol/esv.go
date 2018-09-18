@@ -135,6 +135,8 @@ func IsResponseRequired(esv ESV) bool {
 	switch esv {
 	case ESVReadRequest:
 		return true
+	case ESVNotificationRequest:
+		return true
 	case ESVWriteReadRequest:
 		return true
 	case ESVWriteRequestResponseRequired:
