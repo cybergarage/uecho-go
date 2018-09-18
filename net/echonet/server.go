@@ -5,7 +5,6 @@
 package echonet
 
 import (
-	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 	"github.com/cybergarage/uecho-go/net/echonet/transport"
 )
 
@@ -20,16 +19,6 @@ func newServer() *server {
 		MessageManager: transport.NewMessageManager(),
 	}
 	return server
-}
-
-// PostAnnounce posts a message.
-func (server *server) PostAnnounce(msg *protocol.Message) error {
-	return server.NotifyMessage(msg)
-}
-
-// PostResponse posts a message to the specified node.
-func (server *server) PostResponse(msg *protocol.Message) error {
-	return server.NotifyMessage(msg)
 }
 
 // Start starts the server.
