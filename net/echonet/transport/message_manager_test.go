@@ -73,7 +73,7 @@ func TestNewMessageManager(t *testing.T) {
 
 	// Send a test message
 
-	err = mgr.NotifyMessage(msg)
+	err = mgr.AnnounceMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -131,7 +131,7 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 			continue
 		}
 
-		err = srcMgr.NotifyMessage(msg)
+		err = srcMgr.AnnounceMessage(msg)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -203,13 +203,11 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 
 	// Stop managers
 
-	/*
-		for _, mgr := range mgrs {
-			err := mgr.Stop()
-			if err != nil {
-				t.Error(err)
-				return
-			}
+	for _, mgr := range mgrs {
+		err := mgr.Stop()
+		if err != nil {
+			t.Error(err)
+			return
 		}
-	*/
+	}
 }
