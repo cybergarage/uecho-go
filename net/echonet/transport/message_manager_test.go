@@ -29,7 +29,7 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) {
-	if !msg.IsESV(protocol.ESVNotification) {
+	if !msg.IsESV(protocol.ESVNotificationRequest) {
 		return
 	}
 	mgr.lastNotificationMessage = msg
@@ -45,7 +45,7 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 		tidBytes[0], tidBytes[1],
 		0xA0, 0xB0, 0xC0,
 		0xD0, 0xE0, 0xF0,
-		protocol.ESVNotification,
+		protocol.ESVNotificationRequest,
 		3,
 		1, 1, 'a',
 		2, 2, 'b', 'c',
