@@ -93,14 +93,12 @@ func NewResponseMessageWithMessage(reqMsg *Message) *Message {
 	msg.SetDestinationObjectCode(reqMsg.GetSourceObjectCode())
 
 	switch reqMsg.GetESV() {
-	case ESVWriteRequest:
-		msg.SetESV(ESVWriteResponse)
 	case ESVWriteRequestResponseRequired:
 		msg.SetESV(ESVWriteResponse)
 	case ESVReadRequest:
 		msg.SetESV(ESVReadResponse)
 	case ESVNotificationRequest:
-		msg.SetESV(ESVNotificationResponse)
+		msg.SetESV(ESVNotification)
 	case ESVWriteReadRequest:
 		msg.SetESV(ESVWriteReadResponse)
 	case ESVNotificationResponseRequired:
