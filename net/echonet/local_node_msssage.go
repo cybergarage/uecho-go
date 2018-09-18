@@ -32,7 +32,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 	}
 	msg.SetTID(node.getNextTID())
 	msg.SetDestinationObjectCode(NodeProfileObject)
-	return node.server.NotifyMessage(msg)
+	return node.server.AnnounceMessage(msg)
 }
 
 // AnnounceProperty announces a specified property.
