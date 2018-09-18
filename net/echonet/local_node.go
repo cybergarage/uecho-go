@@ -21,6 +21,7 @@ const (
 type LocalNode struct {
 	*baseNode
 	*server
+	*Config
 	*sync.Mutex
 	manufacturerCode uint
 	lastTID          uint
@@ -35,6 +36,7 @@ func NewLocalNode() *LocalNode {
 	node := &LocalNode{
 		baseNode:         newBaseNode(),
 		server:           newServer(),
+		Config:           NewDefaultConfig(),
 		Mutex:            new(sync.Mutex),
 		manufacturerCode: NodeManufacturerUnknown,
 		lastTID:          TIDMin,
@@ -137,6 +139,8 @@ func (node *LocalNode) GetPort() int {
 
 // Start starts the node.
 func (node *LocalNode) Start() error {
+	node.server.SetConfig(node.Config.transportConfig)
+
 	err := node.server.Start()
 	if err != nil {
 		return err
