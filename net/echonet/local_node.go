@@ -52,6 +52,11 @@ func NewLocalNode() *LocalNode {
 	return node
 }
 
+// SetConfig sets all flags.
+func (node *LocalNode) SetConfig(newConfig *Config) {
+	node.server.SetConfig(newConfig.transportConfig)
+}
+
 // SetManufacturerCode sets a manufacture codes to the node.
 func (node *LocalNode) SetManufacturerCode(code uint) {
 	node.manufacturerCode = code

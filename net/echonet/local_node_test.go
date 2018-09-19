@@ -50,7 +50,7 @@ func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Mes
 	}
 }
 
-func TestNewSampleNode(t *testing.T) {
+func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	ctrl := NewController()
 
 	node, err := newTestSampleNode()
@@ -209,4 +209,22 @@ func TestNewSampleNode(t *testing.T) {
 		t.Error(err)
 	}
 
+}
+
+func TestLocalNodeWithDefaultConfig(t *testing.T) {
+	testLocalNodeWithConfig(t, NewDefaultConfig())
+}
+
+func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(false)
+	conf.SetUDPEnabled(true)
+	testLocalNodeWithConfig(t, conf)
+}
+
+func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(true)
+	conf.SetUDPEnabled(true)
+	testLocalNodeWithConfig(t, conf)
 }

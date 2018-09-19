@@ -20,9 +20,9 @@ func NewDefaultConfig() *Config {
 }
 
 // SetConfig sets all flags.
-func (conf *Config) SetConfig(flags *Config) {
-	conf.TCPEnabled = flags.TCPEnabled
-	conf.UDPEnabled = flags.UDPEnabled
+func (conf *Config) SetConfig(newConfig *Config) {
+	conf.TCPEnabled = newConfig.TCPEnabled
+	conf.UDPEnabled = newConfig.UDPEnabled
 }
 
 // SetTCPEnabled sets a flag for TCP functions.
