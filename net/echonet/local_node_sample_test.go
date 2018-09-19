@@ -23,8 +23,7 @@ type testLocalNode struct {
 	*LocalNode
 }
 
-// newTestSampleNode returns a test node.
-func newTestSampleNode() (*testLocalNode, error) {
+func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 	node := &testLocalNode{
 		LocalNode: NewLocalNode(),
 	}
@@ -45,7 +44,13 @@ func newTestSampleNode() (*testLocalNode, error) {
 		return nil, err
 	}
 
+	node.SetConfig(config)
+
 	return node, nil
+}
+
+func newTestSampleNode() (*testLocalNode, error) {
+	return newTestSampleNodeWithConfig(NewDefaultConfig())
 }
 
 func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) {

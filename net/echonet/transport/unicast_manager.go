@@ -65,7 +65,7 @@ func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *UnicastManager) Start() error {
+func (mgr *UnicastManager) Start(conf *Config) error {
 	err := mgr.Stop()
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (mgr *UnicastManager) Start() error {
 		for _, ifi := range ifis {
 			server := NewUnicastServer()
 			server.Listener = mgr.Listener
-			lastErr = server.Start(ifi, mgr.Port)
+			lastErr = server.Start(conf, ifi, mgr.Port)
 
 			if lastErr == nil {
 				mgr.Servers = append(mgr.Servers, server)
