@@ -40,7 +40,7 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 }
 
 // Start starts this server.
-func (server *UnicastServer) Start(ifi net.Interface, port int) error {
+func (server *UnicastServer) Start(conf *Config, ifi net.Interface, port int) error {
 	err := server.TCPSocket.Bind(ifi, port)
 	if err != nil {
 		return err

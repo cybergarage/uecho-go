@@ -80,7 +80,7 @@ func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
 
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
-	err := mgr.unicastMgr.Start()
+	err := mgr.unicastMgr.Start(mgr.Config)
 	if err != nil {
 		mgr.Stop()
 		return err
