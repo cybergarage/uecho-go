@@ -41,21 +41,17 @@ func (sock *Socket) GetBoundPort() (int, error) {
 }
 
 // GetBoundAddr returns the bound address
-func (sock *Socket) GetBoundAddr() (net.Addr, error) {
+func (sock *Socket) GetBoundAddr() (string, error) {
 	if !sock.IsBound() {
-		return nil, fmt.Errorf(errorSocketIsClosed)
+		return "", fmt.Errorf(errorSocketIsClosed)
 	}
 
-	addrs, err := sock.Interface.Addrs()
+	addr, err := GetInterfaceAddress(sock.Interface)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	if len(addrs) <= 0 {
-		return nil, fmt.Errorf(errorSocketIsClosed)
-	}
-
-	return addrs[0], nil
+	return addr, nil
 }
 
 // GetBoundIPAddr returns the bound address
@@ -70,5 +66,5 @@ func (sock *Socket) GetBoundIPAddr() (string, error) {
 		return "", err
 	}
 
-	return net.JoinHostPort(addr.String(), strconv.Itoa(port)), nil
+	return net.JoinHostPort(addr, strconv.Itoa(port)), nil
 }
