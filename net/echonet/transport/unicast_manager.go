@@ -144,7 +144,7 @@ func (mgr *UnicastManager) IsRunning() bool {
 func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	var lastErr error
 	for _, server := range mgr.Servers {
-		n, err := server.UDPSocket.Write(addr, port, msg.Bytes())
+		n, err := server.SendMessage(addr, port, msg)
 		if err == nil {
 			return n, nil
 		}
