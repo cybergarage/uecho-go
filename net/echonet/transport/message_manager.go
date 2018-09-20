@@ -72,7 +72,7 @@ func (mgr *MessageManager) GetBoundInterfaces() []net.Interface {
 
 // SendMessage send a message to the destination address.
 func (mgr *MessageManager) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
-	return mgr.unicastMgr.Write(addr, port, msg.Bytes())
+	return mgr.unicastMgr.SendMessage(addr, port, msg)
 }
 
 // AnnounceMessage sends a message to the multicast address.

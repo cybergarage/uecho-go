@@ -7,6 +7,8 @@ package transport
 import (
 	"fmt"
 	"net"
+
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
@@ -138,10 +140,11 @@ func (mgr *UnicastManager) IsRunning() bool {
 	return true
 }
 
-func (mgr *UnicastManager) Write(addr string, port int, b []byte) (int, error) {
+// SendMessage send a message to the destination address.
+func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	var lastErr error
 	for _, server := range mgr.Servers {
-		n, err := server.UDPSocket.Write(addr, port, b)
+		n, err := server.UDPSocket.Write(addr, port, msg.Bytes())
 		if err == nil {
 			return n, nil
 		}
