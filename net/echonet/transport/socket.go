@@ -5,7 +5,9 @@
 package transport
 
 import (
+	"fmt"
 	"net"
+	"strconv"
 )
 
 // A Socket represents a socket.
@@ -22,10 +24,51 @@ func NewSocket() *Socket {
 	return sock
 }
 
-// IsBound returns truen whether the socket is bound, otherwise false.
+// IsBound returns true whether the socket is bound, otherwise false.
 func (sock *Socket) IsBound() bool {
 	if sock.Port <= 0 {
 		return false
 	}
 	return true
+}
+
+// GetBoundPort returns the bound port
+func (sock *Socket) GetBoundPort() (int, error) {
+	if !sock.IsBound() {
+		return 0, fmt.Errorf(errorSocketIsClosed)
+	}
+	return sock.Port, nil
+}
+
+// GetBoundAddr returns the bound address
+func (sock *Socket) GetBoundAddr() (net.Addr, error) {
+	if !sock.IsBound() {
+		return nil, fmt.Errorf(errorSocketIsClosed)
+	}
+
+	addrs, err := sock.Interface.Addrs()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(addrs) <= 0 {
+		return nil, fmt.Errorf(errorSocketIsClosed)
+	}
+
+	return addrs[0], nil
+}
+
+// GetBoundIPAddr returns the bound address
+func (sock *Socket) GetBoundIPAddr() (*net.IPAddr, error) {
+	port, err := sock.GetBoundPort()
+	if err != nil {
+		return nil, err
+	}
+
+	addr, err := sock.GetBoundAddr()
+	if err != nil {
+		return nil, err
+	}
+
+	return net.ResolveIPAddr("tcp", net.JoinHostPort(addr.String(), strconv.Itoa(port)))
 }
