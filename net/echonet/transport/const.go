@@ -4,6 +4,10 @@
 
 package transport
 
+import (
+	"time"
+)
+
 const (
 	Port             = 3610
 	UDPPort          = Port
@@ -21,4 +25,8 @@ const (
 const (
 	MessageFormatSpecified = 0x01
 	MessageFormatArbitrary = 0x02
+)
+
+const (
+	DefaultConnectimeTimeOut = (time.Millisecond * 1000)
 )
