@@ -43,8 +43,14 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 
 // SendMessage send a message to the destination address.
 func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
-	n, err := server.UDPSocket.Write(addr, port, msg.Bytes())
-	return n, err
+	if server.IsTCPEnabled() {
+		n, err := server.TCPSocket.Write(addr, port, msg.Bytes())
+		if err != nil {
+			return n, nil
+		}
+	}
+
+	return server.UDPSocket.Write(addr, port, msg.Bytes())
 }
 
 // Start starts this server.
