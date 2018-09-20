@@ -54,6 +54,10 @@ var sharedLogStrings = map[LogLevel]string{
 	LoggerLevelFatal: "FATAL",
 }
 
+func (logger *Logger) SetLevel(level LogLevel) {
+	logger.Level = level
+}
+
 func (logger *Logger) GetLevel() LogLevel {
 	return logger.Level
 }
