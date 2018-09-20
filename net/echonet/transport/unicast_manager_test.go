@@ -8,10 +8,14 @@ import (
 	"testing"
 )
 
-func TestNewUnicastManager(t *testing.T) {
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/log"
+)
+
+func testUnicastManagerBinding(t *testing.T, conf *Config) {
 	mgr := NewUnicastManager()
 
-	err := mgr.Start()
+	err := mgr.Start(conf)
 	if err != nil {
 		t.Error(err)
 		return
@@ -22,4 +26,25 @@ func TestNewUnicastManager(t *testing.T) {
 		t.Error(err)
 		return
 	}
+}
+
+func TestUnicastManagerWithDefaultConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+	testUnicastManagerBinding(t, conf)
+}
+
+func TestUnicastManagerWithOnlyUDPConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(false)
+	conf.SetUDPEnabled(true)
+	testUnicastManagerBinding(t, conf)
+}
+
+func TestUnicastManagerWithTCPConfig(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(true)
+	conf.SetUDPEnabled(true)
+	testUnicastManagerBinding(t, conf)
 }
