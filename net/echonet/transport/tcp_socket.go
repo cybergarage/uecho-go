@@ -124,36 +124,52 @@ func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, erro
 }
 
 func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
-	localAddr := ""
-	if sock.Conn != nil {
-		localAddr = sock.Conn.LocalAddr().String()
-	}
-	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionWrite, localAddr, msgTo, msg, msgSize)
+	msgFrom, _ := sock.GetBoundIPAddr()
+	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
 // Write sends the specified bytes.
 func (sock *TCPSocket) Write(addr string, port int, b []byte, timeout time.Duration) (int, error) {
-	toAddr := net.JoinHostPort(addr, strconv.Itoa(port))
+	toAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
+	if err != nil {
+		sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
+		return 0, err
+	}
+
+	// Send from binding port
+
 	/*
-		toAddr, err := net.ResolveIPAddr("tcp", toAddr)
+		boundAddr, err := sock.GetBoundIPAddr()
 		if err != nil {
-			sock.outputWriteLog(log.LoggerLevelError, toAddr, hex.EncodeToString(b), 0)
 			return 0, err
 		}
+
+		fromAddr, err := net.ResolveTCPAddr("tcp", boundAddr)
+		if err != nil {
+			return 0, err
+		}
+
+		conn, err := net.DialTCP("tcp", fromAddr, toAddr)
+		if err != nil {
+			sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
+			return 0, err
+		}
+
+		n, err := conn.Write(b)
+		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+		conn.Close()
 	*/
 
 	// Send from no binding port
 
-	dialer := net.Dialer{Timeout: timeout}
-	conn, err := dialer.Dial("tcp", toAddr)
-	//conn, err := net.DialTCP("tcp", nil, toAddr)
+	conn, err := net.DialTCP("tcp", nil, toAddr)
 	if err != nil {
-		sock.outputWriteLog(log.LoggerLevelError, toAddr, hex.EncodeToString(b), 0)
+		sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
 		return 0, err
 	}
 
 	n, err := conn.Write(b)
-	sock.outputWriteLog(log.LoggerLevelTrace, toAddr, hex.EncodeToString(b), n)
+	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 	conn.Close()
 
 	return n, err

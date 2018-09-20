@@ -59,16 +59,16 @@ func (sock *Socket) GetBoundAddr() (net.Addr, error) {
 }
 
 // GetBoundIPAddr returns the bound address
-func (sock *Socket) GetBoundIPAddr() (*net.IPAddr, error) {
+func (sock *Socket) GetBoundIPAddr() (string, error) {
 	port, err := sock.GetBoundPort()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	addr, err := sock.GetBoundAddr()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return net.ResolveIPAddr("tcp", net.JoinHostPort(addr.String(), strconv.Itoa(port)))
+	return net.JoinHostPort(addr.String(), strconv.Itoa(port)), nil
 }
