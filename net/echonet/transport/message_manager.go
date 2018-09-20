@@ -77,8 +77,7 @@ func (mgr *MessageManager) SendMessage(addr string, port int, msg *protocol.Mess
 
 // AnnounceMessage sends a message to the multicast address.
 func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
-	_, err := mgr.SendMessage(MulticastAddress, UDPPort, msg)
-	return err
+	return mgr.unicastMgr.AnnounceMessage(MulticastAddress, UDPPort, msg)
 }
 
 // Start starts all transport managers.

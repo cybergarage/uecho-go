@@ -155,3 +155,19 @@ func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Mess
 	}
 	return 0, fmt.Errorf(errorUnicastServerNotRunning)
 }
+
+// AnnounceMessage sends a message to the multicast address.
+func (mgr *UnicastManager) AnnounceMessage(addr string, port int, msg *protocol.Message) error {
+	var lastErr error
+	for _, server := range mgr.Servers {
+		err := server.AnnounceMessage(addr, port, msg)
+		if err == nil {
+			return nil
+		}
+		lastErr = err
+	}
+	if lastErr != nil {
+		return lastErr
+	}
+	return fmt.Errorf(errorUnicastServerNotRunning)
+}
