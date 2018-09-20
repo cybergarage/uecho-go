@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -223,6 +224,8 @@ func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 }
 
 func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
 	conf.SetUDPEnabled(true)

@@ -140,6 +140,7 @@ func (sock *TCPSocket) Write(addr string, port int, b []byte) (int, error) {
 
 	conn, err := net.DialTCP("tcp", nil, toAddr)
 	if err != nil {
+		sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
 		return 0, err
 	}
 
