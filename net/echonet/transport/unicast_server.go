@@ -44,13 +44,19 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 // SendMessage send a message to the destination address.
 func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	if server.IsTCPEnabled() {
-		n, err := server.TCPSocket.Write(addr, port, msg.Bytes())
+		n, err := server.TCPSocket.Write(addr, port, msg.Bytes(), server.GetConnectionTimeout())
 		if err == nil {
 			return n, nil
 		}
 	}
 
 	return server.UDPSocket.Write(addr, port, msg.Bytes())
+}
+
+// AnnounceMessage sends a message to the multicast address.
+func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protocol.Message) error {
+	_, err := server.UDPSocket.Write(addr, port, msg.Bytes())
+	return err
 }
 
 // Start starts this server.
