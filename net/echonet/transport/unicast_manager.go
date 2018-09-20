@@ -16,6 +16,7 @@ const (
 
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
+	*UnicastConfig
 	Port     int
 	Servers  []*UnicastServer
 	Listener UnicastListener
@@ -24,9 +25,10 @@ type UnicastManager struct {
 // NewUnicastManager returns a new UnicastManager.
 func NewUnicastManager() *UnicastManager {
 	mgr := &UnicastManager{
-		Port:     UDPPort,
-		Servers:  make([]*UnicastServer, 0),
-		Listener: nil,
+		UnicastConfig: NewDefaultUnicastConfig(),
+		Port:          UDPPort,
+		Servers:       make([]*UnicastServer, 0),
+		Listener:      nil,
 	}
 	return mgr
 }
@@ -65,7 +67,7 @@ func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *UnicastManager) Start(conf *Config) error {
+func (mgr *UnicastManager) Start() error {
 	err := mgr.Stop()
 	if err != nil {
 		return err
@@ -84,8 +86,9 @@ func (mgr *UnicastManager) Start(conf *Config) error {
 
 		for _, ifi := range ifis {
 			server := NewUnicastServer()
+			server.SetConfig(mgr.UnicastConfig)
 			server.Listener = mgr.Listener
-			lastErr = server.Start(conf, ifi, mgr.Port)
+			lastErr = server.Start(ifi, mgr.Port)
 
 			if lastErr == nil {
 				mgr.Servers = append(mgr.Servers, server)

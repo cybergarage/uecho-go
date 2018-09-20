@@ -17,6 +17,7 @@ type UnicastListener interface {
 
 // A UnicastServer represents a unicast server.
 type UnicastServer struct {
+	*UnicastConfig
 	*Server
 	TCPSocket *UnicastTCPSocket
 	UDPSocket *UnicastUDPSocket
@@ -26,10 +27,11 @@ type UnicastServer struct {
 // NewUnicastServer returns a new UnicastServer.
 func NewUnicastServer() *UnicastServer {
 	server := &UnicastServer{
-		Server:    NewServer(),
-		TCPSocket: NewUnicastTCPSocket(),
-		UDPSocket: NewUnicastUDPSocket(),
-		Listener:  nil,
+		UnicastConfig: NewDefaultUnicastConfig(),
+		Server:        NewServer(),
+		TCPSocket:     NewUnicastTCPSocket(),
+		UDPSocket:     NewUnicastUDPSocket(),
+		Listener:      nil,
 	}
 	return server
 }
@@ -40,16 +42,20 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 }
 
 // Start starts this server.
-func (server *UnicastServer) Start(conf *Config, ifi net.Interface, port int) error {
-	err := server.TCPSocket.Bind(ifi, port)
-	if err != nil {
-		return err
+func (server *UnicastServer) Start(ifi net.Interface, port int) error {
+	if server.IsTCPEnabled() {
+		err := server.TCPSocket.Bind(ifi, port)
+		if err != nil {
+			return err
+		}
 	}
 
-	err = server.UDPSocket.Bind(ifi, port)
-	if err != nil {
-		server.TCPSocket.Close()
-		return err
+	if server.IsUDPEnabled() {
+		err := server.UDPSocket.Bind(ifi, port)
+		if err != nil {
+			server.TCPSocket.Close()
+			return err
+		}
 	}
 
 	server.Interface = ifi
