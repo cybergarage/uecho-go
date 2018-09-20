@@ -12,7 +12,6 @@ import (
 
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
-	*Config
 	Port            uint
 	messageListener protocol.MessageListener
 	multicastMgr    *MulticastManager
@@ -22,13 +21,17 @@ type MessageManager struct {
 // NewMessageManager returns a new message manager.
 func NewMessageManager() *MessageManager {
 	mgr := &MessageManager{
-		Config:          NewDefaultConfig(),
 		Port:            UDPPort,
 		messageListener: nil,
 		multicastMgr:    NewMulticastManager(),
 		unicastMgr:      NewUnicastManager(),
 	}
 	return mgr
+}
+
+// SetConfig sets all flags.
+func (mgr *MessageManager) SetConfig(newConfig *Config) {
+	mgr.unicastMgr.SetConfig(newConfig.UnicastConfig)
 }
 
 // SetPort sets a listen port.
@@ -80,7 +83,7 @@ func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
 
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
-	err := mgr.unicastMgr.Start(mgr.Config)
+	err := mgr.unicastMgr.Start()
 	if err != nil {
 		mgr.Stop()
 		return err
