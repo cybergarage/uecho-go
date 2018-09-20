@@ -18,7 +18,7 @@ type UnicastConfig struct {
 // NewDefaultUnicastConfig returns a default configuration.
 func NewDefaultUnicastConfig() *UnicastConfig {
 	conf := &UnicastConfig{
-		TCPEnabled:        true,
+		TCPEnabled:        false,
 		UDPEnabled:        true,
 		ConnectionTimeout: DefaultConnectimeTimeOut,
 	}
