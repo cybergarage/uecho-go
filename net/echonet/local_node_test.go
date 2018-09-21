@@ -218,7 +218,6 @@ func TestLocalNodeWithDefaultConfig(t *testing.T) {
 func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(false)
-	conf.SetUDPEnabled(true)
 	testLocalNodeWithConfig(t, conf)
 }
 
@@ -228,7 +227,6 @@ func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
 
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
-	conf.SetUDPEnabled(true)
 	testLocalNodeWithConfig(t, conf)
 }
 */
