@@ -144,6 +144,8 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			if srcPort != msgPort {
 				t.Errorf("%d != %d", srcPort, msgPort)
 			}
+		} else {
+			t.Logf("Checking source port : %v", checkSourcePort)
 		}
 	}
 }
@@ -194,14 +196,14 @@ func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
-func TestMulticastAndUnicastMessagingWithOnlyUDPUnicastConfig(t *testing.T) {
+func TestMulticastAndUnicastMessagingWithDisableTCPConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(false)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
-func TestMulticastAndUnicastMessagingWithOnlyTCPUnicastConfig(t *testing.T) {
+func TestMulticastAndUnicastMessagingWithEnableTCPConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
