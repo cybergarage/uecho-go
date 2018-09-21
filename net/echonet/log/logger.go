@@ -46,12 +46,20 @@ func GetSharedLogger() *Logger {
 	return sharedLogger
 }
 
-var sharedLogStrings = map[LogLevel]string{
+var logLevelStrings = map[LogLevel]string{
 	LoggerLevelTrace: "TRACE",
 	LoggerLevelInfo:  "INFO",
 	LoggerLevelWarn:  "WARN",
 	LoggerLevelError: "ERROR",
 	LoggerLevelFatal: "FATAL",
+}
+
+func getLogLevelString(logLevel LogLevel) string {
+	logString, hasString := logLevelStrings[logLevel]
+	if !hasString {
+		return loggerLevelUnknownString
+	}
+	return logString
 }
 
 func (logger *Logger) SetLevel(level LogLevel) {
@@ -60,14 +68,6 @@ func (logger *Logger) SetLevel(level LogLevel) {
 
 func (logger *Logger) GetLevel() LogLevel {
 	return logger.Level
-}
-
-func (logger *Logger) GetLevelString() string {
-	logString, hasString := sharedLogStrings[logger.Level]
-	if !hasString {
-		return loggerLevelUnknownString
-	}
-	return logString
 }
 
 func NewStdoutLogger(level LogLevel) *Logger {
@@ -122,7 +122,7 @@ func output(outputLevel LogLevel, msg string) int {
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
 
-	headerString := fmt.Sprintf("[%s]", sharedLogger.GetLevelString())
+	headerString := fmt.Sprintf("[%s]", getLogLevelString(outputLevel))
 	logMsg := fmt.Sprintf(Format, logDate, headerString, msg)
 	logMsgLen := len(logMsg)
 
