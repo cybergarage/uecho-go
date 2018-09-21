@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"syscall"
 )
 
 // A MulticastSocket represents a socket.
@@ -41,21 +40,14 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
 	}
 
-	fd, err := sock.GetFD()
+	f, err := sock.Conn.File()
 	if err != nil {
 		return err
 	}
-
-	err = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, 1)
+	err = sock.SetReuseAddr(f, true)
 	if err != nil {
 		return err
 	}
-
-	// Disable for Linux platrorms
-	//_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, 1)
-	//if err != nil {
-	//	return err
-	//}
 
 	sock.Interface = ifi
 

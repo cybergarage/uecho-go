@@ -7,7 +7,9 @@ package transport
 import (
 	"fmt"
 	"net"
+	"os"
 	"strconv"
+	"syscall"
 )
 
 // A Socket represents a socket.
@@ -67,4 +69,27 @@ func (sock *Socket) GetBoundIPAddr() (string, error) {
 	}
 
 	return net.JoinHostPort(addr, strconv.Itoa(port)), nil
+}
+
+// SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT
+func (sock *Socket) SetReuseAddr(file *os.File, flag bool) error {
+	fd := file.Fd()
+
+	opt := 0
+	if flag {
+		opt = 1
+	}
+
+	err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
+	if err != nil {
+		return err
+	}
+
+	// Disable for Linux platrorms
+	//_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, opt)
+	//if err != nil {
+	//	return err
+	//}
+
+	return nil
 }
