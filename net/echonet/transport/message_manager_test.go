@@ -196,7 +196,6 @@ func TestMulticastAndUnicastMessagingWithOnlyUDPUnicastConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(false)
-	conf.SetUDPEnabled(true)
 	testMulticastAndUnicastMessagingWithConfig(t, conf)
 }
 
@@ -204,6 +203,5 @@ func TestMulticastAndUnicastMessagingWithOnlyTCPUnicastConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
-	conf.SetUDPEnabled(false)
 	testMulticastAndUnicastMessagingWithConfig(t, conf)
 }
