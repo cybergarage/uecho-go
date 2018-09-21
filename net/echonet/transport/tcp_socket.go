@@ -7,7 +7,7 @@ package transport
 import (
 	"bufio"
 	"encoding/hex"
-	"errors"
+	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -19,8 +19,7 @@ import (
 // A TCPSocket represents a socket for TCP.
 type TCPSocket struct {
 	*Socket
-	Conn     *net.TCPConn
-	Listener net.Listener
+	Listener *net.TCPListener
 	readBuf  []byte
 }
 
@@ -31,16 +30,6 @@ func NewTCPSocket() *TCPSocket {
 		readBuf: make([]byte, MaxPacketSize),
 	}
 	return sock
-}
-
-// GetFD returns the file descriptor.
-func (sock *TCPSocket) GetFD() (uintptr, error) {
-	f, err := sock.Conn.File()
-	if err != nil {
-		return 0, err
-	}
-	return f.Fd(), nil
-
 }
 
 // Bind binds to Echonet multicast address.
@@ -60,13 +49,21 @@ func (sock *TCPSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	l, err := net.ListenTCP("tcp", boundAddr)
+	sock.Listener, err = net.ListenTCP("tcp", boundAddr)
+	if err != nil {
+		return err
+	}
+
+	f, err := sock.Listener.File()
+	if err != nil {
+		return err
+	}
+	err = sock.SetReuseAddr(f, true)
 	if err != nil {
 		return err
 	}
 
 	sock.Port = port
-	sock.Listener = l
 	sock.Interface = ifi
 
 	return nil
@@ -74,16 +71,15 @@ func (sock *TCPSocket) Bind(ifi net.Interface, port int) error {
 
 // Close closes the current opened socket.
 func (sock *TCPSocket) Close() error {
-	if sock.Conn == nil {
+	if sock.Listener == nil {
 		return nil
 	}
 
-	err := sock.Conn.Close()
+	err := sock.Listener.Close()
 	if err != nil {
 		return err
 	}
 
-	sock.Conn = nil
 	sock.Listener = nil
 	sock.Port = 0
 	sock.Interface = net.Interface{}
@@ -92,18 +88,14 @@ func (sock *TCPSocket) Close() error {
 }
 
 func (sock *TCPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg string, msgSize int) {
-	if sock.Conn == nil {
+	if sock.Listener == nil {
 		return
 	}
-	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionRead, msgFrom, sock.Conn.LocalAddr().String(), msg, msgSize)
+	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionRead, msgFrom, sock.Listener.Addr().String(), msg, msgSize)
 }
 
 // ReadMessage reads a message from the current opened socket.
 func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, error) {
-	if sock.Conn == nil {
-		return nil, errors.New(errorSocketIsClosed)
-	}
-
 	retemoAddr := clientConn.RemoteAddr()
 
 	reader := bufio.NewReader(clientConn)
@@ -138,27 +130,23 @@ func (sock *TCPSocket) Write(addr string, port int, b []byte, timeout time.Durat
 
 	// Send from binding port
 
-	/*
-		boundAddr, err := sock.GetBoundIPAddr()
-		if err != nil {
-			return 0, err
-		}
-
+	boundAddr, err := sock.GetBoundIPAddr()
+	if err == nil {
 		fromAddr, err := net.ResolveTCPAddr("tcp", boundAddr)
-		if err != nil {
-			return 0, err
+		if err == nil {
+			conn, err := net.DialTCP("tcp", fromAddr, toAddr)
+			if err == nil {
+				n, err := conn.Write(b)
+				sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+				conn.Close()
+				if err == nil {
+					return n, nil
+				}
+			} else {
+				log.Error(fmt.Sprintf("%s", err))
+			}
 		}
-
-		conn, err := net.DialTCP("tcp", fromAddr, toAddr)
-		if err != nil {
-			sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
-			return 0, err
-		}
-
-		n, err := conn.Write(b)
-		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
-		conn.Close()
-	*/
+	}
 
 	// Send from no binding port
 
