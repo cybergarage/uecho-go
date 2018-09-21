@@ -36,7 +36,6 @@ func TestUnicastManagerWithDefaultConfig(t *testing.T) {
 func TestUnicastManagerWithOnlyUDPConfig(t *testing.T) {
 	conf := NewDefaultUnicastConfig()
 	conf.SetTCPEnabled(false)
-	conf.SetUDPEnabled(true)
 	testUnicastManagerBinding(t, conf)
 }
 
@@ -45,6 +44,5 @@ func TestUnicastManagerWithTCPConfig(t *testing.T) {
 
 	conf := NewDefaultUnicastConfig()
 	conf.SetTCPEnabled(true)
-	conf.SetUDPEnabled(true)
 	testUnicastManagerBinding(t, conf)
 }

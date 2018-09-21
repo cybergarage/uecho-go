@@ -11,7 +11,6 @@ import (
 // UnicastConfig represents a cofiguration for unicast server.
 type UnicastConfig struct {
 	TCPEnabled        bool
-	UDPEnabled        bool
 	ConnectionTimeout time.Duration
 }
 
@@ -19,7 +18,6 @@ type UnicastConfig struct {
 func NewDefaultUnicastConfig() *UnicastConfig {
 	conf := &UnicastConfig{
 		TCPEnabled:        false,
-		UDPEnabled:        true,
 		ConnectionTimeout: DefaultConnectimeTimeOut,
 	}
 	return conf
@@ -28,7 +26,6 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 // SetConfig sets all flags.
 func (conf *UnicastConfig) SetConfig(newConfig *UnicastConfig) {
 	conf.TCPEnabled = newConfig.TCPEnabled
-	conf.UDPEnabled = newConfig.UDPEnabled
 	conf.ConnectionTimeout = newConfig.ConnectionTimeout
 }
 
@@ -40,16 +37,6 @@ func (conf *UnicastConfig) SetTCPEnabled(flag bool) {
 // IsTCPEnabled returns true whether the TCP function is enabled, otherwise false.
 func (conf *UnicastConfig) IsTCPEnabled() bool {
 	return conf.TCPEnabled
-}
-
-// SetUDPEnabled sets a flag for UDP functions.
-func (conf *UnicastConfig) SetUDPEnabled(flag bool) {
-	conf.UDPEnabled = flag
-}
-
-// IsUDPEnabled returns true whether the UDP function is enabled, otherwise false.
-func (conf *UnicastConfig) IsUDPEnabled() bool {
-	return conf.UDPEnabled
 }
 
 // SetConnectionTimeout sets a connection timeout setting.

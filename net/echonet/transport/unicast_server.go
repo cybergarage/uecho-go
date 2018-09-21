@@ -62,17 +62,15 @@ func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protoco
 
 // Start starts this server.
 func (server *UnicastServer) Start(ifi net.Interface, port int) error {
+	err := server.UDPSocket.Bind(ifi, port)
+	if err != nil {
+		server.TCPSocket.Close()
+		return err
+	}
+
 	if server.IsTCPEnabled() {
 		err := server.TCPSocket.Bind(ifi, port)
 		if err != nil {
-			return err
-		}
-	}
-
-	if server.IsUDPEnabled() {
-		err := server.UDPSocket.Bind(ifi, port)
-		if err != nil {
-			server.TCPSocket.Close()
 			return err
 		}
 	}
