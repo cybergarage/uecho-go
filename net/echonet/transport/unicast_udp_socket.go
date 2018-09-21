@@ -69,6 +69,9 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 	if sock.Conn != nil {
 		n, err := sock.Conn.WriteToUDP(b, toAddr)
 		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+		if err != nil {
+			log.Error(err.Error())
+		}
 		return n, err
 	}
 
@@ -76,11 +79,15 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 
 	conn, err := net.DialUDP("udp", nil, toAddr)
 	if err != nil {
+		log.Error(err.Error())
 		return 0, err
 	}
 
 	n, err := conn.Write(b)
 	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+	if err != nil {
+		log.Error(err.Error())
+	}
 	conn.Close()
 
 	return n, err

@@ -67,6 +67,7 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
 	if err != nil {
 		sock.outputReadLog(log.LoggerLevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.readBuf[:n]), n)
+		log.Error(err.Error())
 		return nil, err
 	}
 

@@ -67,6 +67,7 @@ func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 		server.TCPSocket.Close()
 		return err
 	}
+	go handleUnicastUDPConnection(server)
 
 	if server.IsTCPEnabled() {
 		err := server.TCPSocket.Bind(ifi, port)
@@ -74,9 +75,9 @@ func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 			return err
 		}
 	}
+	go handleUnicastTCPListener(server)
 
 	server.Interface = ifi
-	go handleUnicastUDPConnection(server)
 
 	return nil
 }
