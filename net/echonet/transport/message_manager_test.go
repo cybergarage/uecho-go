@@ -96,7 +96,7 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 	}
 }
 
-func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
+func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager, checkSourcePort bool) {
 	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
 	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
 
@@ -137,16 +137,18 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			t.Errorf("%s != %s", msg, dstMsg)
 		}
 
-		srcPort := srcMgr.GetPort()
-		msgPort := dstMsg.GetSourcePort()
+		if checkSourcePort {
+			srcPort := srcMgr.GetPort()
+			msgPort := dstMsg.GetSourcePort()
 
-		if srcPort != msgPort {
-			t.Errorf("%d != %d", srcPort, msgPort)
+			if srcPort != msgPort {
+				t.Errorf("%d != %d", srcPort, msgPort)
+			}
 		}
 	}
 }
 
-func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config) {
+func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, checkSourcePort bool) {
 	mgrs := []*testMessageManager{
 		newTestMessageManager(),
 		newTestMessageManager(),
@@ -174,7 +176,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config) {
 
 	// Send unicast messages, and check the received message
 
-	testUnicastMessagingWithRunningManagers(t, mgrs)
+	testUnicastMessagingWithRunningManagers(t, mgrs, checkSourcePort)
 
 	// Stop managers
 
@@ -189,19 +191,19 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config) {
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
 	conf := NewDefaultConfig()
-	testMulticastAndUnicastMessagingWithConfig(t, conf)
+	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithOnlyUDPUnicastConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(false)
-	testMulticastAndUnicastMessagingWithConfig(t, conf)
+	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithOnlyTCPUnicastConfig(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
-	testMulticastAndUnicastMessagingWithConfig(t, conf)
+	testMulticastAndUnicastMessagingWithConfig(t, conf, false)
 }
