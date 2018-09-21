@@ -7,7 +7,6 @@ package transport
 import (
 	"bufio"
 	"encoding/hex"
-	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -63,8 +62,7 @@ func (sock *TCPSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	sock.Port = port
-	sock.Interface = ifi
+	sock.SetBoundStatus(ifi, addr, port)
 
 	return nil
 }
@@ -80,18 +78,14 @@ func (sock *TCPSocket) Close() error {
 		return err
 	}
 
-	sock.Listener = nil
-	sock.Port = 0
-	sock.Interface = net.Interface{}
+	sock.Socket.Close()
 
 	return nil
 }
 
 func (sock *TCPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg string, msgSize int) {
-	if sock.Listener == nil {
-		return
-	}
-	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionRead, msgFrom, sock.Listener.Addr().String(), msg, msgSize)
+	msgTo, _ := sock.GetBoundIPAddr()
+	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }
 
 // ReadMessage reads a message from the current opened socket.
@@ -117,7 +111,7 @@ func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, erro
 
 func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
 	msgFrom, _ := sock.GetBoundIPAddr()
-	outputSocketLog(logLevel, logSocketTypeTCP, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
+	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
 // Write sends the specified bytes.
@@ -128,37 +122,37 @@ func (sock *TCPSocket) Write(addr string, port int, b []byte, timeout time.Durat
 		return 0, err
 	}
 
-	// Send from binding port
+	// Send from binding or any port
 
-	boundAddr, err := sock.GetBoundIPAddr()
-	if err == nil {
-		fromAddr, err := net.ResolveTCPAddr("tcp", boundAddr)
-		if err == nil {
-			conn, err := net.DialTCP("tcp", fromAddr, toAddr)
-			if err == nil {
-				n, err := conn.Write(b)
-				sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
-				conn.Close()
-				if err == nil {
-					return n, nil
-				}
-			} else {
-				log.Error(fmt.Sprintf("%s", err))
-			}
-		}
-	}
+	var lastError error
 
-	// Send from no binding port
-
-	conn, err := net.DialTCP("tcp", nil, toAddr)
+	boundAddr, err := net.ResolveTCPAddr("tcp", sock.Listener.Addr().String())
 	if err != nil {
 		sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
 		return 0, err
 	}
+	fromAddrs := []*net.TCPAddr{boundAddr, nil}
 
-	n, err := conn.Write(b)
-	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
-	conn.Close()
+	for _, fromAddr := range fromAddrs {
+		var conn *net.TCPConn
+		conn, lastError = net.DialTCP("tcp", fromAddr, toAddr)
+		if lastError != nil {
+			sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
+			continue
+		}
 
-	return n, err
+		var nWrote int
+		nWrote, lastError = conn.Write(b)
+		if lastError != nil {
+			sock.outputWriteLog(log.LoggerLevelError, toAddr.String(), hex.EncodeToString(b), 0)
+			continue
+		}
+
+		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), nWrote)
+		conn.Close()
+
+		return nWrote, nil
+	}
+
+	return 0, lastError
 }

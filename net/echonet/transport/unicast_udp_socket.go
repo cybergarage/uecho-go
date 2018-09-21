@@ -47,17 +47,14 @@ func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
-	sock.Port = port
-	sock.Interface = ifi
+	sock.SetBoundStatus(ifi, addr, port)
 
 	return nil
 }
 
 func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
-	if sock.Conn == nil {
-		return
-	}
-	outputSocketLog(logLevel, logSocketTypeUDP, logSocketDirectionRead, sock.Conn.LocalAddr().String(), msgTo, msg, msgSize)
+	msgFrom, _ := sock.GetBoundIPAddr()
+	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
 // Write sends the specified bytes.

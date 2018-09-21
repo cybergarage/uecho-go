@@ -43,18 +43,14 @@ func (sock *UDPSocket) Close() error {
 		}
 	*/
 
-	sock.Conn = nil
-	sock.Port = 0
-	sock.Interface = net.Interface{}
+	sock.Socket.Close()
 
 	return nil
 }
 
-func (sock *UDPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg string, msgSize int) {
-	if sock.Conn == nil {
-		return
-	}
-	outputSocketLog(logLevel, logSocketTypeUDP, logSocketDirectionRead, msgFrom, sock.Conn.LocalAddr().String(), msg, msgSize)
+func (sock *UDPSocket) outputReadLog(logLevel log.LogLevel, logType string, msgFrom string, msg string, msgSize int) {
+	msgTo, _ := sock.GetBoundIPAddr()
+	outputSocketLog(logLevel, logType, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }
 
 // ReadMessage reads a message from the current opened socket.
@@ -70,15 +66,13 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 
 	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
 	if err != nil {
-		sock.outputReadLog(log.LoggerLevelError, (*from).String(), hex.EncodeToString(sock.readBuf[:n]), n)
+		sock.outputReadLog(log.LoggerLevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.readBuf[:n]), n)
 		return nil, err
 	}
 
 	msg.From.IP = (*from).IP
 	msg.From.Port = (*from).Port
-	msg.Interface = sock.Interface
-
-	sock.outputReadLog(log.LoggerLevelTrace, msg.From.String(), msg.String(), msg.Size())
+	msg.Interface = sock.Socket.BoundInterface
 
 	return msg, nil
 }

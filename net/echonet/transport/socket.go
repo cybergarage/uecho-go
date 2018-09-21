@@ -14,32 +14,54 @@ import (
 
 // A Socket represents a socket.
 type Socket struct {
-	Interface net.Interface
-	Port      int
+	BoundInterface net.Interface
+	BoundPort      int
+	BoundAddress   string
 }
 
 // NewSocket returns a new UDPSocket.
 func NewSocket() *Socket {
-	sock := &Socket{
-		Port: 0,
-	}
+	sock := &Socket{}
+	sock.Close()
 	return sock
+}
+
+// Close initialize this socket.
+func (sock *Socket) Close() {
+	sock.BoundInterface = net.Interface{}
+	sock.BoundAddress = ""
+	sock.BoundPort = 0
+}
+
+// SetBoundStatus sets the bound interface, port, and address.
+func (sock *Socket) SetBoundStatus(i net.Interface, addr string, port int) {
+	sock.BoundInterface = i
+	sock.BoundAddress = addr
+	sock.BoundPort = port
 }
 
 // IsBound returns true whether the socket is bound, otherwise false.
 func (sock *Socket) IsBound() bool {
-	if sock.Port <= 0 {
+	if sock.BoundPort <= 0 {
 		return false
 	}
 	return true
 }
 
-// GetBoundPort returns the bound port
+// GetBoundPort returns the bound port.
 func (sock *Socket) GetBoundPort() (int, error) {
 	if !sock.IsBound() {
 		return 0, fmt.Errorf(errorSocketIsClosed)
 	}
-	return sock.Port, nil
+	return sock.BoundPort, nil
+}
+
+// GetBoundInterface returns the bound interface.
+func (sock *Socket) GetBoundInterface() (net.Interface, error) {
+	if !sock.IsBound() {
+		return net.Interface{}, fmt.Errorf(errorSocketIsClosed)
+	}
+	return sock.BoundInterface, nil
 }
 
 // GetBoundAddr returns the bound address
@@ -48,12 +70,7 @@ func (sock *Socket) GetBoundAddr() (string, error) {
 		return "", fmt.Errorf(errorSocketIsClosed)
 	}
 
-	addr, err := GetInterfaceAddress(sock.Interface)
-	if err != nil {
-		return "", err
-	}
-
-	return addr, nil
+	return sock.BoundAddress, nil
 }
 
 // GetBoundIPAddr returns the bound address

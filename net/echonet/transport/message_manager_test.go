@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -55,69 +56,7 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 	return protocol.NewMessageWithBytes(testMessageBytes)
 }
 
-func TestNewMessageManager(t *testing.T) {
-	mgr := newTestMessageManager()
-	mgr.SetMessageListener(mgr)
-
-	err := mgr.Start()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	msg, err := newTestMessage(0)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	// Send a test message
-
-	err = mgr.AnnounceMessage(msg)
-	if err != nil {
-		t.Error(err)
-	}
-
-	time.Sleep(time.Second)
-
-	if mgr.lastNotificationMessage != nil {
-		if bytes.Compare(msg.Bytes(), mgr.lastNotificationMessage.Bytes()) != 0 {
-			t.Errorf("%s != %s", msg, mgr.lastNotificationMessage)
-		}
-	} else {
-		t.Error("")
-	}
-
-	err = mgr.Stop()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-}
-
-func TestMulticastAndUnicastMessaging(t *testing.T) {
-	mgrs := []*testMessageManager{
-		newTestMessageManager(),
-		newTestMessageManager(),
-	}
-
-	for n, mgr := range mgrs {
-		mgr.SetPort(UDPPort + n)
-		mgr.SetMessageListener(mgr)
-	}
-
-	// Start managers
-
-	for _, mgr := range mgrs {
-		err := mgr.Start()
-		if err != nil {
-			t.Error(err)
-			return
-		}
-	}
-
-	// Send multicast messages, and check the received message
-
+func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
 	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
 	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
 
@@ -155,6 +94,11 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 			t.Errorf("%d != %d", srcPort, msgPort)
 		}
 	}
+}
+
+func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
+	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
+	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
 
 	// Send unicast messages, and check the received message
 
@@ -200,6 +144,37 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 			t.Errorf("%d != %d", srcPort, msgPort)
 		}
 	}
+}
+
+func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config) {
+	mgrs := []*testMessageManager{
+		newTestMessageManager(),
+		newTestMessageManager(),
+	}
+
+	for n, mgr := range mgrs {
+		mgr.SetConfig(conf)
+		mgr.SetPort(UDPPort + n)
+		mgr.SetMessageListener(mgr)
+	}
+
+	// Start managers
+
+	for _, mgr := range mgrs {
+		err := mgr.Start()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+	}
+
+	// Send multicast messages, and check the received message
+
+	testMulticastMessagingWithRunningManagers(t, mgrs)
+
+	// Send unicast messages, and check the received message
+
+	testUnicastMessagingWithRunningManagers(t, mgrs)
 
 	// Stop managers
 
@@ -210,4 +185,25 @@ func TestMulticastAndUnicastMessaging(t *testing.T) {
 			return
 		}
 	}
+}
+
+func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+	testMulticastAndUnicastMessagingWithConfig(t, conf)
+}
+
+func TestMulticastAndUnicastMessagingWithOnlyUDPUnicastConfig(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(false)
+	conf.SetUDPEnabled(true)
+	testMulticastAndUnicastMessagingWithConfig(t, conf)
+}
+
+func TestMulticastAndUnicastMessagingWithOnlyTCPUnicastConfig(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+	conf := NewDefaultConfig()
+	conf.SetTCPEnabled(true)
+	conf.SetUDPEnabled(false)
+	testMulticastAndUnicastMessagingWithConfig(t, conf)
 }

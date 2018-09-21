@@ -7,6 +7,7 @@ package transport
 import (
 	"net"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -105,6 +106,8 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 		if err != nil {
 			break
 		}
+
+		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, msg.From.String(), msg.String(), msg.Size())
 
 		if server.Listener != nil {
 			server.Listener.ProtocolMessageReceived(msg)

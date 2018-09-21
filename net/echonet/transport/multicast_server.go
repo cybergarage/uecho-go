@@ -7,6 +7,7 @@ package transport
 import (
 	"net"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -63,6 +64,8 @@ func handleMulticastConnection(server *MulticastServer) {
 		if err != nil {
 			break
 		}
+
+		server.Socket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPMulticast, msg.From.String(), msg.String(), msg.Size())
 
 		if server.Listener != nil {
 			server.Listener.ProtocolMessageReceived(msg)
