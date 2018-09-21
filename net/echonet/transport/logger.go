@@ -11,10 +11,11 @@ import (
 )
 
 const (
-	logSocketTypeUDP     = "U"
-	logSocketTypeTCP     = "T"
-	logSocketWriteFormat = "W (%s) : %s -> %s (%d) : %s"
-	logSocketReadFormat  = "R (%s) : %s <- %s (%d) : %s"
+	logSocketTypeUDPMulticast = "UM"
+	logSocketTypeUDPUnicast   = "UU"
+	logSocketTypeTCPUnicast   = "TU"
+	logSocketWriteFormat      = "W (%s) : %21s -> %21s (%d) : %s"
+	logSocketReadFormat       = "R (%s) : %21s <- %21s (%d) : %s"
 )
 
 const (
