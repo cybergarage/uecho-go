@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	testNodeRequestCount = 10
+	testNodeRequestCount   = 10
+	testNodeRequestTimeout = time.Millisecond * 500
 )
 
 const (
@@ -213,12 +214,15 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 func TestLocalNodeWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	testLocalNodeWithConfig(t, NewDefaultConfig())
+	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
+	testLocalNodeWithConfig(t, conf)
 }
 
 func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(false)
 	testLocalNodeWithConfig(t, conf)
 }
@@ -226,6 +230,7 @@ func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(true)
 	testLocalNodeWithConfig(t, conf)
 }
