@@ -82,18 +82,29 @@ func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
 
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
-	err := mgr.unicastMgr.Start()
+	err := mgr.Stop()
 	if err != nil {
-		mgr.Stop()
 		return err
 	}
 
-	mgr.SetPort(mgr.unicastMgr.GetPort())
-
-	err = mgr.multicastMgr.Start()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
-		mgr.Stop()
 		return err
+	}
+
+	for _, ifi := range ifis {
+		multicastServer, err := mgr.multicastMgr.Start(ifi)
+		if err != nil {
+			return err
+		}
+
+		unicastServer, err := mgr.unicastMgr.Start(ifi)
+		if err != nil {
+			return err
+		}
+
+		multicastServer.SetUnicastServer(unicastServer)
+		mgr.SetPort(mgr.unicastMgr.GetPort())
 	}
 
 	return nil
@@ -101,17 +112,18 @@ func (mgr *MessageManager) Start() error {
 
 // Stop stops all transport managers.
 func (mgr *MessageManager) Stop() error {
+	var lastErr error
 	err := mgr.multicastMgr.Stop()
 	if err != nil {
-		return err
+		lastErr = err
 	}
 
 	err = mgr.unicastMgr.Stop()
 	if err != nil {
-		return err
+		lastErr = err
 	}
 
-	return nil
+	return lastErr
 }
 
 // IsRunning returns true whether the local managers are running, otherwise false.

@@ -144,8 +144,15 @@ func (sock *TCPSocket) PostMessage(addr string, port int, reqMsg *protocol.Messa
 	return sock.ReadMessage(conn)
 }
 
+// ResponseMessage sends a response message to the specified connection.
+func (sock *TCPSocket) ResponseMessage(conn *net.TCPConn, resMsg *protocol.Message) error {
+	_, err := sock.writeBytesToConnection(conn, resMsg.Bytes())
+	return err
+}
+
 // writeBytesToConnection sends the specified bytes to the specified connection.
-func (sock *TCPSocket) writeBytesToConnection(toAddr *net.TCPAddr, conn *net.TCPConn, b []byte, timeout time.Duration) (int, error) {
+func (sock *TCPSocket) writeBytesToConnection(conn *net.TCPConn, b []byte) (int, error) {
+	toAddr := conn.RemoteAddr()
 	localAddr := conn.LocalAddr()
 
 	var nWrote int
@@ -188,7 +195,7 @@ func (sock *TCPSocket) dialAndWriteBytes(addr string, port int, b []byte, timeou
 		return nil, 0, err
 	}
 
-	nWrote, err := sock.writeBytesToConnection(toAddr, conn, b, timeout)
+	nWrote, err := sock.writeBytesToConnection(conn, b)
 	if err != nil {
 		conn.Close()
 	}

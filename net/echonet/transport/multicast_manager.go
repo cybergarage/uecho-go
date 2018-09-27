@@ -5,7 +5,6 @@
 package transport
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -52,39 +51,18 @@ func (mgr *MulticastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *MulticastManager) Start() error {
-	err := mgr.Stop()
+func (mgr *MulticastManager) Start(ifi net.Interface) (*MulticastServer, error) {
+
+	server := NewMulticastServer()
+	server.Handler = mgr.Handler
+	err := server.Start(ifi)
+
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	ifis, err := GetAvailableInterfaces()
-	if err != nil {
-		return err
-	}
-
-	mgr.Servers = make([]*MulticastServer, 0)
-
-	var lastErr error
-	for _, ifi := range ifis {
-		server := NewMulticastServer()
-		server.Handler = mgr.Handler
-		err := server.Start(ifi)
-		if err != nil {
-			lastErr = err
-		}
-		mgr.Servers = append(mgr.Servers, server)
-	}
-
-	if lastErr != nil {
-		return lastErr
-	}
-
-	if len(mgr.Servers) <= 0 {
-		return fmt.Errorf(errorMulticastServerNoAvailableInterface)
-	}
-
-	return nil
+	mgr.Servers = append(mgr.Servers, server)
+	return server, nil
 }
 
 // Stop stops this server.

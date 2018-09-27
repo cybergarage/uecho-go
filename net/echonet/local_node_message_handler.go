@@ -32,23 +32,16 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 	}
 
 	if !node.validateReceivedMessage(msg) {
-		node.postImpossibleResponse(msg)
-		return nil, nil
+		return protocol.NewImpossibleMessageWithMessage(msg), nil
 	}
 
 	node.executeMessageListeners(msg)
 
-	if msg.IsResponseRequired() {
-		node.postResponseMessage(msg)
+	if !msg.IsResponseRequired() {
+		return nil, nil
 	}
 
-	return nil, nil
-}
-
-// postImpossibleResponse returns an individual response to the source node.
-func (node *LocalNode) postImpossibleResponse(msg *protocol.Message) {
-	resMsg := protocol.NewImpossibleMessageWithMessage(msg)
-	node.SendMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+	return node.createResponseMessageForRequestMessage(msg)
 }
 
 // validateReceivedMessage checks whether the received message is a valid message.
@@ -160,19 +153,4 @@ func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 	}
 
 	return resMsg, nil
-}
-
-// postResponseMessage posts the response message to the destination node.
-func (node *LocalNode) postResponseMessage(reqMsg *protocol.Message) error {
-	resMsg, err := node.createResponseMessageForRequestMessage(reqMsg)
-	if err != nil {
-		return err
-	}
-
-	err = node.responseMessage(NewRemoteNodeWithRequestMessage(reqMsg), resMsg)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

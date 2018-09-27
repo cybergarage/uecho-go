@@ -98,3 +98,11 @@ func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, e
 func (sock *UnicastUDPSocket) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	return sock.SendBytes(addr, port, msg.Bytes())
 }
+
+// ResponseMessageForRequestMessage sends a specified response message to the request node
+func (sock *UnicastUDPSocket) ResponseMessageForRequestMessage(reqMsg *protocol.Message, resMsg *protocol.Message) error {
+	dstAddr := reqMsg.From.IP.String()
+	dstPort := reqMsg.From.Port
+	_, err := sock.SendMessage(dstAddr, dstPort, resMsg)
+	return err
+}
