@@ -15,22 +15,22 @@ const (
 
 // A MulticastManager represents a multicast server manager.
 type MulticastManager struct {
-	Servers  []*MulticastServer
-	Listener MulticastListener
+	Servers []*MulticastServer
+	Handler MulticastHandler
 }
 
 // NewMulticastManager returns a new MulticastManager.
 func NewMulticastManager() *MulticastManager {
 	mgr := &MulticastManager{
-		Servers:  make([]*MulticastServer, 0),
-		Listener: nil,
+		Servers: make([]*MulticastServer, 0),
+		Handler: nil,
 	}
 	return mgr
 }
 
-// SetListener set a listener to all servers.
-func (mgr *MulticastManager) SetListener(l MulticastListener) {
-	mgr.Listener = l
+// SetHandler set a listener to all servers.
+func (mgr *MulticastManager) SetHandler(l MulticastHandler) {
+	mgr.Handler = l
 }
 
 // GetBoundAddresses returns the listen addresses.
@@ -68,7 +68,7 @@ func (mgr *MulticastManager) Start() error {
 	var lastErr error
 	for _, ifi := range ifis {
 		server := NewMulticastServer()
-		server.Listener = mgr.Listener
+		server.Handler = mgr.Handler
 		err := server.Start(ifi)
 		if err != nil {
 			lastErr = err

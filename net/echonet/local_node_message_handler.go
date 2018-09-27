@@ -16,11 +16,11 @@ const (
 )
 
 // ProtocolMessageReceived is a listener for the server
-func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) {
+func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	if msgNode.Equals(node) {
-		return
+		return nil, nil
 	}
 
 	log.Trace(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
@@ -33,7 +33,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) {
 
 	if !node.validateReceivedMessage(msg) {
 		node.postImpossibleResponse(msg)
-		return
+		return nil, nil
 	}
 
 	node.executeMessageListeners(msg)
@@ -41,6 +41,8 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) {
 	if msg.IsResponseRequired() {
 		node.postResponseMessage(msg)
 	}
+
+	return nil, nil
 }
 
 // postImpossibleResponse returns an individual response to the source node.
