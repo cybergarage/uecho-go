@@ -117,6 +117,11 @@ func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgFrom string, msg
 	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
+// SendMessage sends a message to the destination address.
+func (sock *TCPSocket) SendMessage(addr string, port int, msg *protocol.Message, timeout time.Duration) (int, error) {
+	return sock.Write(addr, port, msg.Bytes(), timeout)
+}
+
 // Write sends the specified bytes.
 func (sock *TCPSocket) Write(addr string, port int, b []byte, timeout time.Duration) (int, error) {
 	toAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
