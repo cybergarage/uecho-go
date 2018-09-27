@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -192,19 +191,20 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
+	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithDisableTCPConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(false)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithEnableTCPConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	conf.SetTCPEnabled(true)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, false)
