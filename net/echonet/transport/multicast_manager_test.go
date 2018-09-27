@@ -11,15 +11,22 @@ import (
 func TestNewMulticastManager(t *testing.T) {
 	mgr := NewMulticastManager()
 
-	err := mgr.Start()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		t.Error(err)
-		return
 	}
 
-	err = mgr.Stop()
-	if err != nil {
-		t.Error(err)
-		return
+	for _, ifi := range ifis {
+		_, err := mgr.Start(ifi)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		err = mgr.Stop()
+		if err != nil {
+			t.Error(err)
+			return
+		}
 	}
 }

@@ -69,51 +69,34 @@ func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *UnicastManager) Start() error {
-	err := mgr.Stop()
-	if err != nil {
-		return err
-	}
-
-	ifis, err := GetAvailableInterfaces()
-	if err != nil {
-		return err
-	}
-
-	mgr.Servers = make([]*UnicastServer, 0)
+func (mgr *UnicastManager) Start(ifi net.Interface) (*UnicastServer, error) {
+	server := NewUnicastServer()
+	server.Handler = mgr.Handler
 
 	var lastErr error
 	for port := mgr.GetPort(); (UDPPortMin <= port) && (port <= UDPPortMax); port++ {
 		mgr.SetPort(port)
+		server.SetConfig(mgr.UnicastConfig)
 
-		for _, ifi := range ifis {
-			server := NewUnicastServer()
-			server.SetConfig(mgr.UnicastConfig)
-			server.Handler = mgr.Handler
-			lastErr = server.Start(ifi, mgr.Port)
-
-			if lastErr == nil {
-				mgr.Servers = append(mgr.Servers, server)
-			} else {
-				mgr.Stop()
-				break
-			}
+		err := server.Start(ifi, mgr.Port)
+		if err != nil {
+			lastErr = err
+			continue
 		}
 
-		if lastErr == nil {
+		if err == nil {
+			lastErr = nil
 			break
 		}
 	}
 
 	if lastErr != nil {
-		return lastErr
+		return nil, lastErr
 	}
 
-	if len(mgr.Servers) <= 0 {
-		return fmt.Errorf(errorUnicastServerNoAvailableInterface)
-	}
+	mgr.Servers = append(mgr.Servers, server)
 
-	return nil
+	return server, nil
 }
 
 // Stop stops this server.

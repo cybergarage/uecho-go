@@ -60,6 +60,11 @@ func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protoco
 	return err
 }
 
+// ResponseMessageForRequestMessage sends a specified response message to the request node
+func (server *UnicastServer) ResponseMessageForRequestMessage(reqMsg *protocol.Message, resMsg *protocol.Message) error {
+	return server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
+}
+
 // Start starts this server.
 func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 	err := server.UDPSocket.Bind(ifi, port)
@@ -101,16 +106,23 @@ func (server *UnicastServer) Stop() error {
 
 func handleUnicastUDPConnection(server *UnicastServer) {
 	for {
-		msg, err := server.UDPSocket.ReadMessage()
+		reqMsg, err := server.UDPSocket.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, msg.From.String(), msg.String(), msg.Size())
+		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
 
-		if server.Handler != nil {
-			server.Handler.ProtocolMessageReceived(msg)
+		if server.Handler == nil {
+			continue
 		}
+
+		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
+		if err != nil || resMsg == nil {
+			continue
+		}
+
+		server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
 	}
 }
 
@@ -126,14 +138,17 @@ func handleUnicastTCPHandler(server *UnicastServer) {
 }
 
 func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
-	msg, err := server.TCPSocket.ReadMessage(conn)
+	reqMsg, err := server.TCPSocket.ReadMessage(conn)
 	if err != nil {
 		return
 	}
 
-	conn.Close()
+	defer conn.Close()
 
 	if server.Handler != nil {
-		server.Handler.ProtocolMessageReceived(msg)
+		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
+		if err != nil && resMsg != nil {
+			server.TCPSocket.ResponseMessage(conn, resMsg)
+		}
 	}
 }
