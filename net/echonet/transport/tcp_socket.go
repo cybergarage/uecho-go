@@ -90,10 +90,10 @@ func (sock *TCPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg 
 }
 
 // ReadMessage reads a message from the current opened socket.
-func (sock *TCPSocket) ReadMessage(clientConn net.Conn) (*protocol.Message, error) {
-	retemoAddr := clientConn.RemoteAddr()
+func (sock *TCPSocket) ReadMessage(conn net.Conn) (*protocol.Message, error) {
+	retemoAddr := conn.RemoteAddr()
 
-	reader := bufio.NewReader(clientConn)
+	reader := bufio.NewReader(conn)
 	msg, err := protocol.NewMessageWithReader(reader)
 	if err != nil {
 		sock.outputReadLog(log.LoggerLevelError, retemoAddr.String(), "", 0)
@@ -119,58 +119,79 @@ func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgFrom string, msg
 
 // SendMessage sends a message to the destination address.
 func (sock *TCPSocket) SendMessage(addr string, port int, msg *protocol.Message, timeout time.Duration) (int, error) {
-	return sock.Write(addr, port, msg.Bytes(), timeout)
+	conn, nWorte, err := sock.dialAndWriteBytes(addr, port, msg.Bytes(), timeout)
+	if conn != nil {
+		conn.Close()
+	}
+	return nWorte, err
 }
 
-// Write sends the specified bytes.
-func (sock *TCPSocket) Write(addr string, port int, b []byte, timeout time.Duration) (int, error) {
+// PostMessage sends a message to the destination address.
+func (sock *TCPSocket) PostMessage(addr string, port int, reqMsg *protocol.Message, timeout time.Duration) (*protocol.Message, error) {
+	conn, _, err := sock.dialAndWriteBytes(addr, port, reqMsg.Bytes(), timeout)
+	if err != nil {
+		return nil, err
+	}
+
+	defer conn.Close()
+
+	err = conn.SetReadDeadline(time.Now().Add(timeout))
+	if err != nil {
+		conn.Close()
+		return nil, err
+	}
+
+	return sock.ReadMessage(conn)
+}
+
+// writeBytesToConnection sends the specified bytes to the specified connection.
+func (sock *TCPSocket) writeBytesToConnection(toAddr *net.TCPAddr, conn *net.TCPConn, b []byte, timeout time.Duration) (int, error) {
+	localAddr := conn.LocalAddr()
+
+	var nWrote int
+	nWrote, err := conn.Write(b)
+	if err != nil {
+		sock.outputWriteLog(log.LoggerLevelError, localAddr.String(), toAddr.String(), hex.EncodeToString(b), 0)
+		log.Error(err.Error())
+		return nWrote, err
+	}
+
+	sock.outputWriteLog(log.LoggerLevelTrace, localAddr.String(), toAddr.String(), hex.EncodeToString(b), nWrote)
+
+	return nWrote, nil
+}
+
+// dialAndWriteBytes sends the specified bytes to the specified destination.
+func (sock *TCPSocket) dialAndWriteBytes(addr string, port int, b []byte, timeout time.Duration) (*net.TCPConn, int, error) {
 	toAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		sock.outputWriteLog(log.LoggerLevelError, "", toAddr.String(), hex.EncodeToString(b), 0)
 		log.Error(err.Error())
-		return 0, err
+		return nil, 0, err
 	}
 
-	// Send from binding or any port
-
-	/* Disable to send from listen port
-	boundAddr, err := net.ResolveTCPAddr("tcp", sock.Listener.Addr().String())
+	fromAddr, err := sock.GetBoundIPAddr()
 	if err != nil {
-		sock.outputWriteLog(log.LoggerLevelError, sock.Listener.Addr().String(), toAddr.String(), hex.EncodeToString(b), 0)
+		return nil, 0, err
+	}
+
+	conn, err := net.DialTCP("tcp", nil, toAddr)
+	if err != nil {
+		sock.outputWriteLog(log.LoggerLevelError, fromAddr, toAddr.String(), hex.EncodeToString(b), 0)
 		log.Error(err.Error())
-		return 0, err
+		return nil, 0, err
 	}
-	fromAddrs := []*net.TCPAddr{boundAddr, nil}
-	*/
 
-	var lastError error
-
-	fromAddrs := []*net.TCPAddr{nil}
-
-	for _, fromAddr := range fromAddrs {
-		var conn *net.TCPConn
-		conn, lastError = net.DialTCP("tcp", fromAddr, toAddr)
-		if lastError != nil {
-			sock.outputWriteLog(log.LoggerLevelError, fromAddr.String(), toAddr.String(), hex.EncodeToString(b), 0)
-			log.Error(lastError.Error())
-			continue
-		}
-
-		localAddr := conn.LocalAddr()
-
-		var nWrote int
-		nWrote, lastError = conn.Write(b)
-		if lastError != nil {
-			sock.outputWriteLog(log.LoggerLevelError, localAddr.String(), toAddr.String(), hex.EncodeToString(b), 0)
-			log.Error(lastError.Error())
-			continue
-		}
-
-		sock.outputWriteLog(log.LoggerLevelTrace, localAddr.String(), toAddr.String(), hex.EncodeToString(b), nWrote)
+	err = conn.SetWriteDeadline(time.Now().Add(timeout))
+	if err != nil {
 		conn.Close()
-
-		return nWrote, nil
+		return nil, 0, err
 	}
 
-	return 0, lastError
+	nWrote, err := sock.writeBytesToConnection(toAddr, conn, b, timeout)
+	if err != nil {
+		conn.Close()
+	}
+
+	return conn, nWrote, err
 }

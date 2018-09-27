@@ -4,12 +4,6 @@
 
 package transport
 
-import (
-	"time"
-
-	"github.com/cybergarage/uecho-go/net/echonet/protocol"
-)
-
 // A UnicastTCPSocket represents a socket.
 type UnicastTCPSocket struct {
 	*TCPSocket
@@ -21,9 +15,4 @@ func NewUnicastTCPSocket() *UnicastTCPSocket {
 		TCPSocket: NewTCPSocket(),
 	}
 	return sock
-}
-
-// PostMessage send a message to the destination address.
-func (sock *UnicastTCPSocket) PostMessage(addr string, port int, msg *protocol.Message, timeout time.Duration) (int, error) {
-	return sock.Write(addr, port, msg.Bytes(), timeout)
 }
