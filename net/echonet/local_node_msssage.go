@@ -61,12 +61,8 @@ func (node *LocalNode) Announce() error {
 	return node.AnnounceProperty(nodeProp)
 }
 
-// SendMessage sends a new specified message to the node
-func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
-	if !node.IsRunning() {
-		return fmt.Errorf(errorNodeIsNotRunning, node)
-	}
-
+// updateMessageDestinationHeader update the message header using the local node status.
+func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) error {
 	msg.SetTID(node.getNextTID())
 
 	// SEOJ
@@ -76,11 +72,43 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 	}
 	msg.SetSourceObjectCode(nodeProp.GetParentObject().GetCode())
 
-	n, err := node.server.SendMessage(string(dstNode.GetAddress()), dstNode.GetPort(), msg)
+	return err
+}
 
-	log.Trace(fmt.Sprintf(logLocalNodeSendMessageFormat, msg.String(), n))
+// SendMessage sends a message to the destination node
+func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
+	if !node.IsRunning() {
+		return fmt.Errorf(errorNodeIsNotRunning, node)
+	}
+
+	err := node.updateMessageDestinationHeader(msg)
+	if err != nil {
+		return err
+	}
+
+	_, err = node.server.SendMessage(dstNode.GetAddress(), dstNode.GetPort(), msg)
+
+	//log.Trace(fmt.Sprintf(logLocalNodeSendMessageFormat, msg.String(), n))
 
 	return err
+}
+
+// postMessageSynchronously posts a message to the destination node using a TCP connection and gets the response message.
+func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.Message) (*protocol.Message, error) {
+	if !node.IsRunning() {
+		return nil, fmt.Errorf(errorNodeIsNotRunning, node)
+	}
+
+	err := node.updateMessageDestinationHeader(reqMsg)
+	if err != nil {
+		return nil, err
+	}
+
+	resMsg, err := node.server.PostMessage(dstNode.GetAddress(), dstNode.GetPort(), reqMsg)
+
+	//log.Trace(fmt.Sprintf(logLocalNodeSendMessageFormat, msg.String(), n))
+
+	return resMsg, err
 }
 
 // responseMessage sends a specified response message to the node
@@ -133,8 +161,23 @@ func (node *LocalNode) closeResponseChannel() {
 
 // PostMessage posts a message to the node, and wait the response message.
 func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protocol.Message, error) {
+	// Use TCP connection when the function is enabled
+
+	if node.IsTCPEnabled() {
+		resMsg, err := node.postMessageSynchronously(dstNode, msg)
+		if err != nil {
+			return resMsg, nil
+		}
+	}
+
+	// Part V ECHONET Lite System Design Guidelines v1.12
+	// Chapter 5 - Guidelines on TCP
+	// A node sending a request message to another node should send the message again by UDP unicast when necessary
+	//  in case of a TCP connection failure since the remote party may not be able to use TCP.
+
 	node.Lock()
 	defer node.Unlock()
+
 	defer node.closeResponseChannel()
 
 	node.postResponseCh = make(chan *protocol.Message)
