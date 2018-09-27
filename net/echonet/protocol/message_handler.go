@@ -4,7 +4,7 @@
 
 package protocol
 
-// A MessageListener represents a listener for message.
-type MessageListener interface {
-	ProtocolMessageReceived(*Message)
+// A MessageHandler represents a handler for message.
+type MessageHandler interface {
+	ProtocolMessageReceived(*Message) (*Message, error)
 }

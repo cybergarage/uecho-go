@@ -28,11 +28,11 @@ func newTestMessageManager() *testMessageManager {
 	return mgr
 }
 
-func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) {
-	if !msg.IsESV(protocol.ESVNotificationRequest) {
-		return
+func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
+	if msg.IsESV(protocol.ESVNotificationRequest) {
+		mgr.lastNotificationMessage = msg
 	}
-	mgr.lastNotificationMessage = msg
+	return nil, nil
 }
 
 func newTestMessage(tid uint) (*protocol.Message, error) {
@@ -158,7 +158,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 	for n, mgr := range mgrs {
 		mgr.SetConfig(conf)
 		mgr.SetPort(UDPPort + n)
-		mgr.SetMessageListener(mgr)
+		mgr.SetMessageHandler(mgr)
 	}
 
 	// Start managers
