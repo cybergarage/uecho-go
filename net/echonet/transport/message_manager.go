@@ -80,6 +80,11 @@ func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
 	return mgr.unicastMgr.AnnounceMessage(MulticastAddress, UDPPort, msg)
 }
 
+// PostMessage posts a message to the destination address and gets the response message.
+func (mgr *MessageManager) PostMessage(addr string, port int, msg *protocol.Message) (*protocol.Message, error) {
+	return mgr.unicastMgr.PostMessage(addr, port, msg)
+}
+
 // Start starts all transport managers.
 func (mgr *MessageManager) Start() error {
 	err := mgr.Stop()
