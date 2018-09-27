@@ -45,7 +45,7 @@ func (server *UnicastServer) SetListener(l UnicastListener) {
 // SendMessage send a message to the destination address.
 func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	if server.IsTCPEnabled() {
-		n, err := server.TCPSocket.Write(addr, port, msg.Bytes(), server.GetConnectionTimeout())
+		n, err := server.TCPSocket.SendMessage(addr, port, msg, server.GetConnectionTimeout())
 		if err == nil {
 			return n, nil
 		}
