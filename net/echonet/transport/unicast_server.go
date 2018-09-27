@@ -51,7 +51,7 @@ func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Me
 		}
 	}
 
-	return server.UDPSocket.Write(addr, port, msg.Bytes())
+	return server.UDPSocket.SendMessage(addr, port, msg)
 }
 
 // AnnounceMessage sends a message to the multicast address.

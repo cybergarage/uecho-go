@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 // A UnicastUDPSocket represents a socket.
@@ -91,4 +92,9 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 	conn.Close()
 
 	return n, err
+}
+
+// SendMessage send a message to the destination address.
+func (sock *UnicastUDPSocket) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
+	return sock.Write(addr, port, msg.Bytes())
 }
