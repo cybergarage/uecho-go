@@ -58,8 +58,8 @@ func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string
 	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
-// Write sends the specified bytes.
-func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error) {
+// SendBytes sends the specified bytes.
+func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
 	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		return 0, err
@@ -96,5 +96,5 @@ func (sock *UnicastUDPSocket) Write(addr string, port int, b []byte) (int, error
 
 // SendMessage send a message to the destination address.
 func (sock *UnicastUDPSocket) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
-	return sock.Write(addr, port, msg.Bytes())
+	return sock.SendBytes(addr, port, msg.Bytes())
 }
