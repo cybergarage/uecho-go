@@ -111,12 +111,6 @@ func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.M
 	return resMsg, err
 }
 
-// responseMessage sends a specified response message to the node
-func (node *LocalNode) responseMessage(dstNode Node, msg *protocol.Message) error {
-	_, err := node.server.SendMessage(dstNode.GetAddress(), dstNode.GetPort(), msg)
-	return err
-}
-
 // isResponseMessageWaiting returns true when the node is waiting the response message, otherwise false.
 func (node *LocalNode) isResponseMessageWaiting() bool {
 	if node.postRequestMsg == nil {
