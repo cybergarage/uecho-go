@@ -5,5 +5,6 @@
 package transport
 
 const (
-	errorSocketIsClosed = "Socket is closed"
+	errorSocketClosed      = "Socket is closed"
+	errorTCPSocketDisabled = "TCP function is disabled"
 )

@@ -51,7 +51,7 @@ func (sock *Socket) IsBound() bool {
 // GetBoundPort returns the bound port.
 func (sock *Socket) GetBoundPort() (int, error) {
 	if !sock.IsBound() {
-		return 0, fmt.Errorf(errorSocketIsClosed)
+		return 0, fmt.Errorf(errorSocketClosed)
 	}
 	return sock.BoundPort, nil
 }
@@ -59,7 +59,7 @@ func (sock *Socket) GetBoundPort() (int, error) {
 // GetBoundInterface returns the bound interface.
 func (sock *Socket) GetBoundInterface() (net.Interface, error) {
 	if !sock.IsBound() {
-		return net.Interface{}, fmt.Errorf(errorSocketIsClosed)
+		return net.Interface{}, fmt.Errorf(errorSocketClosed)
 	}
 	return sock.BoundInterface, nil
 }
@@ -67,7 +67,7 @@ func (sock *Socket) GetBoundInterface() (net.Interface, error) {
 // GetBoundAddr returns the bound address
 func (sock *Socket) GetBoundAddr() (string, error) {
 	if !sock.IsBound() {
-		return "", fmt.Errorf(errorSocketIsClosed)
+		return "", fmt.Errorf(errorSocketClosed)
 	}
 
 	return sock.BoundAddress, nil
