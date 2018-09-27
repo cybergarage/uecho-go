@@ -134,19 +134,19 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
 	return true
 }
 
-// postResponseMessage posts the response message to the destination node.
-func (node *LocalNode) postResponseMessage(msg *protocol.Message) bool {
-	msgDstObjCode := msg.GetDestinationObjectCode()
+// createResponseMessageForRequestMessage retunrs the response message for the specified request message.
+func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.Message) (*protocol.Message, error) {
+	msgDstObjCode := reqMsg.GetDestinationObjectCode()
 	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
-		return false
+		return nil, err
 	}
 
-	msgOPC := msg.GetOPC()
+	msgOPC := reqMsg.GetOPC()
 
-	resMsg := protocol.NewResponseMessageWithMessage(msg)
+	resMsg := protocol.NewResponseMessageWithMessage(reqMsg)
 	for n := 0; n < msgOPC; n++ {
-		msgProp := msg.GetProperty(n)
+		msgProp := reqMsg.GetProperty(n)
 		if msgProp == nil {
 			continue
 		}
@@ -157,10 +157,20 @@ func (node *LocalNode) postResponseMessage(msg *protocol.Message) bool {
 		resMsg.AddProperty(prop.toProtocolProperty())
 	}
 
-	err = node.responseMessage(NewRemoteNodeWithRequestMessage(msg), resMsg)
+	return resMsg, nil
+}
+
+// postResponseMessage posts the response message to the destination node.
+func (node *LocalNode) postResponseMessage(reqMsg *protocol.Message) error {
+	resMsg, err := node.createResponseMessageForRequestMessage(reqMsg)
 	if err != nil {
-		return false
+		return err
 	}
 
-	return true
+	err = node.responseMessage(NewRemoteNodeWithRequestMessage(reqMsg), resMsg)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
