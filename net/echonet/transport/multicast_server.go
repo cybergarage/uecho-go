@@ -11,31 +11,31 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// A MulticastListener represents a listener for MulticastServer.
-type MulticastListener interface {
-	protocol.MessageListener
+// A MulticastHandler represents a listener for MulticastServer.
+type MulticastHandler interface {
+	protocol.MessageHandler
 }
 
 // A MulticastServer represents a multicast server.
 type MulticastServer struct {
 	*Server
-	Socket   *MulticastSocket
-	Listener MulticastListener
+	Socket  *MulticastSocket
+	Handler MulticastHandler
 }
 
 // NewMulticastServer returns a new MulticastServer.
 func NewMulticastServer() *MulticastServer {
 	server := &MulticastServer{
-		Server:   NewServer(),
-		Socket:   NewMulticastSocket(),
-		Listener: nil,
+		Server:  NewServer(),
+		Socket:  NewMulticastSocket(),
+		Handler: nil,
 	}
 	return server
 }
 
-// SetListener set a listener.
-func (server *MulticastServer) SetListener(l MulticastListener) {
-	server.Listener = l
+// SetHandler set a listener.
+func (server *MulticastServer) SetHandler(l MulticastHandler) {
+	server.Handler = l
 }
 
 // Start starts this server.
@@ -67,8 +67,8 @@ func handleMulticastConnection(server *MulticastServer) {
 
 		server.Socket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPMulticast, msg.From.String(), msg.String(), msg.Size())
 
-		if server.Listener != nil {
-			server.Listener.ProtocolMessageReceived(msg)
+		if server.Handler != nil {
+			server.Handler.ProtocolMessageReceived(msg)
 		}
 	}
 }

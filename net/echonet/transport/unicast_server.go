@@ -11,9 +11,9 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// A UnicastListener represents a listener for UnicastServer.
-type UnicastListener interface {
-	protocol.MessageListener
+// A UnicastHandler represents a listener for UnicastServer.
+type UnicastHandler interface {
+	protocol.MessageHandler
 }
 
 // A UnicastServer represents a unicast server.
@@ -22,7 +22,7 @@ type UnicastServer struct {
 	*Server
 	TCPSocket *UnicastTCPSocket
 	UDPSocket *UnicastUDPSocket
-	Listener  UnicastListener
+	Handler   UnicastHandler
 }
 
 // NewUnicastServer returns a new UnicastServer.
@@ -32,14 +32,14 @@ func NewUnicastServer() *UnicastServer {
 		Server:        NewServer(),
 		TCPSocket:     NewUnicastTCPSocket(),
 		UDPSocket:     NewUnicastUDPSocket(),
-		Listener:      nil,
+		Handler:       nil,
 	}
 	return server
 }
 
-// SetListener set a listener.
-func (server *UnicastServer) SetListener(l UnicastListener) {
-	server.Listener = l
+// SetHandler set a listener.
+func (server *UnicastServer) SetHandler(l UnicastHandler) {
+	server.Handler = l
 }
 
 // SendMessage send a message to the destination address.
@@ -75,7 +75,7 @@ func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 			return err
 		}
 	}
-	go handleUnicastTCPListener(server)
+	go handleUnicastTCPHandler(server)
 
 	server.Interface = ifi
 
@@ -108,13 +108,13 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 
 		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, msg.From.String(), msg.String(), msg.Size())
 
-		if server.Listener != nil {
-			server.Listener.ProtocolMessageReceived(msg)
+		if server.Handler != nil {
+			server.Handler.ProtocolMessageReceived(msg)
 		}
 	}
 }
 
-func handleUnicastTCPListener(server *UnicastServer) {
+func handleUnicastTCPHandler(server *UnicastServer) {
 	for {
 		conn, err := server.TCPSocket.Listener.AcceptTCP()
 		if err != nil {
@@ -133,7 +133,7 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 
 	conn.Close()
 
-	if server.Listener != nil {
-		server.Listener.ProtocolMessageReceived(msg)
+	if server.Handler != nil {
+		server.Handler.ProtocolMessageReceived(msg)
 	}
 }
