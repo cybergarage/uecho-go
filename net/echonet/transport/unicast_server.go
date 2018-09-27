@@ -79,8 +79,8 @@ func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 		if err != nil {
 			return err
 		}
+		go handleUnicastTCPHandler(server)
 	}
-	go handleUnicastTCPHandler(server)
 
 	server.Interface = ifi
 
