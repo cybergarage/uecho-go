@@ -123,7 +123,7 @@ func (mgr *UnicastManager) IsRunning() bool {
 	return true
 }
 
-// SendMessage send a message to the destination address.
+// SendMessage sends a message to the destination address.
 func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
 	var lastErr error
 	for _, server := range mgr.Servers {
@@ -153,4 +153,26 @@ func (mgr *UnicastManager) AnnounceMessage(addr string, port int, msg *protocol.
 		return lastErr
 	}
 	return fmt.Errorf(errorUnicastServerNotRunning)
+}
+
+// PostMessage posts a message to the destination address and gets the response message.
+func (mgr *UnicastManager) PostMessage(addr string, port int, reqMsg *protocol.Message) (*protocol.Message, error) {
+	if !mgr.IsTCPEnabled() {
+		return nil, fmt.Errorf(errorTCPSocketDisabled)
+	}
+
+	var lastErr error
+	for _, server := range mgr.Servers {
+		resMsg, err := server.TCPSocket.PostMessage(addr, port, reqMsg, mgr.GetConnectionTimeout())
+		if err == nil {
+			return resMsg, nil
+		}
+		lastErr = err
+	}
+
+	if lastErr != nil {
+		return nil, lastErr
+	}
+
+	return nil, fmt.Errorf(errorUnicastServerNotRunning)
 }
