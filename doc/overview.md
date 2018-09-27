@@ -1,6 +1,6 @@
 ![logo](img/logo.png)
 
-eEcho for Go is a portable and cross platform development framework for creating controller applications and devices of [ECHONET Lite][enet]. [ECHONET][enet] is an open standard specification for IoT devices in Japan, it specifies more than 100 IoT devices such as crime prevention sensor, air conditioner and refrigerator.
+`uecho-go` is a portable and cross platform development framework for creating controller applications and devices of [ECHONET Lite][enet]. [ECHONET][enet] is an open standard specification for IoT devices in Japan, it specifies more than 100 IoT devices such as crime prevention sensor, air conditioner and refrigerator.
 
 ## What is uEcho ?
 
@@ -21,6 +21,8 @@ The uEcho is inspired by reactive programming too. Using the uEcho, developer ha
 - Device
   - [Overview of Device](device_overview.md)
   - [Inside of Device](device_inside.md)
+- Appendix
+  - [Extension Specifications](extension.md)
 - [Examples](examples.md)
 
 [enet]:http://echonet.jp/english/
