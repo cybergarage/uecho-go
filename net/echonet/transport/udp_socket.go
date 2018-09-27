@@ -56,7 +56,7 @@ func (sock *UDPSocket) outputReadLog(logLevel log.LogLevel, logType string, msgF
 // ReadMessage reads a message from the current opened socket.
 func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	if sock.Conn == nil {
-		return nil, errors.New(errorSocketIsClosed)
+		return nil, errors.New(errorSocketClosed)
 	}
 
 	n, from, err := sock.Conn.ReadFromUDP(sock.readBuf)
