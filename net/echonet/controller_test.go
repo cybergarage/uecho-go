@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -57,6 +58,9 @@ func TestNewController(t *testing.T) {
 }
 
 func TestControllerSearch(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+	defer log.SetStdoutDebugEnbled(false)
+
 	// Create test nodes
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
