@@ -203,7 +203,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
