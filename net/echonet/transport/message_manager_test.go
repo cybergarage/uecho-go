@@ -82,7 +82,7 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 			continue
 		}
 
-		time.Sleep(time.Second)
+		time.Sleep(time.Microsecond * 500)
 
 		dstLastMsg := dstMgr.lastNotificationMessage
 		if dstLastMsg == nil {
