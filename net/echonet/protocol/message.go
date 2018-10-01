@@ -39,7 +39,6 @@ type Message struct {
 	ESV         ESV
 	OPC         byte
 	EP          []*Property
-	rawBytes    []byte
 	From        *Address
 	Interface   net.Interface
 }
