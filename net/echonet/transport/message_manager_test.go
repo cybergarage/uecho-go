@@ -77,17 +77,19 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 
 		time.Sleep(time.Second)
 
-		dstMsg := dstMgr.lastNotificationMessage
-		if dstMsg == nil {
-			t.Error("")
+		dstLastMsg := dstMgr.lastNotificationMessage
+		if dstLastMsg == nil {
+			t.Errorf("%s !=", msg.String())
+			continue
 		}
 
-		if bytes.Compare(msg.Bytes(), dstMsg.Bytes()) != 0 {
-			t.Errorf("%s != %s", string(msg.Bytes()), string(dstMsg.Bytes()))
+		if bytes.Compare(msg.Bytes(), dstLastMsg.Bytes()) != 0 {
+			t.Errorf("%s != %s", msg.String(), dstLastMsg.String())
+			continue
 		}
 
 		srcPort := srcMgr.GetPort()
-		msgPort := dstMsg.GetSourcePort()
+		msgPort := dstLastMsg.GetSourcePort()
 
 		if srcPort != msgPort {
 			t.Errorf("%d != %d", srcPort, msgPort)
