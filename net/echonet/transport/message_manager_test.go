@@ -33,7 +33,7 @@ func newTestMessageManager() *testMessageManager {
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	log.Trace(fmt.Sprintf("ProtocolMessageReceived : %s", msg.String()))
 	if msg.IsESV(protocol.ESVNotificationRequest) {
-		copyMsg, err := protocol.NewMessageWithBytes(msg.Bytes())
+		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
 			mgr.lastNotificationMessage = copyMsg
 		}
@@ -140,10 +140,12 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 		dstMsg := dstMgr.lastNotificationMessage
 		if dstMsg == nil {
 			t.Error("")
+			continue
 		}
 
 		if bytes.Compare(msg.Bytes(), dstMsg.Bytes()) != 0 {
 			t.Errorf("%s != %s", msg, dstMsg)
+			continue
 		}
 
 		if checkSourcePort {

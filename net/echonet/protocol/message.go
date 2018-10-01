@@ -82,7 +82,17 @@ func NewMessageWithBytes(data []byte) (*Message, error) {
 
 // NewMessageWithMessage copies the specified message.
 func NewMessageWithMessage(msg *Message) (*Message, error) {
-	return NewMessageWithBytes(msg.Bytes())
+	copyMsg, err := NewMessageWithBytes(msg.Bytes())
+	if err != nil {
+		return nil, err
+	}
+
+	from := *msg.From
+	copyMsg.From = &from
+
+	copyMsg.Interface = msg.Interface
+
+	return copyMsg, nil
 }
 
 // NewResponseMessageWithMessage returns a response message of the specified message withtout the properties.
