@@ -28,5 +28,7 @@ func SetStdoutEnbled(flag bool) {
 func SetStdoutDebugEnbled(flag bool) {
 	if flag {
 		SetSharedLogger(NewStdoutLogger(LoggerLevelTrace))
+	} else {
+		SetSharedLogger(nil)
 	}
 }
