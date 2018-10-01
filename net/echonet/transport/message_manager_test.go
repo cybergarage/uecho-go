@@ -6,11 +6,13 @@ package transport
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -29,8 +31,12 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
+	log.Trace(fmt.Sprintf("ProtocolMessageReceived : %s", msg.String()))
 	if msg.IsESV(protocol.ESVNotificationRequest) {
-		mgr.lastNotificationMessage = msg
+		copyMsg, err := protocol.NewMessageWithBytes(msg.Bytes())
+		if err == nil {
+			mgr.lastNotificationMessage = copyMsg
+		}
 	}
 	return nil, nil
 }
@@ -62,6 +68,7 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 	for n := 0; n < len(srcMgrs); n++ {
 		srcMgr := srcMgrs[n]
 		dstMgr := dstMgrs[n]
+		dstMgr.lastNotificationMessage = nil
 
 		msg, err := newTestMessage(uint(rand.Uint32()))
 		if err != nil {
@@ -106,6 +113,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 	for n := 0; n < len(srcMgrs); n++ {
 		srcMgr := srcMgrs[n]
 		dstMgr := dstMgrs[n]
+		dstMgr.lastNotificationMessage = nil
 
 		msg, err := newTestMessage(uint(rand.Uint32()))
 		if err != nil {
@@ -193,7 +201,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
+	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
