@@ -145,10 +145,14 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 
 	defer conn.Close()
 
-	if server.Handler != nil {
-		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
-		if err != nil && resMsg != nil {
-			server.TCPSocket.ResponseMessage(conn, resMsg)
-		}
+	if server.Handler == nil {
+		return
 	}
+
+	resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
+	if err != nil || resMsg == nil {
+		return
+	}
+
+	server.TCPSocket.ResponseMessage(conn, resMsg)
 }
