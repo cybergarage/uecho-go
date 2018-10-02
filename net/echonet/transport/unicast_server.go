@@ -154,5 +154,5 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 		return
 	}
 
-	server.TCPSocket.ResponseMessage(conn, resMsg)
+	server.TCPSocket.ResponseMessageToConnection(conn, resMsg)
 }
