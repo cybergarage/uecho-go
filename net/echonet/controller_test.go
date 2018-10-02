@@ -56,10 +56,7 @@ func TestNewController(t *testing.T) {
 	}
 }
 
-func TestControllerSearch(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
-	//defer log.SetStdoutDebugEnbled(false)
-
+func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	// Create test nodes
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
@@ -75,6 +72,7 @@ func TestControllerSearch(t *testing.T) {
 	// Start a test node
 
 	for _, node := range nodes {
+		node.SetConfig(config)
 		err := node.Start()
 		if err != nil {
 			t.Error(err)
@@ -86,6 +84,7 @@ func TestControllerSearch(t *testing.T) {
 	// Start a controller
 
 	ctrl := newTestController()
+	ctrl.SetConfig(config)
 	err := ctrl.Start()
 	if err != nil {
 		t.Error(err)
@@ -142,4 +141,30 @@ func TestControllerSearch(t *testing.T) {
 		t.Error(err)
 	}
 
+}
+
+func TestControllerSearchithWithDefaultConfig(t *testing.T) {
+	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
+	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
+	testControllerSearchWithConfig(t, conf)
+}
+
+func TestControllerSearchWithOnlyUDPConfig(t *testing.T) {
+	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
+	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
+	conf.SetTCPEnabled(false)
+	testControllerSearchWithConfig(t, conf)
+}
+
+func TestControllerSearchWithEnableTCPConfig(t *testing.T) {
+	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
+	conf := NewDefaultConfig()
+	conf.SetConnectionTimeout(testNodeRequestTimeout)
+	conf.SetTCPEnabled(true)
+	testControllerSearchWithConfig(t, conf)
 }
