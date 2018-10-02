@@ -9,7 +9,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -177,7 +176,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	node.postResponseCh = make(chan *protocol.Message)
 	node.postRequestMsg = msg
 
-	log.Trace(fmt.Sprintf(logLocalNodePostMessageFormat, msg.String()))
+	//log.Trace(fmt.Sprintf(logLocalNodePostMessageFormat, msg.String()))
 
 	err := node.SendMessage(dstNode, msg)
 	if err != nil {

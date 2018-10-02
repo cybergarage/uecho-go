@@ -23,7 +23,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 		return nil, nil
 	}
 
-	log.Trace(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
+	//log.Trace(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
 
 	if node.isResponseMessageWaiting() {
 		if node.isResponseMessage(msg) {
@@ -32,6 +32,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 	}
 
 	if !node.validateReceivedMessage(msg) {
+		log.Error(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
 		return protocol.NewImpossibleMessageWithMessage(msg), nil
 	}
 
@@ -41,7 +42,12 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 		return nil, nil
 	}
 
-	return node.createResponseMessageForRequestMessage(msg)
+	resMsg, err := node.createResponseMessageForRequestMessage(msg)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return resMsg, err
 }
 
 // validateReceivedMessage checks whether the received message is a valid message.

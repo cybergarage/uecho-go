@@ -5,9 +5,6 @@
 package echonet
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -23,7 +20,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
 		return
 	}
 
-	log.Trace(fmt.Sprintf(logControllerListenerFormat, msg.String()))
+	//log.Trace(fmt.Sprintf(logControllerListenerFormat, msg.String()))
 
 	// NodeProfile message ?
 	if msg.IsNotification() || msg.IsReadResponse() {
