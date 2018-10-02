@@ -79,8 +79,10 @@ func handleMulticastConnection(server *MulticastServer) {
 		}
 
 		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
-		if server.UnicastServer != nil && err != nil && resMsg != nil {
-			server.UnicastServer.ResponseMessageForRequestMessage(reqMsg, resMsg)
+		if server.UnicastServer == nil || err != nil || resMsg == nil {
+			continue
 		}
+
+		server.UnicastServer.ResponseMessageForRequestMessage(reqMsg, resMsg)
 	}
 }
