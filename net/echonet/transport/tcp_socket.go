@@ -144,8 +144,8 @@ func (sock *TCPSocket) PostMessage(addr string, port int, reqMsg *protocol.Messa
 	return sock.ReadMessage(conn)
 }
 
-// ResponseMessage sends a response message to the specified connection.
-func (sock *TCPSocket) ResponseMessage(conn *net.TCPConn, resMsg *protocol.Message) error {
+// ResponseMessageToConnection sends a response message to the specified connection.
+func (sock *TCPSocket) ResponseMessageToConnection(conn *net.TCPConn, resMsg *protocol.Message) error {
 	_, err := sock.writeBytesToConnection(conn, resMsg.Bytes())
 	return err
 }
