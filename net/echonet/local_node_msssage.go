@@ -158,7 +158,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 
 	if node.IsTCPEnabled() {
 		resMsg, err := node.postMessageSynchronously(dstNode, msg)
-		if err != nil {
+		if err == nil {
 			return resMsg, nil
 		}
 	}
