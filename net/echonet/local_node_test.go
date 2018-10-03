@@ -53,12 +53,14 @@ func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Mes
 
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	ctrl := NewController()
+	ctrl.SetConfig(config)
 
 	node, err := newTestSampleNode()
 	if err != nil {
 		t.Error(err)
 		return
 	}
+	node.SetConfig(config)
 
 	startTID := ctrl.GetLastTID()
 
@@ -214,6 +216,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 func TestLocalNodeWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
 	conf := NewDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	testLocalNodeWithConfig(t, conf)
@@ -221,6 +224,7 @@ func TestLocalNodeWithDefaultConfig(t *testing.T) {
 
 func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
 	conf := NewDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(false)
@@ -229,6 +233,7 @@ func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 
 func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
 	conf := NewDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(true)

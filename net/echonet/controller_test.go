@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -162,8 +161,8 @@ func TestControllerSearchWithOnlyUDPConfig(t *testing.T) {
 }
 
 func TestControllerSearchWithEnableTCPConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-	defer log.SetStdoutDebugEnbled(false)
+	//log.SetStdoutDebugEnbled(true)
+	//defer log.SetStdoutDebugEnbled(false)
 	conf := NewDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(true)
