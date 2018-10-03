@@ -60,22 +60,6 @@ func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protoco
 	return err
 }
 
-// ResponseMessageForRequestMessage sends a specified response message to the request node
-func (server *UnicastServer) ResponseMessageForRequestMessage(reqMsg *protocol.Message, resMsg *protocol.Message) error {
-	// Part V ECHONET Lite System Design Guidelines v1.12
-	// Chapter 5 - Guidelines on TCP
-	// A node sending a request message to another node should send the message again by UDP unicast when necessary
-	//  in case of a TCP connection failure since the remote party may not be able to use TCP.
-
-	if server.IsTCPEnabled() {
-		err := server.TCPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg, server.GetConnectionTimeout())
-		if err == nil {
-			return nil
-		}
-	}
-	return server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
-}
-
 // Start starts this server.
 func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 	err := server.UDPSocket.Bind(ifi, port)
