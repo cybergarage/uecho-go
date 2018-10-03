@@ -16,3 +16,16 @@ func NewDefaultConfig() *Config {
 	}
 	return conf
 }
+
+// SetConfig sets all configuration flags.
+func (conf *Config) SetConfig(newConfig *Config) {
+	conf.UnicastConfig.SetConfig(newConfig.UnicastConfig)
+}
+
+// Equals returns true whether the specified other class is same, otherwise false.
+func (conf *Config) Equals(other *Config) bool {
+	if !conf.UnicastConfig.Equals(other.UnicastConfig) {
+		return false
+	}
+	return true
+}
