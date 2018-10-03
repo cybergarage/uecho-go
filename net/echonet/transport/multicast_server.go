@@ -83,6 +83,6 @@ func handleMulticastConnection(server *MulticastServer) {
 			continue
 		}
 
-		server.UnicastServer.ResponseMessageForRequestMessage(reqMsg, resMsg)
+		server.UnicastServer.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
 	}
 }
