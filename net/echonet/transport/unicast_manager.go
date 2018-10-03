@@ -18,7 +18,7 @@ const (
 
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
-	*UnicastConfig
+	*Config
 	Port    int
 	Servers []*UnicastServer
 	Handler UnicastHandler
@@ -27,10 +27,10 @@ type UnicastManager struct {
 // NewUnicastManager returns a new UnicastManager.
 func NewUnicastManager() *UnicastManager {
 	mgr := &UnicastManager{
-		UnicastConfig: NewDefaultUnicastConfig(),
-		Port:          UDPPort,
-		Servers:       make([]*UnicastServer, 0),
-		Handler:       nil,
+		Config:  NewDefaultConfig(),
+		Port:    UDPPort,
+		Servers: make([]*UnicastServer, 0),
+		Handler: nil,
 	}
 	return mgr
 }
@@ -71,20 +71,25 @@ func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
 // Start starts this server.
 func (mgr *UnicastManager) Start(ifi net.Interface) (*UnicastServer, error) {
 	server := NewUnicastServer()
+	server.SetConfig(mgr.Config.UnicastConfig)
 	server.Handler = mgr.Handler
 
-	var lastErr error
-	for port := mgr.GetPort(); (UDPPortMin <= port) && (port <= UDPPortMax); port++ {
-		mgr.SetPort(port)
-		server.SetConfig(mgr.UnicastConfig)
+	startPort := mgr.GetPort()
+	endPort := startPort
+	if !mgr.IsAutoBindingEnabled() {
+		endPort = UDPPortMax
+	}
 
-		err := server.Start(ifi, mgr.Port)
+	var lastErr error
+	for port := startPort; port <= endPort; port++ {
+		err := server.Start(ifi, port)
 		if err != nil {
 			lastErr = err
 			continue
 		}
 
 		if err == nil {
+			mgr.SetPort(port)
 			lastErr = nil
 			break
 		}
