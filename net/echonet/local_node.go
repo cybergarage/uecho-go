@@ -21,8 +21,8 @@ const (
 type LocalNode struct {
 	*baseNode
 	*server
-	*Config
 	*sync.Mutex
+	*Config
 	manufacturerCode uint
 	lastTID          uint
 	postResponseCh   chan *protocol.Message
@@ -36,9 +36,9 @@ func NewLocalNode() *LocalNode {
 	node := &LocalNode{
 		baseNode:         newBaseNode(),
 		server:           newServer(),
-		Config:           NewDefaultConfig(),
 		Mutex:            new(sync.Mutex),
 		manufacturerCode: NodeManufacturerUnknown,
+		Config:           NewDefaultConfig(),
 		lastTID:          TIDMin,
 		postResponseCh:   nil,
 		postRequestMsg:   nil,
@@ -52,9 +52,10 @@ func NewLocalNode() *LocalNode {
 	return node
 }
 
-// SetConfig sets all flags.
+// SetConfig sets all configuration flags.
 func (node *LocalNode) SetConfig(newConfig *Config) {
-	node.server.SetConfig(newConfig.transportConfig)
+	node.Config = newConfig
+	node.server.MessageManager.SetConfig(newConfig.TransportConfig)
 }
 
 // SetManufacturerCode sets a manufacture codes to the node.
@@ -144,8 +145,6 @@ func (node *LocalNode) GetPort() int {
 
 // Start starts the node.
 func (node *LocalNode) Start() error {
-	node.server.SetConfig(node.Config.transportConfig)
-
 	err := node.server.Start()
 	if err != nil {
 		return err

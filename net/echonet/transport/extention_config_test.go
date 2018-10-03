@@ -6,16 +6,15 @@ package transport
 
 import (
 	"testing"
-	"time"
 )
 
-func TestNewDefaultUnicastConfig(t *testing.T) {
-	NewDefaultUnicastConfig()
+func TestNewDefaultExtentionConfigConfig(t *testing.T) {
+	NewDefaultExtentionConfig()
 }
 
-func TestUnicastConfigEquals(t *testing.T) {
-	conf01 := NewDefaultUnicastConfig()
-	conf02 := NewDefaultUnicastConfig()
+func TestExtentionConfigEquals(t *testing.T) {
+	conf01 := NewDefaultExtentionConfig()
+	conf02 := NewDefaultExtentionConfig()
 
 	// Testing Set*()
 
@@ -23,21 +22,15 @@ func TestUnicastConfigEquals(t *testing.T) {
 		t.Errorf("%v != %v", conf01, conf02)
 	}
 
-	conf01.SetTCPEnabled(true)
-	conf02.SetTCPEnabled(false)
-	if conf01.Equals(conf02) {
-		t.Errorf("%v == %v", conf01, conf02)
-	}
-
-	conf01.SetConnectionTimeout(time.Microsecond)
-	conf02.SetConnectionTimeout(time.Second)
+	conf01.SetAutoBindingEnabled(true)
+	conf02.SetAutoBindingEnabled(false)
 	if conf01.Equals(conf02) {
 		t.Errorf("%v == %v", conf01, conf02)
 	}
 
 	// Testing SetConfig()
 
-	conf03 := NewDefaultUnicastConfig()
+	conf03 := NewDefaultExtentionConfig()
 	conf03.SetConfig(conf01)
 	if !conf01.Equals(conf03) {
 		t.Errorf("%v != %v", conf01, conf03)
