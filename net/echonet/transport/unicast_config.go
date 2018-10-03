@@ -48,3 +48,14 @@ func (conf *UnicastConfig) SetConnectionTimeout(timeout time.Duration) {
 func (conf *UnicastConfig) GetConnectionTimeout() time.Duration {
 	return conf.ConnectionTimeout
 }
+
+// Equals returns true whether the specified other class is same, otherwise false.
+func (conf *UnicastConfig) Equals(otherConf *UnicastConfig) bool {
+	if conf.IsTCPEnabled() != otherConf.IsTCPEnabled() {
+		return false
+	}
+	if conf.GetConnectionTimeout() != otherConf.GetConnectionTimeout() {
+		return false
+	}
+	return true
+}
