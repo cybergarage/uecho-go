@@ -5,17 +5,18 @@
 `uecho-go` supports some extension specifications for [ECHONET Lite][enet] to use the IoT protocol in a variety of situations such as Cloud computing or testing.
 
 
-[enet]:http://echonet.jp/english/
-
 # TCP Unicast
 
-TCP unicast is not mandatory in [ECHONET Lite][enet], but `uecho-go` supports it the unicast protocol to send the messages more reliably. The TCP extention is disabled as default, and so use `Node::SetTCPEnabled() to enable it as the following.
+[ECHONET Lite][enet] does not strictly specify the TCP specification, and the TCP unicast is not mandatory. However `uecho-go` supports it the unicast protocol to send the messages more reliably. The TCP extention is disabled as default, and so use `Node::SetTCPEnabled() to enable it as the following.
 
 
 ```
 node := NewLocalNode()
 node.SetTCPEnabled(true)
 ```
+
+According to [ECHONET Lite System Design Guidelines][enet_guideline_tcp], `uecho-go` tries to send any request messages using TCP connection at first when the option is enabled and send the request messages using UDP connection again when the TCP requests are failed. 
+In addition, `uecho-go` returns all response messages using UDP connection when the request massages are received from UDP or multicast connection.
 
 # Automatic Port Binding
 
@@ -38,3 +39,10 @@ boundPort := node.GetPort()
 
 The bound UDP and TCP unicast ports are the same number. 
 In addition, [ECHONET Lite][enet] does not specify the source port numbers of UDP multicast, UDP and TCP unicast, but `uecho-go` uses the bound port as the source port number for the all messaging.
+
+# References
+
+- [Part V ECHONET Lite System Design Guidelines v1.12 : Chapter 5 - Guidelines on TCP][enet_guideline_tcp]
+
+[enet]:http://echonet.jp/english/
+[enet_guideline_tcp]:https://echonet.jp/spec_en/
