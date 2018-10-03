@@ -29,9 +29,9 @@ func NewMessageManager() *MessageManager {
 	return mgr
 }
 
-// SetConfig sets all flags.
+// SetConfig sets all configuration flags.
 func (mgr *MessageManager) SetConfig(newConfig *Config) {
-	mgr.unicastMgr.SetConfig(newConfig.UnicastConfig)
+	mgr.unicastMgr.SetConfig(newConfig)
 }
 
 // SetPort sets a listen port.
