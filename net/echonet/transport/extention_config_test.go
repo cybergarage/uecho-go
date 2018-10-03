@@ -44,3 +44,47 @@ func TestExtentionConfigEquals(t *testing.T) {
 		t.Errorf("%v != %v", conf01, conf03)
 	}
 }
+
+/*
+func TestExtentionAutoBindingConfig(t *testing.T) {
+	conf := NewDefaultConfig()
+
+	// Start on the default port
+
+	mgr01 := NewMessageManager()
+	err := mgr01.Start()
+	defer mgr01.Stop()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if mgr01.GetPort() != UDPPort {
+		t.Errorf("%d != %d", mgr01.GetPort(), UDPPort)
+		return
+	}
+
+	// Disable auto binding option
+
+	conf.SetAutoBindingEnabled(false)
+
+	mrg02 := NewMessageManager()
+	mrg02.SetConfig(conf)
+	err = mrg02.Start()
+	if err == nil {
+		mrg02.Stop()
+		t.Errorf("%v", conf)
+		return
+	}
+
+	// Enable auto binding option
+
+	conf.SetAutoBindingEnabled(true)
+
+	mrg02.SetConfig(conf)
+	err = mrg02.Start()
+	if err != nil {
+		t.Error(err)
+	}
+	mrg02.Stop()
+}
+*/
