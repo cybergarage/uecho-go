@@ -12,7 +12,7 @@ type ExtentionConfig struct {
 // NewDefaultExtentionConfig returns a default configuration.
 func NewDefaultExtentionConfig() *ExtentionConfig {
 	conf := &ExtentionConfig{
-		AutoBindingEnabled: false,
+		AutoBindingEnabled: true,
 	}
 	return conf
 }
