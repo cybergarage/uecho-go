@@ -98,13 +98,14 @@ func (mgr *MessageManager) Start() error {
 	}
 
 	for _, ifi := range ifis {
-		multicastServer, err := mgr.multicastMgr.Start(ifi)
+		unicastServer, err := mgr.unicastMgr.Start(ifi)
 		if err != nil {
 			return err
 		}
 
-		unicastServer, err := mgr.unicastMgr.Start(ifi)
+		multicastServer, err := mgr.multicastMgr.Start(ifi)
 		if err != nil {
+			unicastServer.Stop()
 			return err
 		}
 
