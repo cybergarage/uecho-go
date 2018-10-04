@@ -76,7 +76,7 @@ func (mgr *UnicastManager) Start(ifi net.Interface) (*UnicastServer, error) {
 
 	startPort := mgr.GetPort()
 	endPort := startPort
-	if !mgr.IsAutoBindingEnabled() {
+	if mgr.IsAutoBindingEnabled() {
 		endPort = UDPPortMax
 	}
 
