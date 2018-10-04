@@ -45,13 +45,14 @@ func TestExtentionConfigEquals(t *testing.T) {
 	}
 }
 
-/*
 func TestExtentionAutoBindingConfig(t *testing.T) {
 	conf := NewDefaultConfig()
+	conf.SetAutoBindingEnabled(false)
 
 	// Start on the default port
 
 	mgr01 := NewMessageManager()
+	mgr01.SetConfig(conf)
 	err := mgr01.Start()
 	defer mgr01.Stop()
 	if err != nil {
@@ -64,8 +65,6 @@ func TestExtentionAutoBindingConfig(t *testing.T) {
 	}
 
 	// Disable auto binding option
-
-	conf.SetAutoBindingEnabled(false)
 
 	mrg02 := NewMessageManager()
 	mrg02.SetConfig(conf)
@@ -85,6 +84,11 @@ func TestExtentionAutoBindingConfig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	if mrg02.GetPort() == UDPPort {
+		t.Errorf("%d == %d", mrg02.GetPort(), UDPPort)
+		return
+	}
+
 	mrg02.Stop()
 }
-*/
