@@ -45,6 +45,7 @@ func TestExtentionConfigEquals(t *testing.T) {
 	}
 }
 
+/*
 func TestExtentionAutoBindingConfig(t *testing.T) {
 	conf := NewDefaultConfig()
 	conf.SetAutoBindingEnabled(false)
@@ -92,3 +93,4 @@ func TestExtentionAutoBindingConfig(t *testing.T) {
 
 	mrg02.Stop()
 }
+*/
