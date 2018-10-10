@@ -10,6 +10,7 @@ import (
 
 func TestSearchController(t *testing.T) {
 	ctrl := NewSearchController()
+	ctrl.SetListener(ctrl)
 	err := ctrl.Start()
 	if err != nil {
 		t.Error(err)
