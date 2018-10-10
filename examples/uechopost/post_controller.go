@@ -23,10 +23,9 @@ func NewPostController() *PostController {
 	return c
 }
 
-func (ctrl *PostController) RequestMessageReceived(msg *protocol.Message) {
+func (ctrl *PostController) ControllerMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
-func (ctrl *PostController) NewNodeFound(*echonet.RemoteNode) {
-
+func (ctrl *PostController) ControllerNewNodeFound(*echonet.RemoteNode) {
 }

@@ -23,10 +23,9 @@ func NewSearchController() *SearchController {
 	return c
 }
 
-func (ctrl *SearchController) RequestMessageReceived(msg *protocol.Message) {
+func (ctrl *SearchController) ControllerMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
-func (ctrl *SearchController) NewNodeFound(*echonet.RemoteNode) {
-
+func (ctrl *SearchController) ControllerNewNodeFound(*echonet.RemoteNode) {
 }
