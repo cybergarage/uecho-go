@@ -34,6 +34,11 @@ func (mgr *MessageManager) SetConfig(newConfig *Config) {
 	mgr.unicastMgr.SetConfig(newConfig)
 }
 
+// GetConfig returns all current configurations.
+func (mgr *MessageManager) GetConfig() *Config {
+	return mgr.unicastMgr.Config
+}
+
 // SetPort sets a listen port.
 func (mgr *MessageManager) SetPort(port int) {
 	mgr.unicastMgr.SetPort(port)
@@ -97,21 +102,41 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
-	for _, ifi := range ifis {
-		unicastServer, err := mgr.unicastMgr.Start(ifi)
+	if mgr.unicastMgr.IsEachInterfaceBindingEnabled() {
+		for _, ifi := range ifis {
+			unicastServer, err := mgr.unicastMgr.Start(ifi)
+			if err != nil {
+				return err
+			}
+
+			multicastServer, err := mgr.multicastMgr.Start(ifi)
+			if err != nil {
+				unicastServer.Stop()
+				return err
+			}
+
+			multicastServer.SetUnicastServer(unicastServer)
+		}
+
+	} else {
+		unicastServer, err := mgr.unicastMgr.Start(nil)
 		if err != nil {
 			return err
 		}
 
-		multicastServer, err := mgr.multicastMgr.Start(ifi)
-		if err != nil {
-			unicastServer.Stop()
-			return err
-		}
+		for _, ifi := range ifis {
 
-		multicastServer.SetUnicastServer(unicastServer)
-		mgr.SetPort(mgr.unicastMgr.GetPort())
+			multicastServer, err := mgr.multicastMgr.Start(ifi)
+			if err != nil {
+				unicastServer.Stop()
+				return err
+			}
+
+			multicastServer.SetUnicastServer(unicastServer)
+		}
 	}
+
+	mgr.SetPort(mgr.unicastMgr.GetPort())
 
 	return nil
 }
