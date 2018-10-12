@@ -6,7 +6,6 @@ package transport
 
 import (
 	"bytes"
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -31,7 +30,6 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	log.Trace(fmt.Sprintf("ProtocolMessageReceived : %s", msg.String()))
 	if msg.IsESV(protocol.ESVNotificationRequest) {
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
@@ -203,7 +201,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
+	log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
