@@ -33,9 +33,12 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
 		return err
 	}
 
-	addr, err := GetInterfaceAddress(ifi)
-	if err != nil {
-		return err
+	addr := ""
+	if ifi != nil {
+		addr, err = GetInterfaceAddress(ifi)
+		if err != nil {
+			return err
+		}
 	}
 
 	boundAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
