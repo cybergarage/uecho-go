@@ -50,8 +50,8 @@ func (mgr *MulticastManager) GetBoundInterfaces() []*net.Interface {
 	return boundIfs
 }
 
-// Start starts this server.
-func (mgr *MulticastManager) Start(ifi *net.Interface) (*MulticastServer, error) {
+// StartWithInterface starts this server on the specified interface.
+func (mgr *MulticastManager) StartWithInterface(ifi *net.Interface) (*MulticastServer, error) {
 
 	server := NewMulticastServer()
 	server.Handler = mgr.Handler
@@ -62,7 +62,31 @@ func (mgr *MulticastManager) Start(ifi *net.Interface) (*MulticastServer, error)
 	}
 
 	mgr.Servers = append(mgr.Servers, server)
+
 	return server, nil
+}
+
+// Start starts servers on the all avairable interfaces.
+func (mgr *MulticastManager) Start() error {
+	err := mgr.Stop()
+	if err != nil {
+		return err
+	}
+
+	ifis, err := GetAvailableInterfaces()
+	if err != nil {
+		return err
+	}
+
+	for _, ifi := range ifis {
+		_, err := mgr.StartWithInterface(ifi)
+		if err != nil {
+			mgr.Stop()
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Stop stops this server.
@@ -87,4 +111,17 @@ func (mgr *MulticastManager) IsRunning() bool {
 		return false
 	}
 	return true
+}
+
+// setUnicastManager sets appropriate unicast servers to all multicast servers to response the multicast messages.
+func (mgr *MulticastManager) setUnicastManager(unicastMgr *UnicastManager) error {
+	for _, multicastServer := range mgr.Servers {
+		unicastServer, err := unicastMgr.getAppropriateServerForInterface(multicastServer.Interface)
+		if err != nil {
+			mgr.Stop()
+			return err
+		}
+		multicastServer.SetUnicastServer(unicastServer)
+	}
+	return nil
 }

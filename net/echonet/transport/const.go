@@ -18,8 +18,7 @@ const (
 
 //  Extention for Echonet Lite
 const (
-	UDPPortMin = UDPPort
-	UDPPortMax = UDPPort + 80
+	UDPPortRange = 100
 )
 
 const (
