@@ -10,22 +10,24 @@ import (
 
 // A Server represents a server.
 type Server struct {
-	Interface net.Interface
+	Interface *net.Interface
 }
 
 // NewServer returns a new UnicastServer.
 func NewServer() *Server {
-	server := &Server{}
+	server := &Server{
+		Interface: nil,
+	}
 	return server
 }
 
 // SetBoundInterface sets a bind interface.
-func (server *Server) SetBoundInterface(i net.Interface) {
+func (server *Server) SetBoundInterface(i *net.Interface) {
 	server.Interface = i
 }
 
 // GetBoundInterface return a bind interface.
-func (server *Server) GetBoundInterface() net.Interface {
+func (server *Server) GetBoundInterface() *net.Interface {
 	return server.Interface
 }
 
