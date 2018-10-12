@@ -48,6 +48,17 @@ func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
 		return err
 	}
 
+	f, err := sock.Conn.File()
+	if err != nil {
+		sock.Close()
+		return err
+	}
+	err = sock.SetReuseAddr(f, true)
+	if err != nil {
+		sock.Close()
+		return err
+	}
+
 	sock.SetBoundStatus(ifi, addr, port)
 
 	return nil
