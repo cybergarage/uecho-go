@@ -68,40 +68,75 @@ func (mgr *UnicastManager) GetBoundInterfaces() []*net.Interface {
 	return boundIfs
 }
 
-// Start starts this server.
-func (mgr *UnicastManager) Start(ifi *net.Interface) (*UnicastServer, error) {
+// StartWithInterfaceAndPort starts this server on the specified interface and port.
+func (mgr *UnicastManager) StartWithInterfaceAndPort(ifi *net.Interface, port int) (*UnicastServer, error) {
 	server := NewUnicastServer()
 	server.SetConfig(mgr.Config.UnicastConfig)
 	server.Handler = mgr.Handler
 
-	startPort := mgr.GetPort()
-	endPort := startPort
-	if mgr.IsAutoBindingEnabled() {
-		endPort = UDPPortMax
-	}
-
-	var lastErr error
-	for port := startPort; port <= endPort; port++ {
-		err := server.Start(ifi, port)
-		if err != nil {
-			lastErr = err
-			continue
-		}
-
-		if err == nil {
-			mgr.SetPort(port)
-			lastErr = nil
-			break
-		}
-	}
-
-	if lastErr != nil {
-		return nil, lastErr
+	err := server.Start(ifi, port)
+	if err != nil {
+		return nil, err
 	}
 
 	mgr.Servers = append(mgr.Servers, server)
 
 	return server, nil
+}
+
+// StartWithInterface starts this server on the specified interface.
+func (mgr *UnicastManager) StartWithInterface(ifi *net.Interface) (*UnicastServer, error) {
+	startPort := mgr.GetPort()
+	endPort := startPort
+	if mgr.IsAutoBindingEnabled() {
+		endPort = startPort + UDPPortRange
+	}
+
+	var lastErr error
+	for port := startPort; port <= endPort; port++ {
+		server, lastErr := mgr.StartWithInterfaceAndPort(ifi, port)
+		if lastErr == nil {
+			mgr.SetPort(port)
+			return server, nil
+		}
+	}
+
+	return nil, lastErr
+}
+
+// Start starts servers on the all avairable interfaces.
+func (mgr *UnicastManager) Start() error {
+	err := mgr.Stop()
+	if err != nil {
+		return err
+	}
+
+	ifis, err := GetAvailableInterfaces()
+	if err != nil {
+		return err
+	}
+
+	startPort := mgr.GetPort()
+	endPort := startPort
+	if mgr.IsAutoBindingEnabled() {
+		endPort = startPort + UDPPortRange
+	}
+
+	var lastErr error
+	for port := startPort; port <= endPort; port++ {
+		for _, ifi := range ifis {
+			_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
+			if lastErr != nil {
+				break
+			}
+		}
+		if lastErr == nil {
+			mgr.SetPort(port)
+			break
+		}
+	}
+
+	return lastErr
 }
 
 // Stop stops this server.
@@ -118,6 +153,24 @@ func (mgr *UnicastManager) Stop() error {
 	}
 	mgr.Servers = make([]*UnicastServer, 0)
 	return lastErr
+}
+
+// Stop stops this server.
+func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) (*UnicastServer, error) {
+	if len(mgr.Servers) <= 0 {
+		return nil, fmt.Errorf(errorUnicastServerNotRunning)
+	}
+
+	for _, server := range mgr.Servers {
+		if server == nil {
+			continue
+		}
+		if server.Interface == ifi {
+			return server, nil
+		}
+	}
+
+	return mgr.Servers[0], nil
 }
 
 // IsRunning returns true whether the local servers are running, otherwise false.

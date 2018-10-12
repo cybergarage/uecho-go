@@ -16,17 +16,9 @@ func testUnicastManagerBinding(t *testing.T, conf *Config) {
 	mgr := NewUnicastManager()
 	mgr.SetConfig(conf)
 
-	ifis, err := GetAvailableInterfaces()
+	err := mgr.Start()
 	if err != nil {
 		t.Error(err)
-	}
-
-	for _, ifi := range ifis {
-		_, err := mgr.Start(ifi)
-		if err != nil {
-			t.Error(err)
-			return
-		}
 	}
 
 	err = mgr.Stop()

@@ -97,43 +97,22 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
-	ifis, err := GetAvailableInterfaces()
+	err = mgr.unicastMgr.Start()
 	if err != nil {
 		return err
 	}
 
-	if mgr.unicastMgr.IsEachInterfaceBindingEnabled() {
-		for _, ifi := range ifis {
-			unicastServer, err := mgr.unicastMgr.Start(ifi)
-			if err != nil {
-				return err
-			}
+	err = mgr.multicastMgr.Start()
+	if err != nil {
+		mgr.Stop()
+		return err
+	}
 
-			multicastServer, err := mgr.multicastMgr.Start(ifi)
-			if err != nil {
-				unicastServer.Stop()
-				return err
-			}
-
-			multicastServer.SetUnicastServer(unicastServer)
-		}
-
-	} else {
-		unicastServer, err := mgr.unicastMgr.Start(nil)
-		if err != nil {
-			return err
-		}
-
-		for _, ifi := range ifis {
-
-			multicastServer, err := mgr.multicastMgr.Start(ifi)
-			if err != nil {
-				unicastServer.Stop()
-				return err
-			}
-
-			multicastServer.SetUnicastServer(unicastServer)
-		}
+	// Set appropriate unicast servers to all multicast servers to response the multicast messages
+	err = mgr.multicastMgr.setUnicastManager(mgr.unicastMgr)
+	if err != nil {
+		mgr.Stop()
+		return err
 	}
 
 	mgr.SetPort(mgr.unicastMgr.GetPort())
