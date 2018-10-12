@@ -64,8 +64,8 @@ func (mgr *MessageManager) GetBoundAddresses() []string {
 }
 
 // GetBoundInterfaces returns the listen interfaces.
-func (mgr *MessageManager) GetBoundInterfaces() []net.Interface {
-	boundIfs := make([]net.Interface, 0)
+func (mgr *MessageManager) GetBoundInterfaces() []*net.Interface {
+	boundIfs := make([]*net.Interface, 0)
 	boundIfs = append(boundIfs, mgr.unicastMgr.GetBoundInterfaces()...)
 	return boundIfs
 }

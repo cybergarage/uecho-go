@@ -40,7 +40,7 @@ type Message struct {
 	OPC         byte
 	EP          []*Property
 	From        *Address
-	Interface   net.Interface
+	Interface   *net.Interface
 }
 
 // NewMessage returns a new message.

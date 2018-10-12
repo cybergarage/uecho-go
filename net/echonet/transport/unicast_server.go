@@ -61,7 +61,7 @@ func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protoco
 }
 
 // Start starts this server.
-func (server *UnicastServer) Start(ifi net.Interface, port int) error {
+func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 	err := server.UDPSocket.Bind(ifi, port)
 	if err != nil {
 		server.TCPSocket.Close()
@@ -77,7 +77,7 @@ func (server *UnicastServer) Start(ifi net.Interface, port int) error {
 		go handleUnicastTCPHandler(server)
 	}
 
-	server.Interface = ifi
+	server.SetBoundInterface(ifi)
 
 	return nil
 }
@@ -95,6 +95,8 @@ func (server *UnicastServer) Stop() error {
 	if err != nil {
 		lastErr = err
 	}
+
+	server.SetBoundInterface(nil)
 
 	return lastErr
 }

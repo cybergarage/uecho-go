@@ -14,7 +14,7 @@ import (
 
 // A Socket represents a socket.
 type Socket struct {
-	BoundInterface net.Interface
+	BoundInterface *net.Interface
 	BoundPort      int
 	BoundAddress   string
 }
@@ -28,13 +28,13 @@ func NewSocket() *Socket {
 
 // Close initialize this socket.
 func (sock *Socket) Close() {
-	sock.BoundInterface = net.Interface{}
+	sock.BoundInterface = nil
 	sock.BoundAddress = ""
 	sock.BoundPort = 0
 }
 
 // SetBoundStatus sets the bound interface, port, and address.
-func (sock *Socket) SetBoundStatus(i net.Interface, addr string, port int) {
+func (sock *Socket) SetBoundStatus(i *net.Interface, addr string, port int) {
 	sock.BoundInterface = i
 	sock.BoundAddress = addr
 	sock.BoundPort = port
@@ -57,9 +57,9 @@ func (sock *Socket) GetBoundPort() (int, error) {
 }
 
 // GetBoundInterface returns the bound interface.
-func (sock *Socket) GetBoundInterface() (net.Interface, error) {
+func (sock *Socket) GetBoundInterface() (*net.Interface, error) {
 	if !sock.IsBound() {
-		return net.Interface{}, fmt.Errorf(errorSocketClosed)
+		return nil, fmt.Errorf(errorSocketClosed)
 	}
 	return sock.BoundInterface, nil
 }
@@ -97,15 +97,15 @@ func (sock *Socket) SetReuseAddr(file *os.File, flag bool) error {
 		opt = 1
 	}
 
-	err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
+	err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, opt)
 	if err != nil {
 		return err
 	}
 
 	// Disable for Linux platrorms
-	//_ = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, opt)
+	//err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
 	//if err != nil {
-	//	return err
+	//		return err
 	//}
 
 	return nil

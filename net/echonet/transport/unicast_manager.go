@@ -60,8 +60,8 @@ func (mgr *UnicastManager) GetBoundAddresses() []string {
 }
 
 // GetBoundInterfaces returns the listen interfaces.
-func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
-	boundIfs := make([]net.Interface, 0)
+func (mgr *UnicastManager) GetBoundInterfaces() []*net.Interface {
+	boundIfs := make([]*net.Interface, 0)
 	for _, server := range mgr.Servers {
 		boundIfs = append(boundIfs, server.GetBoundInterface())
 	}
@@ -69,7 +69,7 @@ func (mgr *UnicastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *UnicastManager) Start(ifi net.Interface) (*UnicastServer, error) {
+func (mgr *UnicastManager) Start(ifi *net.Interface) (*UnicastServer, error) {
 	server := NewUnicastServer()
 	server.SetConfig(mgr.Config.UnicastConfig)
 	server.Handler = mgr.Handler
