@@ -6,6 +6,7 @@ package transport
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -97,7 +98,7 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 		msgPort := dstLastMsg.GetSourcePort()
 
 		if srcPort != msgPort {
-			t.Errorf("%d != %d", srcPort, msgPort)
+			t.Errorf("%d -!-> %d", srcPort, msgPort)
 		}
 	}
 }
@@ -151,7 +152,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			msgPort := dstMsg.GetSourcePort()
 
 			if srcPort != msgPort {
-				t.Errorf("%d != %d", srcPort, msgPort)
+				t.Errorf("%d -!-> %d", srcPort, msgPort)
 			}
 		} else {
 			//t.Logf("Checking source port : %v", checkSourcePort)
@@ -173,12 +174,13 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 
 	// Start managers
 
-	for _, mgr := range mgrs {
+	for n, mgr := range mgrs {
 		err := mgr.Start()
 		if err != nil {
 			t.Error(err)
 			return
 		}
+		log.Trace(fmt.Sprintf("mgr[%d] : %d", n, mgr.GetPort()))
 	}
 
 	// Send multicast messages, and check the received message
@@ -201,7 +203,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
+	//log.SetStdoutDebugEnbled(true)
 	conf := NewDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
