@@ -27,7 +27,7 @@ func NewUnicastUDPSocket() *UnicastUDPSocket {
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *UnicastUDPSocket) Bind(ifi net.Interface, port int) error {
+func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
 	err := sock.Close()
 	if err != nil {
 		return err

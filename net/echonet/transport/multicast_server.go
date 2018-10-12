@@ -46,12 +46,14 @@ func (server *MulticastServer) SetUnicastServer(s *UnicastServer) {
 }
 
 // Start starts this server.
-func (server *MulticastServer) Start(ifi net.Interface) error {
+func (server *MulticastServer) Start(ifi *net.Interface) error {
 	err := server.Socket.Bind(ifi)
 	if err != nil {
 		return err
 	}
-	server.Interface = ifi
+
+	server.SetBoundInterface(ifi)
+
 	go handleMulticastConnection(server)
 	return nil
 }
@@ -62,6 +64,9 @@ func (server *MulticastServer) Stop() error {
 	if err != nil {
 		return err
 	}
+
+	server.SetBoundInterface(nil)
+
 	return nil
 }
 

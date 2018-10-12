@@ -23,7 +23,7 @@ func IsIPv6Address(addr string) bool {
 	return false
 }
 
-func GetInterfaceAddress(ifi net.Interface) (string, error) {
+func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	addrs, err := ifi.Addrs()
 	if err != nil {
 		return "", err
@@ -46,8 +46,8 @@ func GetInterfaceAddress(ifi net.Interface) (string, error) {
 	return "", errors.New(errorAvailableAddressNotFound)
 }
 
-func GetAvailableInterfaces() ([]net.Interface, error) {
-	useIfs := make([]net.Interface, 0)
+func GetAvailableInterfaces() ([]*net.Interface, error) {
+	useIfs := make([]*net.Interface, 0)
 
 	localIfs, err := net.Interfaces()
 	if err != nil {
@@ -65,12 +65,12 @@ func GetAvailableInterfaces() ([]net.Interface, error) {
 			continue
 		}
 
-		_, addrErr := GetInterfaceAddress(localIf)
+		_, addrErr := GetInterfaceAddress(&localIf)
 		if addrErr != nil {
 			continue
 		}
 
-		useIfs = append(useIfs, localIf)
+		useIfs = append(useIfs, &localIf)
 	}
 
 	if len(useIfs) <= 0 {
@@ -99,15 +99,15 @@ func getMatchAddressBlockCount(ifAddr string, targetAddr string) int {
 	return addrSize
 }
 
-func GetAvailableInterfaceForAddr(fromAddr string) (net.Interface, error) {
+func GetAvailableInterfaceForAddr(fromAddr string) (*net.Interface, error) {
 	ifis, err := GetAvailableInterfaces()
 	if err != nil {
-		return net.Interface{}, err
+		return nil, err
 	}
 
 	switch len(ifis) {
 	case 0:
-		return net.Interface{}, errors.New(errorAvailableInterfaceFound)
+		return nil, errors.New(errorAvailableInterfaceFound)
 	case 1:
 		return ifis[0], nil
 	}

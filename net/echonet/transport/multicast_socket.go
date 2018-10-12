@@ -24,7 +24,7 @@ func NewMulticastSocket() *MulticastSocket {
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *MulticastSocket) Bind(ifi net.Interface) error {
+func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 	err := sock.Close()
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (sock *MulticastSocket) Bind(ifi net.Interface) error {
 		return err
 	}
 
-	sock.Conn, err = net.ListenMulticastUDP("udp", &ifi, addr)
+	sock.Conn, err = net.ListenMulticastUDP("udp", ifi, addr)
 	if err != nil {
 		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
 	}

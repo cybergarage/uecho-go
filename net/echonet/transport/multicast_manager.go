@@ -42,8 +42,8 @@ func (mgr *MulticastManager) GetBoundAddresses() []string {
 }
 
 // GetBoundInterfaces returns the listen interfaces.
-func (mgr *MulticastManager) GetBoundInterfaces() []net.Interface {
-	boundIfs := make([]net.Interface, 0)
+func (mgr *MulticastManager) GetBoundInterfaces() []*net.Interface {
+	boundIfs := make([]*net.Interface, 0)
 	for _, server := range mgr.Servers {
 		boundIfs = append(boundIfs, server.Interface)
 	}
@@ -51,7 +51,7 @@ func (mgr *MulticastManager) GetBoundInterfaces() []net.Interface {
 }
 
 // Start starts this server.
-func (mgr *MulticastManager) Start(ifi net.Interface) (*MulticastServer, error) {
+func (mgr *MulticastManager) Start(ifi *net.Interface) (*MulticastServer, error) {
 
 	server := NewMulticastServer()
 	server.Handler = mgr.Handler

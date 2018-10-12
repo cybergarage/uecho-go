@@ -32,7 +32,7 @@ func NewTCPSocket() *TCPSocket {
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *TCPSocket) Bind(ifi net.Interface, port int) error {
+func (sock *TCPSocket) Bind(ifi *net.Interface, port int) error {
 	err := sock.Close()
 	if err != nil {
 		return err
