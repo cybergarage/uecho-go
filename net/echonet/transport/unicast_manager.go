@@ -124,11 +124,15 @@ func (mgr *UnicastManager) Start() error {
 
 	var lastErr error
 	for port := startPort; port <= endPort; port++ {
-		for _, ifi := range ifis {
-			_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
-			if lastErr != nil {
-				break
+		if mgr.IsEachInterfaceBindingEnabled() {
+			for _, ifi := range ifis {
+				_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
+				if lastErr != nil {
+					break
+				}
 			}
+		} else {
+			_, lastErr = mgr.StartWithInterfaceAndPort(nil, port)
 		}
 		if lastErr == nil {
 			mgr.SetPort(port)
