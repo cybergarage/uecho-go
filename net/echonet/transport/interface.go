@@ -15,6 +15,7 @@ const (
 	errorAvailableInterfaceFound  = "Available interface not found"
 )
 
+// IsIPv6Address retusn true whether the specified address is a IPv6 address
 func IsIPv6Address(addr string) bool {
 	if 0 < strings.Index(addr, ":") {
 		return true
@@ -23,6 +24,7 @@ func IsIPv6Address(addr string) bool {
 	return false
 }
 
+// GetInterfaceAddress retuns a IPv4 address of the specivied interface.
 func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	addrs, err := ifi.Addrs()
 	if err != nil {
@@ -30,7 +32,8 @@ func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	}
 
 	for _, addr := range addrs {
-		saddr := strings.Split(addr.String(), "/")
+		addrStr := addr.String()
+		saddr := strings.Split(addrStr, "/")
 		if len(saddr) < 2 {
 			continue
 		}
@@ -46,6 +49,7 @@ func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	return "", errors.New(errorAvailableAddressNotFound)
 }
 
+// GetAvailableInterfaces retuns all available interfaces in the node.
 func GetAvailableInterfaces() ([]*net.Interface, error) {
 	useIfs := make([]*net.Interface, 0)
 
@@ -70,7 +74,8 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 			continue
 		}
 
-		useIfs = append(useIfs, &localIf)
+		useIf := localIf
+		useIfs = append(useIfs, &useIf)
 	}
 
 	if len(useIfs) <= 0 {
@@ -78,6 +83,26 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 	}
 
 	return useIfs, err
+}
+
+// GetAvailableAddresses retuns all available IPv4 addresses in the node
+func GetAvailableAddresses() ([]string, error) {
+	addrs := make([]string, 0)
+
+	ifis, err := GetAvailableInterfaces()
+	if err != nil {
+		return addrs, err
+	}
+
+	for _, ifi := range ifis {
+		addr, err := GetInterfaceAddress(ifi)
+		if err != nil {
+			continue
+		}
+		addrs = append(addrs, addr)
+	}
+
+	return addrs, nil
 }
 
 func getMatchAddressBlockCount(ifAddr string, targetAddr string) int {
@@ -99,6 +124,7 @@ func getMatchAddressBlockCount(ifAddr string, targetAddr string) int {
 	return addrSize
 }
 
+// GetAvailableInterfaceForAddr returns an interface of the specified address.
 func GetAvailableInterfaceForAddr(fromAddr string) (*net.Interface, error) {
 	ifis, err := GetAvailableInterfaces()
 	if err != nil {

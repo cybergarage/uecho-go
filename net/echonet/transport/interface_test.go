@@ -17,3 +17,13 @@ func TestGetAvailableInterfaces(t *testing.T) {
 		t.Errorf("available interface is not found")
 	}
 }
+
+func TestGetAvailableAddresses(t *testing.T) {
+	addrs, err := GetAvailableAddresses()
+	if err != nil {
+		t.Error(err)
+	}
+	if len(addrs) <= 0 {
+		t.Errorf("available address is not found")
+	}
+}
