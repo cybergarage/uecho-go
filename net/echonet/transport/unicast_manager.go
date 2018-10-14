@@ -53,18 +53,36 @@ func (mgr *UnicastManager) SetHandler(l UnicastHandler) {
 // GetBoundAddresses returns the listen addresses.
 func (mgr *UnicastManager) GetBoundAddresses() []string {
 	boundAddrs := make([]string, 0)
-	for _, server := range mgr.Servers {
-		boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
+
+	if mgr.IsEachInterfaceBindingEnabled() {
+		for _, server := range mgr.Servers {
+			boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
+		}
+	} else {
+		addrs, err := GetAvailableAddresses()
+		if err == nil {
+			boundAddrs = append(boundAddrs, addrs...)
+		}
 	}
+
 	return boundAddrs
 }
 
 // GetBoundInterfaces returns the listen interfaces.
 func (mgr *UnicastManager) GetBoundInterfaces() []*net.Interface {
 	boundIfs := make([]*net.Interface, 0)
-	for _, server := range mgr.Servers {
-		boundIfs = append(boundIfs, server.GetBoundInterface())
+
+	if mgr.IsEachInterfaceBindingEnabled() {
+		for _, server := range mgr.Servers {
+			boundIfs = append(boundIfs, server.GetBoundInterface())
+		}
+	} else {
+		ifis, err := GetAvailableInterfaces()
+		if err == nil {
+			boundIfs = append(boundIfs, ifis...)
+		}
 	}
+
 	return boundIfs
 }
 
