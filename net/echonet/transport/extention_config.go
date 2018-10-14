@@ -14,7 +14,7 @@ type ExtentionConfig struct {
 func NewDefaultExtentionConfig() *ExtentionConfig {
 	conf := &ExtentionConfig{
 		AutoBindingEnabled:          true,
-		EachInterfaceBindingEnabled: true,
+		EachInterfaceBindingEnabled: false,
 	}
 	return conf
 }
