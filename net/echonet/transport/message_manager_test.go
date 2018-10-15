@@ -34,25 +34,20 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	log.Trace(fmt.Sprintf("ProtocolMessageReceived (R) : %s", msg.String()))
+	//log.Trace(fmt.Sprintf("ProtocolMessageReceived (R) : %s", msg.String()))
 
+	/* TODO : Check received message more strictly
 	log.Trace(fmt.Sprintf("MGR : %02X, MSG : %02X = %v", mgr.FromPacketType, msg.GetPacketType(), msg.IsPacketType(mgr.FromPacketType)))
-
-	/*
-		if (msg.From.Port != mgr.FromPort) || (!msg.IsPacketType(mgr.FromPacketType)) {
-				return nil, nil
-		}
-
-		if !msg.IsPacketType(mgr.FromPacketType) {
+	if (msg.From.Port != mgr.FromPort) || (!msg.IsPacketType(mgr.FromPacketType)) {
 			return nil, nil
-		}
+	}
 	*/
 
 	if msg.IsESV(protocol.ESVWriteReadRequest) {
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
 			mgr.lastNotificationMessage = copyMsg
-			log.Trace(fmt.Sprintf("ProtocolMessageReceived (U) : %s", copyMsg.String()))
+			//log.Trace(fmt.Sprintf("ProtocolMessageReceived (U) : %s", copyMsg.String()))
 		}
 	}
 
