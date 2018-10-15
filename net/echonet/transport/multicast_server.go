@@ -76,6 +76,7 @@ func handleMulticastConnection(server *MulticastServer) {
 		if err != nil {
 			break
 		}
+		reqMsg.SetPacketType(protocol.MulticastPacket)
 
 		server.Socket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPMulticast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
 

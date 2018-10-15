@@ -107,6 +107,7 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 		if err != nil {
 			break
 		}
+		reqMsg.SetPacketType(protocol.UDPUnicastPacket)
 
 		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
 
@@ -139,6 +140,7 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 	if err != nil {
 		return
 	}
+	reqMsg.SetPacketType(protocol.TCPUnicastPacket)
 
 	defer conn.Close()
 
