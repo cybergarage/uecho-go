@@ -25,6 +25,14 @@ const (
 )
 
 const (
+	UnknownPacket    = 0x00
+	MulticastPacket  = 0x01
+	UDPUnicastPacket = 0x10
+	TCPUnicastPacket = 0x20
+	UnicastPacket    = (UDPUnicastPacket | TCPUnicastPacket)
+)
+
+const (
 	errorShortMessageSize     = "Short message length : %d < %d"
 	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
 )
@@ -40,6 +48,7 @@ type Message struct {
 	OPC         byte
 	EP          []*Property
 	From        *Address
+	PacketType  int
 	Interface   *net.Interface
 }
 
@@ -55,6 +64,8 @@ func NewMessage() *Message {
 		OPC:         0,
 		EP:          make([]*Property, 0),
 		From:        NewAddress(),
+		PacketType:  UnknownPacket,
+		Interface:   nil,
 	}
 	return msg
 }
@@ -89,6 +100,7 @@ func NewMessageWithMessage(msg *Message) (*Message, error) {
 	from := *msg.From
 	copyMsg.From = &from
 
+	copyMsg.PacketType = msg.PacketType
 	copyMsg.Interface = msg.Interface
 
 	return copyMsg, nil
@@ -274,16 +286,6 @@ func (msg *Message) IsResponseRequired() bool {
 	return IsResponseRequired(msg.ESV)
 }
 
-// GetSourceAddress returns the source address of the message.
-func (msg *Message) GetSourceAddress() string {
-	return msg.From.IP.String()
-}
-
-// GetSourcePort returns the source address of the message.
-func (msg *Message) GetSourcePort() int {
-	return msg.From.Port
-}
-
 // SetOPC sets the specified OPC.
 func (msg *Message) SetOPC(value int) error {
 	msg.OPC = byte(value & 0xFF)
@@ -328,6 +330,54 @@ func (msg *Message) GetProperty(n int) *Property {
 // GetProperties returns the all properties.
 func (msg *Message) GetProperties() []*Property {
 	return msg.EP
+}
+
+// GetSourceAddress returns the source address of the message.
+func (msg *Message) GetSourceAddress() string {
+	return msg.From.IP.String()
+}
+
+// GetSourcePort returns the source address of the message.
+func (msg *Message) GetSourcePort() int {
+	return msg.From.Port
+}
+
+// SetPacketType sets the specified package type to the message.
+func (msg *Message) SetPacketType(packetType int) {
+	msg.PacketType = packetType
+}
+
+// GetPacketType returns the packet type of the message.
+func (msg *Message) GetPacketType() int {
+	return msg.PacketType
+}
+
+// IsPacketType returns true when the specified type equals the message type, otherwise false.
+func (msg *Message) IsPacketType(packetType int) bool {
+	if (msg.PacketType & packetType) != 0 {
+		return true
+	}
+	return false
+}
+
+// IsMulticastPacket returns true when the message was sent by multicast, otherwise false.
+func (msg *Message) IsMulticastPacket() bool {
+	return msg.IsPacketType(MulticastPacket)
+}
+
+// IsUnicastPacket returns true when the message was sent by TCP or UDP unicast, otherwise false.
+func (msg *Message) IsUnicastPacket() bool {
+	return msg.IsPacketType(UnicastPacket)
+}
+
+// IsTCPUnicastPacket returns true when the message was sent by TCP unicast, otherwise false.
+func (msg *Message) IsTCPUnicastPacket() bool {
+	return msg.IsPacketType(TCPUnicastPacket)
+}
+
+// IsUDPUnicastPacket returns true when the message was sent by UDP unicast, otherwise false.
+func (msg *Message) IsUDPUnicastPacket() bool {
+	return msg.IsPacketType(UDPUnicastPacket)
 }
 
 // Size return the byte size.
