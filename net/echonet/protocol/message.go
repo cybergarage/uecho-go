@@ -332,6 +332,16 @@ func (msg *Message) GetProperties() []*Property {
 	return msg.EP
 }
 
+// HasProperty returns true when the message has the specified property, otherwise false.
+func (msg *Message) HasProperty(propCode PropertyCode) bool {
+	for _, prop := range msg.EP {
+		if prop.GetCode() == propCode {
+			return true
+		}
+	}
+	return false
+}
+
 // GetSourceAddress returns the source address of the message.
 func (msg *Message) GetSourceAddress() string {
 	return msg.From.IP.String()
