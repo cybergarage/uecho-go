@@ -5,8 +5,6 @@
 package echonet
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -23,8 +21,6 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 		return nil, nil
 	}
 
-	//log.Trace(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
-
 	if node.isResponseMessageWaiting() {
 		if node.isResponseMessage(msg) {
 			node.setResponseMessage(msg)
@@ -32,7 +28,6 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 	}
 
 	if !node.validateReceivedMessage(msg) {
-		log.Error(fmt.Sprintf(logLocalNodeListenerFormat, msg.String()))
 		return protocol.NewImpossibleMessageWithMessage(msg), nil
 	}
 
