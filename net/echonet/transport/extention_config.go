@@ -6,14 +6,14 @@ package transport
 
 // ExtentionConfig represents a cofiguration for extended specifications.
 type ExtentionConfig struct {
-	AutoBindingEnabled          bool
+	AutoPortBindingEnabled      bool
 	EachInterfaceBindingEnabled bool
 }
 
 // NewDefaultExtentionConfig returns a default configuration.
 func NewDefaultExtentionConfig() *ExtentionConfig {
 	conf := &ExtentionConfig{
-		AutoBindingEnabled:          true,
+		AutoPortBindingEnabled:      true,
 		EachInterfaceBindingEnabled: false,
 	}
 	return conf
@@ -21,18 +21,18 @@ func NewDefaultExtentionConfig() *ExtentionConfig {
 
 // SetConfig sets all flags.
 func (conf *ExtentionConfig) SetConfig(newConfig *ExtentionConfig) {
-	conf.AutoBindingEnabled = newConfig.AutoBindingEnabled
+	conf.AutoPortBindingEnabled = newConfig.AutoPortBindingEnabled
 	conf.EachInterfaceBindingEnabled = newConfig.EachInterfaceBindingEnabled
 }
 
 // SetAutoBindingEnabled sets a flag for TCP functions.
 func (conf *ExtentionConfig) SetAutoBindingEnabled(flag bool) {
-	conf.AutoBindingEnabled = flag
+	conf.AutoPortBindingEnabled = flag
 }
 
 // IsAutoBindingEnabled returns true whether the TCP function is enabled, otherwise false.
 func (conf *ExtentionConfig) IsAutoBindingEnabled() bool {
-	return conf.AutoBindingEnabled
+	return conf.AutoPortBindingEnabled
 }
 
 // SetEachInterfaceBindingEnabled sets a flag for binding functions.
