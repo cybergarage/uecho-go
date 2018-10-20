@@ -231,20 +231,20 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithDisableTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(false)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithEnableTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(true)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, false)
 }

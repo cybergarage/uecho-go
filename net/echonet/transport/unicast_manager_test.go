@@ -26,20 +26,20 @@ func testUnicastManagerBinding(t *testing.T, conf *Config) {
 
 func TestUnicastManagerWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	testUnicastManagerBinding(t, conf)
 }
 
 func TestUnicastManagerWithOnlyUDPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(false)
 	testUnicastManagerBinding(t, conf)
 }
 
 func TestUnicastManagerWithTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(true)
 	testUnicastManagerBinding(t, conf)
 }
