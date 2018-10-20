@@ -192,18 +192,10 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 
 // SendRequest sends a specified request to the object.
 func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
-	msg, err := NewMessageWithParameters(dstNode, objCode, esv, props)
-	if err != nil {
-		return err
-	}
-	return node.SendMessage(dstNode, msg)
+	return node.SendMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
 }
 
 // PostRequest posts a message to the node, and wait the response message.
 func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
-	msg, err := NewMessageWithParameters(dstNode, objCode, esv, props)
-	if err != nil {
-		return nil, err
-	}
-	return node.PostMessage(dstNode, msg)
+	return node.PostMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
 }
