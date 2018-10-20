@@ -146,7 +146,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 func TestControllerSearchithWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	//defer log.SetStdoutDebugEnbled(false)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	testControllerSearchWithConfig(t, conf)
 }
@@ -154,7 +154,7 @@ func TestControllerSearchithWithDefaultConfig(t *testing.T) {
 func TestControllerSearchWithOnlyUDPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	//defer log.SetStdoutDebugEnbled(false)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(false)
 	testControllerSearchWithConfig(t, conf)
@@ -163,7 +163,7 @@ func TestControllerSearchWithOnlyUDPConfig(t *testing.T) {
 func TestControllerSearchWithEnableTCPConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	//defer log.SetStdoutDebugEnbled(false)
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(true)
 	testControllerSearchWithConfig(t, conf)

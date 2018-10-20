@@ -14,8 +14,8 @@ type ExtentionConfig struct {
 // NewDefaultExtentionConfig returns a default configuration.
 func NewDefaultExtentionConfig() *ExtentionConfig {
 	conf := &ExtentionConfig{
-		AutoPortBindingEnabled:      true,
-		EachInterfaceBindingEnabled: false,
+		AutoPortBindingEnabled:      false,
+		EachInterfaceBindingEnabled: true,
 		AutoInterfaceBindingEnabled: true,
 	}
 	return conf

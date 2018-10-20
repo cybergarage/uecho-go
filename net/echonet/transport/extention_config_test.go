@@ -46,7 +46,7 @@ func TestExtentionConfigEquals(t *testing.T) {
 }
 
 func TestExtentionAutoBindingConfig(t *testing.T) {
-	conf := NewDefaultConfig()
+	conf := newTestDefaultConfig()
 	conf.SetAutoPortBindingEnabled(false)
 
 	// Start on the default port
