@@ -145,6 +145,7 @@ func (node *LocalNode) GetPort() int {
 
 // Start starts the node.
 func (node *LocalNode) Start() error {
+
 	err := node.server.Start()
 	if err != nil {
 		return err
