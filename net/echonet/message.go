@@ -5,9 +5,6 @@
 package echonet
 
 import (
-	"fmt"
-	"reflect"
-
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -24,16 +21,12 @@ func NewMessage() *Message {
 }
 
 // NewMessageWithParameters returns a new message of the specified parameters.
-func NewMessageWithParameters(dstNode Node, dstObjCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
-	if dstNode == nil || reflect.ValueOf(dstNode).IsNil() {
-		return nil, fmt.Errorf(errorNodeRequestInvalidDestinationNode, dstNode)
-	}
-
+func NewMessageWithParameters(objCode ObjectCode, esv protocol.ESV, props []*Property) *Message {
 	msg := NewMessage()
 	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(dstObjCode)
+	msg.SetDestinationObjectCode(objCode)
 	for _, prop := range props {
 		msg.AddProperty(prop.toProtocolProperty())
 	}
-	return msg, nil
+	return msg
 }
