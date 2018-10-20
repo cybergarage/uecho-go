@@ -13,7 +13,6 @@ const (
 )
 
 type Message = protocol.Message
-type ESV = protocol.ESV
 
 // NewMessage returns a new message.
 func NewMessage() *Message {
@@ -21,7 +20,7 @@ func NewMessage() *Message {
 }
 
 // NewMessageWithParameters returns a new message of the specified parameters.
-func NewMessageWithParameters(objCode ObjectCode, esv protocol.ESV, props []*Property) *Message {
+func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []*Property) *Message {
 	msg := NewMessage()
 	msg.SetESV(esv)
 	msg.SetDestinationObjectCode(objCode)
