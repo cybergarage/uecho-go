@@ -50,11 +50,11 @@ func main() {
 	for _, node := range ctrl.GetNodes() {
 		objs := node.GetObjects()
 		if len(objs) <= 0 {
-			fmt.Printf("%s\n", node.GetAddress())
+			fmt.Printf("%-15s\n", node.GetAddress())
 			continue
 		}
 		for _, obj := range objs {
-			fmt.Printf("%s %06X\n", node.GetAddress(), obj.GetCode())
+			fmt.Printf("%-15s : %06X\n", node.GetAddress(), obj.GetCode())
 		}
 	}
 
