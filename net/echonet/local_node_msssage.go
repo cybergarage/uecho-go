@@ -6,7 +6,6 @@ package echonet
 
 import (
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
@@ -18,10 +17,8 @@ const (
 )
 
 const (
-	errorNodeRequestInvalidDestinationNode   = "Invalid Destination Node : %v"
-	errorNodeRequestInvalidDestinationObject = "Invalid Destination Object : %v"
-	errorNodeRequestTimeout                  = "Request Timeout : %v"
-	errorNodeIsNotRunning                    = "Node (%s) is not running "
+	errorNodeRequestTimeout = "Request Timeout : %v"
+	errorNodeIsNotRunning   = "Node (%s) is not running "
 )
 
 // AnnounceMessage announces a message.
@@ -193,24 +190,9 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	return resMsg, err
 }
 
-// createRequestMessage creates a message with the specified parameters
-func (node *LocalNode) createRequestMessage(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
-	if dstNode == nil || reflect.ValueOf(dstNode).IsNil() {
-		return nil, fmt.Errorf(errorNodeRequestInvalidDestinationNode, dstNode)
-	}
-
-	msg := protocol.NewMessage()
-	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(objCode)
-	for _, prop := range props {
-		msg.AddProperty(prop.toProtocolProperty())
-	}
-	return msg, nil
-}
-
 // SendRequest sends a specified request to the object.
 func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
-	msg, err := node.createRequestMessage(dstNode, objCode, esv, props)
+	msg, err := NewMessageWithParameters(dstNode, objCode, esv, props)
 	if err != nil {
 		return err
 	}
@@ -219,7 +201,7 @@ func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protoco
 
 // PostRequest posts a message to the node, and wait the response message.
 func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
-	msg, err := node.createRequestMessage(dstNode, objCode, esv, props)
+	msg, err := NewMessageWithParameters(dstNode, objCode, esv, props)
 	if err != nil {
 		return nil, err
 	}
