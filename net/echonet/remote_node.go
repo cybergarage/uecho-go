@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+	"github.com/cybergarage/uecho-go/net/echonet/transport"
 )
 
 const (
@@ -93,6 +94,21 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 	}
 
 	return node, nil
+}
+
+// NewRemoteNodeWithInstanceListMessageAndConfig returns a new node with the specified notification message and configuration.
+func NewRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *transport.Config) (*RemoteNode, error) {
+	remoteNode, err := NewRemoteNodeWithInstanceListMessage(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set a default static UDP port number when the auto port binding option is disabled
+	if !conf.IsAutoPortBindingEnabled() {
+		remoteNode.SetPort(transport.UDPPort)
+	}
+
+	return remoteNode, nil
 }
 
 // SetAddress set the address to the node.

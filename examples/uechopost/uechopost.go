@@ -27,7 +27,7 @@ import (
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	//"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 const (
@@ -50,7 +50,7 @@ func exitWithError(err error) {
 
 func main() {
 
-	log.SetStdoutDebugEnbled(true)
+	//log.SetStdoutDebugEnbled(true)
 
 	// Start a controller for Echonet Lite node
 
