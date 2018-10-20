@@ -97,6 +97,19 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
+	// FIXME : In the future, this function will be deprecated, but it is provisionally introduced
+	// because some Go environments might not work `syscall.SetsockoptInt()` with SO_REUSEPORT for
+	// the UDP unicast listening. See Socket::SetReuseAddr().
+
+	if mgr.unicastMgr.IsAutoInterfaceBindingEnabled() {
+		ifs, err := GetAvailableInterfaces()
+		if err != nil {
+			return err
+		}
+		shouldBindEachInterfaces := len(ifs) <= 1
+		mgr.unicastMgr.SetEachInterfaceBindingEnabled(shouldBindEachInterfaces)
+	}
+
 	err = mgr.unicastMgr.Start()
 	if err != nil {
 		return err

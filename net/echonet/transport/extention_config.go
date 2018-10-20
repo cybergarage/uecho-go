@@ -8,6 +8,7 @@ package transport
 type ExtentionConfig struct {
 	AutoPortBindingEnabled      bool
 	EachInterfaceBindingEnabled bool
+	AutoInterfaceBindingEnabled bool
 }
 
 // NewDefaultExtentionConfig returns a default configuration.
@@ -15,6 +16,7 @@ func NewDefaultExtentionConfig() *ExtentionConfig {
 	conf := &ExtentionConfig{
 		AutoPortBindingEnabled:      true,
 		EachInterfaceBindingEnabled: false,
+		AutoInterfaceBindingEnabled: true,
 	}
 	return conf
 }
@@ -23,6 +25,7 @@ func NewDefaultExtentionConfig() *ExtentionConfig {
 func (conf *ExtentionConfig) SetConfig(newConfig *ExtentionConfig) {
 	conf.AutoPortBindingEnabled = newConfig.AutoPortBindingEnabled
 	conf.EachInterfaceBindingEnabled = newConfig.EachInterfaceBindingEnabled
+	conf.AutoInterfaceBindingEnabled = newConfig.AutoInterfaceBindingEnabled
 }
 
 // SetAutoPortBindingEnabled sets a flag for TCP functions.
@@ -45,12 +48,25 @@ func (conf *ExtentionConfig) IsEachInterfaceBindingEnabled() bool {
 	return conf.EachInterfaceBindingEnabled
 }
 
+// SetAutoInterfaceBindingEnabled sets a flag for the auto interface binding.
+func (conf *ExtentionConfig) SetAutoInterfaceBindingEnabled(flag bool) {
+	conf.AutoInterfaceBindingEnabled = flag
+}
+
+// IsAutoInterfaceBindingEnabled returns true whether the the auto interface binding is enabled, otherwise false.
+func (conf *ExtentionConfig) IsAutoInterfaceBindingEnabled() bool {
+	return conf.AutoInterfaceBindingEnabled
+}
+
 // Equals returns true whether the specified other class is same, otherwise false.
 func (conf *ExtentionConfig) Equals(otherConf *ExtentionConfig) bool {
 	if conf.IsAutoPortBindingEnabled() != otherConf.IsAutoPortBindingEnabled() {
 		return false
 	}
 	if conf.IsEachInterfaceBindingEnabled() != otherConf.IsEachInterfaceBindingEnabled() {
+		return false
+	}
+	if conf.IsAutoInterfaceBindingEnabled() != otherConf.IsAutoInterfaceBindingEnabled() {
 		return false
 	}
 	return true
