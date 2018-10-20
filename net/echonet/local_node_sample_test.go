@@ -16,7 +16,7 @@ const (
 )
 
 const (
-	errorNodeNotFound = "Node Not Found : %s:%d"
+	errorTestNodeNotFound = "Node Not Found : %s:%d"
 )
 
 type testLocalNode struct {

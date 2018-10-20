@@ -107,7 +107,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 
 	if foundNode == nil {
-		t.Errorf(errorNodeNotFound, node.GetAddress(), node.GetPort())
+		t.Errorf(errorTestNodeNotFound, node.GetAddress(), node.GetPort())
 		return
 	}
 	// Check a found device
