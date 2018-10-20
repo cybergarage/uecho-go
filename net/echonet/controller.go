@@ -15,6 +15,10 @@ const (
 	TIDMax = 65535
 )
 
+const (
+	errorNodeNotFound = "Node (%s) not found"
+)
+
 // Controller is an instance for Echonet controller.
 type Controller struct {
 	*LocalNode
@@ -46,7 +50,17 @@ func (ctrl *Controller) GetNodes() []*RemoteNode {
 	return ctrl.foundNodes
 }
 
-// GetObject returns the specified object.
+// GetNode returns a node which has the specified address
+func (ctrl *Controller) GetNode(addr string) (*RemoteNode, error) {
+	for _, node := range ctrl.GetNodes() {
+		if node.GetAddress() == addr {
+			return node, nil
+		}
+	}
+	return nil, fmt.Errorf(errorNodeNotFound, addr)
+}
+
+// GetObject returns a object which has the specified object code.
 func (ctrl *Controller) GetObject(code ObjectCode) (*Object, error) {
 	for _, node := range ctrl.GetNodes() {
 		obj, err := node.GetObject(code)
@@ -57,7 +71,7 @@ func (ctrl *Controller) GetObject(code ObjectCode) (*Object, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetDevice returns the specified device object.
+// GetDevice returns a device object which has the specified object code.
 func (ctrl *Controller) GetDevice(code ObjectCode) (*Device, error) {
 	for _, node := range ctrl.GetNodes() {
 		dev, err := node.GetDevice(code)
@@ -68,7 +82,7 @@ func (ctrl *Controller) GetDevice(code ObjectCode) (*Device, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetProfile returns the specified profile object.
+// GetProfile returns a profile object which has the specified object code.
 func (ctrl *Controller) GetProfile(code ObjectCode) (*Profile, error) {
 	for _, node := range ctrl.GetNodes() {
 		prof, err := node.GetProfile(code)
