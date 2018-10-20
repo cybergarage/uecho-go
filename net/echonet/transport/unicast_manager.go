@@ -106,7 +106,7 @@ func (mgr *UnicastManager) StartWithInterfaceAndPort(ifi *net.Interface, port in
 func (mgr *UnicastManager) StartWithInterface(ifi *net.Interface) (*UnicastServer, error) {
 	startPort := mgr.GetPort()
 	endPort := startPort
-	if mgr.IsAutoBindingEnabled() {
+	if mgr.IsAutoPortBindingEnabled() {
 		endPort = startPort + UDPPortRange
 	}
 
@@ -136,7 +136,7 @@ func (mgr *UnicastManager) Start() error {
 
 	startPort := mgr.GetPort()
 	endPort := startPort
-	if mgr.IsAutoBindingEnabled() {
+	if mgr.IsAutoPortBindingEnabled() {
 		endPort = startPort + UDPPortRange
 	}
 
