@@ -20,8 +20,14 @@ uechodump is a dump utility for Echonet Lite.
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"os"
+	"strconv"
+	"time"
+
+	"github.com/cybergarage/uecho-go/net/echonet"
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 const (
@@ -30,18 +36,28 @@ const (
 )
 
 func outputUsage() {
-	fmt.Printf("Usage : uechopost [options] <address> <obj> <esv> <property (epc, pdc, edt) ...>\n")
+	fmt.Printf("Usage : uechopost [options] <address> <obj> <esv> <property (code, data) ...>\n")
 }
 
-func outputError(err error) {
-	fmt.Printf("ERROR : %s\n", err.Error())
+func exitWithErrorMessage(errMsg string) {
+	fmt.Printf("ERROR : %s\n", errMsg)
+	os.Exit(EXIT_FAIL)
+}
+
+func exitWithError(err error) {
+	exitWithErrorMessage(err.Error())
 }
 
 func main() {
+
+	log.SetStdoutDebugEnbled(true)
+
+	// Start a controller for Echonet Lite node
+
 	ctrl := NewPostController()
 
 	argc := len(os.Args)
-	if argc < 4 {
+	if argc < 5 {
 		outputUsage()
 		os.Exit(EXIT_FAIL)
 		return
@@ -49,108 +65,101 @@ func main() {
 
 	err := ctrl.Start()
 	if err != nil {
-		outputError(err)
-		os.Exit(EXIT_FAIL)
+		exitWithError(err)
 		return
 	}
 
 	err = ctrl.SearchAllObjects()
 	if err != nil {
-		outputError(err)
+		exitWithError(err)
 		return
 	}
 
-	/*
-	     // Find destination node
+	// Wait node responses in the local network
 
-	     dstNodeAddr = argv[0];
+	time.Sleep(time.Second * 1)
 
-	     dstNode = NULL;
-	     for (n=0; n<UECHOPOST_RESPONSE_RETRY_COUNT; n++) {
-	       uecho_sleep(UECHOPOST_MAX_RESPONSE_MTIME / UECHOPOST_RESPONSE_RETRY_COUNT);
-	       dstNode = uecho_controller_getnodebyaddress(ctrl, dstNodeAddr);
-	       if (dstNode)
-	         break;
-	     }
+	// Find the specified destination node
 
-	     if (!dstNode) {
-	       printf("Node (%s) is not found\n", dstNodeAddr);
-	       uecho_controller_delete(ctrl);
-	       return EXIT_FAILURE;
-	     }
+	dstNodeAddr := os.Args[1]
+	dstNode, err := ctrl.GetNode(dstNodeAddr)
+	if err != nil {
+		exitWithErrorMessage(fmt.Sprintf("The destination node (%s) is not found", dstNodeAddr))
+	}
 
-	     // Find destination object
+	// Find the specified destination object in the found node
 
-	     sscanf(argv[1], "%x", &dstObjCode);
+	dstObjStr := os.Args[2]
+	dstObjVal, err := strconv.ParseUint(dstObjStr, 16, 32)
+	if err != nil {
+		exitWithErrorMessage(fmt.Sprintf("The destination object (%s) is invalid", dstObjStr))
+	}
+	dstObjCode := echonet.ObjectCode(dstObjVal)
+	_, err = dstNode.GetObject(dstObjCode)
+	if err != nil {
+		exitWithErrorMessage(fmt.Sprintf("The destination object (%06X) is not found", dstObjCode))
+	}
 
-	     dstObj = uecho_node_getobjectbycode(dstNode, dstObjCode);
+	// Create a request message of the specified ESV and properties
 
-	     if (!dstNode) {
-	       printf("Node (%s) doesn't has the specified object (%06X)\n", dstNodeAddr, dstObjCode);
-	       uecho_controller_delete(ctrl);
-	       return EXIT_FAILURE;
-	     }
+	esvStr := os.Args[3]
+	esvVal, err := strconv.ParseUint(esvStr, 16, 8)
+	if (err != nil) || !echonet.IsValidESV(echonet.ESV(esvVal)) {
+		exitWithErrorMessage(fmt.Sprintf("The ESV (%s) is invalid", esvStr))
+	}
+	esv := echonet.ESV(esvVal)
 
-	     // Create Message
+	props := make([]*echonet.Property, 0)
+	for n := 4; n < len(os.Args); n++ {
+		propHexBytes := []byte(os.Args[n])
+		propBytes := make([]byte, hex.DecodedLen(len(propHexBytes)))
+		_, err := hex.Decode(propBytes, propHexBytes)
+		if err != nil {
+			exitWithErrorMessage(fmt.Sprintf("The property code (%s) is invalid", string(propHexBytes)))
+		}
+		if len(propBytes) <= 1 {
+			exitWithErrorMessage(fmt.Sprintf("The property code (%s) is short", string(propHexBytes)))
+		}
 
-	     msg = uecho_message_new();
-	     sscanf(argv[2], "%x", &esv);
-	     uecho_message_setesv(msg, esv);
+		prop := echonet.NewProperty()
+		prop.SetCode(echonet.PropertyCode(propBytes[0]))
+		if 2 <= len(propBytes) {
+			prop.SetData(propBytes[1:])
+		}
+		props = append(props, prop)
+	}
 
-	   #if defined(DEBUG)
-	     printf("%s %06X %01X\n", dstNodeAddr, dstObjCode, esv);
-	   #endif
+	reqMsg := echonet.NewMessageWithParameters(dstObjCode, esv, props)
 
-	     edata = edt = argv[3];
-	     edtSize = strlen(argv[3]);
-	     while ((edt - edata + (2 + 2)) <= edtSize) {
-	       sscanf(edt, "%02x%02x", &epc, &pdc);
-	       edt += (2 + 2);
+	// Send the specified request message to the destination node
 
-	   #if defined(DEBUG)
-	       printf("[%02X] = %02X ", epc, pdc);
-	   #endif
+	if reqMsg.IsResponseRequired() {
+		resMsg, err := ctrl.PostMessage(dstNode, reqMsg)
+		if err != nil {
+			exitWithError(err)
+		}
 
-	       if (pdc == 0) {
-	         uecho_message_setproperty(msg, epc, 0, NULL);
-	         continue;
-	       }
+		// Output the response message
 
-	       if (edtSize < (edt - edata + (pdc * 2)))
-	         break;
+		fmt.Printf("%s %06X %02X ",
+			resMsg.GetSourceAddress(),
+			resMsg.GetSourceObjectCode(),
+			resMsg.GetESV())
+		for _, prop := range resMsg.GetProperties() {
+			fmt.Printf("%2X%s ",
+				prop.GetCode(),
+				hex.EncodeToString(prop.GetData()))
+		}
+		fmt.Print("\n")
 
-	       propData = (byte *)malloc(pdc);
-	       for (n=0; n<pdc; n++) {
-	         sscanf(edt, "%02x", &edtByte);
-	   #if defined(DEBUG)
-	         printf("%02X", edtByte);
-	   #endif
-	         propData[n] = edtByte & 0xFF;
-	         edt += 2;
-	       }
-	       uecho_message_setproperty(msg, epc, pdc, propData);
-	       free(propData);
-	     }
-	   #if defined(DEBUG)
-	     printf("\n");
-	   #endif
+	} else {
+		err := ctrl.SendMessage(dstNode, reqMsg)
+		if err != nil {
+			exitWithError(err)
+		}
+	}
 
-	     // Send message
-
-	     isResponseRequired = uecho_message_isresponserequired(msg);
-	     if (isResponseRequired) {
-	       resMsg = uecho_message_new();
-	       if (uecho_controller_postmessage(ctrl, dstObj, msg, resMsg)) {
-	         uechopost_print_objectresponse(ctrl, resMsg);
-	       }
-	       uecho_message_delete(resMsg);
-	     }
-	     else {
-	       uecho_controller_sendmessage(ctrl, dstObj, msg);
-	     }
-
-	     uecho_message_delete(msg);
-	*/
+	// Stop the controller
 
 	err = ctrl.Stop()
 	if err != nil {
