@@ -29,6 +29,8 @@ func main() {
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
 
+	// Start a controller for Echonet Lite
+
 	ctrl := NewSearchController()
 
 	if *verbose {
@@ -45,7 +47,11 @@ func main() {
 		return
 	}
 
-	time.Sleep(time.Second)
+	// Wait node responses in the local network
+
+	time.Sleep(time.Second * 1)
+
+	// Output all found nodes
 
 	for _, node := range ctrl.GetNodes() {
 		objs := node.GetObjects()
@@ -57,6 +63,8 @@ func main() {
 			fmt.Printf("%-15s : %06X\n", node.GetAddress(), obj.GetCode())
 		}
 	}
+
+	// Stop the controller
 
 	err = ctrl.Stop()
 	if err != nil {
