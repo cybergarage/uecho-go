@@ -25,13 +25,13 @@ func (conf *ExtentionConfig) SetConfig(newConfig *ExtentionConfig) {
 	conf.EachInterfaceBindingEnabled = newConfig.EachInterfaceBindingEnabled
 }
 
-// SetAutoBindingEnabled sets a flag for TCP functions.
-func (conf *ExtentionConfig) SetAutoBindingEnabled(flag bool) {
+// SetAutoPortBindingEnabled sets a flag for TCP functions.
+func (conf *ExtentionConfig) SetAutoPortBindingEnabled(flag bool) {
 	conf.AutoPortBindingEnabled = flag
 }
 
-// IsAutoBindingEnabled returns true whether the TCP function is enabled, otherwise false.
-func (conf *ExtentionConfig) IsAutoBindingEnabled() bool {
+// IsAutoPortBindingEnabled returns true whether the TCP function is enabled, otherwise false.
+func (conf *ExtentionConfig) IsAutoPortBindingEnabled() bool {
 	return conf.AutoPortBindingEnabled
 }
 
@@ -47,7 +47,7 @@ func (conf *ExtentionConfig) IsEachInterfaceBindingEnabled() bool {
 
 // Equals returns true whether the specified other class is same, otherwise false.
 func (conf *ExtentionConfig) Equals(otherConf *ExtentionConfig) bool {
-	if conf.IsAutoBindingEnabled() != otherConf.IsAutoBindingEnabled() {
+	if conf.IsAutoPortBindingEnabled() != otherConf.IsAutoPortBindingEnabled() {
 		return false
 	}
 	if conf.IsEachInterfaceBindingEnabled() != otherConf.IsEachInterfaceBindingEnabled() {

@@ -22,8 +22,8 @@ func TestExtentionConfigEquals(t *testing.T) {
 		t.Errorf("%v != %v", conf01, conf02)
 	}
 
-	conf01.SetAutoBindingEnabled(true)
-	conf02.SetAutoBindingEnabled(false)
+	conf01.SetAutoPortBindingEnabled(true)
+	conf02.SetAutoPortBindingEnabled(false)
 	if conf01.Equals(conf02) {
 		t.Errorf("%v == %v", conf01, conf02)
 	}
@@ -47,7 +47,7 @@ func TestExtentionConfigEquals(t *testing.T) {
 
 func TestExtentionAutoBindingConfig(t *testing.T) {
 	conf := NewDefaultConfig()
-	conf.SetAutoBindingEnabled(false)
+	conf.SetAutoPortBindingEnabled(false)
 
 	// Start on the default port
 
@@ -77,7 +77,7 @@ func TestExtentionAutoBindingConfig(t *testing.T) {
 
 	// Enable auto binding option
 
-	conf.SetAutoBindingEnabled(true)
+	conf.SetAutoPortBindingEnabled(true)
 
 	mrg02.SetConfig(conf)
 	err = mrg02.Start()
