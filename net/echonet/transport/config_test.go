@@ -8,6 +8,11 @@ import (
 	"testing"
 )
 
+func newTestDefaultConfig() *Config {
+	conf := NewDefaultConfig()
+	conf.SetAutoPortBindingEnabled(true)
+	return conf
+}
 func TestNewDefaultConfig(t *testing.T) {
 	NewDefaultConfig()
 }

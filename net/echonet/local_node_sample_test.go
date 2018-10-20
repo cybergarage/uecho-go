@@ -50,7 +50,7 @@ func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 }
 
 func newTestSampleNode() (*testLocalNode, error) {
-	return newTestSampleNodeWithConfig(NewDefaultConfig())
+	return newTestSampleNodeWithConfig(newTestDefaultConfig())
 }
 
 func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) {
