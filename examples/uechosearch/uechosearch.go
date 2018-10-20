@@ -29,7 +29,7 @@ func main() {
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
 
-	// Start a controller for Echonet Lite
+	// Start a controller for Echonet Lite node
 
 	ctrl := NewSearchController()
 
