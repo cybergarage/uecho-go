@@ -35,6 +35,33 @@ const (
 	EXIT_FAIL    = 1
 )
 
+func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, msg *echonet.Message) {
+	fmt.Printf("%s %-15s : %06X %02X ",
+		prefix,
+		addr,
+		obj,
+		msg.GetESV())
+	for _, prop := range msg.GetProperties() {
+		fmt.Printf("%2X%s ",
+			prop.GetCode(),
+			hex.EncodeToString(prop.GetData()))
+	}
+	fmt.Printf("\n")
+}
+
+func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
+	sourceAddr := ""
+	boundAddrs := ctrl.GetBoundAddresses()
+	if 0 < len(boundAddrs) {
+		sourceAddr = boundAddrs[0]
+	}
+	outputTransportMessage("->", sourceAddr, msg.GetDestinationObjectCode(), msg)
+}
+
+func outputResponseMessage(msg *echonet.Message) {
+	outputTransportMessage("<-", msg.GetSourceAddress(), msg.GetSourceObjectCode(), msg)
+}
+
 func outputUsage() {
 	fmt.Printf("Usage : uechopost [options] <address> <obj> <esv> <property (code, data) ...>\n")
 }
@@ -133,25 +160,14 @@ func main() {
 
 	// Send the specified request message to the destination node
 
+	outputRequestMessage(ctrl, reqMsg)
+
 	if reqMsg.IsResponseRequired() {
 		resMsg, err := ctrl.PostMessage(dstNode, reqMsg)
 		if err != nil {
 			exitWithError(err)
 		}
-
-		// Output the response message
-
-		fmt.Printf("%s %06X %02X ",
-			resMsg.GetSourceAddress(),
-			resMsg.GetSourceObjectCode(),
-			resMsg.GetESV())
-		for _, prop := range resMsg.GetProperties() {
-			fmt.Printf("%2X%s ",
-				prop.GetCode(),
-				hex.EncodeToString(prop.GetData()))
-		}
-		fmt.Print("\n")
-
+		outputResponseMessage(resMsg)
 	} else {
 		err := ctrl.SendMessage(dstNode, reqMsg)
 		if err != nil {
