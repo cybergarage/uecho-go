@@ -20,7 +20,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
 		return
 	}
 
-	//log.Trace(fmt.Sprintf(logControllerListenerFormat, msg.String()))
+	//log.Trace(logControllerListenerFormat, msg.String()))
 
 	// NodeProfile message ?
 	if msg.IsNotification() || msg.IsReadResponse() {

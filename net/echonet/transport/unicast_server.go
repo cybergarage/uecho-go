@@ -109,7 +109,7 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 		}
 		reqMsg.SetPacketType(protocol.UDPUnicastPacket)
 
-		server.UDPSocket.outputReadLog(log.LoggerLevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
+		server.UDPSocket.outputReadLog(log.LevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
 
 		if server.Handler == nil {
 			continue

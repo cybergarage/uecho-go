@@ -6,7 +6,6 @@ package transport
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 	"time"
 
@@ -34,10 +33,10 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	//log.Trace(fmt.Sprintf("ProtocolMessageReceived (R) : %s", msg.String()))
+	//log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
 
 	/* TODO : Check received message more strictly
-	log.Trace(fmt.Sprintf("MGR : %02X, MSG : %02X = %v", mgr.FromPacketType, msg.GetPacketType(), msg.IsPacketType(mgr.FromPacketType)))
+	log.Trace("MGR : %02X, MSG : %02X = %v", mgr.FromPacketType, msg.GetPacketType(), msg.IsPacketType(mgr.FromPacketType))
 	if (msg.From.Port != mgr.FromPort) || (!msg.IsPacketType(mgr.FromPacketType)) {
 			return nil, nil
 	}
@@ -47,7 +46,7 @@ func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
 			mgr.lastNotificationMessage = copyMsg
-			//log.Trace(fmt.Sprintf("ProtocolMessageReceived (U) : %s", copyMsg.String()))
+			//log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
 		}
 	}
 
@@ -107,10 +106,10 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 			continue
 		}
 
-		log.Trace(fmt.Sprintf("CMP(M) : %s ?= %s", msg.String(), dstLastMsg.String()))
+		log.Trace("CMP(M) : %s ?= %s", msg.String(), dstLastMsg.String())
 
 		if bytes.Compare(msg.Bytes(), dstLastMsg.Bytes()) != 0 {
-			log.Trace(fmt.Sprintf("CMP(M) : %s != %s", msg.String(), dstLastMsg.String()))
+			log.Trace("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
 			t.Errorf("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
 			continue
 		}
@@ -167,10 +166,10 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			continue
 		}
 
-		log.Trace(fmt.Sprintf("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String()))
+		log.Trace("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String())
 
 		if bytes.Compare(msg.Bytes(), dstLastMsg.Bytes()) != 0 {
-			log.Error(fmt.Sprintf("CMP(U) : %s != %s", msg.String(), dstLastMsg.String()))
+			log.Error("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
 			t.Errorf("CMP(U) : %s != %s", msg, dstLastMsg)
 		}
 
@@ -207,7 +206,7 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 			t.Error(err)
 			return
 		}
-		log.Trace(fmt.Sprintf("mgr[%d] : %d", n, mgr.GetPort()))
+		log.Trace("mgr[%d] : %d", n, mgr.GetPort())
 	}
 
 	// Send multicast messages, and check the received message
