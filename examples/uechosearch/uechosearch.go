@@ -34,7 +34,7 @@ func main() {
 	// Setup logger
 
 	if *verbose {
-		log.SetSharedLogger(log.NewStdoutLogger(log.LoggerLevelTrace))
+		log.SetSharedLogger(log.NewStdoutLogger(log.LevelTrace))
 	}
 
 	// Start a controller for Echonet Lite node

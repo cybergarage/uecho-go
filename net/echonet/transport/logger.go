@@ -5,8 +5,6 @@
 package transport
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
@@ -27,13 +25,11 @@ func outputSocketLog(logLevel log.LogLevel, socketType string, socketDirection i
 	switch socketDirection {
 	case logSocketDirectionWrite:
 		{
-			log.Output(logLevel, fmt.Sprintf(logSocketWriteFormat, socketType, msgFrom, msgTo, msgSize, msg))
-
+			log.Output(logLevel, logSocketWriteFormat, socketType, msgFrom, msgTo, msgSize, msg)
 		}
 	case logSocketDirectionRead:
 		{
-			log.Output(logLevel, fmt.Sprintf(logSocketReadFormat, socketType, msgTo, msgFrom, msgSize, msg))
-
+			log.Output(logLevel, logSocketReadFormat, socketType, msgTo, msgFrom, msgSize, msg)
 		}
 	}
 }
