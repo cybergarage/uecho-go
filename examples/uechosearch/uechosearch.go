@@ -23,11 +23,19 @@ import (
 	"flag"
 	"fmt"
 	"time"
+
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 func main() {
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
+
+	// Setup logger
+
+	if *verbose {
+		log.SetSharedLogger(log.NewStdoutLogger(log.LoggerLevelTrace))
+	}
 
 	// Start a controller for Echonet Lite node
 
