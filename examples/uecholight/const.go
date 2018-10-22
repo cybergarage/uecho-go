@@ -4,6 +4,7 @@
 package main
 
 const (
+	ProgramName            = "uecholight"
 	LightObjectCode        = 0x029101
 	LightPropertyPowerCode = 0x80
 	LightPropertyPowerOn   = 0x30
