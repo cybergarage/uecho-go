@@ -22,15 +22,15 @@ type Logger struct {
 }
 
 const (
-	Format           = "%s %s %s"
-	LF               = "\n"
-	FilePerm         = 0644
-	LoggerLevelTrace = (1 << 5)
-	LoggerLevelInfo  = (1 << 4)
-	LoggerLevelWarn  = (1 << 3)
-	LoggerLevelError = (1 << 2)
-	LoggerLevelFatal = (1 << 1)
-	LoggerLevelNone  = 0
+	Format     = "%s %s %s"
+	LF         = "\n"
+	FilePerm   = 0644
+	LevelTrace = (1 << 5)
+	LevelInfo  = (1 << 4)
+	LevelWarn  = (1 << 3)
+	LevelError = (1 << 2)
+	LevelFatal = (1 << 1)
+	LevelNone  = 0
 
 	loggerLevelUnknownString = "UNKNOWN"
 	loggerStdout             = "stdout"
@@ -47,11 +47,11 @@ func GetSharedLogger() *Logger {
 }
 
 var logLevelStrings = map[LogLevel]string{
-	LoggerLevelTrace: "TRACE",
-	LoggerLevelInfo:  "INFO",
-	LoggerLevelWarn:  "WARN",
-	LoggerLevelError: "ERROR",
-	LoggerLevelFatal: "FATAL",
+	LevelTrace: "TRACE",
+	LevelInfo:  "INFO",
+	LevelWarn:  "WARN",
+	LevelError: "ERROR",
+	LevelFatal: "FATAL",
 }
 
 func getLogLevelString(logLevel LogLevel) string {
@@ -74,11 +74,11 @@ func NewStdoutLogger(level LogLevel) *Logger {
 	logger := &Logger{
 		File:     loggerStdout,
 		Level:    level,
-		outputer: outputStrount}
+		outputer: outputStdout}
 	return logger
 }
 
-func outputStrount(file string, level LogLevel, msg string) (int, error) {
+func outputStdout(file string, level LogLevel, msg string) (int, error) {
 	fmt.Println(msg)
 	return len(msg), nil
 }
@@ -107,13 +107,13 @@ func outputToFile(file string, level LogLevel, msg string) (int, error) {
 	return len(msgBytes), nil
 }
 
-func output(outputLevel LogLevel, msg string) int {
+func output(outputLevel LogLevel, msgFormat string, msgArgs ...interface{}) int {
 	if sharedLogger == nil {
 		return 0
 	}
 
 	logLevel := sharedLogger.GetLevel()
-	if (logLevel < outputLevel) || (logLevel <= LoggerLevelFatal) || (LoggerLevelTrace < logLevel) {
+	if (logLevel < outputLevel) || (logLevel <= LevelFatal) || (LevelTrace < logLevel) {
 		return 0
 	}
 
@@ -123,7 +123,7 @@ func output(outputLevel LogLevel, msg string) int {
 		t.Hour(), t.Minute(), t.Second())
 
 	headerString := fmt.Sprintf("[%s]", getLogLevelString(outputLevel))
-	logMsg := fmt.Sprintf(Format, logDate, headerString, msg)
+	logMsg := fmt.Sprintf(Format, logDate, headerString, fmt.Sprintf(msgFormat, msgArgs...))
 	logMsgLen := len(logMsg)
 
 	if 0 < logMsgLen {
@@ -133,26 +133,26 @@ func output(outputLevel LogLevel, msg string) int {
 	return logMsgLen
 }
 
-func Trace(msg string) int {
-	return output(LoggerLevelTrace, msg)
+func Trace(format string, args ...interface{}) int {
+	return output(LevelTrace, format, args...)
 }
 
-func Info(msg string) int {
-	return output(LoggerLevelInfo, msg)
+func Info(format string, args ...interface{}) int {
+	return output(LevelInfo, format, args...)
 }
 
-func Warn(msg string) int {
-	return output(LoggerLevelWarn, msg)
+func Warn(format string, args ...interface{}) int {
+	return output(LevelWarn, format, args...)
 }
 
-func Error(msg string) int {
-	return output(LoggerLevelError, msg)
+func Error(format string, args ...interface{}) int {
+	return output(LevelError, format, args...)
 }
 
-func Fatal(msg string) int {
-	return output(LoggerLevelFatal, msg)
+func Fatal(format string, args ...interface{}) int {
+	return output(LevelFatal, format, args...)
 }
 
-func Output(outputLevel LogLevel, msg string) int {
-	return output(outputLevel, msg)
+func Output(outputLevel LogLevel, format string, args ...interface{}) int {
+	return output(outputLevel, format, args...)
 }

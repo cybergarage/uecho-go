@@ -83,7 +83,7 @@ func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, e
 
 	if sock.Conn != nil {
 		n, err := sock.Conn.WriteToUDP(b, toAddr)
-		sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+		sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 		if err != nil {
 			log.Error(err.Error())
 		}
@@ -99,7 +99,7 @@ func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, e
 	}
 
 	n, err := conn.Write(b)
-	sock.outputWriteLog(log.LoggerLevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+	sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 	if err != nil {
 		log.Error(err.Error())
 	}

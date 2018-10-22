@@ -45,7 +45,7 @@ func TestNullLogger(t *testing.T) {
 }
 
 func TestStdoutLogger(t *testing.T) {
-	SetSharedLogger(NewStdoutLogger(LoggerLevelTrace))
+	SetSharedLogger(NewStdoutLogger(LevelTrace))
 	defer SetSharedLogger(nil)
 
 	nOutput := Trace(testLogMessage)
