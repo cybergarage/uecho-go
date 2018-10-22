@@ -169,6 +169,16 @@ func (node *LocalNode) Stop() error {
 	return nil
 }
 
+// Restart starts the node.
+func (node *LocalNode) Restart() error {
+	err := node.Stop()
+	if err != nil {
+		return err
+	}
+
+	return node.Start()
+}
+
 // Equals returns true whether the specified node is same, otherwise false.
 func (node *LocalNode) Equals(otherNode Node) bool {
 	return nodeEquals(node, otherNode)
