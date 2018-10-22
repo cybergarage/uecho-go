@@ -44,6 +44,7 @@ func (ctrl *testController) ControllerNewNodeFound(node *RemoteNode) {
 
 func TestNewController(t *testing.T) {
 	ctrl := NewController()
+	ctrl.SetConfig(newTestDefaultConfig())
 
 	err := ctrl.Start()
 	if err != nil {
