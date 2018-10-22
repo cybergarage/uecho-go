@@ -20,25 +20,70 @@ uechosearch is a search utility for Echonet Lite.
 package main
 
 import (
+	"flag"
 	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 // See : APPENDIX Detailed Requirements for ECHONET Device objects
 //       3.3.29 Requirements for mono functional lighting class
 
 func main() {
+	verbose := flag.Bool("v", false, "verbose")
+	flag.Parse()
+
+	// Setup logger
+
+	if *verbose {
+		log.SetSharedLogger(log.NewStdoutLogger(log.LoggerLevelTrace))
+	}
+
+	// Start a light node for Echonet Lite
 
 	node := NewLightNode()
 
 	err := node.Start()
 	if err != nil {
+		OutputError(err)
 		os.Exit(EXIT_FAILURE)
 	}
 
-	err = node.Stop()
-	if err != nil {
-		os.Exit(EXIT_FAILURE)
-	}
+	sigCh := make(chan os.Signal, 1)
 
-	os.Exit(EXIT_SUCCESS)
+	signal.Notify(sigCh,
+		os.Interrupt,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM)
+
+	exitCh := make(chan int)
+
+	go func() {
+		for {
+			s := <-sigCh
+			switch s {
+			case syscall.SIGHUP:
+				err = node.Restart()
+				if err != nil {
+					OutputError(err)
+					os.Exit(EXIT_FAILURE)
+				}
+			case syscall.SIGINT, syscall.SIGTERM:
+				err = node.Stop()
+				if err != nil {
+					OutputError(err)
+					os.Exit(EXIT_FAILURE)
+				}
+				exitCh <- EXIT_SUCCESS
+			}
+		}
+	}()
+
+	code := <-exitCh
+
+	os.Exit(code)
+
 }

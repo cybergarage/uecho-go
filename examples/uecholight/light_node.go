@@ -4,6 +4,8 @@
 package main
 
 import (
+	"encoding/hex"
+
 	"github.com/cybergarage/uecho-go/net/echonet"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -36,6 +38,8 @@ func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol
 	if !ok {
 		return nil
 	}
+
+	OutputMessage("%02X : %s -> %s", esv, hex.EncodeToString(prop.GetData()), hex.EncodeToString(reqProp.GetData()))
 
 	prop.SetData(reqProp.GetData())
 
