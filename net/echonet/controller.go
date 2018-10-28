@@ -45,6 +45,11 @@ func (ctrl *Controller) SetListener(l ControllerListener) {
 	ctrl.controllerListener = l
 }
 
+// GetLocalNode returns a local contoroller node.
+func (ctrl *Controller) GetLocalNode() *LocalNode {
+	return ctrl.LocalNode
+}
+
 // GetNodes returns found nodes
 func (ctrl *Controller) GetNodes() []*RemoteNode {
 	return ctrl.foundNodes
