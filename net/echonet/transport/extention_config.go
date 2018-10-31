@@ -4,6 +4,8 @@
 
 package transport
 
+import "reflect"
+
 // ExtentionConfig represents a cofiguration for extended specifications.
 type ExtentionConfig struct {
 	AutoPortBindingEnabled      bool
@@ -60,14 +62,5 @@ func (conf *ExtentionConfig) IsAutoInterfaceBindingEnabled() bool {
 
 // Equals returns true whether the specified other class is same, otherwise false.
 func (conf *ExtentionConfig) Equals(otherConf *ExtentionConfig) bool {
-	if conf.IsAutoPortBindingEnabled() != otherConf.IsAutoPortBindingEnabled() {
-		return false
-	}
-	if conf.IsEachInterfaceBindingEnabled() != otherConf.IsEachInterfaceBindingEnabled() {
-		return false
-	}
-	if conf.IsAutoInterfaceBindingEnabled() != otherConf.IsAutoInterfaceBindingEnabled() {
-		return false
-	}
-	return true
+	return reflect.DeepEqual(conf, otherConf)
 }

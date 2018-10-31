@@ -5,6 +5,7 @@
 package transport
 
 import (
+	"reflect"
 	"time"
 )
 
@@ -51,11 +52,5 @@ func (conf *UnicastConfig) GetConnectionTimeout() time.Duration {
 
 // Equals returns true whether the specified other class is same, otherwise false.
 func (conf *UnicastConfig) Equals(otherConf *UnicastConfig) bool {
-	if conf.IsTCPEnabled() != otherConf.IsTCPEnabled() {
-		return false
-	}
-	if conf.GetConnectionTimeout() != otherConf.GetConnectionTimeout() {
-		return false
-	}
-	return true
+	return reflect.DeepEqual(conf, otherConf)
 }
