@@ -17,7 +17,7 @@ const (
 
 // IsIPv6Address retusn true whether the specified address is a IPv6 address
 func IsIPv6Address(addr string) bool {
-	if 0 < strings.Index(addr, ":") {
+	if 0 <= strings.Index(addr, ":") {
 		return true
 	}
 
