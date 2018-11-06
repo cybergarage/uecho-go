@@ -266,6 +266,11 @@ func (prop *Property) announce() error {
 	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
 	}
+
+	if !parentNode.IsRunning() {
+		return nil
+	}
+
 	return parentNode.AnnounceProperty(prop)
 }
 
