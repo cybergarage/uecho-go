@@ -53,10 +53,10 @@ func newTestSampleNode() (*testLocalNode, error) {
 	return newTestSampleNodeWithConfig(newTestDefaultConfig())
 }
 
-func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) {
+func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {
 	dev, err := node.GetDevice(testLightDeviceCode)
 	if err != nil {
-		return
+		return err
 	}
 
 	if msg.IsWriteRequest() {
@@ -70,4 +70,6 @@ func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) {
 			}
 		}
 	}
+
+	return nil
 }
