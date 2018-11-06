@@ -31,7 +31,10 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 		return protocol.NewImpossibleMessageWithMessage(msg), nil
 	}
 
-	node.executeMessageListeners(msg)
+	err := node.executeMessageListeners(msg)
+	if err != nil {
+		return nil, err
+	}
 
 	if !msg.IsResponseRequired() {
 		return nil, nil
@@ -100,11 +103,11 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 }
 
 // executeMessageListeners post the received message to the listeners.
-func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
+func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 	msgDstObjCode := msg.GetDestinationObjectCode()
 	dstObj, err := node.GetObject(msgDstObjCode)
 	if err != nil {
-		return false
+		return err
 	}
 
 	msgESV := msg.GetESV()
@@ -114,7 +117,10 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
 
 	l := node.GetListener()
 	if l != nil {
-		l.NodeMessageReceived(msg)
+		err := l.NodeMessageReceived(msg)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Object Listener
@@ -127,7 +133,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) bool {
 		dstObj.notifyPropertyRequest(msgESV, msgProp)
 	}
 
-	return true
+	return nil
 }
 
 // createResponseMessageForRequestMessage retunrs the response message for the specified request message.

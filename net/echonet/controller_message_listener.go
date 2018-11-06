@@ -13,11 +13,11 @@ const (
 )
 
 // NodeMessageReceived is a listener of the local node
-func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
+func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	if msgNode.Equals(ctrl) {
-		return
+		return nil
 	}
 
 	//log.Trace(logControllerListenerFormat, msg.String()))
@@ -33,6 +33,8 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) {
 	if ctrl.controllerListener != nil {
 		ctrl.controllerListener.ControllerMessageReceived(msg)
 	}
+
+	return nil
 }
 
 // parseNodeProfileMessage parses the specified message to check new objects.
