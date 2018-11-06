@@ -42,6 +42,14 @@ uecho_node_addobject(node, obj);
 To implement the device, developer has only to handle write requests from other nodes because eEcho handles other read and notification requests automatically. To handle the write requests, use `uecho_object_setpropertywriterequestlistener()` as the following:
 
 ```
+// LocalNodeListener is an instance of the listner.
+type LocalNodeListener interface {
+	// NodeMessageReceived is first called when a new message is received.
+	// The node returns the standard responses of Echonet when the listener function returns no error.
+	// Otherwise, the node does not return any responses when the listener function returns an error.
+	NodeMessageReceived(*protocol.Message) error
+}
+
 void object_propertywriterequestlistener(uEchoObject *obj, uEchoEsv esv, uEchoProperty *prop)
 {
   size_t dataSize;
