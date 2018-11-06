@@ -17,11 +17,23 @@ const (
 
 // IsIPv6Address retusn true whether the specified address is a IPv6 address
 func IsIPv6Address(addr string) bool {
+	if len(addr) <= 0 {
+		return false
+	}
+
 	if 0 <= strings.Index(addr, ":") {
 		return true
 	}
-
 	return false
+}
+
+// IsIPv4Address retusn true whether the specified address is a IPv4 address
+func IsIPv4Address(addr string) bool {
+	if len(addr) <= 0 {
+		return false
+	}
+
+	return !IsIPv6Address(addr)
 }
 
 // GetInterfaceAddress retuns a IPv4 address of the specivied interface.
