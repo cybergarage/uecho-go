@@ -129,20 +129,6 @@ func (node *LocalNode) AddProfile(prof *Profile) error {
 	return node.updateNodeProfile()
 }
 
-// GetAddress returns the bound address.
-func (node *LocalNode) GetAddress() string {
-	addrs := node.server.GetBoundAddresses()
-	if len(addrs) <= 0 {
-		return ""
-	}
-	return addrs[0]
-}
-
-// GetPort returns the bound address.
-func (node *LocalNode) GetPort() int {
-	return node.server.GetPort()
-}
-
 // Start starts the node.
 func (node *LocalNode) Start() error {
 

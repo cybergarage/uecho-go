@@ -5,9 +5,14 @@
 package transport
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+)
+
+const (
+	errorMessageManagerNotRunning = "Message manager is not running"
 )
 
 // A MessageManager represents a multicast server list.
@@ -62,17 +67,27 @@ func (mgr *MessageManager) GetMessageHandler() protocol.MessageHandler {
 }
 
 // GetBoundAddresses returns the listen addresses.
-func (mgr *MessageManager) GetBoundAddresses() []string {
-	boundAddrs := make([]string, 0)
-	boundAddrs = append(boundAddrs, mgr.unicastMgr.GetBoundAddresses()...)
-	return boundAddrs
+func (mgr *MessageManager) GetBoundAddresses() ([]string, error) {
+	if !mgr.IsRunning() {
+		return nil, fmt.Errorf(errorMessageManagerNotRunning)
+	}
+	return mgr.unicastMgr.GetBoundAddresses(), nil
 }
 
 // GetBoundInterfaces returns the listen interfaces.
-func (mgr *MessageManager) GetBoundInterfaces() []*net.Interface {
-	boundIfs := make([]*net.Interface, 0)
-	boundIfs = append(boundIfs, mgr.unicastMgr.GetBoundInterfaces()...)
-	return boundIfs
+func (mgr *MessageManager) GetBoundInterfaces() ([]*net.Interface, error) {
+	if !mgr.IsRunning() {
+		return nil, fmt.Errorf(errorMessageManagerNotRunning)
+	}
+	return mgr.unicastMgr.GetBoundInterfaces(), nil
+}
+
+// GetBoundPort returns the listen port.
+func (mgr *MessageManager) GetBoundPort() (int, error) {
+	if !mgr.IsRunning() {
+		return 0, fmt.Errorf(errorMessageManagerNotRunning)
+	}
+	return mgr.unicastMgr.GetPort(), nil
 }
 
 // SendMessage send a message to the destination address.
