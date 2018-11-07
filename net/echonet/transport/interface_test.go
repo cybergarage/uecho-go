@@ -77,3 +77,28 @@ func TestIPv4Addresses(t *testing.T) {
 		}
 	}
 }
+
+func TestLocalAddresses(t *testing.T) {
+	goodAddrs := []string{
+		"127.0.0.1",
+		"::1",
+	}
+
+	for n, addr := range goodAddrs {
+		if !IsLocalAddress(addr) {
+			t.Errorf("[%d] %s", n, addr)
+		}
+	}
+
+	badAddrs := []string{
+		"",
+		"192.168.0.1",
+		"fe80::1875:6549:801:d487",
+	}
+
+	for n, addr := range badAddrs {
+		if IsLocalAddress(addr) {
+			t.Errorf("[%d] %s", n, addr)
+		}
+	}
+}
