@@ -113,13 +113,15 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 	msgESV := msg.GetESV()
 	msgOPC := msg.GetOPC()
 
+	var lastErr error
+
 	// Message Listener
 
 	l := node.GetListener()
 	if l != nil {
 		err := l.NodeMessageReceived(msg)
 		if err != nil {
-			return err
+			lastErr = err
 		}
 	}
 
@@ -130,10 +132,13 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 		if msgProp == nil {
 			continue
 		}
-		dstObj.notifyPropertyRequest(msgESV, msgProp)
+		err := dstObj.notifyPropertyRequest(msgESV, msgProp)
+		if err != nil {
+			lastErr = err
+		}
 	}
 
-	return nil
+	return lastErr
 }
 
 // createResponseMessageForRequestMessage retunrs the response message for the specified request message.
