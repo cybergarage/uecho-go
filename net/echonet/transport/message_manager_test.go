@@ -145,7 +145,10 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 		}
 
 		dstPort := dstMgr.GetPort()
-		dstAddrs := dstMgr.GetBoundAddresses()
+		dstAddrs, err := dstMgr.GetBoundAddresses()
+		if err != nil {
+			t.Error(err)
+		}
 		if len(dstAddrs) <= 0 {
 			t.Errorf("Not found available interfaces ")
 			continue
