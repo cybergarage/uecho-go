@@ -30,7 +30,7 @@ type ObjectCode = protocol.ObjectCode
 type Object struct {
 	*PropertyMap
 	Code       []byte
-	listeners  []ObjectListener
+	listener   ObjectListener
 	parentNode Node
 }
 
@@ -39,7 +39,7 @@ func NewObject() *Object {
 	obj := &Object{
 		PropertyMap: NewPropertyMap(),
 		Code:        make([]byte, ObjectCodeSize),
-		listeners:   make([]ObjectListener, 0),
+		listener:    nil,
 		parentNode:  nil,
 	}
 
@@ -151,19 +151,15 @@ func (obj *Object) GetParentNode() Node {
 	return obj.parentNode
 }
 
-// AddListener add the specified listener to the node.
-func (obj *Object) AddListener(l ObjectListener) {
-	obj.listeners = append(obj.listeners, l)
+// SetListener sets a listener to the object.
+func (obj *Object) SetListener(l ObjectListener) {
+	obj.listener = l
 }
 
-// GetListeners returns all listeners of the node.
-func (obj *Object) GetListeners() []ObjectListener {
-	return obj.listeners
-}
-
-// notifyPropertyRequest notifies a request to the listeners.
-func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Property) {
-	for _, l := range obj.listeners {
-		l.PropertyRequestReceived(obj, esv, prop)
+// notifyPropertyRequest notifies a request to the object listener.
+func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Property) error {
+	if obj.listener == nil {
+		return nil
 	}
+	return obj.listener.PropertyRequestReceived(obj, esv, prop)
 }
