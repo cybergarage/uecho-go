@@ -85,7 +85,7 @@ func TestLocalAddresses(t *testing.T) {
 	}
 
 	for n, addr := range goodAddrs {
-		if !IsLocalAddress(addr) {
+		if !IsLoopbackAddress(addr) {
 			t.Errorf("[%d] %s", n, addr)
 		}
 	}
@@ -97,7 +97,7 @@ func TestLocalAddresses(t *testing.T) {
 	}
 
 	for n, addr := range badAddrs {
-		if IsLocalAddress(addr) {
+		if IsLoopbackAddress(addr) {
 			t.Errorf("[%d] %s", n, addr)
 		}
 	}
