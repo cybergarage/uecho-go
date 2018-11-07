@@ -23,7 +23,7 @@ func NewLightNode() *LightNode {
 
 	dev := NewLightDevice()
 	node.AddDevice(dev)
-	dev.AddListener(node)
+	dev.SetListener(node)
 
 	return node
 }
