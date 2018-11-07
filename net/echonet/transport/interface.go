@@ -36,6 +36,22 @@ func IsIPv4Address(addr string) bool {
 	return !IsIPv6Address(addr)
 }
 
+// IsLocalAddress retusn true whether the specified address is a local addresses
+func IsLocalAddress(addr string) bool {
+	localAddrs := []string{
+		"127.0.0.1",
+		"::1",
+	}
+
+	for _, localAddr := range localAddrs {
+		if localAddr == addr {
+			return true
+		}
+	}
+
+	return false
+}
+
 // GetInterfaceAddress retuns a IPv4 address of the specivied interface.
 func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	addrs, err := ifi.Addrs()
