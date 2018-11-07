@@ -36,8 +36,8 @@ func IsIPv4Address(addr string) bool {
 	return !IsIPv6Address(addr)
 }
 
-// IsLocalAddress retusn true whether the specified address is a local addresses
-func IsLocalAddress(addr string) bool {
+// IsLoopbackAddress retusn true whether the specified address is a loopback addresses
+func IsLoopbackAddress(addr string) bool {
 	localAddrs := []string{
 		"127.0.0.1",
 		"::1",
