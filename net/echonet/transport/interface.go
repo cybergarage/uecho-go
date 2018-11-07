@@ -15,7 +15,7 @@ const (
 	errorAvailableInterfaceFound  = "Available interface not found"
 )
 
-// IsIPv6Address retusn true whether the specified address is a IPv6 address
+// IsIPv6Address returns true whether the specified address is a IPv6 address
 func IsIPv6Address(addr string) bool {
 	if len(addr) <= 0 {
 		return false
@@ -27,7 +27,7 @@ func IsIPv6Address(addr string) bool {
 	return false
 }
 
-// IsIPv4Address retusn true whether the specified address is a IPv4 address
+// IsIPv4Address returns true whether the specified address is a IPv4 address
 func IsIPv4Address(addr string) bool {
 	if len(addr) <= 0 {
 		return false
@@ -36,7 +36,7 @@ func IsIPv4Address(addr string) bool {
 	return !IsIPv6Address(addr)
 }
 
-// IsLoopbackAddress retusn true whether the specified address is a loopback addresses
+// IsLoopbackAddress returns true whether the specified address is a loopback addresses
 func IsLoopbackAddress(addr string) bool {
 	localAddrs := []string{
 		"127.0.0.1",
@@ -50,6 +50,19 @@ func IsLoopbackAddress(addr string) bool {
 	}
 
 	return false
+}
+
+// IsCommunicableAddress returns true whether the address is a effective address to commnicate with other nodes, othwise false.
+func IsCommunicableAddress(addr string) bool {
+	if len(addr) <= 0 {
+		return false
+	}
+
+	if IsLoopbackAddress(addr) {
+		return false
+	}
+
+	return true
 }
 
 // GetInterfaceAddress retuns a IPv4 address of the specivied interface.
