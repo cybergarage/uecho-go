@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	DefaultLocalNodeRequestTimeout = time.Second * 30
+	DefaultLocalNodeRequestTimeout = time.Second * 10
 )
 
 // LocalNode is an instance for Echonet node.
