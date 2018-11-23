@@ -4,13 +4,13 @@
 
 ## Node Profile Object
 
-The controller is a special node of [ECHONETLite][enet] to control other nodes, but [ECHONETLite][enet] controller must have a following special node profile class object which has all children objects of the node [\[1\]][enet-spec].
+The controller is a special node of [ECHONETLite][enet] to control other nodes. [ECHONETLite][enet] controller must have a following special node profile class object which has all children objects of the node [\[1\]][enet-spec].
 
 - Class group code: 0x0E
 - Class code: 0xF0
 - Instance code: 0x01 (general node)
 
-The uEcho added the node profile class objects automatically when the controller is created.
+The `uecho-go` added the node profile class objects automatically when the controller is created.
 
 ![Controller Objects](img/controller_object.png)
 
