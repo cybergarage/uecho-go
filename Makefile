@@ -54,7 +54,7 @@ build: vet
 	go build -v ${PACKAGES}
 
 test: vet
-	go test -v -cover -timeout 30s ${PACKAGES}
+	go test -v -cover -timeout 60s ${PACKAGES}
 
 install: vet
 	go install ${BINARIES}
