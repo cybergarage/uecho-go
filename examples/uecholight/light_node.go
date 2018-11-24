@@ -29,10 +29,12 @@ func NewLightNode() *LightNode {
 }
 
 func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
+	// Check whether the property request is a write request
 	if !protocol.IsWriteRequest(esv) {
 		return nil
 	}
 
+	// Check whether the local object (device) has the requested property
 	propCode := reqProp.GetCode()
 	prop, ok := obj.GetProperty(propCode)
 	if !ok {
@@ -41,6 +43,7 @@ func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol
 
 	OutputMessage("%02X : %s -> %s", esv, hex.EncodeToString(prop.GetData()), hex.EncodeToString(reqProp.GetData()))
 
+	// Set the requested data to the local object (device)
 	prop.SetData(reqProp.GetData())
 
 	return nil
