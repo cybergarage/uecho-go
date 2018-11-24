@@ -10,7 +10,7 @@
 - Class code: 0xF0
 - Instance code: 0x01 (general node)
 
-The uEcho updates the node profile class objects automatically when the children node is changed.
+The `uecho-go` updates the node profile class objects automatically when the children node is changed.
 
 ![Device Objects](img/device_objects.png)
 
