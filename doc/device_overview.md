@@ -10,83 +10,106 @@ uEcho supports your original standard devices of [ECHONET Lite][enet] specificat
 
 ### 1. Creating Node
 
-To create your original device, use `uecho_node_new()` as the following at first.
+To create your original device, use `NewLocalNode()` as the following at first.
 
 ```
-uEchoNode *node = uecho_node_new();
+import (
+	"github.com/cybergarage/uecho-go/net/echonet"
+)
+
+node := echonet.NewLocalNode()
 ```
+
 
 The new node has only a node profile class object, and it has no device object. The node profile object is updated automatically when new devices are added into the node or the any properties in the node are changed.
 
 ### 2. Creating Device Object
 
-The new node has no device object. To add your device objects, create a new device object using `uecho_object_new()` or `uecho_device_new()`. `uecho_object_new()` create a null object, but `uecho_device_new()` create a object which added some mandatory properties of ECHONET device object super class requirements.
+The new node has no device object. To add your device objects, create a new device object using `NewDevice()`.  `NewDevice()` create a new device object which is added some mandatory properties of ECHONET device object super class requirements [\[1\]][enet-spec].
 
-
-Next, according to ECHONET standard device specification [\[1\]][enet-spec], set the manufacturer code, the object code and other standard properties code into the created device object. Then, add the device object into the node using `uecho_node_addobject()` as the following:
+Next, according to ECHONET standard device specification [\[1\]][enet-spec], set the manufacturer code using `Device::SetManufacturerCode()` and the object code using `Device::SetCode()`.
+The created device has only mandatory properties, and so you should add other stadard properties of ECHONET standard device specification [\[1\]][enet-spec] or your extra properties using `Device::CreateProperty()` and `Device::SetPropertyrData()`.
+Then, add the device object into the node using `LocalNode::AddDevice()` as the following:
 
 ```
-uEchoObject *obj;
-obj = uecho_device_new();
-uecho_object_setmanufacturercode(obj, 0xXXXXXX);
-uecho_object_setcode(obj, 0xXXXXXX);
-....
-uecho_object_setproperty(obj, 0xXX, uEchoPropertyAttrReadWrite);
-uecho_object_setpropertydata(obj, 0xXX, ....., ....);
-....
-uecho_node_addobject(node, obj);
+dev := echonet.NewDevice()
+
+dev.SetManufacturerCode(0xXXXXXX)
+dev.SetCode(0xXXXXXX)
+
+dev.CreateProperty(0xXX, echonet.PropertyAttributeReadWrite)
+dev.SetPropertyrData(0xXX, ....)
+
+node.AddDevice(dev)
 ```
 
 ### 3. Setting Observers
 
-To implement the device, developer has only to handle write requests from other nodes because eEcho handles other read and notification requests automatically. To handle the write requests, use `uecho_object_setpropertywriterequestlistener()` as the following:
+To implement the device, you have only to handle write requests from other nodes because `uecho-go` handles other standard read and notification requests automatically. To handle the write requests, use `Object::SetListener()` as the following:
 
 ```
-// LocalNodeListener is an instance of the listner.
-type LocalNodeListener interface {
-	// NodeMessageReceived is first called when a new message is received.
-	// The node returns the standard responses of Echonet when the listener function returns no error.
-	// Otherwise, the node does not return any responses when the listener function returns an error.
-	NodeMessageReceived(*protocol.Message) error
+type ObjectListener interface {
+    PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
 }
 
-void object_propertywriterequestlistener(uEchoObject *obj, uEchoEsv esv, uEchoProperty *prop)
-{
-  size_t dataSize;
-  byte *data;
-
-  dataSize = uecho_property_getdatasize(prop);
-  data = uecho_property_getdata(prop);
-
-  ....
+type MyNode struct {
+    *echonet.LocalNode
 }
-....
-{
-  uEchoObject *obj;
-  byte propCode;
+
+func NewMyNode() *MyNode {
+
+	node := &MyNode{
+		LocalNode: echonet.NewLocalNode(),
+	}
+
+  dev := echonet.NewDevice()
   ....
-  uecho_object_setpropertywriterequestlistener(obj, propCode, object_propertywriterequestlistener)  
+  node.AddDevice(dev)
+	dev.SetListener(node)
+
+	return node
+}
+
+func (node *MyNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
+  // Check whether the property request is a write request
+  if !protocol.IsWriteRequest(esv) {
+    return nil
+  }
+
+  // Check whether the local object (device) has the requested property
+  propCode := reqProp.GetCode()
+  prop, ok := obj.GetProperty(propCode)
+  if !ok {
+    return nil
+  }
+
+  .....
+  // Set the requested data to the local object (device)
+  prop.SetData(reqProp.GetData())
+
+  return nil
 }
 ```
-
-`uecho_object_setpropertywriterequestlistener()` sets the handler for all write request ESV types, Write (0x60) , Write Response Required (0x61) and Write & read Request (0x6E). To set handlers for each ESV, use `uecho_object_setpropertyrequeslistener()`.
 
 ### 4. Start Node
 
-Finally, start the node to use `uecho_node_start` as the following:
+Finally, start the node to use `LocalNode::Start()` as the following:
 
 ```
-uEchoNode *node;
+node := echonet.NewLocalNode()
 ....
-uecho_node_start(node);
+err := node.Start()
+if err != nil {
+  ....
+}
 ```
 
 ## Next Steps
 
 Let's check the following documentations to know the device functions of uEcho in more detail.
 
-- [uEcho Examples](./uecho_examples.md)
-- [Inside of uEcho Device](./uecho_device_inside.md)
+- [Examples](./examples.md)
+- [Inside of uEcho Device](./device_inside.md)
 
 ## References
 
