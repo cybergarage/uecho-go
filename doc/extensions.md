@@ -1,6 +1,6 @@
 ![logo](img/logo.png)
 
-# Extension Specifications
+# Expanded Configurations for Go Platform
 
 `uecho-go` supports some extension specifications for [ECHONET Lite][enet] to use the IoT protocol in a variety of situations such as Cloud computing or testing.
 
