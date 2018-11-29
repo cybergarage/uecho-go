@@ -27,5 +27,6 @@ const (
 )
 
 const (
-	DefaultConnectimeTimeOut = (time.Millisecond * 1000)
+	DefaultConnectimeTimeOut = (time.Millisecond * 5000)
+	DefaultRequestTimeout    = (time.Millisecond * 5000)
 )
