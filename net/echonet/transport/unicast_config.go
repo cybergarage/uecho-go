@@ -13,6 +13,7 @@ import (
 type UnicastConfig struct {
 	TCPEnabled        bool
 	ConnectionTimeout time.Duration
+	RequestTimeout    time.Duration
 }
 
 // NewDefaultUnicastConfig returns a default configuration.
@@ -20,6 +21,7 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 	conf := &UnicastConfig{
 		TCPEnabled:        false,
 		ConnectionTimeout: DefaultConnectimeTimeOut,
+		RequestTimeout:    DefaultRequestTimeout,
 	}
 	return conf
 }
@@ -48,6 +50,16 @@ func (conf *UnicastConfig) SetConnectionTimeout(timeout time.Duration) {
 // GetConnectionTimeout returns the current connection timeout setting.
 func (conf *UnicastConfig) GetConnectionTimeout() time.Duration {
 	return conf.ConnectionTimeout
+}
+
+// SetRequestTimeout sets a request timeout.
+func (conf *Config) SetRequestTimeout(d time.Duration) {
+	conf.RequestTimeout = d
+}
+
+// GetRequestTimeout return the request timeout.
+func (conf *Config) GetRequestTimeout() time.Duration {
+	return conf.RequestTimeout
 }
 
 // Equals returns true whether the specified other class is same, otherwise false.
