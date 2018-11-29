@@ -6,7 +6,6 @@ package transport
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"strings"
 )
@@ -116,7 +115,6 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 	}
 
 	for _, localIf := range localIfs {
-		fmt.Printf("%s : %0d\n", localIf.Name, localIf.Flags)
 		if (localIf.Flags & net.FlagLoopback) != 0 {
 			continue
 		}
@@ -124,6 +122,9 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 			continue
 		}
 		if (localIf.Flags & net.FlagMulticast) == 0 {
+			continue
+		}
+		if IsBridgeInterface(&localIf) {
 			continue
 		}
 		_, addrErr := GetInterfaceAddress(&localIf)
