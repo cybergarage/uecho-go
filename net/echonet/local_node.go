@@ -8,13 +8,8 @@ import (
 	"net"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
-)
-
-const (
-	DefaultLocalNodeRequestTimeout = time.Second * 10
 )
 
 // LocalNode is an instance for Echonet node.
@@ -27,7 +22,6 @@ type LocalNode struct {
 	lastTID          uint
 	postResponseCh   chan *protocol.Message
 	postRequestMsg   *protocol.Message
-	requestTimeout   time.Duration
 	listener         LocalNodeListener
 }
 
@@ -42,7 +36,6 @@ func NewLocalNode() *LocalNode {
 		lastTID:          TIDMin,
 		postResponseCh:   nil,
 		postRequestMsg:   nil,
-		requestTimeout:   DefaultLocalNodeRequestTimeout,
 		listener:         nil,
 	}
 
@@ -66,16 +59,6 @@ func (node *LocalNode) SetManufacturerCode(code uint) {
 // GetManufacturerCode return the manufacture codes of the node.
 func (node *LocalNode) GetManufacturerCode() uint {
 	return node.manufacturerCode
-}
-
-// SetRequestTimeout sets a request timeout the node.
-func (node *LocalNode) SetRequestTimeout(d time.Duration) {
-	node.requestTimeout = d
-}
-
-// GetRequestTimeout return the request timeout of the node.
-func (node *LocalNode) GetRequestTimeout() time.Duration {
-	return node.requestTimeout
 }
 
 // SetListener set a listener to the node.
