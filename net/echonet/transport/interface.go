@@ -6,8 +6,13 @@ package transport
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"strings"
+)
+
+const (
+	libvirtInterfaceName = "virbr0"
 )
 
 const (
@@ -65,6 +70,17 @@ func IsCommunicableAddress(addr string) bool {
 	return true
 }
 
+// IsBridgeInterface retuns true when the specified interface is a bridege interface, otherwise false.
+func IsBridgeInterface(ifi *net.Interface) bool {
+	ifname := ifi.Name
+
+	if ifname == libvirtInterfaceName {
+		return true
+	}
+
+	return false
+}
+
 // GetInterfaceAddress retuns a IPv4 address of the specivied interface.
 func GetInterfaceAddress(ifi *net.Interface) (string, error) {
 	addrs, err := ifi.Addrs()
@@ -100,6 +116,7 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 	}
 
 	for _, localIf := range localIfs {
+		fmt.Printf("%s : %0d\n", localIf.Name, localIf.Flags)
 		if (localIf.Flags & net.FlagLoopback) != 0 {
 			continue
 		}
@@ -109,7 +126,6 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 		if (localIf.Flags & net.FlagMulticast) == 0 {
 			continue
 		}
-
 		_, addrErr := GetInterfaceAddress(&localIf)
 		if addrErr != nil {
 			continue
