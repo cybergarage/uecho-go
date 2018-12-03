@@ -21,31 +21,6 @@ type testMessageManager struct {
 	lastNotificationMessage *protocol.Message
 }
 
-// NewMessageManager returns a new message manager.
-func newTestMessageManager() *testMessageManager {
-	mgr := &testMessageManager{
-		MessageManager:          NewMessageManager(),
-		FromPort:                0,
-		FromPacketType:          protocol.UnknownPacket,
-		lastNotificationMessage: nil,
-	}
-	return mgr
-}
-
-func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	//log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
-
-	if msg.IsESV(protocol.ESVWriteReadRequest) {
-		copyMsg, err := protocol.NewMessageWithMessage(msg)
-		if err == nil {
-			//log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
-			mgr.lastNotificationMessage = copyMsg
-		}
-	}
-
-	return nil, nil
-}
-
 func newTestMessage(tid uint) (*protocol.Message, error) {
 	tidBytes := make([]byte, 2)
 	encoding.IntegerToByte(tid, tidBytes)
@@ -64,6 +39,38 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 	}
 
 	return protocol.NewMessageWithBytes(testMessageBytes)
+}
+
+func isTestMessage(msg *protocol.Message) bool {
+	if !msg.IsESV(protocol.ESVWriteReadRequest) {
+		return false
+	}
+	return true
+}
+
+// NewMessageManager returns a new message manager.
+func newTestMessageManager() *testMessageManager {
+	mgr := &testMessageManager{
+		MessageManager:          NewMessageManager(),
+		FromPort:                0,
+		FromPacketType:          protocol.UnknownPacket,
+		lastNotificationMessage: nil,
+	}
+	return mgr
+}
+
+func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
+	//log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
+
+	if isTestMessage(msg) {
+		copyMsg, err := protocol.NewMessageWithMessage(msg)
+		if err == nil {
+			//log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
+			mgr.lastNotificationMessage = copyMsg
+		}
+	}
+
+	return nil, nil
 }
 
 func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
@@ -101,7 +108,7 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 
 		log.Trace("CMP(M) : %s ?= %s", msg.String(), dstLastMsg.String())
 
-		if bytes.Compare(msg.Bytes(), dstLastMsg.Bytes()) != 0 {
+		if !msg.Equals(dstLastMsg) {
 			log.Trace("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
 			t.Errorf("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
 			continue
