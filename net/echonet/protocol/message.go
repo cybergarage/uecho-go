@@ -409,6 +409,9 @@ func (msg *Message) Size() int {
 
 // Bytes return the message bytes.
 func (msg *Message) Bytes() []byte {
+	if msg == nil {
+		return make([]byte, 0)
+	}
 
 	msgBytes := make([]byte, msg.Size())
 
@@ -465,5 +468,8 @@ func (msg *Message) Equals(other *Message) bool {
 
 // String return the string .
 func (msg *Message) String() string {
+	if msg == nil {
+		return ""
+	}
 	return hex.EncodeToString(msg.Bytes())
 }
