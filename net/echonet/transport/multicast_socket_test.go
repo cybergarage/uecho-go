@@ -14,6 +14,7 @@ func TestMulticastSocketBindWithInterface(t *testing.T) {
 	ifs, err := GetAvailableInterfaces()
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	err = sock.Bind(ifs[0])
