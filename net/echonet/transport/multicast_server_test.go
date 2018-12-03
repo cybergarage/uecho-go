@@ -51,6 +51,8 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 		t.Error(err)
 	}
 
+	time.Sleep(time.Second)
+
 	// Send a test message
 
 	now := time.Now()

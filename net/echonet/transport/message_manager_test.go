@@ -212,6 +212,8 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 		log.Trace("mgr[%d] : %d", n, mgr.GetPort())
 	}
 
+	time.Sleep(time.Second)
+
 	// Send multicast messages, and check the received message
 
 	testMulticastMessagingWithRunningManagers(t, mgrs)
