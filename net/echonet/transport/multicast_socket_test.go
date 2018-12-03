@@ -8,6 +8,35 @@ import (
 	"testing"
 )
 
-func TestNewMulticastSocket(t *testing.T) {
-	NewMulticastSocket()
+func TestMulticastSocketBindWithInterface(t *testing.T) {
+	sock := NewMulticastSocket()
+
+	ifs, err := GetAvailableInterfaces()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = sock.Bind(ifs[0])
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = sock.Close()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMulticastSocketBindWithNoInterface(t *testing.T) {
+	sock := NewMulticastSocket()
+
+	err := sock.Bind(nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = sock.Close()
+	if err != nil {
+		t.Error(err)
+	}
 }
