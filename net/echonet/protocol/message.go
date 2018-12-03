@@ -5,6 +5,7 @@
 package protocol
 
 import (
+	"bytes"
 	"encoding/hex"
 	"io"
 	"net"
@@ -449,6 +450,17 @@ func (msg *Message) Bytes() []byte {
 	}
 
 	return msgBytes
+}
+
+// Equals returns true whether the specified other message is same, otherwise false.
+func (msg *Message) Equals(other *Message) bool {
+	if msg == nil || other == nil {
+		return false
+	}
+	if bytes.Compare(msg.Bytes(), other.Bytes()) != 0 {
+		return false
+	}
+	return true
 }
 
 // String return the string .
