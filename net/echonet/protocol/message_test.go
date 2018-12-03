@@ -110,3 +110,32 @@ func TestEncodeMessage(t *testing.T) {
 		t.Errorf("%s != %s", string(msgBytes), string(testMessageBytes))
 	}
 }
+
+func TestMessageEquals(t *testing.T) {
+
+	msg1 := NewMessage()
+	err := msg1.ParseBytes(testMessageBytes)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// nil message
+
+	if msg1.Equals(nil) {
+		t.Errorf("%s !=", msg1.String())
+	}
+
+	// Same message
+
+	msg2 := NewMessage()
+	err = msg2.ParseBytes(testMessageBytes)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !msg1.Equals(msg2) {
+		t.Errorf("%s != %s", msg1.String(), msg2.String())
+	}
+}
