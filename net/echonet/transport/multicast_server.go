@@ -11,11 +11,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// A MulticastHandler represents a listener for MulticastServer.
-type MulticastHandler interface {
-	protocol.MessageHandler
-}
-
 // A MulticastServer represents a multicast server.
 type MulticastServer struct {
 	*Server
