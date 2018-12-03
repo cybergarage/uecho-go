@@ -11,11 +11,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// A UnicastHandler represents a listener for UnicastServer.
-type UnicastHandler interface {
-	protocol.MessageHandler
-}
-
 // A UnicastServer represents a unicast server.
 type UnicastServer struct {
 	*UnicastConfig
