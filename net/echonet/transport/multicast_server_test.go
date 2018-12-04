@@ -28,12 +28,9 @@ func newTestMulticastServer() *testMulticastServer {
 }
 
 func (server *testMulticastServer) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	//log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
-
 	if isTestMessage(msg) {
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
-			//log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
 			server.lastMessage = copyMsg
 		}
 	}

@@ -96,7 +96,7 @@ func (sock *UnicastUDPSocket) SendBytesFromInterface(ifi *net.Interface, addr st
 	if ifi != nil {
 		ifaddr, err := GetInterfaceAddress(ifi)
 		if err == nil {
-			addr, err := net.ResolveUDPAddr("udp", ifaddr)
+			addr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(ifaddr, strconv.Itoa(port)))
 			if err == nil {
 				fromAddr = addr
 			}
