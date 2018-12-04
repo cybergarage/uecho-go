@@ -12,6 +12,8 @@ import (
 
 // A Socket represents a socket.
 type Socket struct {
+	ReadBufferSize int
+	ReadBuffer     []byte
 	BoundInterface *net.Interface
 	BoundPort      int
 	BoundAddress   string
@@ -19,7 +21,11 @@ type Socket struct {
 
 // NewSocket returns a new UDPSocket.
 func NewSocket() *Socket {
-	sock := &Socket{}
+	sock := &Socket{
+		ReadBufferSize: MaxPacketSize,
+		ReadBuffer:     make([]byte, 0),
+	}
+	sock.SetReadBufferSize(MaxPacketSize)
 	sock.Close()
 	return sock
 }
@@ -29,6 +35,17 @@ func (sock *Socket) Close() {
 	sock.BoundInterface = nil
 	sock.BoundAddress = ""
 	sock.BoundPort = 0
+}
+
+// SetReadBufferSize sets the read buffer size.
+func (sock *Socket) SetReadBufferSize(n int) {
+	sock.ReadBufferSize = n
+	sock.ReadBuffer = make([]byte, n)
+}
+
+// GetReadBufferSize returns the read buffer size.
+func (sock *Socket) GetReadBufferSize() int {
+	return sock.ReadBufferSize
 }
 
 // SetBoundStatus sets the bound interface, port, and address.

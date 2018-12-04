@@ -16,15 +16,13 @@ import (
 // A UDPSocket represents a socket for UDP.
 type UDPSocket struct {
 	*Socket
-	Conn    *net.UDPConn
-	readBuf []byte
+	Conn *net.UDPConn
 }
 
 // NewUDPSocket returns a new UDPSocket.
 func NewUDPSocket() *UDPSocket {
 	sock := &UDPSocket{
-		Socket:  NewSocket(),
-		readBuf: make([]byte, MaxPacketSize),
+		Socket: NewSocket(),
 	}
 	return sock
 }
@@ -59,14 +57,14 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 		return nil, errors.New(errorSocketClosed)
 	}
 
-	n, from, err := sock.Conn.ReadFromUDP(sock.readBuf)
+	n, from, err := sock.Conn.ReadFromUDP(sock.ReadBuffer)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := protocol.NewMessageWithBytes(sock.readBuf[:n])
+	msg, err := protocol.NewMessageWithBytes(sock.ReadBuffer[:n])
 	if err != nil {
-		sock.outputReadLog(log.LevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.readBuf[:n]), n)
+		sock.outputReadLog(log.LevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.ReadBuffer[:n]), n)
 		log.Error(err.Error())
 		return nil, err
 	}
