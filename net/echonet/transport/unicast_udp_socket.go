@@ -72,8 +72,8 @@ func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string
 	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
-// SendBytes sends the specified bytes.
-func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
+// SendBytesFromInterface sends the specified bytes from the specified interface.
+func (sock *UnicastUDPSocket) SendBytesFromInterface(ifi *net.Interface, addr string, port int, b []byte) (int, error) {
 	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		return 0, err
@@ -92,7 +92,18 @@ func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, e
 
 	// Send from no binding port
 
-	conn, err := net.DialUDP("udp", nil, toAddr)
+	var fromAddr *net.UDPAddr
+	if ifi != nil {
+		ifaddr, err := GetInterfaceAddress(ifi)
+		if err == nil {
+			addr, err := net.ResolveUDPAddr("udp", ifaddr)
+			if err == nil {
+				fromAddr = addr
+			}
+		}
+	}
+
+	conn, err := net.DialUDP("udp", fromAddr, toAddr)
 	if err != nil {
 		log.Error(err.Error())
 		return 0, err
@@ -106,6 +117,16 @@ func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, e
 	conn.Close()
 
 	return n, err
+}
+
+// SendBytes sends the specified bytes.
+func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
+	return sock.SendBytesFromInterface(nil, addr, port, b)
+}
+
+// SendMessageFromInterface sends the specified string from the specified interface.
+func (sock *UnicastUDPSocket) SendMessageFromInterface(ifi *net.Interface, addr string, port int, msg *protocol.Message) (int, error) {
+	return sock.SendBytesFromInterface(ifi, addr, port, msg.Bytes())
 }
 
 // SendMessage send a message to the destination address.
