@@ -16,15 +16,31 @@ import (
 // A UDPSocket represents a socket for UDP.
 type UDPSocket struct {
 	*Socket
-	Conn *net.UDPConn
+	Conn           *net.UDPConn
+	ReadBufferSize int
+	ReadBuffer     []byte
 }
 
 // NewUDPSocket returns a new UDPSocket.
 func NewUDPSocket() *UDPSocket {
 	sock := &UDPSocket{
-		Socket: NewSocket(),
+		Socket:         NewSocket(),
+		ReadBufferSize: MaxPacketSize,
+		ReadBuffer:     make([]byte, 0),
 	}
+	sock.SetReadBufferSize(MaxPacketSize)
 	return sock
+}
+
+// SetReadBufferSize sets the read buffer size.
+func (sock *UDPSocket) SetReadBufferSize(n int) {
+	sock.ReadBufferSize = n
+	sock.ReadBuffer = make([]byte, n)
+}
+
+// GetReadBufferSize returns the read buffer size.
+func (sock *UDPSocket) GetReadBufferSize() int {
+	return sock.ReadBufferSize
 }
 
 // Close closes the current opened socket.
