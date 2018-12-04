@@ -19,14 +19,12 @@ import (
 type TCPSocket struct {
 	*Socket
 	Listener *net.TCPListener
-	readBuf  []byte
 }
 
 // NewTCPSocket returns a new TCPSocket.
 func NewTCPSocket() *TCPSocket {
 	sock := &TCPSocket{
-		Socket:  NewSocket(),
-		readBuf: make([]byte, MaxPacketSize),
+		Socket: NewSocket(),
 	}
 	return sock
 }
