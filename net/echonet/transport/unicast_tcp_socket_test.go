@@ -8,6 +8,27 @@ import (
 	"testing"
 )
 
-func TestNewUnicastTCPSocket(t *testing.T) {
-	NewUnicastTCPSocket()
+const (
+	testUnicastTCPSocketPort = 32001
+)
+
+func TestUnicastTCPSocketOpenClose(t *testing.T) {
+	sock := NewUnicastTCPSocket()
+
+	ifs, err := GetAvailableInterfaces()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = sock.Bind(ifs[0], testUnicastTCPSocketPort)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = sock.Close()
+	if err != nil {
+		t.Error(err)
+	}
 }
