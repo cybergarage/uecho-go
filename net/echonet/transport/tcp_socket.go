@@ -79,10 +79,14 @@ func (sock *TCPSocket) Close() error {
 		return nil
 	}
 
-	err := sock.Listener.Close()
-	if err != nil {
-		return err
-	}
+	// FIXME : sock.Listener.Close() hung up on darwin
+	/*
+		err := sock.Listener.Close()
+		if err != nil {
+			return err
+		}
+	*/
+	go sock.Listener.Close()
 
 	sock.Listener = nil
 
