@@ -56,6 +56,9 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
 		sock.Close()
 		return err
 	}
+
+	defer f.Close()
+
 	err = sock.SetReuseAddr(f, true)
 	if err != nil {
 		sock.Close()
