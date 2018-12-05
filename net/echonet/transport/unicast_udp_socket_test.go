@@ -8,6 +8,27 @@ import (
 	"testing"
 )
 
-func TestNewUnicastUDPSocket(t *testing.T) {
-	NewUnicastUDPSocket()
+const (
+	testUnicastUDPSocketPort = testUnicastTCPSocketPort + 1
+)
+
+func TestUnicastUDPSocketOpenClose(t *testing.T) {
+	sock := NewUnicastUDPSocket()
+
+	ifs, err := GetAvailableInterfaces()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = sock.Bind(ifs[0], testUnicastUDPSocketPort)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = sock.Close()
+	if err != nil {
+		t.Error(err)
+	}
 }
