@@ -87,6 +87,9 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 	if err != nil {
 		return err
 	}
+
+	defer f.Close()
+
 	err = sock.SetReuseAddr(f, true)
 	if err != nil {
 		return err
