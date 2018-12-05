@@ -84,6 +84,8 @@ func (sock *TCPSocket) Close() error {
 		return err
 	}
 
+	sock.Listener = nil
+
 	return nil
 }
 
