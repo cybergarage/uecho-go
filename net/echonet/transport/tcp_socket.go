@@ -19,12 +19,14 @@ import (
 type TCPSocket struct {
 	*Socket
 	Listener *net.TCPListener
+	readBuf  []byte
 }
 
 // NewTCPSocket returns a new TCPSocket.
 func NewTCPSocket() *TCPSocket {
 	sock := &TCPSocket{
-		Socket: NewSocket(),
+		Socket:  NewSocket(),
+		readBuf: make([]byte, MaxPacketSize),
 	}
 	return sock
 }
@@ -58,6 +60,9 @@ func (sock *TCPSocket) Bind(ifi *net.Interface, port int) error {
 	if err != nil {
 		return err
 	}
+
+	defer f.Close()
+
 	err = sock.SetReuseAddr(f, true)
 	if err != nil {
 		return err
@@ -74,13 +79,10 @@ func (sock *TCPSocket) Close() error {
 		return nil
 	}
 
-	// FIXE : Hung up on go1.11 darwin/amd64
-	/*
-		err := sock.Listener.Close()
-		if err != nil {
-			return err
-		}
-	*/
+	err := sock.Listener.Close()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
