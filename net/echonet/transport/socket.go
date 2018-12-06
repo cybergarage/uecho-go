@@ -7,7 +7,9 @@ package transport
 import (
 	"fmt"
 	"net"
+	"os"
 	"strconv"
+	"syscall"
 )
 
 // A Socket represents a socket.
@@ -84,4 +86,21 @@ func (sock *Socket) GetBoundIPAddr() (string, error) {
 	}
 
 	return net.JoinHostPort(addr, strconv.Itoa(port)), nil
+}
+
+// SetMulticastLoop sets a flag to IP_MULTICAST_LOOP
+func (sock *Socket) SetMulticastLoop(file *os.File, flag bool) error {
+	fd := file.Fd()
+
+	opt := 0
+	if flag {
+		opt = 1
+	}
+
+	err := syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
