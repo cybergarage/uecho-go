@@ -95,6 +95,11 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 		return err
 	}
 
+	err = sock.SetMulticastLoop(f, true)
+	if err != nil {
+		return err
+	}
+
 	sock.SetBoundStatus(ifi, MulticastAddress, UDPPort)
 
 	return nil
