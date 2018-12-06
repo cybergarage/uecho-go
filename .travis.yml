@@ -1,6 +1,7 @@
 language: go
 
-go_import_path: golang.org/x/net/ipv4
+before_install:
+  - ./setup
 
 go:
   - "1.9"
