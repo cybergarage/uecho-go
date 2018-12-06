@@ -7,8 +7,6 @@ package transport
 import (
 	"fmt"
 	"net"
-	"strconv"
-	//"golang.org/x/net/ipv4"
 )
 
 // A MulticastSocket represents a socket.
@@ -24,45 +22,6 @@ func NewMulticastSocket() *MulticastSocket {
 	return sock
 }
 
-// ListenMulticastUDP listens the Ethonet multicast address with the specified interface.
-/*
-func (sock *MulticastSocket) ListenMulticastUDP(ifi *net.Interface) error {
-	err := sock.Close()
-	if err != nil {
-		return err
-	}
-
-	addr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(MulticastAddress, strconv.Itoa(UDPPort)))
-	if err != nil {
-		return err
-	}
-
-	sock.Conn, err = net.ListenUDP("udp4", addr)
-	if err != nil {
-		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
-	}
-
-	pktConn := ipv4.NewPacketConn(conn)
-
-	err = pktConn.pktConn(ifi, addr)
-	if err != nil {
-		return err
-	}
-
-	err = pc.JoinGroup(ifi, addr)
-	if err != nil {
-		return err
-	}
-
-	err = pktConn.SetMulticastLoopback(true)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-*/
-
 // Bind binds to the Echonet multicast address with the specified interface.
 func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 	err := sock.Close()
@@ -70,13 +29,7 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 		return err
 	}
 
-	addr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(MulticastAddress, strconv.Itoa(UDPPort)))
-	if err != nil {
-		return err
-	}
-
-	sock.Conn, err = net.ListenMulticastUDP("udp", ifi, addr)
-	//err = sock.ListenMulticastUDP(ifi)
+	err = sock.Listen(ifi)
 	if err != nil {
 		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
 	}
