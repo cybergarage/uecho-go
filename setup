@@ -1,6 +1,20 @@
 #!/bin/bash
 export GOPATH=`pwd`
 
+########################################
+# Get dependency packages
+########################################
+
+dependencies=(
+"golang.org/x/net/ipv4"
+)
+
+go get -u "${dependencies[@]}"
+
+########################################
+# Get latest source codes
+########################################
+
 git pull
 
 go_uecho_path="github.com/cybergarage/uecho-go/net/echonet"
