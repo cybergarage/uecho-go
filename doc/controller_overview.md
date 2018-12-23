@@ -117,7 +117,7 @@ if err != nil {
 
 Let's check the following documentations to know the controller functions of uEcho in more detail.
 
-- [uEcho Examples](./examples.md)
 - [Inside of uEcho Controller](./controller_inside.md)
+- [Examples](./examples.md)
 
 [enet]:http://echonet.jp/english/
