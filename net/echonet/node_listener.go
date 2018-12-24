@@ -8,8 +8,8 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// LocalNodeListener is an instance of the listner.
-type LocalNodeListener interface {
+// NodeListener is an instance of the listner.
+type NodeListener interface {
 	// NodeMessageReceived is first called when a new message is received.
 	// The node returns the standard responses of Echonet when the listener function returns no error.
 	// Otherwise, the node does not return any responses when the listener function returns an error.
