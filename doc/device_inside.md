@@ -14,11 +14,11 @@ The node profile object is a standard profile object, [ECHONET Lite][enet] node 
 - Class code: 0xF0
 - Instance code: 0x01 (general node)
 
-The `uecho` updates the node profile class objects automatically when the children node is changed, and so the developer doesn't need to update the node profile object yourself.
+The `uecho-go` updates the node profile class objects automatically when the children node is changed, and so the developer doesn't need to update the node profile object yourself.
 
 ## Device Object Super Class
 
-[ECHONETLite][enet] device node must have some mandatory properties [\[2\]][enet-spec]. The `uecho_device_new()` addes the following mandatory properties into the device object as default, and the developer should update the properties according to the device status.
+[ECHONETLite][enet] device node must have some mandatory properties [\[2\]][enet-spec]. The `NewDevice()` addes the following mandatory properties into the device object as default, and the developer should update the properties according to the device status.
 
 | EPC | Property name | Default value |
 |---|---|---|
@@ -28,7 +28,7 @@ The `uecho` updates the node profile class objects automatically when the childr
 | 0x88 | Fault status | 0x42 = No fault has occurred |
 | 0x8A | Manufacturer code | 0xFFFFF0 = Testing code |
 
-The `uecho` add the following mandatory properties too. However, the developer doesn't need to update the mandatory properties because the `uecho` updates the mandatory properties automatically when any properties are added or removed.
+The `uecho-go` add the following mandatory properties too. However, the developer doesn't need to update the mandatory properties because the `uecho-go` updates the mandatory properties automatically when any properties are added or removed.
 
 | EPC | Property name |
 |---|---|
@@ -36,11 +36,11 @@ The `uecho` add the following mandatory properties too. However, the developer d
 | 0x9E | Set property map  |
 | 0x9F | Get property map |
 
-## Device Message Listeners
+## Message Listeners
 
-Basically, the `uecho` handles all messages from other nodes automatically. However, developer can set some user listeners into the node, objects and properties to handle the messages from other nodes.
+Basically, the `uecho-go` handles all messages from other nodes automatically. However, developer can set some user listeners into the node, objects and properties to handle the messages from other nodes.
 
-Using the user listeners, the developer can handle the write requests and update the internal status. To set the listeners, use `uecho_node_setmessagelistener`, `uecho_object_setmessagelistener` and `uecho_object_setpropertyrequeslistener`.
+Using the user listeners, the developer can handle the write requests and update the internal status. To set the listeners, use `LocalNode::SetListener()` or `Object::SetListener()`.
 
 ### Message Listener Sequences
 
@@ -52,24 +52,31 @@ After a node is received a message from other nodes, the node's listeners are ca
 
 ### Node Message Listener
 
-The `uecho_node_setmessagelistener` can get all message for the node from other nodes, thus the message might be invalid.
+The `LocalNode::SetListener()` can set the following listener to get all message for the node from other nodes, thus the message might be invalid.
+
+```
+type NodeListener interface {
+	NodeMessageReceived(*protocol.Message) error
+}
+```
 
 ### Object Message Listener
 
-The `uecho` verifies the messages form other nodes using the objects and properties information of the node, and returns an error response when the message is invalid automatically. The `uecho_object_setmessagelistener` can get only valid messages for the object from other nodes.
+The `uecho-go` verifies the messages form other nodes using the objects and properties information of the node, and returns an error response when the message is invalid automatically. The `Object::SetListener()` can set the following listener to get only valid messages for the object from other nodes.
 
-### Property Message Listener
-
-The `uecho_object_setpropertyrequeslistener` can get only valid request message for the object property from other nodes.
-
+```
+type ObjectListener interface {
+	PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
+}
+```
 
 ## Supported Basic Sequences
 
-The `uecho` supports the following five basic sequences in ECHONET Lite Communication Middleware Specification [\[1\]][enet-spec].
+The `uecho-go` supports the following five basic sequences in ECHONET Lite Communication Middleware Specification [\[1\]][enet-spec].
 
 ### 4.2.1 Basic Sequences for Service Content
 
-The `uecho` handles the five basic sequences automatically, thus the developer doesn't have to implement the responses directly. The property data is announced automatically when the property is changed using `uecho_property_setdata()`.
+The `uecho-go` handles the five basic sequences automatically, thus the developer doesn't have to implement the responses directly. The property data is announced automatically when the property is changed using `uecho_property_setdata()`.
 
 | Type | Description | Support |
 |---|---|---|
@@ -81,7 +88,7 @@ The `uecho` handles the five basic sequences automatically, thus the developer d
 
 ### 4.2.2 Basic Sequences for Object Control in General
 
-The `uecho` supports the following basic sequences too, and returns the error responses automatically. The developer doesn't have to receive and handle the error messages, but use `uecho_node_setmessagelistener()` if you want to listen the error messages.
+The `uecho-go` supports the following basic sequences too, and returns the error responses automatically. The developer doesn't have to receive and handle the error messages, but use `LocalNode::SetListener()` if you want to listen the error messages.
 
 | Type | Description | Support |
 |---|---|---|
