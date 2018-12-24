@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	logLocalNodeListenerFormat = "LocalNode::ProtocolMessageReceived : %s"
+	logNodeListenerFormat = "LocalNode::ProtocolMessageReceived : %s"
 )
 
 // ProtocolMessageReceived is a listener for the server

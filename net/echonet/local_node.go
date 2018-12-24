@@ -22,7 +22,7 @@ type LocalNode struct {
 	lastTID          uint
 	postResponseCh   chan *protocol.Message
 	postRequestMsg   *protocol.Message
-	listener         LocalNodeListener
+	listener         NodeListener
 }
 
 // NewLocalNode returns a new node.
@@ -62,12 +62,12 @@ func (node *LocalNode) GetManufacturerCode() uint {
 }
 
 // SetListener set a listener to the node.
-func (node *LocalNode) SetListener(l LocalNodeListener) {
+func (node *LocalNode) SetListener(l NodeListener) {
 	node.listener = l
 }
 
 // GetListener returns the listener of the node.
-func (node *LocalNode) GetListener() LocalNodeListener {
+func (node *LocalNode) GetListener() NodeListener {
 	return node.listener
 }
 
