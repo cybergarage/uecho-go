@@ -63,8 +63,8 @@ func outputResponseMessage(msg *echonet.Message) {
 }
 
 func outputUsage() {
-	prgram := filepath.Base(os.Args[0])
-	fmt.Printf("Usage : %s [options] <address> <obj> <esv> <property (code, data) ...>\n", prgram)
+	program := filepath.Base(os.Args[0])
+	fmt.Printf("Usage : %s [options] <address> <obj> <esv> <property (code, data) ...>\n", program)
 }
 
 func exitWithErrorMessage(errMsg string) {
