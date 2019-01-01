@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
-	//"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 const (
@@ -76,11 +75,6 @@ func exitWithError(err error) {
 }
 
 func main() {
-
-	//log.SetStdoutDebugEnbled(true)
-
-	// Start a controller for Echonet Lite node
-
 	ctrl := NewPostController()
 
 	argc := len(os.Args)
