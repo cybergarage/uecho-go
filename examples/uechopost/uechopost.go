@@ -23,6 +23,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -62,7 +63,8 @@ func outputResponseMessage(msg *echonet.Message) {
 }
 
 func outputUsage() {
-	fmt.Printf("Usage : uechopost [options] <address> <obj> <esv> <property (code, data) ...>\n")
+	prgram := filepath.Base(os.Args[0])
+	fmt.Printf("Usage : %s [options] <address> <obj> <esv> <property (code, data) ...>\n", prgram)
 }
 
 func exitWithErrorMessage(errMsg string) {
