@@ -6,9 +6,9 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -24,7 +24,7 @@ func NewSearchController() *SearchController {
 }
 
 func (ctrl *SearchController) ControllerMessageReceived(msg *protocol.Message) {
-	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
+	log.Info("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
 func (ctrl *SearchController) ControllerNewNodeFound(*echonet.RemoteNode) {
