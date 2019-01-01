@@ -21,8 +21,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/cybergarage/uecho-go/net/echonet/log"
@@ -34,6 +36,8 @@ import (
 func main() {
 	verbose := flag.Bool("v", false, "verbose")
 	flag.Parse()
+
+	fmt.Fprintf(os.Stderr, "usage: %s [inputfile]\n", filepath.Base(os.Args[0]))
 
 	// Setup logger
 
