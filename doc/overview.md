@@ -22,8 +22,8 @@ The `uecho-go` is inspired by reactive programming too. Using The `uecho-go`, de
 - Device
   - [Overview of Device](https://github.com/cybergarage/uecho-go/blob/master/doc/device_overview.md)
   - [Inside of Device](https://github.com/cybergarage/uecho-go/blob/master/doc/device_inside.md)
+- [Examples](https://github.com/cybergarage/uecho-go/blob/master/doc/examples.md)
 - Appendix
   - [Expanded Configurations for Go Platform](https://github.com/cybergarage/uecho-go/blob/master/doc/extension.md)
-- [Examples](https://github.com/cybergarage/uecho-go/blob/master/doc/examples.md)
 
 [enet]:http://echonet.jp/english/
