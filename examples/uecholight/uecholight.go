@@ -25,6 +25,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/cybergarage/uecho-go/net/echonet"
 	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
@@ -33,6 +34,7 @@ import (
 
 func main() {
 	verbose := flag.Bool("v", false, "Enable verbose output")
+	manufacturerCode := flag.Int("m", echonet.ObjectManufacturerUnknown, "Set manufacturer code")
 	flag.Parse()
 
 	// Setup logger
@@ -44,6 +46,7 @@ func main() {
 	// Start a light node for Echonet Lite
 
 	node := NewLightNode()
+	node.SetManufacturerCode(uint(*manufacturerCode))
 
 	err := node.Start()
 	if err != nil {
