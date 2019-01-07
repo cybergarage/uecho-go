@@ -5,6 +5,7 @@ package main
 
 import (
 	"encoding/hex"
+	"fmt"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
@@ -29,22 +30,40 @@ func NewLightNode() *LightNode {
 }
 
 func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
-	// Check whether the property request is a write request
+	// Check whether the property request is a write request. Basically, the developer should handle only write requests.
+
 	if !protocol.IsWriteRequest(esv) {
 		return nil
 	}
 
 	// Check whether the local object (device) has the requested property
-	propCode := reqProp.GetCode()
-	prop, ok := obj.GetProperty(propCode)
-	if !ok {
-		return nil
+
+	reqPropCode := reqProp.GetCode()
+	reqPropData := reqProp.GetData()
+
+	switch reqPropCode {
+	case 0x80: // Operation status
+		// Check whether the request data is 0x30(ON) or 0x31(OFF)
+		if (len(reqPropData) != 1) || (reqPropData[0] != 0x30) || (reqPropData[0] != 0x31) {
+			err := fmt.Errorf("Invalid Request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
+			OutputError(err)
+			return err
+		}
+	default:
+		err := fmt.Errorf("Invalid Request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
+		OutputError(err)
+		return err
 	}
 
-	OutputMessage("%02X : %s -> %s", esv, hex.EncodeToString(prop.GetData()), hex.EncodeToString(reqProp.GetData()))
+	// Output the update message
+	// NOTE : Object::GetProperty() can get the specified property always because the PropertyRequestReceived is not called when the object has no the specified property
+
+	targetProp, _ := obj.GetProperty(reqPropCode)
+	OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.GetData()), hex.EncodeToString(reqPropData))
 
 	// Set the requested data to the local object (device)
-	prop.SetData(reqProp.GetData())
+
+	targetProp.SetData(reqPropData)
 
 	return nil
 }
