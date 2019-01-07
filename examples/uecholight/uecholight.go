@@ -32,7 +32,7 @@ import (
 //       3.3.29 Requirements for mono functional lighting class
 
 func main() {
-	verbose := flag.Bool("v", false, "verbose")
+	verbose := flag.Bool("v", false, "Enable verbose output")
 	flag.Parse()
 
 	// Setup logger

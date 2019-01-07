@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	verbose := flag.Bool("v", false, "verbose")
+	verbose := flag.Bool("v", false, "Enable verbose output")
 	flag.Parse()
 
 	// Setup logger
