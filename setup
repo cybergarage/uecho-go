@@ -6,7 +6,6 @@ export GOPATH=`pwd`
 ########################################
 
 dependencies=(
-"golang.org/x/net/ipv4"
 )
 
 go get -u "${dependencies[@]}"
