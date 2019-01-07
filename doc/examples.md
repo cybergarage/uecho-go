@@ -81,17 +81,9 @@ The `uecholight` outputs power status messages when the write requests are recei
 
 ```
 $ uecholight
-ESV = 80 : 30 (1)
-POWER = ON
-ESV = 80 : 31 (1)
-POWER = OFF
+0x80 : 0x31 -> 0x30 // 0x31 (OFF) -> 0x30 (ON)
+0x80 : 0x30 -> 0x31 // 0x30 (ON) -> 0x31 (OFF)
 ```
-
-For Raspbery Pi, the `uecholight` outputs the lighting power status into the specified GPIO port.
-
-![RaspberyPi](img/example_raspberry_pi.jpg)
-
-To enable the GPIO function for Raspbery Pi, you have to compile the binary on the Raspbery Pi and run it with root privileges.
 
 # References
 
