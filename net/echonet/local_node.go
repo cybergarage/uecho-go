@@ -54,6 +54,14 @@ func (node *LocalNode) SetConfig(newConfig *Config) {
 // SetManufacturerCode sets a manufacture codes to the node.
 func (node *LocalNode) SetManufacturerCode(code uint) {
 	node.manufacturerCode = code
+
+	for _, dev := range node.devices {
+		dev.SetManufacturerCode(code)
+	}
+
+	for _, prop := range node.profiles {
+		prop.SetManufacturerCode(code)
+	}
 }
 
 // GetManufacturerCode return the manufacture codes of the node.
