@@ -121,6 +121,7 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 }
 
 func handleUnicastTCPHandler(server *UnicastServer) {
+	defer server.TCPSocket.Close()
 	for {
 		conn, err := server.TCPSocket.Listener.AcceptTCP()
 		if err != nil {
