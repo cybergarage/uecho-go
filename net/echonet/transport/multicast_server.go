@@ -81,6 +81,7 @@ func handleMulticastRequestMessage(server *MulticastServer, reqMsg *protocol.Mes
 }
 
 func handleMulticastConnection(server *MulticastServer) {
+	defer server.Socket.Close()
 	for {
 		reqMsg, err := server.Socket.ReadMessage()
 		if err != nil {
