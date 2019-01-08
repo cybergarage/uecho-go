@@ -97,7 +97,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		t.Error(err)
 	}
 
-	time.Sleep(time.Millisecond * 100 * testControllerNodeCount)
+	time.Sleep(time.Millisecond * 200 * testControllerNodeCount)
 
 	// Check a found device by the listener
 
