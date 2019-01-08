@@ -65,6 +65,21 @@ func (server *MulticastServer) Stop() error {
 	return nil
 }
 
+func handleMulticastRequestMessage(server *MulticastServer, reqMsg *protocol.Message) {
+	server.Socket.outputReadLog(log.LevelTrace, logSocketTypeUDPMulticast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
+
+	if server.Handler == nil {
+		return
+	}
+
+	resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
+	if server.UnicastServer == nil || err != nil || resMsg == nil {
+		return
+	}
+
+	server.UnicastServer.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
+}
+
 func handleMulticastConnection(server *MulticastServer) {
 	for {
 		reqMsg, err := server.Socket.ReadMessage()
@@ -73,17 +88,6 @@ func handleMulticastConnection(server *MulticastServer) {
 		}
 		reqMsg.SetPacketType(protocol.MulticastPacket)
 
-		server.Socket.outputReadLog(log.LevelTrace, logSocketTypeUDPMulticast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
-
-		if server.Handler == nil {
-			continue
-		}
-
-		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
-		if server.UnicastServer == nil || err != nil || resMsg == nil {
-			continue
-		}
-
-		server.UnicastServer.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
+		go handleMulticastRequestMessage(server, reqMsg)
 	}
 }
