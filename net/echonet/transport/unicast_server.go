@@ -97,6 +97,7 @@ func (server *UnicastServer) Stop() error {
 }
 
 func handleUnicastUDPConnection(server *UnicastServer) {
+	defer server.UDPSocket.Close()
 	for {
 		reqMsg, err := server.UDPSocket.ReadMessage()
 		if err != nil {
