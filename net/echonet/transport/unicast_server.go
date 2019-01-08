@@ -96,6 +96,21 @@ func (server *UnicastServer) Stop() error {
 	return lastErr
 }
 
+func handleUnicastUDPRequestMessage(server *UnicastServer, reqMsg *protocol.Message) {
+	server.UDPSocket.outputReadLog(log.LevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
+
+	if server.Handler == nil {
+		return
+	}
+
+	resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
+	if err != nil || resMsg == nil {
+		return
+	}
+
+	server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
+}
+
 func handleUnicastUDPConnection(server *UnicastServer) {
 	defer server.UDPSocket.Close()
 	for {
@@ -105,18 +120,7 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 		}
 		reqMsg.SetPacketType(protocol.UDPUnicastPacket)
 
-		server.UDPSocket.outputReadLog(log.LevelTrace, logSocketTypeUDPUnicast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
-
-		if server.Handler == nil {
-			continue
-		}
-
-		resMsg, err := server.Handler.ProtocolMessageReceived(reqMsg)
-		if err != nil || resMsg == nil {
-			continue
-		}
-
-		server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
+		go handleUnicastUDPRequestMessage(server, reqMsg)
 	}
 }
 
