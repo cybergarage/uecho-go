@@ -97,6 +97,10 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	var foundNode *RemoteNode
 	for _, ctrlNode := range ctrl.GetNodes() {
+		// Skip deprecated nodes
+		if !ctrlNode.Equals(node) {
+			continue
+		}
 		// Skip other Echonet nodes
 		_, err := ctrlNode.GetDevice(testLightDeviceCode)
 		if err != nil {
