@@ -91,6 +91,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		t.Error(err)
 		return
 	}
+	defer ctrl.Stop()
 
 	err = ctrl.SearchAllObjects()
 	if err != nil {
@@ -102,7 +103,12 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	// Check a found device by the listener
 
 	if ctrl.foundTestNodeCount < testControllerNodeCount {
-		t.Errorf("%d < %d", ctrl.foundTestNodeCount, testControllerNodeCount)
+		if ctrl.foundTestNodeCount == 0 {
+			t.Errorf("Any nodes are not found (%d < %d)", ctrl.foundTestNodeCount, testControllerNodeCount)
+			return
+		} else {
+			t.Skipf("%d < %d", ctrl.foundTestNodeCount, testControllerNodeCount)
+		}
 	}
 
 	if ctrl.foundTestNodeCount != testControllerNodeCount {
@@ -164,14 +170,6 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			}
 		}
 	}
-
-	// Finalize
-
-	err = ctrl.Stop()
-	if err != nil {
-		t.Error(err)
-	}
-
 }
 
 func TestControllerSearchithWithDefaultConfig(t *testing.T) {
