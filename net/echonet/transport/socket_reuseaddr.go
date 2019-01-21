@@ -25,10 +25,5 @@ func (sock *Socket) SetReuseAddr(file *os.File, flag bool) error {
 		return err
 	}
 
-	err = syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
