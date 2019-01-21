@@ -6,7 +6,7 @@
 
 ## What is uEcho ?
 
-The `uecho-go` supports to control devices of [ECHONET Lite][enet] or create the standard devices of the specification easily. The `uecho-go` is designed in object-oriented programming, and the functions are object-oriented in their naming convention, and are grouped into classes such as `Controller`, `Node`, `Class` and `Object`.
+The `uecho-go` supports to control devices of [ECHONET Lite][enet] or create the standard devices of the specification easily. The `uecho-go` is designed in object-oriented programming, and the functions are object-oriented in their naming convention, and are grouped into classes such as `Controller`, `Node`, `Class` and `Object`.
 
 ![framwork](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/framework.png)
 
