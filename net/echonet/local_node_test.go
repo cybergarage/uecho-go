@@ -203,19 +203,6 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	if lastTID < startTID {
 		t.Errorf("%d < %d", lastTID, startTID)
 	}
-
-	// Finalize
-
-	err = node.Stop()
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = ctrl.Stop()
-	if err != nil {
-		t.Error(err)
-	}
-
 }
 
 func TestLocalNodeWithDefaultConfig(t *testing.T) {
