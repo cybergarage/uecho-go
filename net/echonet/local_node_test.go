@@ -218,6 +218,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 }
 
+/*
 func TestLocalNodeWithDefaultConfig(t *testing.T) {
 	//log.SetStdoutDebugEnbled(true)
 	//defer log.SetStdoutDebugEnbled(false)
@@ -243,3 +244,4 @@ func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
 	conf.SetTCPEnabled(true)
 	testLocalNodeWithConfig(t, conf)
 }
+*/
