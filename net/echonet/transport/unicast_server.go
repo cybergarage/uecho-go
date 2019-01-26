@@ -112,7 +112,6 @@ func handleUnicastUDPRequestMessage(server *UnicastServer, reqMsg *protocol.Mess
 }
 
 func handleUnicastUDPConnection(server *UnicastServer) {
-	defer server.UDPSocket.Close()
 	for {
 		reqMsg, err := server.UDPSocket.ReadMessage()
 		if err != nil {
@@ -124,26 +123,14 @@ func handleUnicastUDPConnection(server *UnicastServer) {
 	}
 }
 
-func handleUnicastTCPHandler(server *UnicastServer) {
-	defer server.TCPSocket.Close()
-	for {
-		conn, err := server.TCPSocket.Listener.AcceptTCP()
-		if err != nil {
-			break
-		}
-
-		go handleUnicastTCPConnection(server, conn)
-	}
-}
-
 func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
+	defer conn.Close()
+
 	reqMsg, err := server.TCPSocket.ReadMessage(conn)
 	if err != nil {
 		return
 	}
 	reqMsg.SetPacketType(protocol.TCPUnicastPacket)
-
-	defer conn.Close()
 
 	if server.Handler == nil {
 		return
@@ -155,4 +142,15 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 	}
 
 	server.TCPSocket.ResponseMessageToConnection(conn, resMsg)
+}
+
+func handleUnicastTCPHandler(server *UnicastServer) {
+	for {
+		conn, err := server.TCPSocket.Listener.AcceptTCP()
+		if err != nil {
+			break
+		}
+
+		go handleUnicastTCPConnection(server, conn)
+	}
 }
