@@ -14,6 +14,8 @@ type UnicastConfig struct {
 	TCPEnabled        bool
 	ConnectionTimeout time.Duration
 	RequestTimeout    time.Duration
+	BindRetryCount    uint
+	BindRetryWaitTime time.Duration
 }
 
 // NewDefaultUnicastConfig returns a default configuration.
@@ -22,6 +24,8 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 		TCPEnabled:        false,
 		ConnectionTimeout: DefaultConnectimeTimeOut,
 		RequestTimeout:    DefaultRequestTimeout,
+		BindRetryCount:    DefaultBindRetryCount,
+		BindRetryWaitTime: 0,
 	}
 	return conf
 }
@@ -60,6 +64,43 @@ func (conf *Config) SetRequestTimeout(d time.Duration) {
 // GetRequestTimeout return the request timeout.
 func (conf *Config) GetRequestTimeout() time.Duration {
 	return conf.RequestTimeout
+}
+
+// SetBindRetryEnabled sets a flag for the bind retry function.
+func (conf *UnicastConfig) SetBindRetryEnabled(flag bool) {
+	if !flag {
+		conf.BindRetryCount = 0
+		return
+	}
+	conf.BindRetryCount = DefaultBindRetryCount
+}
+
+// IsBindRetryEnabled returns true whether the bind retry function is enabled, otherwise false.
+func (conf *UnicastConfig) IsBindRetryEnabled() bool {
+	if conf.BindRetryCount == 0 {
+		return false
+	}
+	return true
+}
+
+// SetBindRetryCount sets a retry count when the binding is failed.
+func (conf *Config) SetBindRetryCount(n uint) {
+	conf.BindRetryCount = n
+}
+
+// GetBindRetryCount returns the retry count when the binding is failed.
+func (conf *Config) GetBindRetryCount() uint {
+	return conf.BindRetryCount
+}
+
+// SetBindRetryWaitTime sets a wait time when the binding is failed.
+func (conf *Config) SetBindRetryWaitTime(d time.Duration) {
+	conf.BindRetryWaitTime = d
+}
+
+// GetBindRetryWaitTime return the wait time when the binding is failed.
+func (conf *Config) GetBindRetryWaitTime() time.Duration {
+	return conf.BindRetryWaitTime
 }
 
 // Equals returns true whether the specified other class is same, otherwise false.

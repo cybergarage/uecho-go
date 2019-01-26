@@ -7,6 +7,7 @@ package transport
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -134,23 +135,38 @@ func (mgr *UnicastManager) Start() error {
 		return err
 	}
 
+	var lastErr error
+
 	startPort := mgr.GetPort()
 	endPort := startPort
 	if mgr.IsAutoPortBindingEnabled() {
 		endPort = startPort + UDPPortRange
 	}
 
-	var lastErr error
 	for port := startPort; port <= endPort; port++ {
-		if mgr.IsEachInterfaceBindingEnabled() {
-			for _, ifi := range ifis {
-				_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
-				if lastErr != nil {
-					break
+
+		bindRetryCount := uint(0)
+		if !mgr.IsAutoPortBindingEnabled() {
+			bindRetryCount = mgr.GetBindRetryCount()
+		}
+
+		for n := uint(0); n <= bindRetryCount; n++ {
+			if mgr.IsEachInterfaceBindingEnabled() {
+				for _, ifi := range ifis {
+					_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
+					if lastErr != nil {
+						break
+					}
 				}
+			} else {
+				_, lastErr = mgr.StartWithInterfaceAndPort(nil, port)
 			}
-		} else {
-			_, lastErr = mgr.StartWithInterfaceAndPort(nil, port)
+			if lastErr == nil {
+				break
+			}
+			if n < bindRetryCount {
+				time.Sleep(mgr.GetBindRetryWaitTime())
+			}
 		}
 		if lastErr == nil {
 			mgr.SetPort(port)
