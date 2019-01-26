@@ -25,7 +25,7 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 		ConnectionTimeout: DefaultConnectimeTimeOut,
 		RequestTimeout:    DefaultRequestTimeout,
 		BindRetryCount:    DefaultBindRetryCount,
-		BindRetryWaitTime: DefaultBindRetryWaitTime,
+		BindRetryWaitTime: 0,
 	}
 	return conf
 }
