@@ -166,7 +166,6 @@ func (mgr *UnicastManager) Start() error {
 			}
 			if n < bindRetryCount {
 				time.Sleep(mgr.GetBindRetryWaitTime())
-				fmt.Printf("Bind Retry : %d\n", n)
 			}
 		}
 		if lastErr == nil {
