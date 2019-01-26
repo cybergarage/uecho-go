@@ -137,13 +137,13 @@ func handleUnicastTCPHandler(server *UnicastServer) {
 }
 
 func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
+	defer conn.Close()
+
 	reqMsg, err := server.TCPSocket.ReadMessage(conn)
 	if err != nil {
 		return
 	}
 	reqMsg.SetPacketType(protocol.TCPUnicastPacket)
-
-	defer conn.Close()
 
 	if server.Handler == nil {
 		return
