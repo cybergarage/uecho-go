@@ -29,4 +29,6 @@ const (
 const (
 	DefaultConnectimeTimeOut = (time.Millisecond * 5000)
 	DefaultRequestTimeout    = (time.Millisecond * 5000)
+	DefaultBindRetryCount    = 5
+	DefaultBindRetryWaitTime = (time.Millisecond * 500)
 )
