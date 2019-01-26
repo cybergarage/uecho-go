@@ -87,6 +87,7 @@ func (sock *TCPSocket) Close() error {
 		}
 	*/
 	go sock.Listener.Close()
+	time.Sleep(time.Millisecond * 100)
 
 	sock.Listener = nil
 
