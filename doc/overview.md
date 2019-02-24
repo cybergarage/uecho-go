@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cybergarage/uecho-go.svg?branch=master)](https://travis-ci.org/cybergarage/uecho-go)
 
-`uecho-go` is a portable and cross platform development framework for creating controller applications and devices of [ECHONET Lite][enet]. [ECHONET][enet] is an open standard specification for IoT devices in Japan, it specifies more than 100 IoT devices such as crime prevention sensor, air conditioner and refrigerator.
+The `uecho-go` is a portable and cross platform development framework for creating controller applications and devices of [ECHONET Lite][enet] for Go developers. [ECHONET][enet] is an open standard specification for IoT devices in Japan, it specifies more than 100 IoT devices such as crime prevention sensor, air conditioner and refrigerator.
 
 ## What is uEcho ?
 
