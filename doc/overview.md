@@ -10,7 +10,7 @@ The `uecho-go` supports to control devices of [ECHONET Lite][enet] or create the
 
 ![framwork](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/framework.png)
 
-To implement IoT controller or devices of [ECHONET Lite][enet], developer had to understand and implement the communication middleware specification such as the message format and base sequences.
+To implement IoT controller or devices of [ECHONET Lite][enet], the developer had to understand and implement the communication middleware specification such as the message format and base sequences.
 
 The `uecho-go` is inspired by reactive programming too. Using The `uecho-go`, developer have only to set basic listeners to implement the devices and controllers because uEcho handles other requests such as request and notification requests automatically.
 
