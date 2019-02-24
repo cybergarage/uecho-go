@@ -20,7 +20,6 @@ import (
 node := echonet.NewLocalNode()
 ```
 
-
 The new node has only a node profile class object, and it has no device object. The node profile object is updated automatically when new devices are added into the node or the any properties in the node are changed.
 
 ### 2. Creating Device Object
@@ -106,7 +105,7 @@ if err != nil {
 
 ## Next Steps
 
-Let's check the following documentations to know the device functions of uEcho in more detail.
+Let's check the following documentation to know the device functions of uEcho in more detail.
 
 - [Examples](./examples.md)
 - [Inside of uEcho Device](./device_inside.md)
