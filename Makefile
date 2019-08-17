@@ -10,12 +10,15 @@
 
 SHELL := bash
 
-PREFIX?=$(shell pwd)
-GOPATH:=$(shell pwd)
-export GOPATH
+#PREFIX?=$(shell pwd)
+#GOPATH:=$(shell pwd)
+#export GOPATH
 
-GITHUB_ROOT=github.com/cybergarage/uecho-go
-PACKAGE_ROOT=${GITHUB_ROOT}/net/echonet
+PACKAGE_NAME=net/echonet
+
+MODULE_ROOT=github.com/cybergarage/uecho-go
+SOURCE_ROOT=${PACKAGE_NAME}
+PACKAGE_ROOT=${MODULE_ROOT}/${PACKAGE_NAME}
 
 PACKAGE_ID=${PACKAGE_ROOT}
 PACKAGES=\
@@ -24,9 +27,8 @@ PACKAGES=\
 	${PACKAGE_ID}/protocol \
 	${PACKAGE_ID}/transport
 
-SOURCE_ROOT_DIR=src/${PACKAGE_ROOT}
 
-EXSAMPLE_ROOT=${GITHUB_ROOT}/examples
+EXSAMPLE_ROOT=${MODULE_ROOT}/examples
 
 BINARIES=\
 	${EXSAMPLE_ROOT}/uechopost \
@@ -37,18 +39,14 @@ BINARIES=\
 
 all: test
 
-VERSION_GO=${SOURCE_ROOT_DIR}/version.go
-
-${VERSION_GO}: ${SOURCE_ROOT_DIR}/version.gen
-	$< > $@
-
-version: ${VERSION_GO}
+version:
+	@pushd ${SOURCE_ROOT} && ./version.gen > version.go && popd
 
 format:
-	gofmt -w src/${PACKAGE_ROOT}
+	gofmt -w ${SOURCE_ROOT}
 
 vet: format
-	go vet ${PACKAGES}
+	go vet ${PACKAGE_ROOT}
 
 build: vet
 	go build -v ${PACKAGES}
@@ -60,6 +58,4 @@ install: vet
 	go install ${BINARIES}
 
 clean:
-	-rm ${PREFIX}/bin/*
-	rm -rf _obj
 	go clean -i ${PACKAGES}
