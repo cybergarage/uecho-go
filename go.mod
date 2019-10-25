@@ -1,3 +1,3 @@
-module github.com/cybergarage/uecho-go/net/echonet
+module github.com/cybergarage/uecho-go
 
 go 1.12
