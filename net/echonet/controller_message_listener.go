@@ -23,11 +23,18 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 	//log.Trace(logControllerListenerFormat, msg.String()))
 
 	// NodeProfile message ?
-	if msg.IsNotification() || msg.IsReadResponse() {
-		msgDsgObj := msg.GetDestinationObjectCode()
-		if isNodeProfileObjectCode(msgDsgObj) {
-			ctrl.parseNodeProfileMessage(msg)
+	isNodeProfileMessage := func(msg *protocol.Message) bool {
+		if !msg.IsNotification() && !msg.IsReadResponse() {
+			return false
 		}
+		if !isNodeProfileObjectCode(msg.GetDestinationObjectCode()) {
+			return false
+		}
+		return true
+	}
+
+	if isNodeProfileMessage(msg) {
+		ctrl.parseNodeProfileMessage(msg)
 	}
 
 	if ctrl.controllerListener != nil {
