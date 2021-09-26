@@ -1,6 +1,6 @@
 ![logo](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/logo.png)
 
-![](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml/badge.svg)
+[![](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml/badge.svg)](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml)
 
 The `uecho-go` is a portable and cross platform development framework for creating controller applications and devices of [ECHONET Lite][enet] for Go developers. [ECHONET][enet] is an open standard specification for IoT devices in Japan, it specifies more than 100 IoT devices such as crime prevention sensor, air conditioner and refrigerator.
 
