@@ -38,7 +38,7 @@ func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Mes
 			resData := resProp.GetData()
 			if len(resData) == 1 {
 				if resData[0] != powerStatus {
-					t.Errorf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
+					t.Skipf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
 				}
 			} else {
 				t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
