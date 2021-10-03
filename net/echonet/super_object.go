@@ -95,7 +95,7 @@ func (obj *SuperObject) updatePropertyMap() error {
 		if prop.IsWritable() {
 			setPropMapCodes = append(setPropMapCodes, prop.GetCode())
 		}
-		if prop.IsAnnouncement() {
+		if prop.isAnnounceable() {
 			annoPropMapCodes = append(annoPropMapCodes, prop.GetCode())
 		}
 	}
