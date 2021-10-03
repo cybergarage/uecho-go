@@ -165,8 +165,8 @@ func (prop *Property) IsWriteOnly() bool {
 	return true
 }
 
-// IsAnnouncement returns true when the property attribute is announcement, otherwise false.
-func (prop *Property) IsAnnouncement() bool {
+// isAnnounceable returns true when the property attribute is announcement, otherwise false.
+func (prop *Property) isAnnounceable() bool {
 	if (prop.Attr & PropertyAttributeAnno) == 0 {
 		return false
 	}
@@ -192,7 +192,7 @@ func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 		}
 		return false
 	case protocol.ESVNotificationRequest:
-		if prop.IsAnnouncement() {
+		if prop.isAnnounceable() {
 			return true
 		}
 		return false
@@ -202,7 +202,7 @@ func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 		}
 		return false
 	case protocol.ESVNotificationResponseRequired:
-		if prop.IsAnnouncement() {
+		if prop.isAnnounceable() {
 			return true
 		}
 		return false
@@ -217,7 +217,7 @@ func (prop *Property) SetData(data []byte) {
 
 	// (D) Basic sequence for autonomous notification.
 
-	if prop.IsAnnouncement() {
+	if prop.isAnnounceable() {
 		prop.announce()
 	}
 }
