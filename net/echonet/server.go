@@ -43,7 +43,7 @@ func (server *server) GetPort() int {
 func (server *server) Start() error {
 	err := server.MessageManager.Start()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
@@ -53,7 +53,7 @@ func (server *server) Start() error {
 func (server *server) Stop() error {
 	err := server.MessageManager.Stop()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
