@@ -40,7 +40,7 @@ func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	return node.AnnounceMessage(msg)
 }
 
-// Announce announces the node
+// Announce announces the node.
 func (node *LocalNode) Announce() error {
 	// 4.3.1 Basic Sequence for ECHONET Lite Node Startup
 
@@ -71,7 +71,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 	return err
 }
 
-// SendMessage sends a message to the destination node
+// SendMessage sends a message to the destination node.
 func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
