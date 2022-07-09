@@ -12,3 +12,4 @@ linters:
     - errcheck
     - unparam
     - gocognit
+    - lll
