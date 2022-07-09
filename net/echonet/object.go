@@ -65,7 +65,7 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 	return obj, nil
 }
 
-// SetCode sets a code to the object
+// SetCode sets a code to the object.
 func (obj *Object) SetCode(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), obj.Code)
 }
@@ -75,7 +75,7 @@ func (obj *Object) GetCode() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(obj.Code))
 }
 
-// SetCodes sets codes to the object
+// SetCodes sets codes to the object.
 func (obj *Object) SetCodes(codes []byte) {
 	copy(obj.Code, codes)
 }

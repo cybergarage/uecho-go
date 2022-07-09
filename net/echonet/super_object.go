@@ -42,7 +42,7 @@ func NewSuperObject() *SuperObject {
 	return obj
 }
 
-// CreateProperty creates a new property to the property map. (Override function for PropertyMap)
+// CreateProperty creates a new property to the property map. (Override function for PropertyMap).
 func (obj *SuperObject) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
 	obj.PropertyMap.CreateProperty(propCode, propAttr)
 	obj.updatePropertyMap()

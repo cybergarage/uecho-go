@@ -173,7 +173,7 @@ func (prop *Property) isAnnounceable() bool {
 	return true
 }
 
-// IsAvailableService returns true whether the specified service can execute, otherwise false
+// IsAvailableService returns true whether the specified service can execute, otherwise false.
 func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 	switch esv {
 	case protocol.ESVWriteRequest:
@@ -282,7 +282,7 @@ func (prop *Property) toProtocolProperty() *protocol.Property {
 	return newProp
 }
 
-// Equals returns true if the specified property is same, otherwise false
+// Equals returns true if the specified property is same, otherwise false.
 func (prop *Property) Equals(otherProp *Property) bool {
 	if prop.GetCode() != otherProp.GetCode() {
 		return false

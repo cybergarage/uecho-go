@@ -71,7 +71,7 @@ func NewProfile() *Profile {
 	return prop
 }
 
-// addProfileMandatoryProperties sets mandatory properties for node profile
+// addProfileMandatoryProperties sets mandatory properties for node profile.
 func (prop *Profile) addProfileMandatoryProperties() error {
 
 	// Manufacture Code
