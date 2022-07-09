@@ -58,6 +58,8 @@ func TestNewController(t *testing.T) {
 }
 
 func testControllerSearchWithConfig(t *testing.T, config *Config) {
+	t.Helper()
+
 	// Create test nodes
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
