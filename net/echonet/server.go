@@ -24,7 +24,7 @@ func newServer() *server {
 // GetAddress returns a bound address.
 func (server *server) GetAddress() string {
 	addrs, err := server.GetBoundAddresses()
-	if err != nil || len(addrs) <= 0 {
+	if err != nil || len(addrs) == 0 {
 		return ""
 	}
 	return addrs[0]
