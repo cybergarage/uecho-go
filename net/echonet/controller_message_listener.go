@@ -20,7 +20,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 		return nil
 	}
 
-	//log.Trace(logControllerListenerFormat, msg.String()))
+	// log.Trace(logControllerListenerFormat, msg.String()))
 
 	// NodeProfile message ?
 	isNodeProfileMessage := func(msg *protocol.Message) bool {

@@ -50,7 +50,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 
 // validateReceivedMessage checks whether the received message is a valid message.
 func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
-	//4.2.2 Basic Sequences for Object Control in General
+	// 4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.GetDestinationObjectCode()
 	msgESV := msg.GetESV()

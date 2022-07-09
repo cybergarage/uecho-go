@@ -60,12 +60,12 @@ func newTestMessageManager() *testMessageManager {
 }
 
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	//log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
+	// log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
 
 	if isTestMessage(msg) {
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
-			//log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
+			// log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
 			mgr.lastNotificationMessage = copyMsg
 		}
 	}
@@ -234,20 +234,20 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 }
 
 func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
+	// log.SetStdoutDebugEnbled(true)
 	conf := newTestDefaultConfig()
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithDisableTCPConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
+	// log.SetStdoutDebugEnbled(true)
 	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(false)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
 }
 
 func TestMulticastAndUnicastMessagingWithEnableTCPConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
+	// log.SetStdoutDebugEnbled(true)
 	conf := newTestDefaultConfig()
 	conf.SetTCPEnabled(true)
 	testMulticastAndUnicastMessagingWithConfig(t, conf, false)
