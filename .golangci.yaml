@@ -18,3 +18,4 @@ linters:
     - godox
     - cyclop
     - wrapcheck
+    - unused
