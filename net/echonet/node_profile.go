@@ -31,8 +31,8 @@ const (
 	NodeProfileClassOperatingStatusSize                = 1
 	NodeProfileClassVersionInformationSize             = 4
 	NodeProfileClassIdentificationManufacturerCodeSize = 3
-	NodeProfileClassIdentificationUniqueIdSize         = 13
-	NodeProfileClassIdentificationNumberSize           = 1 + NodeProfileClassIdentificationManufacturerCodeSize + NodeProfileClassIdentificationUniqueIdSize
+	NodeProfileClassIdentificationUniqueIDSize         = 13
+	NodeProfileClassIdentificationNumberSize           = 1 + NodeProfileClassIdentificationManufacturerCodeSize + NodeProfileClassIdentificationUniqueIDSize
 	NodeProfileClassFaultContentSize                   = 2
 	NodeProfileClassUniqueIdentifierDataSize           = 2
 	NodeProfileClassNumberOfSelfNodeInstancesSize      = 3
@@ -108,7 +108,7 @@ func (prof *Profile) SetID(manufactureCode uint) error {
 	encoding.IntegerToByte(manufactureCode, manufactureCodeBytes)
 
 	// TODO : Set a unique number
-	uniqID := make([]byte, NodeProfileClassIdentificationUniqueIdSize)
+	uniqID := make([]byte, NodeProfileClassIdentificationUniqueIDSize)
 
 	return prof.SetPropertyData(NodeProfileClassIdentificationNumber, append(manufactureCodeBytes, uniqID...))
 }
