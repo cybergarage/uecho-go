@@ -206,16 +206,16 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 }
 
 func TestLocalNodeWithDefaultConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
-	//defer log.SetStdoutDebugEnbled(false)
+	// log.SetStdoutDebugEnbled(true)
+	// defer log.SetStdoutDebugEnbled(false)
 	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	testLocalNodeWithConfig(t, conf)
 }
 
 func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
-	//defer log.SetStdoutDebugEnbled(false)
+	// log.SetStdoutDebugEnbled(true)
+	// defer log.SetStdoutDebugEnbled(false)
 	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(false)
@@ -223,8 +223,8 @@ func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
 }
 
 func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
-	//log.SetStdoutDebugEnbled(true)
-	//defer log.SetStdoutDebugEnbled(false)
+	// log.SetStdoutDebugEnbled(true)
+	// defer log.SetStdoutDebugEnbled(false)
 	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(true)

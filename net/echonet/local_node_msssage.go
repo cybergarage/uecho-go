@@ -42,7 +42,7 @@ func (node *LocalNode) AnnounceProperty(prop *Property) error {
 
 // Announce announces the node
 func (node *LocalNode) Announce() error {
-	//4.3.1 Basic Sequence for ECHONET Lite Node Startup
+	// 4.3.1 Basic Sequence for ECHONET Lite Node Startup
 
 	nodePropObj, err := node.GetNodeProfile()
 	if err != nil {
@@ -84,7 +84,7 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 
 	_, err = node.server.SendMessage(dstNode.GetAddress(), dstNode.GetPort(), msg)
 
-	//log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
+	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
 
 	return err
 }
@@ -102,7 +102,7 @@ func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.M
 
 	resMsg, err := node.server.PostMessage(dstNode.GetAddress(), dstNode.GetPort(), reqMsg)
 
-	//log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
+	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
 
 	return resMsg, err
 }
@@ -173,7 +173,7 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	node.postResponseCh = make(chan *protocol.Message)
 	node.postRequestMsg = msg
 
-	//log.Trace(logLocalNodePostMessageFormat, msg.String()))
+	// log.Trace(logLocalNodePostMessageFormat, msg.String()))
 
 	err := node.SendMessage(dstNode, msg)
 	if err != nil {

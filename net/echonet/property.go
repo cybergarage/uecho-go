@@ -241,7 +241,7 @@ func (prop *Property) GetData() []byte {
 
 // GetByteData returns a byte value of the property data.
 func (prop *Property) GetByteData() (byte, error) {
-	if len(prop.Data) <= 0 {
+	if len(prop.Data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
 	return prop.Data[0], nil
@@ -254,7 +254,7 @@ func (prop *Property) GetStringData() (string, error) {
 
 // GetIntegerData returns a integer value of the property integer data.
 func (prop *Property) GetIntegerData() (uint, error) {
-	if len(prop.Data) <= 0 {
+	if len(prop.Data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
 	return encoding.ByteToInteger(prop.GetData()), nil
