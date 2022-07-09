@@ -131,25 +131,19 @@ func (ctrl *Controller) Clear() error {
 
 // Start starts the controller.
 func (ctrl *Controller) Start() error {
-	err := ctrl.Clear()
-	if err != nil {
+	if err := ctrl.Clear(); err != nil {
 		return err
 	}
-
-	err = ctrl.LocalNode.Start()
-	if err != nil {
+	if err := ctrl.LocalNode.Start(); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // Stop stop the controller.
 func (ctrl *Controller) Stop() error {
-	err := ctrl.LocalNode.Stop()
-	if err != nil {
+	if err := ctrl.LocalNode.Stop(); err != nil {
 		return err
 	}
-
 	return nil
 }
