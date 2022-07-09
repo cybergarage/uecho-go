@@ -12,7 +12,7 @@ const (
 	logControllerListenerFormat = "Controller::NodeMessageReceived : %s"
 )
 
-// NodeMessageReceived is a listener of the local node
+// NodeMessageReceived is a listener of the local node.
 func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
