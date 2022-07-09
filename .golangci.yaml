@@ -10,3 +10,4 @@ linters:
     - wsl
     - funlen
     - errcheck
+    - unparam
