@@ -24,15 +24,15 @@ const (
 func TestNewLocalNode(t *testing.T) {
 	node := NewLocalNode()
 
-	_, err := node.GetNodeProfile()
-	if err != nil {
+	if _, err := node.GetNodeProfile(); err != nil {
 		t.Error(err)
 	}
 }
 
+//nolint ifshort
 func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Message, powerStatus byte) {
-	resOpc := resMsg.GetOPC()
-	if resOpc == 1 {
+
+	if resOpc := resMsg.GetOPC(); resOpc == 1 {
 		resProp := resMsg.GetProperty(0)
 		if resProp != nil || (resProp.GetCode() == testLightPropertyPowerCode) {
 			resData := resProp.GetData()
@@ -51,6 +51,7 @@ func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Mes
 	}
 }
 
+//nolint ifshort
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	ctrl := NewController()
 	ctrl.SetConfig(config)
@@ -73,8 +74,6 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	defer ctrl.Stop()
 
-	ctrlPort := ctrl.GetPort()
-
 	err = node.Start()
 	if err != nil {
 		t.Error(err)
@@ -86,6 +85,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	defer node.Stop()
 
+	ctrlPort := ctrl.GetPort()
 	nodePort := node.GetPort()
 	if ctrlPort == nodePort {
 		t.Errorf("%d == %d", ctrlPort, nodePort)
