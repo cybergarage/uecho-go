@@ -23,7 +23,7 @@ type PropertyMap struct {
 	parentObject *Object
 }
 
-// NewPropertyMap returns a new property map
+// NewPropertyMap returns a new property map.
 func NewPropertyMap() *PropertyMap {
 	propMap := &PropertyMap{
 		properties:   map[PropertyCode]*Property{},
