@@ -17,3 +17,4 @@ linters:
     - nolintlint
     - godox
     - cyclop
+    - wrapcheck
