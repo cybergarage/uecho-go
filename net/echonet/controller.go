@@ -50,12 +50,12 @@ func (ctrl *Controller) GetLocalNode() *LocalNode {
 	return ctrl.LocalNode
 }
 
-// GetNodes returns found nodes
+// GetNodes returns found nodes.
 func (ctrl *Controller) GetNodes() []*RemoteNode {
 	return ctrl.foundNodes
 }
 
-// GetNode returns a node which has the specified address
+// GetNode returns a node which has the specified address.
 func (ctrl *Controller) GetNode(addr string) (*RemoteNode, error) {
 	for _, node := range ctrl.GetNodes() {
 		if node.GetAddress() == addr {
