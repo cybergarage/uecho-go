@@ -13,3 +13,4 @@ linters:
     - unparam
     - gocognit
     - lll
+    - goerr113
