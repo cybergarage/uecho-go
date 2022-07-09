@@ -20,6 +20,9 @@ MODULE_ROOT=github.com/cybergarage/uecho-go
 SOURCE_ROOT=${PACKAGE_NAME}
 PACKAGE_ROOT=${MODULE_ROOT}/${PACKAGE_NAME}
 
+SOURCES=\
+        ${SOURCE_ROOT}
+
 PACKAGE_ID=${PACKAGE_ROOT}
 PACKAGES=\
 	${PACKAGE_ID} \
@@ -27,13 +30,12 @@ PACKAGES=\
 	${PACKAGE_ID}/protocol \
 	${PACKAGE_ID}/transport
 
-
-EXSAMPLE_ROOT=${MODULE_ROOT}/examples
+BINARY_ROOT=${MODULE_ROOT}/examples
 
 BINARIES=\
-	${EXSAMPLE_ROOT}/uechopost \
-	${EXSAMPLE_ROOT}/uechosearch \
-	${EXSAMPLE_ROOT}/uecholight
+	${BINARY_ROOT}/uechopost \
+	${BINARY_ROOT}/uechosearch \
+	${BINARY_ROOT}/uecholight
 
 .PHONY: version clean
 
@@ -48,10 +50,13 @@ format:
 vet: format
 	go vet ${PACKAGE_ROOT}
 
+lint: format
+	golangci-lint run ${SOURCES}
+
 build: vet
 	go build -v ${PACKAGES}
 
-test: vet
+test: lint
 	go test -v -cover -timeout 60s ${PACKAGES}
 
 install: vet
