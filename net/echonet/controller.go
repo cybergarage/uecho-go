@@ -147,8 +147,8 @@ func (ctrl *Controller) Start() error {
 // Stop stop the controller.
 func (ctrl *Controller) Stop() error {
 	err := ctrl.LocalNode.Stop()
-	if err != err {
-		return nil
+	if err != nil {
+		return err
 	}
 
 	return nil
