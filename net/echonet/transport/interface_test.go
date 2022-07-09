@@ -23,7 +23,7 @@ func TestGetAvailableAddresses(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(addrs) <= 0 {
+	if len(addrs) == 0 {
 		t.Errorf("available address is not found")
 	}
 }
