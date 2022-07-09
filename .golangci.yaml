@@ -1,0 +1,11 @@
+linters:
+  enable-all: true
+  disable:
+    - deadcode
+    - paralleltest
+    - testpackage
+    - gofumpt
+    - nlreturn
+    - varnamelen
+    - wsl
+    - funlen
