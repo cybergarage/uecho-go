@@ -14,3 +14,4 @@ linters:
     - gocognit
     - lll
     - goerr113
+    - nolintlint
