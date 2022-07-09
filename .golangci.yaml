@@ -11,3 +11,4 @@ linters:
     - funlen
     - errcheck
     - unparam
+    - gocognit
