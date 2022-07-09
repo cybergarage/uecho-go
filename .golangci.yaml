@@ -16,3 +16,4 @@ linters:
     - goerr113
     - nolintlint
     - godox
+    - cyclop
