@@ -121,8 +121,7 @@ func (prof *Profile) SetInstanceCount(count uint) error {
 // SetInstanceList sets a instance list in a node.
 func (prof *Profile) SetInstanceList(devices []*Device) error {
 	instanceList := make([]byte, 1)
-	instanceCount := len(devices)
-	if instanceCount <= (NodeProfileClassSelfNodeInstanceListSMax - 1) {
+	if instanceCount := len(devices); instanceCount <= (NodeProfileClassSelfNodeInstanceListSMax - 1) {
 		instanceList[0] = byte(instanceCount)
 	} else {
 		instanceList[0] = NodeProfileClassSelfNodeInstanceListSMax
@@ -153,8 +152,7 @@ func (prof *Profile) SetClassCount(count uint) error {
 // SetClassList sets a class list in a node.
 func (prof *Profile) SetClassList(classes []*Class) error {
 	classList := make([]byte, 1)
-	classCount := len(classes)
-	if classCount <= (NodeProfileClassSelfNodeClassListSMax - 1) {
+	if classCount := len(classes); classCount <= (NodeProfileClassSelfNodeClassListSMax - 1) {
 		classList[0] = byte(classCount)
 	} else {
 		classList[0] = NodeProfileClassSelfNodeClassListSMax
@@ -163,7 +161,6 @@ func (prof *Profile) SetClassList(classes []*Class) error {
 	for _, class := range classes {
 		classList = append(classList, class.GetCodes()...)
 	}
-
 	return prof.SetPropertyData(NodeProfileClassSelfNodeClassListS, classList)
 }
 

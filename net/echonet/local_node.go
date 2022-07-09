@@ -138,21 +138,17 @@ func (node *LocalNode) Start() error {
 
 // Stop stop the node.
 func (node *LocalNode) Stop() error {
-	err := node.server.Stop()
-	if err != nil {
+	if err := node.server.Stop(); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // Restart starts the node.
 func (node *LocalNode) Restart() error {
-	err := node.Stop()
-	if err != nil {
+	if err := node.Stop(); err != nil {
 		return err
 	}
-
 	return node.Start()
 }
 

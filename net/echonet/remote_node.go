@@ -45,8 +45,7 @@ func NewRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
 
 // NewRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
 func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, error) {
-	msgOPC := msg.GetOPC()
-	if msgOPC < 1 {
+	if msgOPC := msg.GetOPC(); msgOPC < 1 {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 
