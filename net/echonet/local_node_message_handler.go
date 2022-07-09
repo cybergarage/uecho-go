@@ -13,7 +13,7 @@ const (
 	logNodeListenerFormat = "LocalNode::ProtocolMessageReceived : %s"
 )
 
-// ProtocolMessageReceived is a listener for the server
+// ProtocolMessageReceived is a listener for the server.
 func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	// Ignore own messages
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
