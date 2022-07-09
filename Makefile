@@ -56,7 +56,7 @@ lint: format
 build: vet
 	go build -v ${PACKAGES}
 
-test: lint
+test:
 	go test -v -cover -timeout 60s ${PACKAGES}
 
 install: vet
