@@ -58,21 +58,21 @@ func isNodeProfileObjectCode(code ObjectCode) bool {
 
 // NewProfile returns a new profile object.
 func NewProfile() *Profile {
-	prop := &Profile{
+	prof := &Profile{
 		SuperObject: NewSuperObject(),
 	}
 
-	prop.SetClassGroupCode(ProfileClassGroupCode)
-	prop.addProfileMandatoryProperties()
+	prof.SetClassGroupCode(ProfileClassGroupCode)
+	prof.addProfileMandatoryProperties()
 
-	return prop
+	return prof
 }
 
 // addProfileMandatoryProperties sets mandatory properties for node profile.
-func (prop *Profile) addProfileMandatoryProperties() error {
+func (prof *Profile) addProfileMandatoryProperties() error {
 	// Manufacture Code
-	prop.CreateProperty(ProfileManufacturerCode, PropertyAttributeRead)
-	prop.SetManufacturerCode(ProfileManufacturerUnknown)
+	prof.CreateProperty(ProfileManufacturerCode, PropertyAttributeRead)
+	prof.SetManufacturerCode(ProfileManufacturerUnknown)
 
 	return nil
 }
