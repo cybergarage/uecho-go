@@ -21,3 +21,4 @@ linters:
     - unused
     - varcheck
     - ireturn
+    - nilnil
