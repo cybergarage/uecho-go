@@ -125,18 +125,12 @@ func (prop *Property) GetAttribute() PropertyAttribute {
 
 // IsReadable returns true when the property attribute is readable, otherwise false.
 func (prop *Property) IsReadable() bool {
-	if (prop.Attr & PropertyAttributeRead) == 0 {
-		return false
-	}
-	return true
+	return ((prop.Attr & PropertyAttributeRead) != 0)
 }
 
 // IsWritable returns true when the property attribute is writable, otherwise false.
 func (prop *Property) IsWritable() bool {
-	if (prop.Attr & PropertyAttributeWrite) == 0 {
-		return false
-	}
-	return true
+	return ((prop.Attr & PropertyAttributeWrite) != 0)
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
@@ -167,10 +161,7 @@ func (prop *Property) IsWriteOnly() bool {
 
 // isAnnounceable returns true when the property attribute is announcement, otherwise false.
 func (prop *Property) isAnnounceable() bool {
-	if (prop.Attr & PropertyAttributeAnno) == 0 {
-		return false
-	}
-	return true
+	return ((prop.Attr & PropertyAttributeAnno) != 0)
 }
 
 // IsAvailableService returns true whether the specified service can execute, otherwise false.
@@ -290,7 +281,7 @@ func (prop *Property) Equals(otherProp *Property) bool {
 	if prop.GetAttribute() != otherProp.GetAttribute() {
 		return false
 	}
-	if bytes.Compare(prop.GetData(), otherProp.GetData()) != 0 {
+	if !bytes.Equal(prop.GetData(), otherProp.GetData()) {
 		return false
 	}
 	return true

@@ -42,10 +42,7 @@ type Profile struct {
 
 // isProfileObjectCode returns true when the class group code is the profile code, otherwise false.
 func isProfileObjectCode(code byte) bool {
-	if code != ProfileClassGroupCode {
-		return false
-	}
-	return true
+	return (code == ProfileClassGroupCode)
 }
 
 // isNodeProfileObjectCode returns true when the code is the node profile code, otherwise false.
