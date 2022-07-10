@@ -9,10 +9,10 @@ import (
 )
 
 func TestNewLocalNodeProfile(t *testing.T) {
-	prop := NewLocalNodeProfile()
+	prof := NewLocalNodeProfile()
 
-	if !prop.IsProfile() {
-		t.Errorf(errorInvalidGroupClassCode, prop.GetClassGroupCode())
+	if !prof.IsProfile() {
+		t.Errorf(errorInvalidGroupClassCode, prof.GetClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{
@@ -33,7 +33,7 @@ func TestNewLocalNodeProfile(t *testing.T) {
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {
-		if !prop.HasProperty(propCode) {
+		if !prof.HasProperty(propCode) {
 			t.Errorf(errorMandatoryPropertyNotFound, propCode)
 		}
 	}
