@@ -122,7 +122,6 @@ func (node *LocalNode) AddProfile(prof *Profile) error {
 
 // Start starts the node.
 func (node *LocalNode) Start() error {
-
 	err := node.server.Start()
 	if err != nil {
 		return err

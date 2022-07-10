@@ -154,7 +154,6 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			if (n % 2) == 0 {
 				lastLightPowerStatus = testLightPropertyPowerOn
 			} else {
-
 				lastLightPowerStatus = testLightPropertyPowerOff
 			}
 

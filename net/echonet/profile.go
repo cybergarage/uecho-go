@@ -70,7 +70,6 @@ func NewProfile() *Profile {
 
 // addProfileMandatoryProperties sets mandatory properties for node profile.
 func (prop *Profile) addProfileMandatoryProperties() error {
-
 	// Manufacture Code
 	prop.CreateProperty(ProfileManufacturerCode, PropertyAttributeRead)
 	prop.SetManufacturerCode(ProfileManufacturerUnknown)
