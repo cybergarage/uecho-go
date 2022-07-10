@@ -1,0 +1,7 @@
+2022-07-10 The uecho-go Authors <skonno@cybergarage.org>
+	* v1.0.1
+        * Fix golangci-lint warnings.
+
+2019-02-04 The uecho-go Authors <skonno@cybergarage.org>
+	* v1.0.0
+        * The first release.
