@@ -22,3 +22,4 @@ linters:
     - varcheck
     - ireturn
     - nilnil
+    - makezero
