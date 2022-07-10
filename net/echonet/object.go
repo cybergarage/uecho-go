@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	errorInvalidObjectCodes = "Invalid Object Code : %s"
-	errorParentNodeNotFound = "Parent node not found"
+	errorInvalidObjectCodes = "invalid object code : %s"
+	errorParentNodeNotFound = "parent node not found"
 )
 
 const (

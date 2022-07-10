@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	errorInvalidNotificationMessage = "Invalid Notification Message : %s"
+	errorInvalidNotificationMessage = "invalid notification message : %s"
 )
 
 // RemoteNode is an instance for Echonet node.
