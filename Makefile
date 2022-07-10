@@ -53,13 +53,13 @@ vet: format
 lint: vet
 	golangci-lint run ${SOURCES}
 
-build: lint
+build:
 	go build -v ${PACKAGES}
 
-test: lint
+test:
 	go test -v -cover -timeout 60s ${PACKAGES}
 
-install: lint
+install:
 	go install ${BINARIES}
 
 clean:
