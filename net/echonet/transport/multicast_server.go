@@ -15,6 +15,7 @@ import (
 type MulticastServer struct {
 	*Server
 	Socket        *MulticastSocket
+	Channel       chan any
 	Handler       MulticastHandler
 	UnicastServer *UnicastServer
 }
@@ -24,6 +25,7 @@ func NewMulticastServer() *MulticastServer {
 	server := &MulticastServer{
 		Server:        NewServer(),
 		Socket:        NewMulticastSocket(),
+		Channel:       nil,
 		Handler:       nil,
 		UnicastServer: nil,
 	}
@@ -49,7 +51,9 @@ func (server *MulticastServer) Start(ifi *net.Interface) error {
 
 	server.SetBoundInterface(ifi)
 
-	go handleMulticastConnection(server)
+	server.Channel = make(chan any)
+	go handleMulticastConnection(server, server.Channel)
+
 	return nil
 }
 
@@ -80,15 +84,20 @@ func handleMulticastRequestMessage(server *MulticastServer, reqMsg *protocol.Mes
 	server.UnicastServer.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
 }
 
-func handleMulticastConnection(server *MulticastServer) {
+func handleMulticastConnection(server *MulticastServer, cancel chan any) {
 	defer server.Socket.Close()
 	for {
-		reqMsg, err := server.Socket.ReadMessage()
-		if err != nil {
-			break
-		}
-		reqMsg.SetPacketType(protocol.MulticastPacket)
+		select {
+		case <-cancel:
+			return
+		default:
+			reqMsg, err := server.Socket.ReadMessage()
+			if err != nil {
+				break
+			}
+			reqMsg.SetPacketType(protocol.MulticastPacket)
 
-		go handleMulticastRequestMessage(server, reqMsg)
+			go handleMulticastRequestMessage(server, reqMsg)
+		}
 	}
 }
