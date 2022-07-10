@@ -74,7 +74,7 @@ func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 			return err
 		}
 		server.TCPChannel = make(chan any)
-		go handleUnicastTCPHandler(server)
+		go handleUnicastTCPListener(server, server.TCPChannel)
 	}
 
 	server.SetBoundInterface(ifi)
@@ -86,15 +86,18 @@ func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 func (server *UnicastServer) Stop() error {
 	var lastErr error
 
-	err := server.TCPSocket.Close()
+	close(server.UDPChannel)
+	err := server.UDPSocket.Close()
 	if err != nil {
 		lastErr = err
 	}
 
-	close(server.UDPChannel)
-	err = server.UDPSocket.Close()
-	if err != nil {
-		lastErr = err
+	if server.IsTCPEnabled() {
+		close(server.TCPChannel)
+		err := server.TCPSocket.Close()
+		if err != nil {
+			lastErr = err
+		}
 	}
 
 	server.SetBoundInterface(nil)
@@ -155,13 +158,18 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 	server.TCPSocket.ResponseMessageToConnection(conn, resMsg)
 }
 
-func handleUnicastTCPHandler(server *UnicastServer) {
+func handleUnicastTCPListener(server *UnicastServer, cancel chan any) {
 	for {
-		conn, err := server.TCPSocket.Listener.AcceptTCP()
-		if err != nil {
-			break
-		}
+		select {
+		case <-cancel:
+			return
+		default:
+			conn, err := server.TCPSocket.Listener.AcceptTCP()
+			if err != nil {
+				break
+			}
 
-		go handleUnicastTCPConnection(server, conn)
+			go handleUnicastTCPConnection(server, conn)
+		}
 	}
 }
