@@ -17,7 +17,7 @@ const (
 )
 
 const (
-	errorNodeRequestTimeout = "Request Timeout : %v"
+	errorNodeRequestTimeout = "request timeout : %v"
 	errorNodeIsNotRunning   = "Node (%s) is not running "
 )
 

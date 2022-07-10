@@ -80,7 +80,7 @@ const (
 )
 
 const (
-	errorDeviceInvalidDeviceStandardVersion = "Invalid Device Standard Version (%s)"
+	errorDeviceInvalidDeviceStandardVersion = "invalid device standard version (%s)"
 )
 
 // Device represents an instance for a device object of Echonet.
