@@ -107,7 +107,7 @@ func (dev *Device) addDeviceMandatoryProperties() error {
 	dev.CreateProperty(DeviceInstallationLocation, PropertyAttributeReadAnno)
 	dev.SetInstallationLocation(DeviceInstallationLocationUnknown)
 
-	// Standard Version Infomation
+	// Standard Version Information
 	dev.CreateProperty(DeviceStandardVersion, PropertyAttributeRead)
 	dev.SetStandardVersion(DeviceDefaultVersionAppendix)
 

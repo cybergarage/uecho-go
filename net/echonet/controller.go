@@ -27,7 +27,7 @@ type Controller struct {
 	controllerListener ControllerListener
 }
 
-// NewController returns a new contorller.
+// NewController returns a new controller.
 func NewController() *Controller {
 	ctrl := &Controller{
 		LocalNode:          NewLocalNode(),
