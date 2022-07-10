@@ -87,10 +87,7 @@ func (obj *Object) GetCodes() []byte {
 
 // IsCode returns true when the object code is the specified code, otherwise false.
 func (obj *Object) IsCode(code ObjectCode) bool {
-	if code != obj.GetCode() {
-		return false
-	}
-	return true
+	return (code == obj.GetCode())
 }
 
 // GetClass returns the class of the object.
@@ -130,10 +127,7 @@ func (obj *Object) GetInstanceCode() byte {
 
 // IsDevice returns true when the class group code is the device code, otherwise false.
 func (obj *Object) IsDevice() bool {
-	if obj.IsProfile() {
-		return false
-	}
-	return true
+	return !obj.IsProfile()
 }
 
 // IsProfile returns true when the class group code is the profile code, otherwise false.

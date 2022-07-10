@@ -31,8 +31,5 @@ func (conf *Config) SetConfig(newConfig *Config) {
 
 // Equals returns true whether the specified other class is same, otherwise false.
 func (conf *Config) Equals(other *Config) bool {
-	if !conf.TransportConfig.Equals(other.TransportConfig) {
-		return false
-	}
-	return true
+	return conf.TransportConfig.Equals(other.TransportConfig)
 }
