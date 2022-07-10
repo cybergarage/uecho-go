@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"net"
-	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
@@ -50,19 +49,12 @@ func (sock *UDPSocket) Close() error {
 		return nil
 	}
 
-	// FIXME : sock.Conn.Close() hung up on darwin
-	/*
-		err := sock.Conn.Close()
-		if err != nil {
-			return err
-		}
-	*/
-	go sock.Conn.Close()
-	time.Sleep(time.Millisecond * 100)
+	err := sock.Conn.Close()
+	if err != nil {
+		return err
+	}
 
 	sock.Conn = nil
-
-	sock.Socket.Close()
 
 	return nil
 }
