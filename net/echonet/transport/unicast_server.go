@@ -15,9 +15,11 @@ import (
 type UnicastServer struct {
 	*UnicastConfig
 	*Server
-	TCPSocket *UnicastTCPSocket
-	UDPSocket *UnicastUDPSocket
-	Handler   UnicastHandler
+	TCPSocket  *UnicastTCPSocket
+	TCPChannel chan any
+	UDPSocket  *UnicastUDPSocket
+	UDPChannel chan any
+	Handler    UnicastHandler
 }
 
 // NewUnicastServer returns a new UnicastServer.
@@ -26,7 +28,9 @@ func NewUnicastServer() *UnicastServer {
 		UnicastConfig: NewDefaultUnicastConfig(),
 		Server:        NewServer(),
 		TCPSocket:     NewUnicastTCPSocket(),
+		TCPChannel:    nil,
 		UDPSocket:     NewUnicastUDPSocket(),
+		UDPChannel:    nil,
 		Handler:       nil,
 	}
 	return server
@@ -45,7 +49,6 @@ func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Me
 			return n, nil
 		}
 	}
-
 	return server.UDPSocket.SendMessage(addr, port, msg)
 }
 
@@ -62,13 +65,15 @@ func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 		server.TCPSocket.Close()
 		return err
 	}
-	go handleUnicastUDPConnection(server)
+	server.UDPChannel = make(chan any)
+	go handleUnicastUDPConnection(server, server.UDPChannel)
 
 	if server.IsTCPEnabled() {
 		err := server.TCPSocket.Bind(ifi, port)
 		if err != nil {
 			return err
 		}
+		server.TCPChannel = make(chan any)
 		go handleUnicastTCPHandler(server)
 	}
 
@@ -86,6 +91,7 @@ func (server *UnicastServer) Stop() error {
 		lastErr = err
 	}
 
+	close(server.UDPChannel)
 	err = server.UDPSocket.Close()
 	if err != nil {
 		lastErr = err
@@ -111,15 +117,20 @@ func handleUnicastUDPRequestMessage(server *UnicastServer, reqMsg *protocol.Mess
 	server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
 }
 
-func handleUnicastUDPConnection(server *UnicastServer) {
+func handleUnicastUDPConnection(server *UnicastServer, cancel chan any) {
 	for {
-		reqMsg, err := server.UDPSocket.ReadMessage()
-		if err != nil {
-			break
-		}
-		reqMsg.SetPacketType(protocol.UDPUnicastPacket)
+		select {
+		case <-cancel:
+			return
+		default:
+			reqMsg, err := server.UDPSocket.ReadMessage()
+			if err != nil {
+				break
+			}
+			reqMsg.SetPacketType(protocol.UDPUnicastPacket)
 
-		go handleUnicastUDPRequestMessage(server, reqMsg)
+			go handleUnicastUDPRequestMessage(server, reqMsg)
+		}
 	}
 }
 
