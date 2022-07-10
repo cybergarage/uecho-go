@@ -79,7 +79,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 				continue
 			}
 			// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
-			prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+			prop, ok := dstObj.GetProperty(msgProp.GetCode())
 			if !ok {
 				return false
 			}
@@ -156,7 +156,7 @@ func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 		if msgProp == nil {
 			continue
 		}
-		prop, ok := dstObj.GetProperty(PropertyCode(msgProp.GetCode()))
+		prop, ok := dstObj.GetProperty(msgProp.GetCode())
 		if !ok {
 			continue
 		}
