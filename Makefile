@@ -50,16 +50,16 @@ format:
 vet: format
 	go vet ${PACKAGE_ROOT}
 
-lint: format
+lint: vet
 	golangci-lint run ${SOURCES}
 
-build: vet
+build: lint
 	go build -v ${PACKAGES}
 
-test:
+test: lint
 	go test -v -cover -timeout 60s ${PACKAGES}
 
-install: vet
+install: lint
 	go install ${BINARIES}
 
 clean:
