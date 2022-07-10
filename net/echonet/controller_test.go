@@ -108,9 +108,8 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		if ctrl.foundTestNodeCount == 0 {
 			t.Errorf("Any nodes are not found (%d < %d)", ctrl.foundTestNodeCount, testControllerNodeCount)
 			return
-		} else {
-			t.Skipf("%d < %d", ctrl.foundTestNodeCount, testControllerNodeCount)
 		}
+		t.Skipf("%d < %d", ctrl.foundTestNodeCount, testControllerNodeCount)
 	}
 
 	if ctrl.foundTestNodeCount != testControllerNodeCount {
