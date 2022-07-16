@@ -53,6 +53,8 @@ func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Mes
 
 //nolint ifshort
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
+	t.Helper()
+
 	ctrl := NewController()
 	ctrl.SetConfig(config)
 
