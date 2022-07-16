@@ -93,6 +93,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	nodePort := node.GetPort()
 	if ctrlPort == nodePort {
 		t.Errorf("%d == %d", ctrlPort, nodePort)
+		return
 	}
 
 	time.Sleep(time.Second)
@@ -133,6 +134,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		err = ctrl.SendRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
 		if err != nil {
 			t.Error(err)
+			return
 		}
 	}
 
@@ -170,6 +172,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		err = ctrl.SendRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVWriteRequest, []*Property{prop})
 		if err != nil {
 			t.Error(err)
+			return
 		}
 
 		// Read
@@ -195,7 +198,6 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		if (n % 2) == 0 {
 			lastLightPowerStatus = testLightPropertyPowerOn
 		} else {
-
 			lastLightPowerStatus = testLightPropertyPowerOff
 		}
 
