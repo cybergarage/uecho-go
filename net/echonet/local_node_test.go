@@ -185,7 +185,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 			t.Error(err)
 			return
 		}
-		if err := localNodeCheckResponseMessagePowerStatus(resMsg, testLightPropertyInitialPowerStatus); err != nil {
+		if err := localNodeCheckResponseMessagePowerStatus(resMsg, lastLightPowerStatus); err != nil {
 			t.Error(err)
 			return
 		}
@@ -210,7 +210,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 			t.Error(err)
 			return
 		}
-		if err := localNodeCheckResponseMessagePowerStatus(resMsg, testLightPropertyInitialPowerStatus); err != nil {
+		if err := localNodeCheckResponseMessagePowerStatus(resMsg, lastLightPowerStatus); err != nil {
 			t.Error(err)
 			return
 		}
