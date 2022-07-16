@@ -57,7 +57,7 @@ build:
 	go build -v ${PACKAGES}
 
 test:
-	go test -v -cover -timeout 60s ${PACKAGES}
+	go test -v -cover -timeout 300s ${PACKAGES}
 
 install:
 	go install ${BINARIES}
