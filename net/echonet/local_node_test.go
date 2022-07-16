@@ -31,6 +31,7 @@ func TestNewLocalNode(t *testing.T) {
 
 //nolint ifshort
 func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Message, powerStatus byte) {
+	t.Helper()
 
 	if resOpc := resMsg.GetOPC(); resOpc == 1 {
 		resProp := resMsg.GetProperty(0)
