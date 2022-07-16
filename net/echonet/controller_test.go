@@ -98,6 +98,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	err = ctrl.SearchAllObjects()
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	time.Sleep(time.Millisecond * 200 * testControllerNodeCount)
@@ -165,9 +166,11 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			if err != nil {
 				t.Errorf("[%d] %s:%d is not responding", foundNodeIdx, foundNode.GetAddress(), foundNode.GetPort())
 				t.Error(err)
+				return
 			}
 			if err := localNodeCheckResponseMessagePowerStatus(resMsg, lastLightPowerStatus); err != nil {
 				t.Error(err)
+				return
 			}
 		}
 	}
