@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -30,32 +31,28 @@ func TestNewLocalNode(t *testing.T) {
 	}
 }
 
-func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Message, powerStatus byte) {
-	t.Helper()
-
+func localNodeCheckResponseMessagePowerStatus(resMsg *protocol.Message, powerStatus byte) error {
 	if resOpc := resMsg.GetOPC(); resOpc != 1 {
-		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-		return
+		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 
 	resProp := resMsg.GetProperty(0)
 	if resProp == nil {
-		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-		return
+		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 	if resProp.GetCode() != testLightPropertyPowerCode {
-		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-		return
+		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 
 	resData := resProp.GetData()
 	if len(resData) != 1 {
-		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-		return
+		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 	if resData[0] != powerStatus {
-		t.Skipf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
+		return fmt.Errorf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
 	}
+
+	return nil
 }
 
 //nolint ifshort
@@ -144,10 +141,13 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	prop = NewPropertyWithCode(testLightPropertyPowerCode)
 	for n := 0; n < testNodeRequestCount; n++ {
 		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
-		if err == nil {
-			localNodeCheckResponseMessagePowerStatus(t, resMsg, testLightPropertyInitialPowerStatus)
-		} else {
+		if err != nil {
 			t.Error(err)
+			return
+		}
+		if err := localNodeCheckResponseMessagePowerStatus(resMsg, testLightPropertyInitialPowerStatus); err != nil {
+			t.Error(err)
+			return
 		}
 	}
 
@@ -174,12 +174,17 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		// Read
 
+		time.Sleep(time.Millisecond * 100)
+
 		prop = NewPropertyWithCode(testLightPropertyPowerCode)
 		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
-		if err == nil {
-			localNodeCheckResponseMessagePowerStatus(t, resMsg, lastLightPowerStatus)
-		} else {
+		if err != nil {
 			t.Error(err)
+			return
+		}
+		if err := localNodeCheckResponseMessagePowerStatus(resMsg, testLightPropertyInitialPowerStatus); err != nil {
+			t.Error(err)
+			return
 		}
 	}
 
@@ -199,10 +204,13 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
 		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
-		if err == nil {
-			localNodeCheckResponseMessagePowerStatus(t, resMsg, lastLightPowerStatus)
-		} else {
+		if err != nil {
 			t.Error(err)
+			return
+		}
+		if err := localNodeCheckResponseMessagePowerStatus(resMsg, testLightPropertyInitialPowerStatus); err != nil {
+			t.Error(err)
+			return
 		}
 	}
 
