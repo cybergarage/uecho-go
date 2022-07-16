@@ -16,7 +16,7 @@ import (
 const (
 	testNodeRequestCount   = 4
 	testNodeRequestTimeout = time.Millisecond * 1000
-	testNodeRequestSleep   = time.Millisecond * 100
+	testNodeRequestSleep   = time.Millisecond * 500
 )
 
 const (
