@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -29,26 +30,31 @@ func TestNewLocalNode(t *testing.T) {
 	}
 }
 
-//nolint ifshort
 func localNodeCheckResponseMessagePowerStatus(t *testing.T, resMsg *protocol.Message, powerStatus byte) {
 	t.Helper()
 
-	if resOpc := resMsg.GetOPC(); resOpc == 1 {
-		resProp := resMsg.GetProperty(0)
-		if resProp != nil || (resProp.GetCode() == testLightPropertyPowerCode) {
-			resData := resProp.GetData()
-			if len(resData) == 1 {
-				if resData[0] != powerStatus {
-					t.Skipf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
-				}
-			} else {
-				t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-			}
-		} else {
-			t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
-		}
-	} else {
+	if resOpc := resMsg.GetOPC(); resOpc != 1 {
 		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return
+	}
+
+	resProp := resMsg.GetProperty(0)
+	if resProp == nil {
+		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return
+	}
+	if resProp.GetCode() != testLightPropertyPowerCode {
+		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return
+	}
+
+	resData := resProp.GetData()
+	if len(resData) != 1 {
+		t.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return
+	}
+	if resData[0] != powerStatus {
+		t.Skipf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus)
 	}
 }
 
@@ -215,8 +221,8 @@ func TestLocalNodeWithDefaultConfig(t *testing.T) {
 }
 
 func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	// defer log.SetStdoutDebugEnbled(false)
+	log.SetStdoutDebugEnbled(true)
+	defer log.SetStdoutDebugEnbled(false)
 	conf := newTestDefaultConfig()
 	conf.SetConnectionTimeout(testNodeRequestTimeout)
 	conf.SetTCPEnabled(false)
