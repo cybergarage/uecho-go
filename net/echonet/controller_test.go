@@ -158,7 +158,9 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 				lastLightPowerStatus = testLightPropertyPowerOff
 			}
 
-			// Write / Read
+			// WriteRead
+
+			time.Sleep(testNodeRequestSleep)
 
 			prop := NewPropertyWithCode(testLightPropertyPowerCode)
 			prop.SetData([]byte{lastLightPowerStatus})
