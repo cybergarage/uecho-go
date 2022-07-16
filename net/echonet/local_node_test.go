@@ -142,6 +142,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	prop = NewPropertyWithCode(testLightPropertyPowerCode)
 	for n := 0; n < testNodeRequestCount; n++ {
+		time.Sleep(time.Millisecond * 100)
 		resMsg, err := ctrl.PostRequest(dev.GetParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
 		if err != nil {
 			t.Error(err)
@@ -166,6 +167,8 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		}
 
 		// Write
+
+		time.Sleep(time.Millisecond * 100)
 
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
@@ -201,7 +204,9 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 			lastLightPowerStatus = testLightPropertyPowerOff
 		}
 
-		// Write / Read
+		// WriteRead
+
+		time.Sleep(time.Millisecond * 100)
 
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
