@@ -137,7 +137,7 @@ func (sock *UnicastUDPSocket) SendMessage(addr string, port int, msg *protocol.M
 	return sock.SendBytes(addr, port, msg.Bytes())
 }
 
-// ResponseMessageForRequestMessage sends a specified response message to the request node
+// ResponseMessageForRequestMessage sends a specified response message to the request node.
 func (sock *UnicastUDPSocket) ResponseMessageForRequestMessage(reqMsg *protocol.Message, resMsg *protocol.Message) error {
 	dstAddr := reqMsg.From.IP.String()
 	dstPort := reqMsg.From.Port

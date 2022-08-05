@@ -12,7 +12,7 @@ import (
 	"syscall"
 )
 
-// SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT
+// SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT.
 func (sock *Socket) SetReuseAddr(file *os.File, flag bool) error {
 	fd := file.Fd()
 

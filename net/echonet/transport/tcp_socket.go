@@ -155,7 +155,7 @@ func (sock *TCPSocket) PostMessage(addr string, port int, reqMsg *protocol.Messa
 	return sock.ReadMessage(conn)
 }
 
-// ResponseMessageForRequestMessage sends a specified response message to the request node
+// ResponseMessageForRequestMessage sends a specified response message to the request node.
 func (sock *TCPSocket) ResponseMessageForRequestMessage(reqMsg *protocol.Message, resMsg *protocol.Message, timeout time.Duration) error {
 	dstAddr := reqMsg.From.IP.String()
 	dstPort := reqMsg.From.Port
