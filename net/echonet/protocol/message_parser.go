@@ -10,8 +10,7 @@ import (
 
 // parseFrameHeaderBytes parses the specified frame header bytes.
 func (msg *Message) parseFrameHeaderBytes(data []byte) error {
-	headerSize := len(data)
-	if headerSize < FrameHeaderSize {
+	if headerSize := len(data); headerSize < FrameHeaderSize {
 		return fmt.Errorf(errorShortMessageSize, headerSize, FrameHeaderSize)
 	}
 
@@ -35,8 +34,7 @@ func (msg *Message) parseFrameHeaderBytes(data []byte) error {
 
 // parseFormat1HeaderBytes parses the specified header bytes.
 func (msg *Message) parseFormat1HeaderBytes(data []byte) error {
-	headerSize := len(data)
-	if headerSize < Format1HeaderSize {
+	if headerSize := len(data); headerSize < Format1HeaderSize {
 		return fmt.Errorf(errorShortMessageSize, (headerSize + FrameHeaderSize), (Format1HeaderSize + FrameHeaderSize))
 	}
 

@@ -61,8 +61,7 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 		t.Error(err)
 	}
 
-	msgBytes := msg.Bytes()
-	if nSent != len(msgBytes) {
+	if msgBytes := msg.Bytes(); nSent != len(msgBytes) {
 		t.Errorf("%d != %d", nSent, len(msgBytes))
 	}
 

@@ -52,17 +52,12 @@ func (mgr *MulticastManager) GetBoundInterfaces() []*net.Interface {
 
 // StartWithInterface starts this server on the specified interface.
 func (mgr *MulticastManager) StartWithInterface(ifi *net.Interface) (*MulticastServer, error) {
-
 	server := NewMulticastServer()
 	server.Handler = mgr.Handler
-	err := server.Start(ifi)
-
-	if err != nil {
+	if err := server.Start(ifi); err != nil {
 		return nil, err
 	}
-
 	mgr.Servers = append(mgr.Servers, server)
-
 	return server, nil
 }
 
