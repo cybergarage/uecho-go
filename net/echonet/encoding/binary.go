@@ -4,7 +4,7 @@
 
 package encoding
 
-// IntegerToByte converts a specified integer to bytes
+// IntegerToByte converts a specified integer to bytes.
 func IntegerToByte(v uint, b []byte) {
 	byteSize := len(b)
 	for n := 0; n < byteSize; n++ {
@@ -13,7 +13,7 @@ func IntegerToByte(v uint, b []byte) {
 	}
 }
 
-// ByteToInteger converts specified bytes to a integer
+// ByteToInteger converts specified bytes to a integer.
 func ByteToInteger(b []byte) uint {
 	var v uint
 	byteSize := len(b)

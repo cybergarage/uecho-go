@@ -107,7 +107,7 @@ func (mgr *MulticastManager) Stop() error {
 
 // IsRunning returns true whether the local servers are running, otherwise false.
 func (mgr *MulticastManager) IsRunning() bool {
-	if len(mgr.Servers) <= 0 {
+	if len(mgr.Servers) == 0 {
 		return false
 	}
 	return true

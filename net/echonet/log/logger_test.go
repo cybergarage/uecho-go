@@ -49,27 +49,27 @@ func TestStdoutLogger(t *testing.T) {
 	defer SetSharedLogger(nil)
 
 	nOutput := Trace(testLogMessage)
-	if nOutput <= 0 {
+	if nOutput == 0 {
 		t.Error(errors.New(outputErrorMessage))
 	}
 
 	nOutput = Info(testLogMessage)
-	if nOutput <= 0 {
+	if nOutput == 0 {
 		t.Error(errors.New(outputErrorMessage))
 	}
 
 	nOutput = Error(testLogMessage)
-	if nOutput <= 0 {
+	if nOutput == 0 {
 		t.Error(errors.New(outputErrorMessage))
 	}
 
 	nOutput = Warn(testLogMessage)
-	if nOutput <= 0 {
+	if nOutput == 0 {
 		t.Error(errors.New(outputErrorMessage))
 	}
 
 	nOutput = Fatal(testLogMessage)
-	if nOutput <= 0 {
+	if nOutput == 0 {
 		t.Error(errors.New(outputErrorMessage))
 	}
 }
