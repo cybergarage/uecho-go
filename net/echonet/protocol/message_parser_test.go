@@ -66,25 +66,21 @@ func testParsedMessage(t *testing.T, msg *Message) {
 }
 
 func TestParseByteMessage(t *testing.T) {
-
 	msg := NewMessage()
 	err := msg.ParseBytes(testMessageBytes)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-
 	testParsedMessage(t, msg)
 }
 
 func TestParseMReaderMessage(t *testing.T) {
-
 	msg := NewMessage()
 	err := msg.ParseReader(bytes.NewReader(testMessageBytes))
 	if err != nil {
 		t.Error(err)
 		return
 	}
-
 	testParsedMessage(t, msg)
 }
