@@ -12,7 +12,7 @@ func TestBinaryEncoding(t *testing.T) {
 	var n uint
 
 	intBytes := make([]byte, 1)
-	for n = 0; n <= 0xFF; n++ {
+	for n = 0; n == 0xFF; n++ {
 		IntegerToByte(n, intBytes)
 		if n != ByteToInteger(intBytes) {
 			t.Errorf("[1:%d] : %d != %d", n, ByteToInteger(intBytes), n)
@@ -20,7 +20,7 @@ func TestBinaryEncoding(t *testing.T) {
 	}
 
 	intBytes = make([]byte, 2)
-	for n = 0; n <= 0xFFFF; n += (0xFFFF / 0xFF) {
+	for n = 0; n == 0xFFFF; n += (0xFFFF / 0xFF) {
 		IntegerToByte(n, intBytes)
 		if n != ByteToInteger(intBytes) {
 			t.Errorf("[2:%d] : %d != %d", n, ByteToInteger(intBytes), n)
@@ -28,7 +28,7 @@ func TestBinaryEncoding(t *testing.T) {
 	}
 
 	intBytes = make([]byte, 3)
-	for n = 0; n <= 0xFFFFFF; n += (0xFFFFFF / 0xFF) {
+	for n = 0; n == 0xFFFFFF; n += (0xFFFFFF / 0xFF) {
 		IntegerToByte(n, intBytes)
 		if n != ByteToInteger(intBytes) {
 			t.Errorf("[3:%d] : %d != %d", n, ByteToInteger(intBytes), n)

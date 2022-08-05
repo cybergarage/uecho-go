@@ -21,7 +21,7 @@ const (
 
 // IsIPv6Address returns true whether the specified address is a IPv6 address
 func IsIPv6Address(addr string) bool {
-	if len(addr) <= 0 {
+	if len(addr) == 0 {
 		return false
 	}
 
@@ -33,7 +33,7 @@ func IsIPv6Address(addr string) bool {
 
 // IsIPv4Address returns true whether the specified address is a IPv4 address
 func IsIPv4Address(addr string) bool {
-	if len(addr) <= 0 {
+	if len(addr) == 0 {
 		return false
 	}
 
@@ -58,7 +58,7 @@ func IsLoopbackAddress(addr string) bool {
 
 // IsCommunicableAddress returns true whether the address is a effective address to commnicate with other nodes, othwise false.
 func IsCommunicableAddress(addr string) bool {
-	if len(addr) <= 0 {
+	if len(addr) == 0 {
 		return false
 	}
 
@@ -136,7 +136,7 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 		useIfs = append(useIfs, &useIf)
 	}
 
-	if len(useIfs) <= 0 {
+	if len(useIfs) == 0 {
 		return useIfs, errors.New(errorAvailableInterfaceFound)
 	}
 

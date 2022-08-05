@@ -88,8 +88,8 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 		return nil, err
 	}
 
-	msg.From.IP = (*from).IP
-	msg.From.Port = (*from).Port
+	msg.From.IP = from.IP
+	msg.From.Port = from.Port
 	msg.Interface = sock.Socket.BoundInterface
 
 	return msg, nil
