@@ -103,7 +103,8 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 		return useIfs, err
 	}
 
-	for _, localIf := range localIfs {
+	for n := range localIfs {
+		localIf := localIfs[n]
 		if (localIf.Flags & net.FlagLoopback) != 0 {
 			continue
 		}
