@@ -137,7 +137,7 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 	return useIfs, err
 }
 
-// GetAvailableAddresses returns all available IPv4 addresses in the node
+// GetAvailableAddresses returns all available IPv4 addresses in the node.
 func GetAvailableAddresses() ([]string, error) {
 	addrs := make([]string, 0)
 

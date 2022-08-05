@@ -68,7 +68,7 @@ func (sock *Socket) GetBoundInterface() (*net.Interface, error) {
 	return sock.BoundInterface, nil
 }
 
-// GetBoundAddr returns the bound address
+// GetBoundAddr returns the bound address.
 func (sock *Socket) GetBoundAddr() (string, error) {
 	if !sock.IsBound() {
 		return "", fmt.Errorf(errorSocketClosed)
@@ -77,7 +77,7 @@ func (sock *Socket) GetBoundAddr() (string, error) {
 	return sock.BoundAddress, nil
 }
 
-// GetBoundIPAddr returns the bound address
+// GetBoundIPAddr returns the bound address.
 func (sock *Socket) GetBoundIPAddr() (string, error) {
 	port, err := sock.GetBoundPort()
 	if err != nil {
@@ -92,7 +92,7 @@ func (sock *Socket) GetBoundIPAddr() (string, error) {
 	return net.JoinHostPort(addr, strconv.Itoa(port)), nil
 }
 
-// SetMulticastLoop sets a flag to IP_MULTICAST_LOOP
+// SetMulticastLoop sets a flag to IP_MULTICAST_LOOP.
 func (sock *Socket) SetMulticastLoop(file *os.File, flag bool) error {
 	fd := file.Fd()
 
