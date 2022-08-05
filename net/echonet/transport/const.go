@@ -16,7 +16,7 @@ const (
 	MaxPacketSize    = 1024
 )
 
-//  Extention for Echonet Lite
+//  Extension for Echonet Lite
 const (
 	UDPPortRange = 100
 )
