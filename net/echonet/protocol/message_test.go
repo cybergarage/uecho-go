@@ -105,8 +105,7 @@ func TestEncodeMessage(t *testing.T) {
 		return
 	}
 
-	msgBytes := msg.Bytes()
-	if bytes.Compare(testMessageBytes, msgBytes) != 0 {
+	if msgBytes := msg.Bytes(); bytes.Compare(testMessageBytes, msgBytes) != 0 {
 		t.Errorf("%s != %s", string(msgBytes), string(testMessageBytes))
 	}
 }
