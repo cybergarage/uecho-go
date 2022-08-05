@@ -9,6 +9,8 @@ import (
 )
 
 func testUnicastManagerBinding(t *testing.T, conf *Config) {
+	t.Helper()
+
 	mgr := NewUnicastManager()
 	mgr.SetConfig(conf)
 

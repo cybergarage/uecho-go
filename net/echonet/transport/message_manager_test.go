@@ -74,6 +74,8 @@ func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*
 }
 
 func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
+	t.Helper()
+
 	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
 	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
 
@@ -124,6 +126,8 @@ func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessage
 }
 
 func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager, checkSourcePort bool) {
+	t.Helper()
+
 	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
 	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
 
@@ -190,6 +194,8 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 }
 
 func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, checkSourcePort bool) {
+	t.Helper()
+
 	mgrs := []*testMessageManager{
 		newTestMessageManager(),
 		newTestMessageManager(),

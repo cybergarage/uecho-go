@@ -23,6 +23,8 @@ var testMessageBytes = []byte{
 }
 
 func testParsedMessage(t *testing.T, msg *Message) {
+	t.Helper()
+
 	if msg.GetTID() != 0 {
 		t.Errorf("%d != %d", msg.GetTID(), 0)
 	}
