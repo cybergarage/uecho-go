@@ -42,10 +42,7 @@ func newTestMessage(tid uint) (*protocol.Message, error) {
 }
 
 func isTestMessage(msg *protocol.Message) bool {
-	if !msg.IsESV(protocol.ESVWriteReadRequest) {
-		return false
-	}
-	return true
+	return msg.IsESV(protocol.ESVWriteReadRequest)
 }
 
 // NewMessageManager returns a new message manager.
@@ -175,7 +172,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 
 		log.Trace("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String())
 
-		if bytes.Compare(msg.Bytes(), dstLastMsg.Bytes()) != 0 {
+		if !bytes.Equal(msg.Bytes(), dstLastMsg.Bytes()) {
 			log.Error("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
 			t.Errorf("CMP(U) : %s != %s", msg, dstLastMsg)
 		}
