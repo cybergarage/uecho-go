@@ -45,7 +45,7 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		t.Errorf("%d != %d", msg.GetESV(), 3)
 	}
 
-	for n := 1; n <= int(msg.GetOPC()); n++ {
+	for n := 1; n <= msg.GetOPC(); n++ {
 		prop := msg.GetProperty(n - 1)
 		if prop == nil {
 			t.Errorf("%d", n)
