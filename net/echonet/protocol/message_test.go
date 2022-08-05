@@ -84,8 +84,7 @@ func TestMessageAddProperty(t *testing.T) {
 	}
 
 	prop := NewProperty()
-	err := msg.AddProperty(prop)
-	if err != nil {
+	if err := msg.AddProperty(prop); err != nil {
 		t.Error(err)
 		return
 	}
