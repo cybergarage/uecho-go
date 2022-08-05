@@ -70,7 +70,7 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
 	return nil
 }
 
-func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.LogLevel, msgTo string, msg string, msgSize int) {
+func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.Level, msgTo string, msg string, msgSize int) {
 	msgFrom, _ := sock.GetBoundIPAddr()
 	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }

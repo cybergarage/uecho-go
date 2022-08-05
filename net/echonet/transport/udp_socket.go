@@ -66,7 +66,7 @@ func (sock *UDPSocket) Close() error {
 	return nil
 }
 
-func (sock *UDPSocket) outputReadLog(logLevel log.LogLevel, logType string, msgFrom string, msg string, msgSize int) {
+func (sock *UDPSocket) outputReadLog(logLevel log.Level, logType string, msgFrom string, msg string, msgSize int) {
 	msgTo, _ := sock.GetBoundIPAddr()
 	outputSocketLog(logLevel, logType, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }

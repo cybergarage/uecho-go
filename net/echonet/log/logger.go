@@ -11,13 +11,13 @@ import (
 	"time"
 )
 
-type LoggerOutpter func(file string, level LogLevel, msg string) (int, error)
+type LoggerOutpter func(file string, level Level, msg string) (int, error)
 
-type LogLevel int
+type Level int
 
 type Logger struct {
 	File     string
-	Level    LogLevel
+	Level    Level
 	outputer LoggerOutpter
 }
 
@@ -46,7 +46,7 @@ func GetSharedLogger() *Logger {
 	return sharedLogger
 }
 
-var logLevelStrings = map[LogLevel]string{
+var logLevelStrings = map[Level]string{
 	LevelTrace: "TRACE",
 	LevelInfo:  "INFO",
 	LevelWarn:  "WARN",
@@ -54,7 +54,7 @@ var logLevelStrings = map[LogLevel]string{
 	LevelFatal: "FATAL",
 }
 
-func getLogLevelString(logLevel LogLevel) string {
+func getLogLevelString(logLevel Level) string {
 	logString, hasString := logLevelStrings[logLevel]
 	if !hasString {
 		return loggerLevelUnknownString
@@ -62,15 +62,15 @@ func getLogLevelString(logLevel LogLevel) string {
 	return logString
 }
 
-func (logger *Logger) SetLevel(level LogLevel) {
+func (logger *Logger) SetLevel(level Level) {
 	logger.Level = level
 }
 
-func (logger *Logger) GetLevel() LogLevel {
+func (logger *Logger) GetLevel() Level {
 	return logger.Level
 }
 
-func NewStdoutLogger(level LogLevel) *Logger {
+func NewStdoutLogger(level Level) *Logger {
 	logger := &Logger{
 		File:     loggerStdout,
 		Level:    level,
@@ -78,12 +78,12 @@ func NewStdoutLogger(level LogLevel) *Logger {
 	return logger
 }
 
-func outputStdout(file string, level LogLevel, msg string) (int, error) {
+func outputStdout(file string, level Level, msg string) (int, error) {
 	fmt.Println(msg)
 	return len(msg), nil
 }
 
-func NewFileLogger(file string, level LogLevel) *Logger {
+func NewFileLogger(file string, level Level) *Logger {
 	logger := &Logger{
 		File:     file,
 		Level:    level,
@@ -91,7 +91,8 @@ func NewFileLogger(file string, level LogLevel) *Logger {
 	return logger
 }
 
-func outputToFile(file string, level LogLevel, msg string) (int, error) {
+// nolint: nosnakecase
+func outputToFile(file string, level Level, msg string) (int, error) {
 	msgBytes := []byte(msg + LF)
 	fd, err := os.OpenFile(file, (os.O_WRONLY | os.O_CREATE | os.O_APPEND), FilePerm)
 	if err != nil {
@@ -107,7 +108,7 @@ func outputToFile(file string, level LogLevel, msg string) (int, error) {
 	return len(msgBytes), nil
 }
 
-func output(outputLevel LogLevel, msgFormat string, msgArgs ...interface{}) int {
+func output(outputLevel Level, msgFormat string, msgArgs ...interface{}) int {
 	if sharedLogger == nil {
 		return 0
 	}
@@ -153,6 +154,6 @@ func Fatal(format string, args ...interface{}) int {
 	return output(LevelFatal, format, args...)
 }
 
-func Output(outputLevel LogLevel, format string, args ...interface{}) int {
+func Output(outputLevel Level, format string, args ...interface{}) int {
 	return output(outputLevel, format, args...)
 }
