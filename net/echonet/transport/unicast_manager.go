@@ -207,10 +207,7 @@ func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) 
 
 // IsRunning returns true whether the local servers are running, otherwise false.
 func (mgr *UnicastManager) IsRunning() bool {
-	if len(mgr.Servers) == 0 {
-		return false
-	}
-	return true
+	return len(mgr.Servers) != 0
 }
 
 // SendMessage sends a message to the destination address.

@@ -102,10 +102,7 @@ func (mgr *MulticastManager) Stop() error {
 
 // IsRunning returns true whether the local servers are running, otherwise false.
 func (mgr *MulticastManager) IsRunning() bool {
-	if len(mgr.Servers) == 0 {
-		return false
-	}
-	return true
+	return len(mgr.Servers) != 0
 }
 
 // setUnicastManager sets appropriate unicast servers to all multicast servers to response the multicast messages.

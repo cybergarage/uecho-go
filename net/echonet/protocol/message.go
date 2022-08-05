@@ -180,10 +180,7 @@ func (msg *Message) GetTID() uint {
 
 // IsTID returns true whether the specified value equals the message TID, otherwise false.
 func (msg *Message) IsTID(tid uint) bool {
-	if msg.GetTID() != tid {
-		return false
-	}
-	return true
+	return msg.GetTID() == tid
 }
 
 // SetSourceObjectCode sets a source object code.
@@ -198,10 +195,7 @@ func (msg *Message) GetSourceObjectCode() ObjectCode {
 
 // IsSourceObjectCode returns true whether the specified value equals the message source object code, otherwise false.
 func (msg *Message) IsSourceObjectCode(code ObjectCode) bool {
-	if msg.GetSourceObjectCode() != code {
-		return false
-	}
-	return true
+	return msg.GetSourceObjectCode() == code
 }
 
 // SetDestinationObjectCode sets a source object code.
@@ -216,10 +210,7 @@ func (msg *Message) GetDestinationObjectCode() ObjectCode {
 
 // IsDestinationObjectCode returns true whether the specified value equals the message destination object code, otherwise false.
 func (msg *Message) IsDestinationObjectCode(code ObjectCode) bool {
-	if msg.GetDestinationObjectCode() != code {
-		return false
-	}
-	return true
+	return msg.GetDestinationObjectCode() == code
 }
 
 // SetESV sets the specified ESV.
@@ -234,10 +225,7 @@ func (msg *Message) GetESV() ESV {
 
 // IsESV returns true whether the specified code equals the message ESV, otherwise false.
 func (msg *Message) IsESV(esv ESV) bool {
-	if msg.ESV != esv {
-		return false
-	}
-	return true
+	return msg.ESV == esv
 }
 
 // IsValidESV returns true whether the specified code is valid, otherwise false.
@@ -363,10 +351,7 @@ func (msg *Message) GetPacketType() int {
 
 // IsPacketType returns true when the specified type equals the message type, otherwise false.
 func (msg *Message) IsPacketType(packetType int) bool {
-	if (msg.PacketType & packetType) != 0 {
-		return true
-	}
-	return false
+	return (msg.PacketType & packetType) != 0
 }
 
 // IsMulticastPacket returns true when the message was sent by multicast, otherwise false.
@@ -458,7 +443,7 @@ func (msg *Message) Equals(other *Message) bool {
 	if msg == nil || other == nil {
 		return false
 	}
-	if bytes.Compare(msg.Bytes(), other.Bytes()) != 0 {
+	if !bytes.Equal(msg.Bytes(), other.Bytes()) {
 		return false
 	}
 	return true

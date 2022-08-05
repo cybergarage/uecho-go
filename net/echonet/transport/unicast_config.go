@@ -77,10 +77,7 @@ func (conf *UnicastConfig) SetBindRetryEnabled(flag bool) {
 
 // IsBindRetryEnabled returns true whether the bind retry function is enabled, otherwise false.
 func (conf *UnicastConfig) IsBindRetryEnabled() bool {
-	if conf.BindRetryCount == 0 {
-		return false
-	}
-	return true
+	return conf.BindRetryCount != 0
 }
 
 // SetBindRetryCount sets a retry count when the binding is failed.
