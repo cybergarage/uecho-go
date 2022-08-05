@@ -92,14 +92,10 @@ func (mgr *UnicastManager) StartWithInterfaceAndPort(ifi *net.Interface, port in
 	server := NewUnicastServer()
 	server.SetConfig(mgr.Config.UnicastConfig)
 	server.Handler = mgr.Handler
-
-	err := server.Start(ifi, port)
-	if err != nil {
+	if err := server.Start(ifi, port); err != nil {
 		return nil, err
 	}
-
 	mgr.Servers = append(mgr.Servers, server)
-
 	return server, nil
 }
 
@@ -125,8 +121,7 @@ func (mgr *UnicastManager) StartWithInterface(ifi *net.Interface) (*UnicastServe
 
 // Start starts servers on the all avairable interfaces.
 func (mgr *UnicastManager) Start() error {
-	err := mgr.Stop()
-	if err != nil {
+	if err := mgr.Stop(); err != nil {
 		return err
 	}
 

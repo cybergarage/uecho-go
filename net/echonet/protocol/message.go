@@ -74,8 +74,7 @@ func NewMessage() *Message {
 // NewMessageWithReader returns a new message with the specified reader.
 func NewMessageWithReader(reader io.Reader) (*Message, error) {
 	msg := NewMessage()
-	err := msg.ParseReader(reader)
-	if err != nil {
+	if err := msg.ParseReader(reader); err != nil {
 		return nil, err
 	}
 	return msg, nil
@@ -84,8 +83,7 @@ func NewMessageWithReader(reader io.Reader) (*Message, error) {
 // NewMessageWithBytes returns a new message of the specified bytes.
 func NewMessageWithBytes(data []byte) (*Message, error) {
 	msg := NewMessage()
-	err := msg.ParseBytes(data)
-	if err != nil {
+	if err := msg.ParseBytes(data); err != nil {
 		return nil, err
 	}
 	return msg, nil
