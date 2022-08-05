@@ -8,13 +8,13 @@ import (
 	"testing"
 )
 
-func TestNewDefaultExtentionConfigConfig(t *testing.T) {
-	NewDefaultExtentionConfig()
+func TestNewDefaultExtensionConfigConfig(t *testing.T) {
+	NewDefaultExtensionConfig()
 }
 
-func TestExtentionConfigEquals(t *testing.T) {
-	conf01 := NewDefaultExtentionConfig()
-	conf02 := NewDefaultExtentionConfig()
+func TestExtensionConfigEquals(t *testing.T) {
+	conf01 := NewDefaultExtensionConfig()
+	conf02 := NewDefaultExtensionConfig()
 
 	// Testing Set*()
 
@@ -30,7 +30,7 @@ func TestExtentionConfigEquals(t *testing.T) {
 
 	// Testing SetConfig()
 
-	conf03 := NewDefaultExtentionConfig()
+	conf03 := NewDefaultExtensionConfig()
 	conf03.SetConfig(conf01)
 	if !conf01.Equals(conf03) {
 		t.Errorf("%v != %v", conf01, conf03)
@@ -45,7 +45,7 @@ func TestExtentionConfigEquals(t *testing.T) {
 	}
 }
 
-func TestExtentionAutoBindingConfig(t *testing.T) {
+func TestExtensionAutoBindingConfig(t *testing.T) {
 	conf01 := newTestDefaultConfig()
 	conf01.SetAutoPortBindingEnabled(false)
 	conf01.SetBindRetryEnabled(true)
@@ -57,7 +57,7 @@ func TestExtentionAutoBindingConfig(t *testing.T) {
 	err := mgr01.Start()
 	defer mgr01.Stop()
 	if err != nil {
-		// FIXME : TestExtentionAutoBindingConfig is failed on Travis
+		// FIXME : TestExtensionAutoBindingConfig is failed on Travis
 		// t.Skip(err)
 		return
 	}

@@ -19,7 +19,7 @@ const (
 	errorAvailableInterfaceFound  = "Available interface not found"
 )
 
-// IsIPv6Address returns true whether the specified address is a IPv6 address
+// IsIPv6Address returns true whether the specified address is a IPv6 address.
 func IsIPv6Address(addr string) bool {
 	if len(addr) == 0 {
 		return false
@@ -31,7 +31,7 @@ func IsIPv6Address(addr string) bool {
 	return false
 }
 
-// IsIPv4Address returns true whether the specified address is a IPv4 address
+// IsIPv4Address returns true whether the specified address is a IPv4 address.
 func IsIPv4Address(addr string) bool {
 	if len(addr) == 0 {
 		return false
@@ -40,7 +40,7 @@ func IsIPv4Address(addr string) bool {
 	return !IsIPv6Address(addr)
 }
 
-// IsLoopbackAddress returns true whether the specified address is a loopback addresses
+// IsLoopbackAddress returns true whether the specified address is a loopback addresses.
 func IsLoopbackAddress(addr string) bool {
 	localAddrs := []string{
 		"127.0.0.1",
