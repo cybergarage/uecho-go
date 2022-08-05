@@ -27,6 +27,7 @@ linters:
     - nestif
     - maligned
     - gochecknoglobals
+    - forbidigo
 
 linters-settings:
   gocritic:
