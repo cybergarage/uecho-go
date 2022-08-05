@@ -25,8 +25,9 @@ type TCPSocket struct {
 // NewTCPSocket returns a new TCPSocket.
 func NewTCPSocket() *TCPSocket {
 	sock := &TCPSocket{
-		Socket:  NewSocket(),
-		readBuf: make([]byte, MaxPacketSize),
+		Socket:   NewSocket(),
+		Listener: nil,
+		readBuf:  make([]byte, MaxPacketSize),
 	}
 	return sock
 }

@@ -21,7 +21,11 @@ type Socket struct {
 
 // NewSocket returns a new UDPSocket.
 func NewSocket() *Socket {
-	sock := &Socket{}
+	sock := &Socket{
+		BoundInterface: nil,
+		BoundPort:      0,
+		BoundAddress:   "",
+	}
 	sock.Close()
 	return sock
 }

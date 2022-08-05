@@ -23,7 +23,11 @@ type Address struct {
 
 // NewAddress returns a new remote address.
 func NewAddress() *Address {
-	addr := &Address{}
+	addr := &Address{
+		IP:   nil,
+		Port: 0,
+		Zone: "",
+	}
 	return addr
 }
 
