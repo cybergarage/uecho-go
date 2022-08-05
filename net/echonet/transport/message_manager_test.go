@@ -185,7 +185,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 				t.Errorf("%d -!-> %d", srcPort, msgPort)
 			}
 		} else {
-			// t.Logf("Checking source port : %v", checkSourcePort)
+			t.Logf("Checking source port : %v", checkSourcePort)
 		}
 	}
 }
