@@ -415,7 +415,7 @@ func (msg *Message) Bytes() []byte {
 		msgBytes[offset] = byte(prop.GetCode())
 		offset++
 
-		propSize := int(prop.Size())
+		propSize := prop.Size()
 		msgBytes[offset] = byte(propSize)
 		offset++
 		if propSize == 0 {
