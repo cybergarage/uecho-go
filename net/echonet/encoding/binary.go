@@ -19,7 +19,7 @@ func ByteToInteger(b []byte) uint {
 	byteSize := len(b)
 	for n := 0; n < byteSize; n++ {
 		idx := ((byteSize - 1) - n)
-		v += uint((uint(b[idx]) << (uint(n) * 8)))
+		v += (uint(b[idx]) << (uint(n) * 8))
 	}
 	return v
 }
