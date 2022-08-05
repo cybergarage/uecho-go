@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// nolint: gochecknoglobals
 var testMessageBytes = []byte{
 	EHD1Echonet,
 	EHD2Format1,
