@@ -25,3 +25,8 @@ linters:
     - makezero
     - gomnd
     - nestif
+
+linters-settings:
+  gocritic:
+    disabled-checks:
+      - singleCaseSwitch
