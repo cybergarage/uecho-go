@@ -39,6 +39,8 @@ func (server *testMulticastServer) ProtocolMessageReceived(msg *protocol.Message
 }
 
 func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
+	t.Helper()
+
 	server := newTestMulticastServer()
 
 	// Start server
