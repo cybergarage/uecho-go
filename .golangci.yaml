@@ -25,6 +25,7 @@ linters:
     - makezero
     - gomnd
     - nestif
+    - maligned
 
 linters-settings:
   gocritic:
