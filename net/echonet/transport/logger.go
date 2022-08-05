@@ -21,7 +21,7 @@ const (
 	logSocketDirectionRead  = 1
 )
 
-func outputSocketLog(logLevel log.LogLevel, socketType string, socketDirection int, msgFrom string, msgTo string, msg string, msgSize int) {
+func outputSocketLog(logLevel log.Level, socketType string, socketDirection int, msgFrom string, msgTo string, msg string, msgSize int) {
 	switch socketDirection {
 	case logSocketDirectionWrite:
 		{

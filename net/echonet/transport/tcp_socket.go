@@ -95,7 +95,7 @@ func (sock *TCPSocket) Close() error {
 	return nil
 }
 
-func (sock *TCPSocket) outputReadLog(logLevel log.LogLevel, msgFrom string, msg string, msgSize int) {
+func (sock *TCPSocket) outputReadLog(logLevel log.Level, msgFrom string, msg string, msgSize int) {
 	msgTo, _ := sock.GetBoundIPAddr()
 	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }
@@ -124,7 +124,7 @@ func (sock *TCPSocket) ReadMessage(conn net.Conn) (*protocol.Message, error) {
 	return msg, nil
 }
 
-func (sock *TCPSocket) outputWriteLog(logLevel log.LogLevel, msgFrom string, msgTo string, msg string, msgSize int) {
+func (sock *TCPSocket) outputWriteLog(logLevel log.Level, msgFrom string, msgTo string, msg string, msgSize int) {
 	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
