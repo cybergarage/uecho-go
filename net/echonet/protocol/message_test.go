@@ -73,7 +73,6 @@ func TestNewFormat1TestMessage(t *testing.T) {
 		if prop.Size() != n {
 			t.Errorf("%d != %d", prop.Size(), n)
 		}
-
 	}
 }
 
@@ -97,7 +96,6 @@ func TestMessageAddProperty(t *testing.T) {
 }
 
 func TestEncodeMessage(t *testing.T) {
-
 	msg := NewMessage()
 	err := msg.ParseBytes(testMessageBytes)
 	if err != nil {
@@ -111,7 +109,6 @@ func TestEncodeMessage(t *testing.T) {
 }
 
 func TestMessageEquals(t *testing.T) {
-
 	msg1 := NewMessage()
 	err := msg1.ParseBytes(testMessageBytes)
 	if err != nil {

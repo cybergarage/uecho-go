@@ -139,7 +139,6 @@ func (mgr *UnicastManager) Start() error {
 	}
 
 	for port := startPort; port <= endPort; port++ {
-
 		bindRetryCount := uint(0)
 		if !mgr.IsAutoPortBindingEnabled() {
 			bindRetryCount = mgr.GetBindRetryCount()
