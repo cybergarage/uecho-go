@@ -42,7 +42,7 @@ func (sock *Socket) SetBoundStatus(i *net.Interface, addr string, port int) {
 
 // IsBound returns true whether the socket is bound, otherwise false.
 func (sock *Socket) IsBound() bool {
-	if sock.BoundPort <= 0 {
+	if sock.BoundPort == 0 {
 		return false
 	}
 	return true

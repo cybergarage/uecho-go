@@ -149,7 +149,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 		if err != nil {
 			t.Error(err)
 		}
-		if len(dstAddrs) <= 0 {
+		if len(dstAddrs) == 0 {
 			t.Errorf("Not found available interfaces ")
 			continue
 		}
@@ -184,7 +184,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 				t.Errorf("%d -!-> %d", srcPort, msgPort)
 			}
 		} else {
-			//t.Logf("Checking source port : %v", checkSourcePort)
+			// t.Logf("Checking source port : %v", checkSourcePort)
 		}
 	}
 }

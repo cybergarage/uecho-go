@@ -195,7 +195,7 @@ func (mgr *UnicastManager) Stop() error {
 
 // Stop stops this server.
 func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) (*UnicastServer, error) {
-	if len(mgr.Servers) <= 0 {
+	if len(mgr.Servers) == 0 {
 		return nil, fmt.Errorf(errorUnicastServerNotRunning)
 	}
 
@@ -213,7 +213,7 @@ func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) 
 
 // IsRunning returns true whether the local servers are running, otherwise false.
 func (mgr *UnicastManager) IsRunning() bool {
-	if len(mgr.Servers) <= 0 {
+	if len(mgr.Servers) == 0 {
 		return false
 	}
 	return true

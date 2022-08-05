@@ -13,7 +13,7 @@ func TestGetAvailableInterfaces(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(ifs) <= 0 {
+	if len(ifs) == 0 {
 		t.Errorf("available interface is not found")
 	}
 }

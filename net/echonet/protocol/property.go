@@ -40,7 +40,7 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 	return props
 }
 
-// SetCode sets a code to the property
+// SetCode sets a code to the property.
 func (prop *Property) SetCode(code PropertyCode) {
 	prop.Code = code
 }
@@ -50,7 +50,7 @@ func (prop *Property) GetCode() PropertyCode {
 	return prop.Code
 }
 
-// SetData sets a code to the property
+// SetData sets a code to the property.
 func (prop *Property) SetData(data []byte) {
 	prop.Data = make([]byte, len(data))
 	copy(prop.Data, data)
