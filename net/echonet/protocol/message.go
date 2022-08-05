@@ -33,11 +33,6 @@ const (
 	UnicastPacket    = (UDPUnicastPacket | TCPUnicastPacket)
 )
 
-const (
-	errorShortMessageSize     = "Short message length : %d < %d"
-	errorInvalidMessageHeader = "Invalid Message header [%d] : %02X != %02X"
-)
-
 // Message is an instance for Echonet message.
 type Message struct {
 	EHD1Echonet byte

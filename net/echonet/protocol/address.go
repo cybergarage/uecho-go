@@ -10,10 +10,6 @@ import (
 	"strconv"
 )
 
-const (
-	errorInvalidAddress = "Invalid address string : %s"
-)
-
 // Address represents the address of the message end point.
 type Address struct {
 	IP   net.IP

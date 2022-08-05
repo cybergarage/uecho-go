@@ -14,11 +14,6 @@ const (
 	libvirtInterfaceName = "virbr0"
 )
 
-const (
-	errorAvailableAddressNotFound = "Available address not found"
-	errorAvailableInterfaceFound  = "Available interface not found"
-)
-
 // IsIPv6Address returns true whether the specified address is a IPv6 address.
 func IsIPv6Address(addr string) bool {
 	if len(addr) == 0 {
