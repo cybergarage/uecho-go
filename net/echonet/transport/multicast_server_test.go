@@ -48,6 +48,7 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 	err := server.Start(ifi)
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	time.Sleep(time.Second)
@@ -56,6 +57,10 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 
 	now := time.Now()
 	msg, err := newTestMessage(uint(now.Unix()))
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	sock := NewUnicastUDPSocket()
 	nSent, err := sock.SendMessage(MulticastAddress, Port, msg)
@@ -65,6 +70,7 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 
 	if msgBytes := msg.Bytes(); nSent != len(msgBytes) {
 		t.Errorf("%d != %d", nSent, len(msgBytes))
+		return
 	}
 
 	// Wait a test message
