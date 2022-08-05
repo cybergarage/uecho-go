@@ -93,6 +93,7 @@ func (sock *Socket) GetBoundIPAddr() (string, error) {
 }
 
 // SetMulticastLoop sets a flag to IP_MULTICAST_LOOP.
+// nolint: nosnakecase
 func (sock *Socket) SetMulticastLoop(file *os.File, flag bool) error {
 	fd := file.Fd()
 
