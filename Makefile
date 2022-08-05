@@ -22,6 +22,7 @@ PACKAGE_ROOT=${MODULE_ROOT}/${PACKAGE_NAME}
 
 SOURCES=\
 	${SOURCE_ROOT} \
+	${SOURCE_ROOT}/log \
 	${SOURCE_ROOT}/encoding \
 	${SOURCE_ROOT}/protocol \
 	${SOURCE_ROOT}/transport
@@ -29,6 +30,7 @@ SOURCES=\
 PACKAGE_ID=${PACKAGE_ROOT}
 PACKAGES=\
 	${PACKAGE_ID} \
+	${PACKAGE_ID}/log \
 	${PACKAGE_ID}/encoding \
 	${PACKAGE_ID}/protocol \
 	${PACKAGE_ID}/transport
