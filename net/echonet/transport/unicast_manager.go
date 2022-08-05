@@ -12,11 +12,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	errorUnicastServerNotRunning           = "Unicast server is not running"
-	errorUnicastServerNoAvailableInterface = "No available interface"
-)
-
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
 	*Config

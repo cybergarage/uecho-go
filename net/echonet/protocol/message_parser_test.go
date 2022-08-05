@@ -49,6 +49,7 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		prop := msg.GetProperty(n - 1)
 		if prop == nil {
 			t.Errorf("%d", n)
+			continue
 		}
 		if prop.Code != PropertyCode(n) {
 			t.Errorf("%d != %d", prop.Code, n)

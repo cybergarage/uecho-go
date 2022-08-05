@@ -11,10 +11,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	errorMessageManagerNotRunning = "Message manager is not running"
-)
-
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
 	Port           uint
