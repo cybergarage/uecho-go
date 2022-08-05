@@ -31,7 +31,7 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 
 	err = sock.Listen(ifi)
 	if err != nil {
-		return fmt.Errorf("%s (%s)", err.Error(), ifi.Name)
+		return fmt.Errorf("%w (%s)", err, ifi.Name)
 	}
 
 	sock.Conn.SetReadBuffer(sock.GetReadBufferSize())
