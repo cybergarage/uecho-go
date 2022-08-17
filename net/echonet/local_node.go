@@ -45,6 +45,19 @@ func NewLocalNode() *LocalNode {
 	return node
 }
 
+// GetAddress returns the bound address.
+func (node *LocalNode) GetAddress() string {
+	for _, server := range node.GeUnicastManager().Servers {
+		return server.UDPSocket.BoundAddress
+	}
+	return ""
+}
+
+// GetPort returns the bound address.
+func (node *LocalNode) GetPort() int {
+	return node.GeUnicastManager().GetPort()
+}
+
 // SetConfig sets all configuration flags.
 func (node *LocalNode) SetConfig(newConfig *Config) {
 	node.Config = newConfig
