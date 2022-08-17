@@ -9,14 +9,15 @@ import (
 )
 
 const (
-	Port             = 3610
-	UDPPort          = Port
-	TCPPort          = Port
-	MulticastAddress = "224.0.23.0"
-	MaxPacketSize    = 1024
+	Port                 = 3610
+	UDPPort              = Port
+	TCPPort              = Port
+	MulticastIPv4Address = "224.0.23.0"
+	MulticastIPv6Address = "ff02::1"
+	MaxPacketSize        = 1024
 )
 
-//  Extension for Echonet Lite
+// Extension for Echonet Lite.
 const (
 	UDPPortRange = 100
 )
