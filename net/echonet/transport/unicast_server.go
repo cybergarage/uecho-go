@@ -53,14 +53,13 @@ func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Me
 }
 
 // AnnounceMessage sends a message to the multicast address.
-func (server *UnicastServer) AnnounceMessage(addr string, port int, msg *protocol.Message) error {
-	_, err := server.UDPSocket.SendBytes(addr, port, msg.Bytes())
-	return err
+func (server *UnicastServer) AnnounceMessage(msg *protocol.Message) error {
+	return server.UDPSocket.AnnounceMessage(msg)
 }
 
 // Start starts this server.
-func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
-	err := server.UDPSocket.Bind(ifi, port)
+func (server *UnicastServer) Start(ifi *net.Interface, ifaddr string, port int) error {
+	err := server.UDPSocket.Bind(ifi, ifaddr, port)
 	if err != nil {
 		server.TCPSocket.Close()
 		return err
@@ -69,7 +68,7 @@ func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 	go handleUnicastUDPConnection(server, server.UDPChannel)
 
 	if server.IsTCPEnabled() {
-		err := server.TCPSocket.Bind(ifi, port)
+		err := server.TCPSocket.Bind(ifi, ifaddr, port)
 		if err != nil {
 			return err
 		}
@@ -77,7 +76,8 @@ func (server *UnicastServer) Start(ifi *net.Interface, port int) error {
 		go handleUnicastTCPListener(server, server.TCPChannel)
 	}
 
-	server.SetBoundInterface(ifi)
+	server.TCPSocket.SetBoundStatus(ifi, ifaddr, port)
+	server.UDPSocket.SetBoundStatus(ifi, ifaddr, port)
 
 	return nil
 }
@@ -99,8 +99,6 @@ func (server *UnicastServer) Stop() error {
 			lastErr = err
 		}
 	}
-
-	server.SetBoundInterface(nil)
 
 	return lastErr
 }

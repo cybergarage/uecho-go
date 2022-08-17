@@ -6,6 +6,7 @@ package transport
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 	"time"
 
@@ -56,70 +57,23 @@ func newTestMessageManager() *testMessageManager {
 	return mgr
 }
 
+// nolint: staticcheck
 func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	// log.Trace("ProtocolMessageReceived (R) : %s", msg.String())
 
 	if isTestMessage(msg) {
 		copyMsg, err := protocol.NewMessageWithMessage(msg)
 		if err == nil {
-			// log.Trace("ProtocolMessageReceived (U) : %s", copyMsg.String())
+			// log.Trace("lastNotificationMessage (O) : %s", copyMsg.String())
 			mgr.lastNotificationMessage = copyMsg
+		} else {
+			log.Error("ProtocolMessageReceived (X) : %s", msg.String())
 		}
+	} else {
+		// log.Trace("ProtocolMessageReceived (-) : %s", msg.String())
 	}
 
 	return nil, nil
-}
-
-func testMulticastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager) {
-	t.Helper()
-
-	srcMgrs := []*testMessageManager{mgrs[0], mgrs[1]}
-	dstMgrs := []*testMessageManager{mgrs[1], mgrs[0]}
-
-	for n := 0; n < len(srcMgrs); n++ {
-		srcMgr := srcMgrs[n]
-		srcMgr.FromPacketType = protocol.UnknownPacket
-
-		dstMgr := dstMgrs[n]
-		dstMgr.FromPort = srcMgr.GetPort()
-		dstMgr.FromPacketType = protocol.MulticastPacket
-		dstMgr.lastNotificationMessage = nil
-
-		msg, err := newTestMessage(uint(n | 0xF0))
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		err = srcMgr.AnnounceMessage(msg)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		time.Sleep(time.Second)
-
-		dstLastMsg := dstMgr.lastNotificationMessage
-		if dstLastMsg == nil {
-			t.Errorf("%s !=", msg.String())
-			continue
-		}
-
-		log.Trace("CMP(M) : %s ?= %s", msg.String(), dstLastMsg.String())
-
-		if !msg.Equals(dstLastMsg) {
-			log.Trace("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
-			t.Errorf("CMP(M) : %s != %s", msg.String(), dstLastMsg.String())
-			continue
-		}
-
-		srcPort := srcMgr.GetPort()
-		msgPort := dstLastMsg.GetSourcePort()
-
-		if srcPort != msgPort {
-			t.Errorf("%d -!-> %d", srcPort, msgPort)
-		}
-	}
 }
 
 func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageManager, checkSourcePort bool) {
@@ -139,58 +93,57 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 		dstMgr.FromPacketType = protocol.UnicastPacket
 		dstMgr.lastNotificationMessage = nil
 
-		msg, err := newTestMessage(uint(n))
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		dstPort := dstMgr.GetPort()
-		dstAddrs, err := dstMgr.GetBoundAddresses()
-		if err != nil {
-			t.Error(err)
-		}
-		if len(dstAddrs) == 0 {
-			t.Errorf("Not found available interfaces ")
-			continue
-		}
-
-		dstAddr := dstAddrs[0]
-		_, err = srcMgr.SendMessage(dstAddr, dstPort, msg)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		time.Sleep(time.Second)
-
-		dstLastMsg := dstMgr.lastNotificationMessage
-		if dstLastMsg == nil {
-			t.Errorf("%s != (nil)", msg)
-			continue
-		}
-
-		log.Trace("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String())
-
-		if !bytes.Equal(msg.Bytes(), dstLastMsg.Bytes()) {
-			log.Error("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
-			t.Errorf("CMP(U) : %s != %s", msg, dstLastMsg)
-		}
-
-		if checkSourcePort {
-			srcPort := srcMgr.GetPort()
-			msgPort := dstLastMsg.GetSourcePort()
-
-			if srcPort != msgPort {
-				t.Errorf("%d -!-> %d", srcPort, msgPort)
+		t.Run(fmt.Sprintf("Unicast:%d->%d", srcMgr.GetPort(), dstMgr.GetPort()), func(t *testing.T) {
+			msg, err := newTestMessage(uint(n))
+			if err != nil {
+				t.Error(err)
+				return
 			}
-		} else {
-			t.Logf("Checking source port : %v", checkSourcePort)
-		}
+
+			dstPort := dstMgr.GetPort()
+			dstAddrs := dstMgr.GetBoundAddresses()
+			if len(dstAddrs) == 0 {
+				t.Errorf("Not found available interfaces ")
+				return
+			}
+
+			dstAddr := dstAddrs[0]
+			_, err = srcMgr.SendMessage(dstAddr, dstPort, msg)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			time.Sleep(time.Second)
+
+			dstLastMsg := dstMgr.lastNotificationMessage
+			if dstLastMsg == nil {
+				t.Errorf("%s != (nil)", msg)
+				return
+			}
+
+			// log.Trace("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String())
+
+			if !bytes.Equal(msg.Bytes(), dstLastMsg.Bytes()) {
+				log.Error("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
+				t.Errorf("CMP(U) : %s != %s", msg, dstLastMsg)
+			}
+
+			if checkSourcePort {
+				srcPort := srcMgr.GetPort()
+				msgPort := dstLastMsg.GetSourcePort()
+
+				if srcPort != msgPort {
+					t.Errorf("%d -!-> %d", srcPort, msgPort)
+				}
+			} else {
+				t.Logf("Checking source port : %v", checkSourcePort)
+			}
+		})
 	}
 }
 
-func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, checkSourcePort bool) {
+func testUnicastMessagingWithConfig(t *testing.T, conf *Config, checkSourcePort bool) {
 	t.Helper()
 
 	mgrs := []*testMessageManager{
@@ -206,20 +159,15 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 
 	// Start managers
 
-	for n, mgr := range mgrs {
+	for _, mgr := range mgrs {
 		err := mgr.Start()
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		log.Trace("mgr[%d] : %d", n, mgr.GetPort())
 	}
 
 	time.Sleep(time.Second)
-
-	// Send multicast messages, and check the received message
-
-	testMulticastMessagingWithRunningManagers(t, mgrs)
 
 	// Send unicast messages, and check the received message
 
@@ -236,22 +184,18 @@ func testMulticastAndUnicastMessagingWithConfig(t *testing.T, conf *Config, chec
 	}
 }
 
-func TestMulticastAndUnicastMessagingWithDefaultConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	conf := newTestDefaultConfig()
-	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
-}
+func TestUnicastMessaging(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+	defer log.SetStdoutDebugEnbled(false)
 
-func TestMulticastAndUnicastMessagingWithDisableTCPConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	conf := newTestDefaultConfig()
-	conf.SetTCPEnabled(false)
-	testMulticastAndUnicastMessagingWithConfig(t, conf, true)
-}
+	t.Run("Default", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		testUnicastMessagingWithConfig(t, conf, true)
+	})
 
-func TestMulticastAndUnicastMessagingWithEnableTCPConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	conf := newTestDefaultConfig()
-	conf.SetTCPEnabled(true)
-	testMulticastAndUnicastMessagingWithConfig(t, conf, false)
+	t.Run("TCPEnabled", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		conf.SetTCPEnabled(true)
+		testUnicastMessagingWithConfig(t, conf, false)
+	})
 }

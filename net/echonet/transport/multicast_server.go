@@ -14,7 +14,7 @@ import (
 // A MulticastServer represents a multicast server.
 type MulticastServer struct {
 	*Server
-	Socket        *MulticastSocket
+	*MulticastSocket
 	Channel       chan interface{}
 	Handler       MulticastHandler
 	UnicastServer *UnicastServer
@@ -23,11 +23,11 @@ type MulticastServer struct {
 // NewMulticastServer returns a new MulticastServer.
 func NewMulticastServer() *MulticastServer {
 	server := &MulticastServer{
-		Server:        NewServer(),
-		Socket:        NewMulticastSocket(),
-		Channel:       nil,
-		Handler:       nil,
-		UnicastServer: nil,
+		Server:          NewServer(),
+		MulticastSocket: NewMulticastSocket(),
+		Channel:         nil,
+		Handler:         nil,
+		UnicastServer:   nil,
 	}
 	return server
 }
@@ -43,11 +43,10 @@ func (server *MulticastServer) SetUnicastServer(s *UnicastServer) {
 }
 
 // Start starts this server.
-func (server *MulticastServer) Start(ifi *net.Interface) error {
-	if err := server.Socket.Bind(ifi); err != nil {
+func (server *MulticastServer) Start(ifi *net.Interface, ifaddr string) error {
+	if err := server.MulticastSocket.Bind(ifi, ifaddr); err != nil {
 		return err
 	}
-	server.SetBoundInterface(ifi)
 	server.Channel = make(chan interface{})
 	go handleMulticastConnection(server, server.Channel)
 	return nil
@@ -55,15 +54,14 @@ func (server *MulticastServer) Start(ifi *net.Interface) error {
 
 // Stop stops this server.
 func (server *MulticastServer) Stop() error {
-	if err := server.Socket.Close(); err != nil {
+	if err := server.MulticastSocket.Close(); err != nil {
 		return err
 	}
-	server.SetBoundInterface(nil)
 	return nil
 }
 
 func handleMulticastRequestMessage(server *MulticastServer, reqMsg *protocol.Message) {
-	server.Socket.outputReadLog(log.LevelTrace, logSocketTypeUDPMulticast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
+	server.MulticastSocket.outputReadLog(log.LevelTrace, logSocketTypeUDPMulticast, reqMsg.From.String(), reqMsg.String(), reqMsg.Size())
 
 	if server.Handler == nil {
 		return
@@ -78,13 +76,13 @@ func handleMulticastRequestMessage(server *MulticastServer, reqMsg *protocol.Mes
 }
 
 func handleMulticastConnection(server *MulticastServer, cancel chan interface{}) {
-	defer server.Socket.Close()
+	defer server.MulticastSocket.Close()
 	for {
 		select {
 		case <-cancel:
 			return
 		default:
-			reqMsg, err := server.Socket.ReadMessage()
+			reqMsg, err := server.MulticastSocket.ReadMessage()
 			if err != nil {
 				break
 			}

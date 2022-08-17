@@ -46,72 +46,16 @@ func (mgr *UnicastManager) SetHandler(l UnicastHandler) {
 	mgr.Handler = l
 }
 
-// GetBoundAddresses returns the listen addresses.
-func (mgr *UnicastManager) GetBoundAddresses() []string {
-	boundAddrs := make([]string, 0)
-
-	if mgr.IsEachInterfaceBindingEnabled() {
-		for _, server := range mgr.Servers {
-			boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
-		}
-	} else {
-		addrs, err := GetAvailableAddresses()
-		if err == nil {
-			boundAddrs = append(boundAddrs, addrs...)
-		}
-	}
-
-	return boundAddrs
-}
-
-// GetBoundInterfaces returns the listen interfaces.
-func (mgr *UnicastManager) GetBoundInterfaces() []*net.Interface {
-	boundIfs := make([]*net.Interface, 0)
-
-	if mgr.IsEachInterfaceBindingEnabled() {
-		for _, server := range mgr.Servers {
-			boundIfs = append(boundIfs, server.GetBoundInterface())
-		}
-	} else {
-		ifis, err := GetAvailableInterfaces()
-		if err == nil {
-			boundIfs = append(boundIfs, ifis...)
-		}
-	}
-
-	return boundIfs
-}
-
 // StartWithInterfaceAndPort starts this server on the specified interface and port.
-func (mgr *UnicastManager) StartWithInterfaceAndPort(ifi *net.Interface, port int) (*UnicastServer, error) {
+func (mgr *UnicastManager) StartWithInterfaceAndPort(ifi *net.Interface, ifaddr string, port int) (*UnicastServer, error) {
 	server := NewUnicastServer()
 	server.SetConfig(mgr.Config.UnicastConfig)
 	server.Handler = mgr.Handler
-	if err := server.Start(ifi, port); err != nil {
+	if err := server.Start(ifi, ifaddr, port); err != nil {
 		return nil, err
 	}
 	mgr.Servers = append(mgr.Servers, server)
 	return server, nil
-}
-
-// StartWithInterface starts this server on the specified interface.
-func (mgr *UnicastManager) StartWithInterface(ifi *net.Interface) (*UnicastServer, error) {
-	startPort := mgr.GetPort()
-	endPort := startPort
-	if mgr.IsAutoPortBindingEnabled() {
-		endPort = startPort + UDPPortRange
-	}
-
-	var lastErr error
-	for port := startPort; port <= endPort; port++ {
-		server, lastErr := mgr.StartWithInterfaceAndPort(ifi, port)
-		if lastErr == nil {
-			mgr.SetPort(port)
-			return server, nil
-		}
-	}
-
-	return nil, lastErr
 }
 
 // Start starts servers on the all avairable interfaces.
@@ -140,15 +84,17 @@ func (mgr *UnicastManager) Start() error {
 		}
 
 		for n := uint(0); n <= bindRetryCount; n++ {
-			if mgr.IsEachInterfaceBindingEnabled() {
-				for _, ifi := range ifis {
-					_, lastErr = mgr.StartWithInterfaceAndPort(ifi, port)
+			for _, ifi := range ifis {
+				ifaddrs, err := GetInterfaceAddresses(ifi)
+				if err != nil {
+					continue
+				}
+				for _, ifaddr := range ifaddrs {
+					_, lastErr = mgr.StartWithInterfaceAndPort(ifi, ifaddr, port)
 					if lastErr != nil {
 						break
 					}
 				}
-			} else {
-				_, lastErr = mgr.StartWithInterfaceAndPort(nil, port)
 			}
 			if lastErr == nil {
 				break
@@ -192,7 +138,7 @@ func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) 
 		if server == nil {
 			continue
 		}
-		if server.Interface == ifi {
+		if server.UDPSocket.BoundInterface == ifi {
 			return server, nil
 		}
 	}
@@ -222,10 +168,10 @@ func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Mess
 }
 
 // AnnounceMessage sends a message to the multicast address.
-func (mgr *UnicastManager) AnnounceMessage(addr string, port int, msg *protocol.Message) error {
+func (mgr *UnicastManager) AnnounceMessage(msg *protocol.Message) error {
 	var lastErr error
 	for _, server := range mgr.Servers {
-		err := server.AnnounceMessage(addr, port, msg)
+		err := server.AnnounceMessage(msg)
 		if err == nil {
 			return nil
 		}

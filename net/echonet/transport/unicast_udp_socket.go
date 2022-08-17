@@ -5,11 +5,9 @@
 package transport
 
 import (
-	"encoding/hex"
 	"net"
 	"strconv"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -27,21 +25,13 @@ func NewUnicastUDPSocket() *UnicastUDPSocket {
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
+func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, ifaddr string, port int) error {
 	err := sock.Close()
 	if err != nil {
 		return err
 	}
 
-	addr := ""
-	if ifi != nil {
-		addr, err = GetInterfaceAddress(ifi)
-		if err != nil {
-			return err
-		}
-	}
-
-	boundAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
+	boundAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(ifaddr, strconv.Itoa(port)))
 	if err != nil {
 		return err
 	}
@@ -65,76 +55,9 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, port int) error {
 		return err
 	}
 
-	sock.SetBoundStatus(ifi, addr, port)
+	sock.SetBoundStatus(ifi, ifaddr, port)
 
 	return nil
-}
-
-func (sock *UnicastUDPSocket) outputWriteLog(logLevel log.Level, msgTo string, msg string, msgSize int) {
-	msgFrom, _ := sock.GetBoundIPAddr()
-	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
-}
-
-// SendBytesFromInterface sends the specified bytes from the specified interface.
-func (sock *UnicastUDPSocket) SendBytesFromInterface(ifi *net.Interface, addr string, port int, b []byte) (int, error) {
-	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
-	if err != nil {
-		return 0, err
-	}
-
-	// Send from binding port
-
-	if sock.Conn != nil {
-		n, err := sock.Conn.WriteToUDP(b, toAddr)
-		sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
-		if err != nil {
-			log.Error(err.Error())
-		}
-		return n, err
-	}
-
-	// Send from no binding port
-
-	var fromAddr *net.UDPAddr
-	if ifi != nil {
-		ifaddr, err := GetInterfaceAddress(ifi)
-		if err == nil {
-			addr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(ifaddr, strconv.Itoa(port)))
-			if err == nil {
-				fromAddr = addr
-			}
-		}
-	}
-
-	conn, err := net.DialUDP("udp", fromAddr, toAddr)
-	if err != nil {
-		log.Error(err.Error())
-		return 0, err
-	}
-
-	n, err := conn.Write(b)
-	sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
-	if err != nil {
-		log.Error(err.Error())
-	}
-	conn.Close()
-
-	return n, err
-}
-
-// SendBytes sends the specified bytes.
-func (sock *UnicastUDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
-	return sock.SendBytesFromInterface(nil, addr, port, b)
-}
-
-// SendMessageFromInterface sends the specified string from the specified interface.
-func (sock *UnicastUDPSocket) SendMessageFromInterface(ifi *net.Interface, addr string, port int, msg *protocol.Message) (int, error) {
-	return sock.SendBytesFromInterface(ifi, addr, port, msg.Bytes())
-}
-
-// SendMessage send a message to the destination address.
-func (sock *UnicastUDPSocket) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
-	return sock.SendBytes(addr, port, msg.Bytes())
 }
 
 // ResponseMessageForRequestMessage sends a specified response message to the request node.
