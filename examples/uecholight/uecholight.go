@@ -25,8 +25,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet"
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 )
 
 // See : APPENDIX Detailed Requirements for ECHONET Device objects
