@@ -13,10 +13,24 @@ const (
 )
 
 // NodeMessageReceived is a listener of the local node.
-func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
-	// Ignore own messages
+func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
-	if msgNode.Equals(ctrl) {
+	for _, server := range ctrl.GetMulticastManager().Servers {
+		if msgNode.GetPort() != server.BoundPort {
+			continue
+		}
+		if msgNode.GetAddress() != server.BoundAddress {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+// NodeMessageReceived is a listener of the local node.
+func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
+	// Ignores the controller's own messages.
+	if ctrl.isOwnMessage(msg) {
 		return nil
 	}
 
@@ -46,12 +60,13 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 
 // parseNodeProfileMessage parses the specified message to check new objects.
 func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
-	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.GetConfig())
-	if err != nil {
+	// Ignores the controller's own messages.
+	if ctrl.isOwnMessage(msg) {
 		return
 	}
 
-	if node.Equals(ctrl) {
+	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.GetConfig())
+	if err != nil {
 		return
 	}
 
