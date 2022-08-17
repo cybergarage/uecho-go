@@ -6,6 +6,8 @@ package transport
 
 import (
 	"net"
+
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
@@ -32,29 +34,23 @@ func (mgr *MulticastManager) SetHandler(l MulticastHandler) {
 	mgr.Handler = l
 }
 
-// GetBoundAddresses returns the listen addresses.
-func (mgr *MulticastManager) GetBoundAddresses() []string {
-	boundAddrs := make([]string, 0)
+// AnnounceMessage announces the message to the bound multicast address.
+func (mgr *MulticastManager) AnnounceMessage(msg *protocol.Message) error {
+	var lastErr error
 	for _, server := range mgr.Servers {
-		boundAddrs = append(boundAddrs, server.GetBoundAddresses()...)
+		err := server.AnnounceMessage(msg)
+		if err != nil {
+			lastErr = err
+		}
 	}
-	return boundAddrs
-}
-
-// GetBoundInterfaces returns the listen interfaces.
-func (mgr *MulticastManager) GetBoundInterfaces() []*net.Interface {
-	boundIfs := make([]*net.Interface, 0)
-	for _, server := range mgr.Servers {
-		boundIfs = append(boundIfs, server.Interface)
-	}
-	return boundIfs
+	return lastErr
 }
 
 // StartWithInterface starts this server on the specified interface.
-func (mgr *MulticastManager) StartWithInterface(ifi *net.Interface) (*MulticastServer, error) {
+func (mgr *MulticastManager) StartWithInterface(ifi *net.Interface, ifaddr string) (*MulticastServer, error) {
 	server := NewMulticastServer()
 	server.Handler = mgr.Handler
-	if err := server.Start(ifi); err != nil {
+	if err := server.Start(ifi, ifaddr); err != nil {
 		return nil, err
 	}
 	mgr.Servers = append(mgr.Servers, server)
@@ -74,10 +70,16 @@ func (mgr *MulticastManager) Start() error {
 	}
 
 	for _, ifi := range ifis {
-		_, err := mgr.StartWithInterface(ifi)
+		ifaddrs, err := GetInterfaceAddresses(ifi)
 		if err != nil {
-			mgr.Stop()
-			return err
+			continue
+		}
+		for _, ifaddr := range ifaddrs {
+			_, err := mgr.StartWithInterface(ifi, ifaddr)
+			if err != nil {
+				mgr.Stop()
+				return err
+			}
 		}
 	}
 
@@ -108,7 +110,7 @@ func (mgr *MulticastManager) IsRunning() bool {
 // setUnicastManager sets appropriate unicast servers to all multicast servers to response the multicast messages.
 func (mgr *MulticastManager) setUnicastManager(unicastMgr *UnicastManager) error {
 	for _, multicastServer := range mgr.Servers {
-		unicastServer, err := unicastMgr.getAppropriateServerForInterface(multicastServer.Interface)
+		unicastServer, err := unicastMgr.getAppropriateServerForInterface(multicastServer.Socket.BoundInterface)
 		if err != nil {
 			mgr.Stop()
 			return err
