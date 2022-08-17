@@ -33,21 +33,13 @@ func NewTCPSocket() *TCPSocket {
 }
 
 // Bind binds to Echonet multicast address.
-func (sock *TCPSocket) Bind(ifi *net.Interface, port int) error {
+func (sock *TCPSocket) Bind(ifi *net.Interface, ifaddr string, port int) error {
 	err := sock.Close()
 	if err != nil {
 		return err
 	}
 
-	addr := ""
-	if ifi != nil {
-		addr, err = GetInterfaceAddress(ifi)
-		if err != nil {
-			return err
-		}
-	}
-
-	boundAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
+	boundAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(ifaddr, strconv.Itoa(port)))
 	if err != nil {
 		return err
 	}
@@ -69,7 +61,7 @@ func (sock *TCPSocket) Bind(ifi *net.Interface, port int) error {
 		return err
 	}
 
-	sock.SetBoundStatus(ifi, addr, port)
+	sock.SetBoundStatus(ifi, ifaddr, port)
 
 	return nil
 }
