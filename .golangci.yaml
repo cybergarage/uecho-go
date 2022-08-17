@@ -28,6 +28,7 @@ linters:
     - maligned
     - gochecknoglobals
     - forbidigo
+    - scopelint
 
 linters-settings:
   gocritic:
