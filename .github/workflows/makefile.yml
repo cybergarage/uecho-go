@@ -1,18 +1,25 @@
-name: build
+name: test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ master ]
+    branches: [ "main" ]
 
 jobs:
+
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Run test
-      run: make test
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Set up golangci-lint
+      run: sudo snap install golangci-lint
+
+    - name: Test
+      run: export CGO_ENABLED=0 make test
