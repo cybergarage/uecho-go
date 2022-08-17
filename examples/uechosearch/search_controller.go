@@ -7,8 +7,8 @@ package main
 import (
 	"encoding/hex"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet"
-	"github.com/cybergarage/uecho-go/net/echonet/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
