@@ -39,11 +39,7 @@ func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = node.AddDevice(dev)
-	if err != nil {
-		return nil, err
-	}
-
+	node.AddDevice(dev)
 	node.SetConfig(config)
 
 	return node, nil

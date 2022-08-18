@@ -129,17 +129,15 @@ func (node *RemoteNode) GetPort() int {
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
-func (node *RemoteNode) AddDevice(dev *Device) error {
+func (node *RemoteNode) AddDevice(dev *Device) {
 	node.baseNode.AddDevice(dev)
 	dev.SetParentNode(node)
-	return nil
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
-func (node *RemoteNode) AddProfile(prof *Profile) error {
+func (node *RemoteNode) AddProfile(prof *Profile) {
 	node.baseNode.AddProfile(prof)
 	prof.SetParentNode(node)
-	return nil
 }
 
 // Equals returns true whether the specified node is same, otherwise false.

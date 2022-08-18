@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -108,19 +109,19 @@ func (node *LocalNode) getNextTID() uint {
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
-func (node *LocalNode) AddDevice(dev *Device) error {
+func (node *LocalNode) AddDevice(dev *Device) {
 	node.baseNode.AddDevice(dev)
 	dev.SetManufacturerCode(node.manufacturerCode)
 	dev.SetParentNode(node)
-	return node.updateNodeProfile()
+	node.updateNodeProfile()
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
-func (node *LocalNode) AddProfile(prof *Profile) error {
+func (node *LocalNode) AddProfile(prof *Profile) {
 	node.baseNode.AddProfile(prof)
 	prof.SetManufacturerCode(node.manufacturerCode)
 	prof.SetParentNode(node)
-	return node.updateNodeProfile()
+	node.updateNodeProfile()
 }
 
 // Start starts the node.
@@ -160,10 +161,11 @@ func (node *LocalNode) Equals(otherNode Node) bool {
 }
 
 // updateNodeProfile updates the node profile in the node.
-func (node *LocalNode) updateNodeProfile() error {
+func (node *LocalNode) updateNodeProfile() {
 	nodeProf, err := node.GetNodeProfile()
 	if err != nil {
-		return err
+		log.Error(err.Error())
+		return
 	}
 
 	// Check the current all objects
@@ -216,8 +218,6 @@ func (node *LocalNode) updateNodeProfile() error {
 	// Self-node class list S
 
 	nodeProf.SetClassList(classes)
-
-	return nil
 }
 
 // String returns the node string representation.
