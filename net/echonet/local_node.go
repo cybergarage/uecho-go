@@ -96,27 +96,17 @@ func (node *LocalNode) getNextTID() uint {
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
 func (node *LocalNode) AddDevice(dev *Device) error {
-	err := node.baseNode.AddDevice(dev)
-	if err != nil {
-		return err
-	}
-
+	node.baseNode.AddDevice(dev)
 	dev.SetManufacturerCode(node.manufacturerCode)
 	dev.SetParentNode(node)
-
 	return node.updateNodeProfile()
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
 func (node *LocalNode) AddProfile(prof *Profile) error {
-	err := node.baseNode.AddProfile(prof)
-	if err != nil {
-		return err
-	}
-
+	node.baseNode.AddProfile(prof)
 	prof.SetManufacturerCode(node.manufacturerCode)
 	prof.SetParentNode(node)
-
 	return node.updateNodeProfile()
 }
 

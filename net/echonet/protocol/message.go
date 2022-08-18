@@ -284,21 +284,16 @@ func (msg *Message) GetOPC() int {
 }
 
 // AddProperty adds a property.
-func (msg *Message) AddProperty(prop *Property) error {
+func (msg *Message) AddProperty(prop *Property) {
 	msg.OPC++
 	msg.EP = append(msg.EP, prop)
-	return nil
 }
 
 // AddProperties adds a properties.
-func (msg *Message) AddProperties(props []*Property) error {
+func (msg *Message) AddProperties(props []*Property) {
 	for _, prop := range props {
-		err := msg.AddProperty(prop)
-		if err != nil {
-			return err
-		}
+		msg.AddProperty(prop)
 	}
-	return nil
 }
 
 // GetProperty returns the specified property.

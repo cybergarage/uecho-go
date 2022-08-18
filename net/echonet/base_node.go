@@ -29,9 +29,8 @@ func newBaseNode() *baseNode {
 }
 
 // AddDevice adds a new device into the node.
-func (node *baseNode) AddDevice(dev *Device) error {
+func (node *baseNode) AddDevice(dev *Device) {
 	node.devices = append(node.devices, dev)
-	return nil
 }
 
 // GetDevices returns all device objects.
@@ -51,9 +50,8 @@ func (node *baseNode) GetDevice(code ObjectCode) (*Device, error) {
 }
 
 // AddProfile adds a new profile object into the node.
-func (node *baseNode) AddProfile(prof *Profile) error {
+func (node *baseNode) AddProfile(prof *Profile) {
 	node.profiles = append(node.profiles, prof)
-	return nil
 }
 
 // GetProfiles returns all profile objects.

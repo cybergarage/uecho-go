@@ -83,11 +83,7 @@ func TestMessageAddProperty(t *testing.T) {
 		t.Errorf("%d != %d", msg.GetOPC(), 0)
 	}
 
-	prop := NewProperty()
-	if err := msg.AddProperty(prop); err != nil {
-		t.Error(err)
-		return
-	}
+	msg.AddProperty(NewProperty())
 
 	if msg.GetOPC() != 1 {
 		t.Errorf("%d != %d", msg.GetOPC(), 1)
