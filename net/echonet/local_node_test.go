@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -56,8 +56,10 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg *protocol.Message, resMsg *
 	return nil
 }
 
-//nolint ifshort
+// nolint ifshort
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
+	// Setup
+
 	ctrl := NewController()
 	ctrl.SetConfig(config)
 
@@ -96,6 +98,8 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		t.Errorf("%d == %d", ctrlPort, nodePort)
 		return
 	}
+
+	// log.Trace("controller:%d, node:%d", ctrlPort, nodePort)
 
 	time.Sleep(time.Second)
 
@@ -231,28 +235,19 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 }
 
-func TestLocalNodeWithDefaultConfig(t *testing.T) {
+func TestLocalNode(t *testing.T) {
 	log.SetStdoutDebugEnbled(true)
 	defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	testLocalNodeWithConfig(t, conf)
-}
 
-func TestLocalNodeWithOnlyUDPConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-	defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	conf.SetTCPEnabled(false)
-	testLocalNodeWithConfig(t, conf)
-}
-
-func TestLocalNodeWithEnableTCPConfig(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-	defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	conf.SetTCPEnabled(true)
-	testLocalNodeWithConfig(t, conf)
+	t.Run("Default", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		testLocalNodeWithConfig(t, conf)
+	})
+	t.Run("TCPEnabled", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		conf.SetTCPEnabled(true)
+		testLocalNodeWithConfig(t, conf)
+	})
 }

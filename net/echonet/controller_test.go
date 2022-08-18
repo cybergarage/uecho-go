@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -179,28 +180,20 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	}
 }
 
-func TestControllerSearchithWithDefaultConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	// defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	testControllerSearchWithConfig(t, conf)
-}
+func TestController(t *testing.T) {
+	log.SetStdoutDebugEnbled(true)
+	defer log.SetStdoutDebugEnbled(false)
 
-func TestControllerSearchWithOnlyUDPConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	// defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	conf.SetTCPEnabled(false)
-	testControllerSearchWithConfig(t, conf)
-}
+	t.Run("Default", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		testControllerSearchWithConfig(t, conf)
+	})
 
-func TestControllerSearchWithEnableTCPConfig(t *testing.T) {
-	// log.SetStdoutDebugEnbled(true)
-	// defer log.SetStdoutDebugEnbled(false)
-	conf := newTestDefaultConfig()
-	conf.SetConnectionTimeout(testNodeRequestTimeout)
-	conf.SetTCPEnabled(true)
-	testControllerSearchWithConfig(t, conf)
+	t.Run("TCPEnabled", func(t *testing.T) {
+		conf := newTestDefaultConfig()
+		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		conf.SetTCPEnabled(true)
+		testControllerSearchWithConfig(t, conf)
+	})
 }

@@ -21,24 +21,6 @@ func newServer() *server {
 	return server
 }
 
-// GetAddress returns a bound address.
-func (server *server) GetAddress() string {
-	addrs, err := server.GetBoundAddresses()
-	if err != nil || len(addrs) == 0 {
-		return ""
-	}
-	return addrs[0]
-}
-
-// GetPort returns the bound port.
-func (server *server) GetPort() int {
-	port, err := server.GetBoundPort()
-	if err != nil {
-		return 0
-	}
-	return port
-}
-
 // Start starts the server.
 func (server *server) Start() error {
 	err := server.MessageManager.Start()

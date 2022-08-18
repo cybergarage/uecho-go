@@ -5,7 +5,7 @@
 package echonet
 
 import (
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
