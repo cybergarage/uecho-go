@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/go-logger/log"
 )
 
 func main() {

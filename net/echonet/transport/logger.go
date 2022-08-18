@@ -5,7 +5,7 @@
 package transport
 
 import (
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/go-logger/log"
 )
 
 const (

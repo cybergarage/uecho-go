@@ -5,6 +5,7 @@
 package transport
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -13,22 +14,31 @@ const (
 )
 
 func TestUnicastUDPSocketOpenClose(t *testing.T) {
-	sock := NewUnicastUDPSocket()
-
-	ifs, err := GetAvailableInterfaces()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	err = sock.Bind(ifs[0], testUnicastUDPSocketPort)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	err = sock.Close()
-	if err != nil {
-		t.Error(err)
+	for _, ifi := range ifis {
+		ifaddrs, err := GetInterfaceAddresses(ifi)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		for _, ifaddr := range ifaddrs {
+			t.Run(fmt.Sprintf("%s:%s", ifi.Name, ifaddr), func(t *testing.T) {
+				sock := NewUnicastUDPSocket()
+				err = sock.Bind(ifi, ifaddr, testUnicastUDPSocketPort)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				err = sock.Close()
+				if err != nil {
+					t.Error(err)
+				}
+			})
+		}
 	}
 }

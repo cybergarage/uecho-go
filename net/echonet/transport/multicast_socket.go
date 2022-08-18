@@ -5,6 +5,7 @@
 package transport
 
 import (
+	"errors"
 	"fmt"
 	"net"
 )
@@ -23,17 +24,26 @@ func NewMulticastSocket() *MulticastSocket {
 }
 
 // Bind binds to the Echonet multicast address with the specified interface.
-func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
+func (sock *MulticastSocket) Bind(ifi *net.Interface, ifaddr string) error {
 	err := sock.Close()
 	if err != nil {
 		return err
 	}
 
-	err = sock.Listen(ifi)
+	switch {
+	case IsIPv4Address(ifaddr):
+		err = sock.Listen(ifi, MulticastIPv4Address, Port)
+	case IsIPv6Address(ifaddr):
+		err = sock.Listen(ifi, MulticastIPv6Address, Port)
+	default:
+		return errors.New(errorAvailableAddressNotFound)
+	}
+
 	if err != nil {
 		return fmt.Errorf("%w (%s)", err, ifi.Name)
 	}
 
+	sock.SetBoundStatus(ifi, ifaddr, Port)
 	sock.Conn.SetReadBuffer(sock.GetReadBufferSize())
 
 	f, err := sock.Conn.File()
@@ -48,12 +58,10 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface) error {
 		return err
 	}
 
-	err = sock.SetMulticastLoop(f, true)
+	err = sock.SetMulticastLoop(f, ifaddr, true)
 	if err != nil {
 		return err
 	}
-
-	sock.SetBoundStatus(ifi, MulticastAddress, UDPPort)
 
 	return nil
 }

@@ -1,8 +1,17 @@
+2022-XX-XX The uecho-go Authors <skonno@cybergarage.org>
+	* v1.1.0
+	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium
+	* Support write and read request protocol (0x6E)
+
+2022-08-20 The uecho-go Authors <skonno@cybergarage.org>
+	* v1.0.2
+	* Update transport layer to bind all available interfaces as default
+
 2022-08-05 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.0.1
 	* Update based on golang 1.18 
-	* Fix golangci-lint warnings.
+	* Fix golangci-lint warnings
 
 2019-02-04 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.0.0
-    * The first release.
+    * The first release

@@ -6,7 +6,6 @@ package transport
 
 import (
 	"fmt"
-	"net"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -28,6 +27,25 @@ func NewMessageManager() *MessageManager {
 		unicastMgr:     NewUnicastManager(),
 	}
 	return mgr
+}
+
+// GetMulticastManager returns the multicast manager.
+func (mgr *MessageManager) GetMulticastManager() *MulticastManager {
+	return mgr.multicastMgr
+}
+
+// GetMulticastManager returns the unicast manager.
+func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
+	return mgr.unicastMgr
+}
+
+// GetBoundAddresses return the bounded interface addresses.
+func (mgr *MessageManager) GetBoundAddresses() []string {
+	ifaddrs := []string{}
+	for _, server := range mgr.GetMulticastManager().Servers {
+		ifaddrs = append(ifaddrs, server.BoundAddress)
+	}
+	return ifaddrs
 }
 
 // SetConfig sets all configuration flags.
@@ -62,22 +80,6 @@ func (mgr *MessageManager) GetMessageHandler() protocol.MessageHandler {
 	return mgr.messageHandler
 }
 
-// GetBoundAddresses returns the listen addresses.
-func (mgr *MessageManager) GetBoundAddresses() ([]string, error) {
-	if !mgr.IsRunning() {
-		return nil, fmt.Errorf(errorMessageManagerNotRunning)
-	}
-	return mgr.unicastMgr.GetBoundAddresses(), nil
-}
-
-// GetBoundInterfaces returns the listen interfaces.
-func (mgr *MessageManager) GetBoundInterfaces() ([]*net.Interface, error) {
-	if !mgr.IsRunning() {
-		return nil, fmt.Errorf(errorMessageManagerNotRunning)
-	}
-	return mgr.unicastMgr.GetBoundInterfaces(), nil
-}
-
 // GetBoundPort returns the listen port.
 func (mgr *MessageManager) GetBoundPort() (int, error) {
 	if !mgr.IsRunning() {
@@ -93,7 +95,7 @@ func (mgr *MessageManager) SendMessage(addr string, port int, msg *protocol.Mess
 
 // AnnounceMessage sends a message to the multicast address.
 func (mgr *MessageManager) AnnounceMessage(msg *protocol.Message) error {
-	return mgr.unicastMgr.AnnounceMessage(MulticastAddress, UDPPort, msg)
+	return mgr.unicastMgr.AnnounceMessage(msg)
 }
 
 // PostMessage posts a message to the destination address and gets the response message.
@@ -107,20 +109,6 @@ func (mgr *MessageManager) Start() error {
 	if err != nil {
 		return err
 	}
-
-	// FIXME : In the future, this function will be deprecated, but it is provisionally introduced
-	// because some Go environments might not work `syscall.SetsockoptInt()` with SO_REUSEPORT for
-	// the UDP unicast listening. See Socket::SetReuseAddr().
-
-	if mgr.unicastMgr.IsAutoInterfaceBindingEnabled() {
-		ifs, err := GetAvailableInterfaces()
-		if err != nil {
-			return err
-		}
-		shouldBindEachInterfaces := len(ifs) <= 1
-		mgr.unicastMgr.SetEachInterfaceBindingEnabled(shouldBindEachInterfaces)
-	}
-
 	err = mgr.unicastMgr.Start()
 	if err != nil {
 		return err

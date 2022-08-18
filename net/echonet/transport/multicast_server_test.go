@@ -5,6 +5,7 @@
 package transport
 
 import (
+	"fmt"
 	"net"
 	"testing"
 	"time"
@@ -38,14 +39,14 @@ func (server *testMulticastServer) ProtocolMessageReceived(msg *protocol.Message
 	return nil, nil
 }
 
-func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
+func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface, ifaddr string) {
 	t.Helper()
 
 	server := newTestMulticastServer()
 
 	// Start server
 
-	err := server.Start(ifi)
+	err := server.Start(ifi, ifaddr)
 	if err != nil {
 		t.Error(err)
 		return
@@ -63,7 +64,11 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 	}
 
 	sock := NewUnicastUDPSocket()
-	nSent, err := sock.SendMessage(MulticastAddress, Port, msg)
+	toAddr := MulticastIPv4Address
+	if IsIPv6Address(ifaddr) {
+		toAddr = MulticastIPv6Address
+	}
+	nSent, err := sock.SendMessage(toAddr, Port, msg)
 	if err != nil {
 		t.Error(err)
 	}
@@ -92,15 +97,22 @@ func testMulticastServerWithInterface(t *testing.T, ifi *net.Interface) {
 }
 
 func TestMulticastServerWithInterface(t *testing.T) {
-	ifs, err := GetAvailableInterfaces()
+	ifis, err := GetAvailableInterfaces()
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	testMulticastServerWithInterface(t, ifs[0])
-}
-
-func TestMulticastServerWithNoInterface(t *testing.T) {
-	testMulticastServerWithInterface(t, nil)
+	for _, ifi := range ifis {
+		ifaddrs, err := GetInterfaceAddresses(ifi)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		for _, ifaddr := range ifaddrs {
+			t.Run(fmt.Sprintf("%s:%s", ifi.Name, ifaddr), func(t *testing.T) {
+				testMulticastServerWithInterface(t, ifi, ifaddr)
+			})
+		}
+	}
 }
