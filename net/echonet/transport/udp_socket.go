@@ -8,9 +8,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"net"
+	"strconv"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet/log"
+	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -69,6 +70,66 @@ func (sock *UDPSocket) Close() error {
 func (sock *UDPSocket) outputReadLog(logLevel log.Level, logType string, msgFrom string, msg string, msgSize int) {
 	msgTo, _ := sock.GetBoundIPAddr()
 	outputSocketLog(logLevel, logType, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
+}
+
+func (sock *UDPSocket) outputWriteLog(logLevel log.Level, msgTo string, msg string, msgSize int) {
+	msgFrom, _ := sock.GetBoundIPAddr()
+	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
+}
+
+// SendBytes sends the specified bytes.
+func (sock *UDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
+	toAddr, err := net.ResolveUDPAddr("udp", net.JoinHostPort(addr, strconv.Itoa(port)))
+	if err != nil {
+		return 0, err
+	}
+
+	// Send from binding port
+
+	if sock.Conn != nil {
+		n, err := sock.Conn.WriteToUDP(b, toAddr)
+		sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+		if err != nil {
+			log.Error(err.Error())
+		}
+		return n, err
+	}
+
+	// Send from no binding port
+
+	conn, err := net.Dial("udp", toAddr.String())
+	if err != nil {
+		log.Error(err.Error())
+		return 0, err
+	}
+
+	n, err := conn.Write(b)
+	sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
+	if err != nil {
+		log.Error(err.Error())
+	}
+	conn.Close()
+
+	return n, err
+}
+
+// SendMessage send a message to the destination address.
+func (sock *UDPSocket) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
+	return sock.SendBytes(addr, port, msg.Bytes())
+}
+
+// AnnounceMessage announces the message to the bound multicast address.
+func (sock *UDPSocket) AnnounceMessage(msg *protocol.Message) error {
+	ifaddr, err := sock.GetBoundAddress()
+	if err != nil {
+		return err
+	}
+	maddr := MulticastIPv4Address
+	if IsIPv6Address(ifaddr) {
+		maddr = MulticastIPv6Address
+	}
+	_, err = sock.SendMessage(maddr, Port, msg)
+	return err
 }
 
 // ReadMessage reads a message from the current opened socket.
