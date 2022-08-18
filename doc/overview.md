@@ -1,4 +1,4 @@
-[![](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml/badge.svg)](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/uecho-go.svg)](https://pkg.go.dev/github.com/cybergarage/uecho-go)
+[![test](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml/badge.svg)](https://github.com/cybergarage/uecho-go/actions/workflows/makefile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/uecho-go.svg)](https://pkg.go.dev/github.com/cybergarage/uecho-go)
 
 ![logo](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/logo.png)
 
