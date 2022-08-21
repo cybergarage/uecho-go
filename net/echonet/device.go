@@ -108,7 +108,7 @@ func (dev *Device) addDeviceMandatoryProperties() error {
 	dev.SetInstallationLocation(DeviceInstallationLocationUnknown)
 
 	// Standard Version Information
-	dev.CreateProperty(DeviceStandardVersion, PropertyAttributeRead)
+	dev.CreateProperty(DeviceStandardVersion, PropertyAttributeGet)
 	dev.SetStandardVersion(DeviceDefaultVersionAppendix)
 
 	// Fault Status
@@ -116,7 +116,7 @@ func (dev *Device) addDeviceMandatoryProperties() error {
 	dev.SetFaultStatus(false)
 
 	// Manufacture Code
-	dev.CreateProperty(DeviceManufacturerCode, PropertyAttributeRead)
+	dev.CreateProperty(DeviceManufacturerCode, PropertyAttributeGet)
 	dev.SetManufacturerCode(DeviceManufacturerUnknown)
 
 	return nil
