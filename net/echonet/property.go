@@ -21,11 +21,11 @@ const (
 	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
 
 	PropertyAttributeNone      = 0x00
-	PropertyAttributeRead      = 0x01
+	PropertyAttributeGet       = 0x01
 	PropertyAttributeWrite     = 0x02
 	PropertyAttributeAnno      = 0x10
-	PropertyAttributeReadWrite = PropertyAttributeRead | PropertyAttributeWrite
-	PropertyAttributeReadAnno  = PropertyAttributeRead | PropertyAttributeAnno
+	PropertyAttributeReadWrite = PropertyAttributeGet | PropertyAttributeWrite
+	PropertyAttributeReadAnno  = PropertyAttributeGet | PropertyAttributeAnno
 )
 
 const (
@@ -137,7 +137,7 @@ func (prop *Property) GetAttribute() PropertyAttribute {
 
 // IsReadable returns true when the property attribute is readable, otherwise false.
 func (prop *Property) IsReadable() bool {
-	return ((prop.Attr & PropertyAttributeRead) != 0)
+	return ((prop.Attr & PropertyAttributeGet) != 0)
 }
 
 // IsWritable returns true when the property attribute is writable, otherwise false.
@@ -147,7 +147,7 @@ func (prop *Property) IsWritable() bool {
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
 func (prop *Property) IsReadOnly() bool {
-	if (prop.Attr & PropertyAttributeRead) == 0 {
+	if (prop.Attr & PropertyAttributeGet) == 0 {
 		return false
 	}
 
@@ -164,7 +164,7 @@ func (prop *Property) IsWriteOnly() bool {
 		return false
 	}
 
-	if (prop.Attr & PropertyAttributeRead) != 0 {
+	if (prop.Attr & PropertyAttributeGet) != 0 {
 		return false
 	}
 
