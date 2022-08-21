@@ -38,6 +38,7 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 // nolint:misspell, whitespace, maintidx
 func (db *StandardDatabase) initObjects() {
   var obj *Object
+
 HEADER
 
 my @mra_sub_dirs = (
