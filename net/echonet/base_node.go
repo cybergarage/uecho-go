@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	errorObjectNotFound              = "Object (%X) not found"
-	errorObjectProfileObjectNotFound = "Object profile object not found"
+	errorObjectNotFound              = "object (%X) not found"
+	errorObjectProfileObjectNotFound = "object profile object not found"
+	errorUnknownObjectType           = "unknown object type (%v)"
 )
 
 // baseNode is an instance for Echonet node.
@@ -77,6 +78,19 @@ func (node *baseNode) GetNodeProfile() (*Profile, error) {
 		return prof, nil
 	}
 	return node.GetProfile(NodeProfileObjectReadOnly)
+}
+
+// AddObject adds a new object into the node.
+func (node *baseNode) AddObject(obj interface{}) error {
+	switch v := obj.(type) {
+	case *Device:
+		node.AddDevice(v)
+		return nil
+	case *Profile:
+		node.AddProfile(v)
+		return nil
+	}
+	return fmt.Errorf(errorUnknownObjectType, obj)
 }
 
 // GetObjects returns all objects.
