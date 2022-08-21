@@ -41,6 +41,7 @@ type PropertyAttribute uint
 
 // Property is an instance for Echonet property.
 type Property struct {
+	Name         string
 	Code         PropertyCode
 	Attr         PropertyAttribute
 	Data         []byte
@@ -50,6 +51,7 @@ type Property struct {
 // NewProperty returns a new property.
 func NewProperty() *Property {
 	prop := &Property{
+		Name:         "",
 		Code:         0,
 		Attr:         PropertyAttributeNone,
 		Data:         make([]byte, 0),
@@ -91,6 +93,16 @@ func (prop *Property) GetNode() Node {
 		return nil
 	}
 	return parentObj.GetParentNode()
+}
+
+// SetName sets a name to the property.
+func (prop *Property) SetName(name string) {
+	prop.Name = name
+}
+
+// GetName returns the property name.
+func (prop *Property) GetName() string {
+	return prop.Name
 }
 
 // SetCode sets a specified code to the property.
