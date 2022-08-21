@@ -32,14 +32,3 @@ func NewStandardObjectWithCodes(codes []byte) (interface{}, error) {
 	}
 	return NewStandardDeviceWithCodes(codes)
 }
-
-// NewStandardDeviceWithCodes returns a new device of the specified object codes.
-func NewStandardDeviceWithCodes(codes []byte) (*Device, error) {
-	if len(codes) != ObjectCodeSize {
-		return nil, fmt.Errorf(errorInvalidObjectCodes, string(codes))
-	}
-	obj := NewDevice()
-	obj.SetCodes(codes)
-	addStandardProperties(obj.Object)
-	return obj, nil
-}
