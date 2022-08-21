@@ -100,11 +100,11 @@ func NewDevice() *Device {
 // addDeviceMandatoryProperties sets mandatory properties for device object.
 func (dev *Device) addDeviceMandatoryProperties() error {
 	// Operation Status
-	dev.CreateProperty(ObjectOperatingStatus, PropertyAttributeReadAnno)
+	dev.CreateProperty(ObjectOperatingStatus, PropertyAttributeGetAnno)
 	dev.SetOperatingStatus(true)
 
 	// Installation Location
-	dev.CreateProperty(DeviceInstallationLocation, PropertyAttributeReadAnno)
+	dev.CreateProperty(DeviceInstallationLocation, PropertyAttributeGetAnno)
 	dev.SetInstallationLocation(DeviceInstallationLocationUnknown)
 
 	// Standard Version Information
@@ -112,7 +112,7 @@ func (dev *Device) addDeviceMandatoryProperties() error {
 	dev.SetStandardVersion(DeviceDefaultVersionAppendix)
 
 	// Fault Status
-	dev.CreateProperty(DeviceFaultStatus, PropertyAttributeReadAnno)
+	dev.CreateProperty(DeviceFaultStatus, PropertyAttributeGetAnno)
 	dev.SetFaultStatus(false)
 
 	// Manufacture Code
