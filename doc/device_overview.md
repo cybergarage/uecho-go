@@ -36,7 +36,7 @@ dev := echonet.NewDevice()
 dev.SetManufacturerCode(0xXXXXXX)
 dev.SetCode(0xXXXXXX)
 
-dev.CreateProperty(0xXX, echonet.PropertyAttributeReadWrite)
+dev.CreateProperty(0xXX, echonet.PropertyAttrReadWrite)
 dev.SetPropertyrData(0xXX, ....)
 
 node.AddDevice(dev)

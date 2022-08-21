@@ -64,31 +64,31 @@ func NewLocalNodeProfile() *Profile {
 // addNodeProfileMandatoryProperties sets mandatory properties for node profile.
 func (prof *Profile) addNodeProfileMandatoryProperties() error {
 	// Operation Status
-	prof.CreateProperty(NodeProfileClassOperatingStatus, PropertyAttributeGetAnno)
+	prof.CreateProperty(NodeProfileClassOperatingStatus, PropertyAttrGetAnno)
 	prof.SetOperatingStatus(true)
 
 	// Version Information
-	prof.CreateProperty(NodeProfileClassVersionInformation, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassVersionInformation, PropertyAttrGet)
 	prof.SetVersion(MajorVersion, MinorVersion)
 
 	// Identification Number
-	prof.CreateProperty(NodeProfileClassIdentificationNumber, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassIdentificationNumber, PropertyAttrGet)
 	prof.SetID(ProfileManufacturerUnknown)
 
 	// Number Of Self Node Instances
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeInstances, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeInstances, PropertyAttrGet)
 
 	// Number Of Self Node Classes
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeClasses, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeClasses, PropertyAttrGet)
 
 	// Instance List Notification
-	prof.CreateProperty(NodeProfileClassInstanceListNotification, PropertyAttributeAnno)
+	prof.CreateProperty(NodeProfileClassInstanceListNotification, PropertyAttrAnno)
 
 	// Self Node Instance ListS
-	prof.CreateProperty(NodeProfileClassSelfNodeInstanceListS, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassSelfNodeInstanceListS, PropertyAttrGet)
 
 	// Self Node Class List S
-	prof.CreateProperty(NodeProfileClassSelfNodeClassListS, PropertyAttributeGet)
+	prof.CreateProperty(NodeProfileClassSelfNodeClassListS, PropertyAttrGet)
 
 	return nil
 }
