@@ -18,3 +18,11 @@ func NewStandardDeviceWithCodes(codes []byte) (*Device, error) {
 	addStandardProperties(obj.Object)
 	return obj, nil
 }
+
+// NewStandardDeviceWithCode returns a new device of the specified object code.
+func NewStandardDeviceWithCode(code ObjectCode) *Device {
+	obj := NewDevice()
+	obj.SetCode(code)
+	addStandardProperties(obj.Object)
+	return obj
+}
