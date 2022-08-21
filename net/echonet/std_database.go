@@ -41,7 +41,7 @@ func (db *StandardDatabase) addObject(obj *Object) {
 
 // GetObjectByCode returns the registered object by the specified object code.
 func (db *StandardDatabase) GetObjectByCode(code ObjectCode) (*Object, bool) {
-	obj, ok := db.Objects[code]
+	obj, ok := db.Objects[(code & 0xFFFF00)]
 	return obj, ok
 }
 
