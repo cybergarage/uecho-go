@@ -20,7 +20,7 @@ In addition, `uecho-go` returns all response messages using UDP connection when 
 
 # Automatic Port Binding
 
- An [ECHONET Lite][enet] node must listen the UDP unicast, UDP multicast and TCP unicast packets always at port number 3610, but `echo-go` supports automatic port mapping to bind at any port to be able to run the [ECHONET Lite][enet] nodes in the same machine at the same time. The extention is also disabled as default, and so use `Node::SetAutoPortBindingEnabled() to enable it as the following.
+ An [ECHONET Lite][enet] node must listen the UDP unicast, UDP multicast and TCP unicast packets always at port number 3610, but `echo-go` supports automatic port mapping to bind at any port to be able to run the [ECHONET Lite][enet] nodes in the same machine at the same time. The extention is also disabled as default, and so use `Node::SetAutoPortBindingEnabled() to enable it as the following.
 
 ```
 node := NewLocalNode()
