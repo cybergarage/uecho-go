@@ -9,14 +9,10 @@ import (
 
 func NewLightDevice() *echonet.Device {
 
-	dev := echonet.NewDevice()
+	dev := echonet.NewStandardDeviceWithCode(LightObjectCode)
 
 	// TODO : Set your manufacture code
 	dev.SetManufacturerCode(echonet.DeviceManufacturerUnknown)
-
-	dev.SetCode(LightObjectCode)
-
-	dev.CreateProperty(LightPropertyPowerCode, echonet.PropertyAttrGetSet)
 	dev.SetPropertyIntegerData(LightPropertyPowerCode, LightPropertyPowerOn, 1)
 
 	return dev
