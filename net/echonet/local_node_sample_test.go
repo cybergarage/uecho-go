@@ -33,7 +33,7 @@ func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 
 	dev := NewDevice()
 	dev.SetCode(testLightDeviceCode)
-	dev.CreateProperty(testLightPropertyPowerCode, PropertyAttributeReadWrite)
+	dev.CreateProperty(testLightPropertyPowerCode, PropertyAttributeGetSet)
 	powerData := []byte{testLightPropertyInitialPowerStatus}
 	err := dev.SetPropertyData(testLightPropertyPowerCode, powerData)
 	if err != nil {

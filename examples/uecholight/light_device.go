@@ -16,7 +16,7 @@ func NewLightDevice() *echonet.Device {
 
 	dev.SetCode(LightObjectCode)
 
-	dev.CreateProperty(LightPropertyPowerCode, echonet.PropertyAttributeReadWrite)
+	dev.CreateProperty(LightPropertyPowerCode, echonet.PropertyAttributeGetSet)
 	dev.SetPropertyIntegerData(LightPropertyPowerCode, LightPropertyPowerOn, 1)
 
 	return dev

@@ -20,12 +20,12 @@ const (
 	PropertyMapFormat2Size    = 18
 	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
 
-	PropertyAttributeNone      = 0x00
-	PropertyAttributeGet       = 0x01
-	PropertyAttributeSet       = 0x02
-	PropertyAttributeAnno      = 0x10
-	PropertyAttributeReadWrite = PropertyAttributeGet | PropertyAttributeSet
-	PropertyAttributeReadAnno  = PropertyAttributeGet | PropertyAttributeAnno
+	PropertyAttributeNone     = 0x00
+	PropertyAttributeGet      = 0x01
+	PropertyAttributeSet      = 0x02
+	PropertyAttributeAnno     = 0x10
+	PropertyAttributeGetSet   = PropertyAttributeGet | PropertyAttributeSet
+	PropertyAttributeReadAnno = PropertyAttributeGet | PropertyAttributeAnno
 )
 
 const (
