@@ -35,8 +35,8 @@ func (db *StandardDatabase) addObject(obj *Object) {
 	db.Objects[obj.GetCode()] = obj
 }
 
-// GetObject returns the registered object by the specified object code.
-func (db *StandardDatabase) GetObject(code ObjectCode) (*Object, bool) {
+// GetObjectByCode returns the registered object by the specified object code.
+func (db *StandardDatabase) GetObjectByCode(code ObjectCode) (*Object, bool) {
 	obj, ok := db.Objects[code]
 	return obj, ok
 }
