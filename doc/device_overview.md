@@ -24,19 +24,10 @@ The new node has only a node profile class object, and it has no device object. 
 
 ### 2. Creating Device Object
 
-The new node has no device object. To add your device objects, create a new device object using `NewDevice()`.  `NewDevice()` create a new device object which is added some mandatory properties of ECHONET device object super class requirements [\[1\]][enet-spec].
-
-Next, according to ECHONET standard device specification [\[1\]][enet-spec], set the manufacturer code using `Device::SetManufacturerCode()` and the object code using `Device::SetCode()`.
-The created device has only mandatory properties, and so you should add other stadard properties of ECHONET standard device specification [\[1\]][enet-spec] or your extra properties using `Device::CreateProperty()` and `Device::SetPropertyrData()`.
-Then, add the device object into the node using `LocalNode::AddDevice()` as the following:
+The new node has no device object. To add your device objects, create a new device object using `NewStandardDeviceWithCode()`.  `NewStandardDeviceWithCode()` create a new device object which is added some mandatory and default properties of ECHONET standard device specification [\[1\]][enet-spec]. Next, set your property data using `Device::SetPropertyrData()`. Then, add the device object into the node using `LocalNode::AddDevice()` as the following:
 
 ```
-dev := echonet.NewDevice()
-
-dev.SetManufacturerCode(0xXXXXXX)
-dev.SetCode(0xXXXXXX)
-
-dev.CreateProperty(0xXX, echonet.PropertyAttrReadWrite)
+dev := echonet.NewStandardDeviceWithCode(echonet.ObjectCode(0xXXXXXX))
 dev.SetPropertyrData(0xXX, ....)
 
 node.AddDevice(dev)
