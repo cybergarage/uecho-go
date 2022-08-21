@@ -4,6 +4,10 @@
 
 package echonet
 
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+)
+
 // StandardDatabase represents a standard database of Echonet.
 type StandardDatabase struct {
 	Manufactures map[ManufactureCode]*Manufacture
@@ -39,4 +43,12 @@ func (db *StandardDatabase) addObject(obj *Object) {
 func (db *StandardDatabase) GetObjectByCode(code ObjectCode) (*Object, bool) {
 	obj, ok := db.Objects[code]
 	return obj, ok
+}
+
+// GetObjectByCodes returns the registered object by the specified object code.
+func (db *StandardDatabase) GetObjectByCodes(codes []byte) (*Object, bool) {
+	if len(codes) != ObjectCodeSize {
+		return nil, false
+	}
+	return db.GetObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
 }
