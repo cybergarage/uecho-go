@@ -181,3 +181,23 @@ func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Proper
 	}
 	return obj.listener.PropertyRequestReceived(obj, esv, prop)
 }
+
+// Copy copies the object instance without the data.
+func (obj *Object) Copy() *Object {
+	newObj := &Object{
+		PropertyMap: NewPropertyMap(),
+		ClassName:   obj.GetClassName(),
+		Name:        obj.GetName(),
+		Code:        make([]byte, ObjectCodeSize),
+		listener:    nil,
+		parentNode:  nil,
+	}
+
+	newObj.SetCode(newObj.GetCode())
+	newObj.SetParentObject(newObj)
+	for _, prop := range obj.properties {
+		newObj.AddProperty(prop.Copy())
+	}
+
+	return newObj
+}
