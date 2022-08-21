@@ -68,27 +68,27 @@ func (prof *Profile) addNodeProfileMandatoryProperties() error {
 	prof.SetOperatingStatus(true)
 
 	// Version Information
-	prof.CreateProperty(NodeProfileClassVersionInformation, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassVersionInformation, PropertyAttributeGet)
 	prof.SetVersion(MajorVersion, MinorVersion)
 
 	// Identification Number
-	prof.CreateProperty(NodeProfileClassIdentificationNumber, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassIdentificationNumber, PropertyAttributeGet)
 	prof.SetID(ProfileManufacturerUnknown)
 
 	// Number Of Self Node Instances
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeInstances, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeInstances, PropertyAttributeGet)
 
 	// Number Of Self Node Classes
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeClasses, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeClasses, PropertyAttributeGet)
 
 	// Instance List Notification
 	prof.CreateProperty(NodeProfileClassInstanceListNotification, PropertyAttributeAnno)
 
 	// Self Node Instance ListS
-	prof.CreateProperty(NodeProfileClassSelfNodeInstanceListS, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassSelfNodeInstanceListS, PropertyAttributeGet)
 
 	// Self Node Class List S
-	prof.CreateProperty(NodeProfileClassSelfNodeClassListS, PropertyAttributeRead)
+	prof.CreateProperty(NodeProfileClassSelfNodeClassListS, PropertyAttributeGet)
 
 	return nil
 }
