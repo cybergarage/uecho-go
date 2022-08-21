@@ -29,6 +29,7 @@ type ObjectCode = protocol.ObjectCode
 // Object is an instance for Echonet object.
 type Object struct {
 	*PropertyMap
+	Name       string
 	Code       []byte
 	listener   ObjectListener
 	parentNode Node
@@ -38,6 +39,7 @@ type Object struct {
 func NewObject() *Object {
 	obj := &Object{
 		PropertyMap: NewPropertyMap(),
+		Name:        "",
 		Code:        make([]byte, ObjectCodeSize),
 		listener:    nil,
 		parentNode:  nil,
@@ -63,6 +65,16 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 	obj := NewDevice()
 	obj.SetCodes(codes)
 	return obj, nil
+}
+
+// SetName sets a name to the object.
+func (obj *Object) SetName(name string) {
+	obj.Name = name
+}
+
+// GetName returns the object name.
+func (obj *Object) GetName() string {
+	return obj.Name
 }
 
 // SetCode sets a code to the object.
