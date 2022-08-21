@@ -29,6 +29,7 @@ linters:
     - gochecknoglobals
     - forbidigo
     - scopelint
+    - gochecknoinits
 
 linters-settings:
   gocritic:

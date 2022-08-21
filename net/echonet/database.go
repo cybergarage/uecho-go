@@ -34,7 +34,7 @@ func (db *StandardDatabase) addObject(obj *Object) {
 }
 
 // GetObject returns the registered object by the specified object code.
-func (db *StandardDatabase) GetMaGetObjectnufacture(code ObjectCode) (*Object, bool) {
+func (db *StandardDatabase) GetObject(code ObjectCode) (*Object, bool) {
 	obj, ok := db.Objects[code]
 	return obj, ok
 }
