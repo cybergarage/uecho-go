@@ -51,14 +51,13 @@ type Property struct {
 
 // NewProperty returns a new property.
 func NewProperty() *Property {
-	prop := &Property{
+	return &Property{
 		Name:         "",
 		Code:         0,
 		Attr:         PropertyAttrNone,
 		Data:         make([]byte, 0),
 		ParentObject: nil,
 	}
-	return prop
 }
 
 // NewPropertyWithCode returns a new property with the specified property code.
@@ -296,4 +295,15 @@ func (prop *Property) Equals(otherProp *Property) bool {
 		return false
 	}
 	return true
+}
+
+// Copy copies the property instance without the data.
+func (prop *Property) Copy() *Property {
+	return &Property{
+		Name:         prop.Name,
+		Code:         prop.Code,
+		Attr:         prop.Attr,
+		Data:         make([]byte, 0),
+		ParentObject: nil,
+	}
 }
