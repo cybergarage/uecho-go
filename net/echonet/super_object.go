@@ -51,7 +51,7 @@ func (obj *SuperObject) CreateProperty(propCode PropertyCode, propAttr PropertyA
 // setPropertyMapProperty sets a specified property map to the object.
 func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
 	if !obj.HasProperty(propMapCode) {
-		obj.PropertyMap.CreateProperty(propMapCode, PropertyAttributeGet)
+		obj.PropertyMap.CreateProperty(propMapCode, PropertyAttrGet)
 	}
 
 	// Description Format 1
