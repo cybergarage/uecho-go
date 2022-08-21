@@ -18,7 +18,7 @@ The `uecho-go` updates the node profile class objects automatically when the chi
 
 ## Device Object Super Class
 
-[ECHONETLite][enet] device node must have some mandatory properties [\[2\]][enet-spec]. The `NewDevice()` addes the following mandatory properties into the device object as default, and the developer should update the properties according to the device status.
+[ECHONETLite][enet] device node must have some mandatory properties [\[2\]][enet-spec]. The `NewDevice()` addes the following mandatory properties into the device object as default, and the developer should update the properties according to the device status.
 
 | EPC | Property name | Default value |
 |---|---|---|
@@ -40,7 +40,7 @@ The `uecho-go` add the following mandatory properties too. However, the develope
 
 Basically, the `uecho-go` handles all messages from other nodes automatically. However, developer can set some user listeners into the node, objects and properties to handle the messages from other nodes.
 
-Using the user listeners, the developer can handle the write requests and update the internal status. To set the listeners, use `LocalNode::SetListener()` or `Object::SetListener()`.
+Using the user listeners, the developer can handle the write requests and update the internal status. To set the listeners, use `LocalNode::SetListener()` or `Object::SetListener()`.
 
 ### Message Listener Sequences
 
@@ -48,7 +48,7 @@ After a node is received a message from other nodes, the node's listeners are ca
 
 ![Node Observers](img/node_msg_listener.png)
 
-The developer can handle all request messages using the node message listener, and they can handle only valid messages using the object and property message listeners.
+The developer can handle all request messages using the node message listener, and they can handle only valid messages using the object and property message listeners.
 
 ### Node Message Listener
 

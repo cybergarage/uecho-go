@@ -69,7 +69,7 @@ Usage : uecholight
  -m 0xXXXXXX : Set Manufacturer code
  ```
 
-The example device object is specified as the 'Requirements for mono functional lighting class' in the Detailed Requirements
+The example device object is specified as the 'Requirements for mono functional lighting class' in the Detailed Requirements
 for ECHONET Device objects[\[1\]][enet-spec], and the object code is below.
 
 - mono functional lighting class
