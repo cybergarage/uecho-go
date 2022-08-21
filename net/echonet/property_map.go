@@ -52,7 +52,7 @@ func (propMap *PropertyMap) AddProperty(prop *Property) {
 }
 
 // CreateProperty creates a new property to the property map.
-func (propMap *PropertyMap) CreateProperty(propCode PropertyCode, propAttr PropertyAttribute) {
+func (propMap *PropertyMap) CreateProperty(propCode PropertyCode, propAttr PropertyAttr) {
 	prop := NewProperty()
 	prop.SetCode(propCode)
 	prop.SetAttribute(propAttr)
@@ -91,7 +91,7 @@ func (propMap *PropertyMap) GetPropertyCount() int {
 }
 
 // SetPropertyAttribute sets an attribute to the existing property.
-func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr PropertyAttribute) error {
+func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr PropertyAttr) error {
 	prop, ok := propMap.GetProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
@@ -101,7 +101,7 @@ func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr
 }
 
 // GetPropertyAttribute returns the specified property attribute in the property map.
-func (propMap *PropertyMap) GetPropertyAttribute(propCode PropertyCode) (PropertyAttribute, error) {
+func (propMap *PropertyMap) GetPropertyAttribute(propCode PropertyCode) (PropertyAttr, error) {
 	prop, ok := propMap.GetProperty(propCode)
 	if !ok {
 		return PropertyAttributeNone, fmt.Errorf(errorPropertyNotFound, uint(propCode))
