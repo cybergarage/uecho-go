@@ -17,6 +17,7 @@ func NewStandardDatabase() *StandardDatabase {
 		Objects:      map[ObjectCode]*Object{},
 	}
 	db.initManufactures()
+	db.initObjects()
 	return db
 }
 
