@@ -64,7 +64,7 @@ func NewLocalNodeProfile() *Profile {
 // addNodeProfileMandatoryProperties sets mandatory properties for node profile.
 func (prof *Profile) addNodeProfileMandatoryProperties() error {
 	// Operation Status
-	prof.CreateProperty(NodeProfileClassOperatingStatus, PropertyAttributeReadAnno)
+	prof.CreateProperty(NodeProfileClassOperatingStatus, PropertyAttributeGetAnno)
 	prof.SetOperatingStatus(true)
 
 	// Version Information
