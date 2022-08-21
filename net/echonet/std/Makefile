@@ -15,9 +15,8 @@
 SHELL := bash
 
 SOURCE_FILES= \
-	manufacturers.py \
-	objects_scsl.py \
-	objects_mra.py
+	../std_manufacturers.go \
+	../std_mra_objects.go
 
 .PHONY: all ${SOURCE_FILES} clean
 
@@ -34,7 +33,7 @@ MANUFACTURE_XLSX=list_code_e.xlsx
 MANUFACTURE_CSV=list_code_e.csv
 MANUFACTURE_LIST_URL=https://echonet.jp/wp/wp-content/uploads/pdf/General/Echonet/ManufacturerCode_en/${MANUFACTURE_XLSX}
 
-manufacturers.py : ${MANUFACTURE_CSV}
+../std_manufacturers.go : ${MANUFACTURE_CSV}
 	@./manufacturers.pl ${MANUFACTURE_CSV} > $@
 
 ${MANUFACTURE_XLSX}:
@@ -44,23 +43,10 @@ ${MANUFACTURE_CSV}: ${MANUFACTURE_XLSX}
 	@-ssconvert $< $@
 
 ############################################################
-# Machine-readable database from Sony CSL
-############################################################
-
-SCSL_DEVICE_LIST_CSV=DeviceList.csv
-SCSL_DEVICE_LIST_URL=https://raw.githubusercontent.com/SonyCSL/ECHONETLite-ObjectDatabase/master/data/csv/en/${SCSL_DEVICE_LIST_CSV}
-
-objects_scsl.py : ${SCSL_DEVICE_LIST_CSV}
-	@./objects_scsl.pl ${SCSL_DEVICE_LIST_CSV} > $@
-
-${SCSL_DEVICE_LIST_CSV}:
-	@wget -q -O ${SCSL_DEVICE_LIST_CSV} ${SCSL_DEVICE_LIST_URL}
-
-############################################################
 # Machine-readable database from Echonet consortium
 ############################################################
 
-MRA_JSON_DIR=MRA_V1.1.1
+MRA_JSON_DIR=MRA_en_V1.1.1
 
-objects_mra.py :
+../std_mra_objects.go :
 	@./objects_mra.pl ${MRA_JSON_DIR} > $@
