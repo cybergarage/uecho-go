@@ -40,22 +40,6 @@ boundPort := node.GetPort()
 The bound UDP and TCP unicast ports are the same number. 
 In addition, [ECHONET Lite][enet] does not specify the source port numbers of UDP multicast, UDP and TCP unicast, but `uecho-go` uses the bound port as the source port number for the all messaging.
 
-# Auto Interface Binding
-
-`uecho-go` provides `SetAutoInterfaceBindingEnabled()` to decide wheter to bind the listen ports to each interface or not, and the default setting is true.
-
-The auto interface binding function enables to listen on an interface when the available interface is one, otherwise, listen without the specifying interface.
-Regardless of this option, `uecho-go` listens to multicast messages on each interface.
-If you want to spefiy the interface binding manually, use `SetAutoInterfaceBindingEnabled()` and `SetEachInterfaceBindingEnabled()` as the following.
-
-```
-node := NewLocalNode()
-node.SetAutoInterfaceBindingEnabled(false)
-node.SetEachInterfaceBindingEnabled(true)
- ```
-
-In the future, this function will be deprecated, but it is provisionally introduced because some Go environments might not work `syscall.SetsockoptInt()` with SO_REUSEPORT for the UDP unicast listening.
-
 # References
 
 - [Part V ECHONET Lite System Design Guidelines v1.12 : Chapter 5 - Guidelines on TCP][enet_guideline_tcp]
