@@ -13,19 +13,11 @@ import (
 )
 
 const (
-	PropertyCodeMin = 0x80
-	PropertyCodeMax = 0xFF
-
+	PropertyCodeMin           = 0x80
+	PropertyCodeMax           = 0xFF
 	PropertyMapFormat1MaxSize = 15
 	PropertyMapFormat2Size    = 18
 	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
-
-	PropertyAttributeNone    = 0x00
-	PropertyAttributeGet     = 0x01
-	PropertyAttributeSet     = 0x02
-	PropertyAttributeAnno    = 0x10
-	PropertyAttributeGetSet  = PropertyAttributeGet | PropertyAttributeSet
-	PropertyAttributeGetAnno = PropertyAttributeGet | PropertyAttributeAnno
 )
 
 const (
@@ -38,6 +30,15 @@ type PropertyCode = protocol.PropertyCode
 
 // PropertyAttr is a type for property attribute.
 type PropertyAttr uint
+
+const (
+	PropertyAttrNone    = PropertyAttr(0x00)
+	PropertyAttrGet     = PropertyAttr(0x01)
+	PropertyAttrSet     = PropertyAttr(0x02)
+	PropertyAttrAnno    = PropertyAttr(0x10)
+	PropertyAttrGetSet  = PropertyAttrGet | PropertyAttrSet
+	PropertyAttrGetAnno = PropertyAttrGet | PropertyAttrAnno
+)
 
 // Property is an instance for Echonet property.
 type Property struct {
@@ -53,7 +54,7 @@ func NewProperty() *Property {
 	prop := &Property{
 		Name:         "",
 		Code:         0,
-		Attr:         PropertyAttributeNone,
+		Attr:         PropertyAttrNone,
 		Data:         make([]byte, 0),
 		ParentObject: nil,
 	}
@@ -137,21 +138,21 @@ func (prop *Property) GetAttribute() PropertyAttr {
 
 // IsReadable returns true when the property attribute is readable, otherwise false.
 func (prop *Property) IsReadable() bool {
-	return ((prop.Attr & PropertyAttributeGet) != 0)
+	return ((prop.Attr & PropertyAttrGet) != 0)
 }
 
 // IsWritable returns true when the property attribute is writable, otherwise false.
 func (prop *Property) IsWritable() bool {
-	return ((prop.Attr & PropertyAttributeSet) != 0)
+	return ((prop.Attr & PropertyAttrSet) != 0)
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
 func (prop *Property) IsReadOnly() bool {
-	if (prop.Attr & PropertyAttributeGet) == 0 {
+	if (prop.Attr & PropertyAttrGet) == 0 {
 		return false
 	}
 
-	if (prop.Attr & PropertyAttributeSet) != 0 {
+	if (prop.Attr & PropertyAttrSet) != 0 {
 		return false
 	}
 
@@ -160,10 +161,10 @@ func (prop *Property) IsReadOnly() bool {
 
 // IsWriteOnly returns true when the property attribute is write only, otherwise false.
 func (prop *Property) IsWriteOnly() bool {
-	if (prop.Attr & PropertyAttributeSet) == 0 {
+	if (prop.Attr & PropertyAttrSet) == 0 {
 		return false
 	}
-	if (prop.Attr & PropertyAttributeGet) != 0 {
+	if (prop.Attr & PropertyAttrGet) != 0 {
 		return false
 	}
 	return true
@@ -171,7 +172,7 @@ func (prop *Property) IsWriteOnly() bool {
 
 // isAnnounceable returns true when the property attribute is announcement, otherwise false.
 func (prop *Property) isAnnounceable() bool {
-	return ((prop.Attr & PropertyAttributeAnno) != 0)
+	return ((prop.Attr & PropertyAttrAnno) != 0)
 }
 
 // IsAvailableService returns true whether the specified service can execute, otherwise false.
