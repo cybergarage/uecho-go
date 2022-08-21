@@ -3,9 +3,13 @@
 // license that can be found in the LICENSE file.
 package main
 
+import (
+	"github.com/cybergarage/uecho-go/net/echonet"
+)
+
 const (
 	ProgramName            = "uecholight"
-	LightObjectCode        = 0x029101
+	LightObjectCode        = echonet.ObjectCode(0x029101)
 	LightPropertyPowerCode = 0x80
 	LightPropertyPowerOn   = 0x30
 	LightPropertyPowerOff  = 0x31
