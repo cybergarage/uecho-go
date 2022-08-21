@@ -22,9 +22,9 @@ const (
 
 	PropertyAttributeNone      = 0x00
 	PropertyAttributeGet       = 0x01
-	PropertyAttributeWrite     = 0x02
+	PropertyAttributeSet       = 0x02
 	PropertyAttributeAnno      = 0x10
-	PropertyAttributeReadWrite = PropertyAttributeGet | PropertyAttributeWrite
+	PropertyAttributeReadWrite = PropertyAttributeGet | PropertyAttributeSet
 	PropertyAttributeReadAnno  = PropertyAttributeGet | PropertyAttributeAnno
 )
 
@@ -142,7 +142,7 @@ func (prop *Property) IsReadable() bool {
 
 // IsWritable returns true when the property attribute is writable, otherwise false.
 func (prop *Property) IsWritable() bool {
-	return ((prop.Attr & PropertyAttributeWrite) != 0)
+	return ((prop.Attr & PropertyAttributeSet) != 0)
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
@@ -151,7 +151,7 @@ func (prop *Property) IsReadOnly() bool {
 		return false
 	}
 
-	if (prop.Attr & PropertyAttributeWrite) != 0 {
+	if (prop.Attr & PropertyAttributeSet) != 0 {
 		return false
 	}
 
@@ -160,7 +160,7 @@ func (prop *Property) IsReadOnly() bool {
 
 // IsWriteOnly returns true when the property attribute is write only, otherwise false.
 func (prop *Property) IsWriteOnly() bool {
-	if (prop.Attr & PropertyAttributeWrite) == 0 {
+	if (prop.Attr & PropertyAttributeSet) == 0 {
 		return false
 	}
 
