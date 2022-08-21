@@ -20,20 +20,24 @@ print<<HEADER;
 
 package echonet
 
-func newStandardObject(cls_name string, grp_code byte, cls_code byte) *Object {
+func newStandardObject(clsName string, grpCode byte, clsCode byte) *Object {
 	obj := NewObject()
-  obj.SetName(cls_name)
-	obj.SetClassGroupCode(grp_code)
-	obj.SetClassCode(cls_code)
+	obj.SetName(clsName)
+	obj.SetClassGroupCode(grpCode)
+	obj.SetClassCode(clsCode)
 	return obj
 }
 
-func newStandardProperty() *Property {
-  prop := NewProperty()
-  return prop
+func newStandardProperty(code PropertyCode, name string, dataType string, dataSize int, getRule string, setRule string, annoRule string) *Property {
+	prop := NewProperty()
+	prop.SetCode(code)
+	prop.SetName(name)
+	return prop
 }
 
-func (db *StandardDatabase) iniObjects() {
+// nolint:misspell, whitespace, maintidx
+func (db *StandardDatabase) initObjects() {
+  var obj *Object
 HEADER
 
 my @mra_sub_dirs = (
@@ -90,7 +94,6 @@ foreach my $device_json_file(@device_json_files){
    }
   printf("db.addObject(obj)\n\n", $grp_code, $cls_code);
 }
-
 print<<FOTTER;
 }
 FOTTER
