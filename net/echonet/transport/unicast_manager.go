@@ -80,7 +80,7 @@ func (mgr *UnicastManager) Start() error {
 	for port := startPort; port <= endPort; port++ {
 		bindRetryCount := uint(0)
 		if !mgr.IsAutoPortBindingEnabled() {
-			bindRetryCount = mgr.GetBindRetryCount()
+			bindRetryCount = mgr.BindRetryCount()
 		}
 
 		for n := uint(0); n <= bindRetryCount; n++ {
@@ -100,7 +100,7 @@ func (mgr *UnicastManager) Start() error {
 				break
 			}
 			if n < bindRetryCount {
-				time.Sleep(mgr.GetBindRetryWaitTime())
+				time.Sleep(mgr.BindRetryWaitTime())
 			}
 		}
 		if lastErr == nil {
@@ -191,7 +191,7 @@ func (mgr *UnicastManager) PostMessage(addr string, port int, reqMsg *protocol.M
 
 	var lastErr error
 	for _, server := range mgr.Servers {
-		resMsg, err := server.TCPSocket.PostMessage(addr, port, reqMsg, mgr.GetConnectionTimeout())
+		resMsg, err := server.TCPSocket.PostMessage(addr, port, reqMsg, mgr.ConnectionTimeout())
 		if err == nil {
 			return resMsg, nil
 		}
