@@ -34,12 +34,24 @@ type SuperObject struct {
 	*Object
 }
 
-// NewDevice returns a new device Object.
+// NewSuperObject returns a new device Object.
 func NewSuperObject() *SuperObject {
 	obj := &SuperObject{
 		Object: NewObject(),
 	}
+	obj.addDeviceMandatoryProperties()
 	return obj
+}
+
+// addDeviceMandatoryProperties sets mandatory properties for the super object.
+func (obj *SuperObject) addDeviceMandatoryProperties() {
+	stdObj, ok := GetStandardDatabase().SuperObject()
+	if !ok {
+		return
+	}
+	for _, stdProp := range stdObj.Properties() {
+		obj.AddProperty(stdProp.Copy())
+	}
 }
 
 // CreateProperty creates a new property to the property map. (Override function for PropertyMap).
