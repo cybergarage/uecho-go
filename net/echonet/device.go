@@ -138,8 +138,8 @@ func (dev *Device) SetStandardVersion(ver byte) error {
 	return dev.SetPropertyData(DeviceStandardVersion, verBytes)
 }
 
-// GetStandardVersion return the standard version of the device.
-func (dev *Device) GetStandardVersion() (byte, error) {
+// StandardVersion return the standard version of the device.
+func (dev *Device) StandardVersion() (byte, error) {
 	verBytes, err := dev.FindPropertyData(DeviceStandardVersion)
 	if err != nil {
 		return 0, err
@@ -159,8 +159,8 @@ func (dev *Device) SetFaultStatus(stats bool) error {
 	return dev.SetPropertyByteData(DeviceFaultStatus, statsByte)
 }
 
-// GetFaultStatus return the fault status of the device.
-func (dev *Device) GetFaultStatus() (bool, error) {
+// FaultStatus return the fault status of the device.
+func (dev *Device) FaultStatus() (bool, error) {
 	statsByte, err := dev.FindPropertyByteData(DeviceFaultStatus)
 	if err != nil {
 		return false, err

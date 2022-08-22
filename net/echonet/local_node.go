@@ -81,8 +81,8 @@ func (node *LocalNode) SetManufacturerCode(code uint) {
 	}
 }
 
-// GetManufacturerCode return the manufacture codes of the node.
-func (node *LocalNode) GetManufacturerCode() uint {
+// ManufacturerCode return the manufacture codes of the node.
+func (node *LocalNode) ManufacturerCode() uint {
 	return node.manufacturerCode
 }
 
