@@ -173,7 +173,7 @@ func (node *LocalNode) updateNodeProfile() {
 	classes := make([]*Class, 0)
 
 	for _, dev := range node.devices {
-		devClass := dev.GetClass()
+		devClass := dev.Class()
 		hasSameClass := false
 		for _, class := range classes {
 			if class.Equals(devClass) {
@@ -188,7 +188,7 @@ func (node *LocalNode) updateNodeProfile() {
 	}
 
 	for _, prof := range node.profiles {
-		profClass := prof.GetClass()
+		profClass := prof.Class()
 		hasSameClass := false
 		for _, class := range classes {
 			if class.Equals(profClass) {
