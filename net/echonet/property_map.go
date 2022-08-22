@@ -41,8 +41,8 @@ func (propMap *PropertyMap) SetParentObject(obj *Object) {
 	}
 }
 
-// GetParentObject returns a parent object.
-func (propMap *PropertyMap) GetParentObject() *Object {
+// ParentObject returns a parent object.
+func (propMap *PropertyMap) ParentObject() *Object {
 	return propMap.parentObject
 }
 
@@ -68,8 +68,8 @@ func (propMap *PropertyMap) ClearAllProperties(prop *Property) {
 	}
 }
 
-// GetProperies returns the all properties in the property map.
-func (propMap *PropertyMap) GetProperties() []*Property {
+// Properties returns the all properties in the property map.
+func (propMap *PropertyMap) Properties() []*Property {
 	props := []*Property{}
 	for _, prop := range propMap.properties {
 		props = append(props, prop)
@@ -77,17 +77,17 @@ func (propMap *PropertyMap) GetProperties() []*Property {
 	return props
 }
 
-// GetProperty returns the specified property in the property map.
-func (propMap *PropertyMap) GetProperty(code PropertyCode) (*Property, bool) {
+// FindProperty returns the specified property in the property map.
+func (propMap *PropertyMap) FindProperty(code PropertyCode) (*Property, bool) {
 	prop, ok := propMap.properties[code]
 	return prop, ok
 }
 
-// GetPropertyWait returns the specified property in the property map with the specified waiting time.
-func (propMap *PropertyMap) GetPropertyWait(code PropertyCode, waitTime time.Duration) (*Property, bool) {
+// FindPropertyWait returns the specified property in the property map with the specified waiting time.
+func (propMap *PropertyMap) FindPropertyWait(code PropertyCode, waitTime time.Duration) (*Property, bool) {
 	for n := 0; n < propertyWaitRetryCount; n++ {
 		time.Sleep(waitTime / propertyWaitRetryCount)
-		prop, ok := propMap.GetProperty(code)
+		prop, ok := propMap.FindProperty(code)
 		if ok {
 			return prop, true
 		}
@@ -95,14 +95,14 @@ func (propMap *PropertyMap) GetPropertyWait(code PropertyCode, waitTime time.Dur
 	return nil, false
 }
 
-// GetPropertyCount returns the property count in the property map.
-func (propMap *PropertyMap) GetPropertyCount() int {
+// PropertyCount returns the property count in the property map.
+func (propMap *PropertyMap) PropertyCount() int {
 	return len(propMap.properties)
 }
 
 // SetPropertyAttribute sets an attribute to the existing property.
 func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr PropertyAttr) error {
-	prop, ok := propMap.GetProperty(propCode)
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
@@ -110,18 +110,18 @@ func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr
 	return nil
 }
 
-// GetPropertyAttribute returns the specified property attribute in the property map.
-func (propMap *PropertyMap) GetPropertyAttribute(propCode PropertyCode) (PropertyAttr, error) {
-	prop, ok := propMap.GetProperty(propCode)
+// FindPropertyAttribute returns the specified property attribute in the property map.
+func (propMap *PropertyMap) FindPropertyAttribute(propCode PropertyCode) (PropertyAttr, error) {
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return PropertyAttrNone, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return prop.GetAttribute(), nil
+	return prop.Attribute(), nil
 }
 
 // SetPropertyData sets a data to the existing property.
 func (propMap *PropertyMap) SetPropertyData(propCode PropertyCode, propData []byte) error {
-	prop, ok := propMap.GetProperty(propCode)
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
@@ -131,7 +131,7 @@ func (propMap *PropertyMap) SetPropertyData(propCode PropertyCode, propData []by
 
 // SetPropertyByteData sets a byte to the existing property.
 func (propMap *PropertyMap) SetPropertyByteData(propCode PropertyCode, propData byte) error {
-	prop, ok := propMap.GetProperty(propCode)
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
@@ -141,7 +141,7 @@ func (propMap *PropertyMap) SetPropertyByteData(propCode PropertyCode, propData 
 
 // SetPropertyIntegerData sets a integer to the existing property.
 func (propMap *PropertyMap) SetPropertyIntegerData(propCode PropertyCode, propData uint, propSize uint) error {
-	prop, ok := propMap.GetProperty(propCode)
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
@@ -151,42 +151,42 @@ func (propMap *PropertyMap) SetPropertyIntegerData(propCode PropertyCode, propDa
 
 // HasProperty return true when the specified property exists, otherwise false.
 func (propMap *PropertyMap) HasProperty(propCode PropertyCode) bool {
-	_, ok := propMap.GetProperty(propCode)
+	_, ok := propMap.FindProperty(propCode)
 	return ok
 }
 
-// GetPropertyDataSize return the specified property data size in the property map.
-func (propMap *PropertyMap) GetPropertyDataSize(propCode PropertyCode) (int, error) {
-	prop, ok := propMap.GetProperty(propCode)
+// FindPropertyDataSize return the specified property data size in the property map.
+func (propMap *PropertyMap) FindPropertyDataSize(propCode PropertyCode) (int, error) {
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return -1, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return len(prop.GetData()), nil
+	return len(prop.Data()), nil
 }
 
-// GetPropertyData return the specified property data in the property map.
-func (propMap *PropertyMap) GetPropertyData(propCode PropertyCode) ([]byte, error) {
-	prop, ok := propMap.GetProperty(propCode)
+// FindPropertyData return the specified property data in the property map.
+func (propMap *PropertyMap) FindPropertyData(propCode PropertyCode) ([]byte, error) {
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return nil, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return prop.GetData(), nil
+	return prop.Data(), nil
 }
 
-// GetPropertyByteData return the specified property byte data in the property map.
-func (propMap *PropertyMap) GetPropertyByteData(propCode PropertyCode) (byte, error) {
-	prop, ok := propMap.GetProperty(propCode)
+// FindPropertyByteData return the specified property byte data in the property map.
+func (propMap *PropertyMap) FindPropertyByteData(propCode PropertyCode) (byte, error) {
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return prop.GetByteData()
+	return prop.ByteData()
 }
 
-// GetPropertyIntegerData return the specified property integer data in the property map.
-func (propMap *PropertyMap) GetPropertyIntegerData(propCode PropertyCode) (uint, error) {
-	prop, ok := propMap.GetProperty(propCode)
+// FindPropertyIntegerData return the specified property integer data in the property map.
+func (propMap *PropertyMap) FindPropertyIntegerData(propCode PropertyCode) (uint, error) {
+	prop, ok := propMap.FindProperty(propCode)
 	if !ok {
 		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	return prop.GetIntegerData()
+	return prop.IntegerData()
 }

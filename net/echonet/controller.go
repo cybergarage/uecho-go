@@ -50,14 +50,14 @@ func (ctrl *Controller) GetLocalNode() *LocalNode {
 	return ctrl.LocalNode
 }
 
-// GetNodes returns found nodes.
-func (ctrl *Controller) GetNodes() []*RemoteNode {
+// Nodes returns found nodes.
+func (ctrl *Controller) Nodes() []*RemoteNode {
 	return ctrl.foundNodes
 }
 
-// GetNode returns a node which has the specified address.
-func (ctrl *Controller) GetNode(addr string) (*RemoteNode, error) {
-	for _, node := range ctrl.GetNodes() {
+// FindNode returns a node which has the specified address.
+func (ctrl *Controller) FindNode(addr string) (*RemoteNode, error) {
+	for _, node := range ctrl.Nodes() {
 		if node.GetAddress() == addr {
 			return node, nil
 		}
@@ -67,7 +67,7 @@ func (ctrl *Controller) GetNode(addr string) (*RemoteNode, error) {
 
 // FindObject returns a object which has the specified object code.
 func (ctrl *Controller) FindObject(code ObjectCode) (*Object, error) {
-	for _, node := range ctrl.GetNodes() {
+	for _, node := range ctrl.Nodes() {
 		obj, err := node.FindObject(code)
 		if err == nil {
 			return obj, nil
@@ -78,7 +78,7 @@ func (ctrl *Controller) FindObject(code ObjectCode) (*Object, error) {
 
 // FindDevice returns a device object which has the specified object code.
 func (ctrl *Controller) FindDevice(code ObjectCode) (*Device, error) {
-	for _, node := range ctrl.GetNodes() {
+	for _, node := range ctrl.Nodes() {
 		dev, err := node.FindDevice(code)
 		if err == nil {
 			return dev, nil
@@ -89,7 +89,7 @@ func (ctrl *Controller) FindDevice(code ObjectCode) (*Device, error) {
 
 // FindProfile returns a profile object which has the specified object code.
 func (ctrl *Controller) FindProfile(code ObjectCode) (*Profile, error) {
-	for _, node := range ctrl.GetNodes() {
+	for _, node := range ctrl.Nodes() {
 		prof, err := node.FindProfile(code)
 		if err == nil {
 			return prof, nil

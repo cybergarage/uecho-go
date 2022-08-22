@@ -13,8 +13,8 @@ import (
 func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 	propertyHeader := make([]byte, Format1PropertyHeaderSize)
 
-	for n := 0; n < int(msg.OPC); n++ {
-		prop := msg.GetProperty(n)
+	for n := 0; n < int(msg.opc); n++ {
+		prop := msg.PropertyAt(n)
 		if prop == nil {
 			continue
 		}

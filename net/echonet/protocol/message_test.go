@@ -46,7 +46,7 @@ func TestNewFormat1TestMessage(t *testing.T) {
 	}
 
 	if !msg.IsTID(uint(tid)) {
-		t.Errorf("%d != %d", msg.GetTID(), tid)
+		t.Errorf("%d != %d", msg.TID(), tid)
 	}
 
 	if !msg.IsSourceObjectCode(0xA0B0C0) {
@@ -58,15 +58,15 @@ func TestNewFormat1TestMessage(t *testing.T) {
 	}
 
 	if !msg.IsESV(ESVNotification) {
-		t.Errorf("%X != %X", msg.GetESV(), ESVNotification)
+		t.Errorf("%X != %X", msg.ESV(), ESVNotification)
 	}
 
-	if msg.GetOPC() != opc {
-		t.Errorf("%d != %d", msg.GetOPC(), opc)
+	if msg.OPC() != opc {
+		t.Errorf("%d != %d", msg.OPC(), opc)
 	}
 
 	for n := 1; n <= opc; n++ {
-		prop := msg.GetProperty(n - 1)
+		prop := msg.PropertyAt(n - 1)
 		if prop.Code() != PropertyCode(n) {
 			t.Errorf("%d != %d", prop.Code(), n)
 		}
@@ -79,14 +79,14 @@ func TestNewFormat1TestMessage(t *testing.T) {
 func TestMessageAddProperty(t *testing.T) {
 	msg := NewMessage()
 
-	if msg.GetOPC() != 0 {
-		t.Errorf("%d != %d", msg.GetOPC(), 0)
+	if msg.OPC() != 0 {
+		t.Errorf("%d != %d", msg.OPC(), 0)
 	}
 
 	msg.AddProperty(NewProperty())
 
-	if msg.GetOPC() != 1 {
-		t.Errorf("%d != %d", msg.GetOPC(), 1)
+	if msg.OPC() != 1 {
+		t.Errorf("%d != %d", msg.OPC(), 1)
 	}
 }
 
