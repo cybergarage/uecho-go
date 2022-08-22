@@ -12,7 +12,7 @@ func TestNewLocalNodeProfile(t *testing.T) {
 	prof := NewLocalNodeProfile()
 
 	if !prof.IsProfile() {
-		t.Errorf(errorInvalidGroupClassCode, prof.GetClassGroupCode())
+		t.Errorf(errorInvalidGroupClassCode, prof.ClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{

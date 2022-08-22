@@ -41,8 +41,8 @@ func (cls *Class) SetGroupCode(code byte) {
 	cls.codes[0] = code
 }
 
-// GetGroupCode returns the group code of the class.
-func (cls *Class) GetGroupCode() byte {
+// GroupCode returns the group code of the class.
+func (cls *Class) GroupCode() byte {
 	return cls.codes[0]
 }
 
@@ -69,7 +69,7 @@ func (cls *Class) Equals(other *Class) bool {
 	if len(cls.codes) != 2 {
 		return false
 	}
-	if cls.GetGroupCode() != other.GetGroupCode() {
+	if cls.GroupCode() != other.GroupCode() {
 		return false
 	}
 	if cls.Code() != other.Code() {

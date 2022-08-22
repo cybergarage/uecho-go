@@ -16,8 +16,8 @@ const (
 // Object is an instance for Echonet object.
 type Object struct {
 	*PropertyMap
-	ClassName  string
-	Name       string
+	clsName    string
+	name       string
 	codes      []byte
 	listener   ObjectListener
 	parentNode Node
@@ -27,8 +27,8 @@ type Object struct {
 func NewObject() *Object {
 	obj := &Object{
 		PropertyMap: NewPropertyMap(),
-		ClassName:   "",
-		Name:        "",
+		clsName:     "",
+		name:        "",
 		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
 		parentNode:  nil,
@@ -59,22 +59,22 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 
 // SetClassName sets a class name to the object.
 func (obj *Object) SetClassName(name string) {
-	obj.ClassName = name
+	obj.clsName = name
 }
 
-// GetClassName returns the class name.
-func (obj *Object) GetClassName() string {
-	return obj.ClassName
+// ClassName returns the class name.
+func (obj *Object) ClassName() string {
+	return obj.clsName
 }
 
 // SetName sets a name to the object.
 func (obj *Object) SetName(name string) {
-	obj.Name = name
+	obj.name = name
 }
 
-// GetName returns the object name.
-func (obj *Object) GetName() string {
-	return obj.Name
+// Name returns the object name.
+func (obj *Object) Name() string {
+	return obj.name
 }
 
 // SetCode sets a code to the object.
@@ -102,8 +102,8 @@ func (obj *Object) IsCode(code ObjectCode) bool {
 	return (code == obj.Code())
 }
 
-// GetClass returns the class of the object.
-func (obj *Object) GetClass() *Class {
+// Class returns the class of the object.
+func (obj *Object) Class() *Class {
 	return NewClassWithCodes(obj.codes)
 }
 
@@ -112,8 +112,8 @@ func (obj *Object) SetClassGroupCode(code byte) {
 	obj.codes[0] = code
 }
 
-// GetClassGroupCode returns the class group code.
-func (obj *Object) GetClassGroupCode() byte {
+// ClassGroupCode returns the class group code.
+func (obj *Object) ClassGroupCode() byte {
 	return obj.codes[0]
 }
 
@@ -122,8 +122,8 @@ func (obj *Object) SetClassCode(code byte) {
 	obj.codes[1] = code
 }
 
-// GetClassCode returns the class group code.
-func (obj *Object) GetClassCode() byte {
+// ClassCode returns the class group code.
+func (obj *Object) ClassCode() byte {
 	return obj.codes[1]
 }
 
@@ -132,8 +132,8 @@ func (obj *Object) SetInstanceCode(code byte) {
 	obj.codes[2] = code
 }
 
-// GetInstanceCode returns the instance code.
-func (obj *Object) GetInstanceCode() byte {
+// InstanceCode returns the instance code.
+func (obj *Object) InstanceCode() byte {
 	return obj.codes[2]
 }
 
@@ -174,8 +174,8 @@ func (obj *Object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Proper
 func (obj *Object) Copy() *Object {
 	newObj := &Object{
 		PropertyMap: NewPropertyMap(),
-		ClassName:   obj.GetClassName(),
-		Name:        obj.GetName(),
+		clsName:     obj.ClassName(),
+		name:        obj.Name(),
 		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
 		parentNode:  nil,

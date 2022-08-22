@@ -12,7 +12,7 @@ func TestNewProfile(t *testing.T) {
 	prof := NewProfile()
 
 	if !prof.IsProfile() {
-		t.Errorf(errorInvalidGroupClassCode, prof.GetClassGroupCode())
+		t.Errorf(errorInvalidGroupClassCode, prof.ClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{
