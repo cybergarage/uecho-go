@@ -152,8 +152,8 @@ func (obj *Object) SetParentNode(node Node) {
 	obj.parentNode = node
 }
 
-// GetParentNode returns a parent node.
-func (obj *Object) GetParentNode() Node {
+// ParentNode returns a parent node.
+func (obj *Object) ParentNode() Node {
 	return obj.parentNode
 }
 

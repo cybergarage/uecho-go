@@ -92,7 +92,7 @@ func (prop *Property) GetNode() Node {
 	if parentObj == nil {
 		return nil
 	}
-	return parentObj.GetParentNode()
+	return parentObj.ParentNode()
 }
 
 // SetName sets a name to the property.
