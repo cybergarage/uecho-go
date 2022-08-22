@@ -87,10 +87,10 @@ func (ctrl *Controller) FindDevice(code ObjectCode) (*Device, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetProfile returns a profile object which has the specified object code.
-func (ctrl *Controller) GetProfile(code ObjectCode) (*Profile, error) {
+// FindProfile returns a profile object which has the specified object code.
+func (ctrl *Controller) FindProfile(code ObjectCode) (*Profile, error) {
 	for _, node := range ctrl.GetNodes() {
-		prof, err := node.GetProfile(code)
+		prof, err := node.FindProfile(code)
 		if err == nil {
 			return prof, nil
 		}
