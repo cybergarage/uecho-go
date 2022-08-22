@@ -125,7 +125,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			}
 
 			if !isTestNode {
-				t.Skipf("[%d] %s:%d is an unknow node", foundNodeIdx, foundNode.GetAddress(), foundNode.GetPort())
+				t.Skipf("[%d] %s:%d is an unknow node", foundNodeIdx, foundNode.Address(), foundNode.Port())
 			}
 		}
 	}
@@ -142,7 +142,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		}
 
 		if !isTestNode {
-			t.Skipf("[%d] %s:%d is an unknow node", foundNodeIdx, foundNode.GetAddress(), foundNode.GetPort())
+			t.Skipf("[%d] %s:%d is an unknow node", foundNodeIdx, foundNode.Address(), foundNode.Port())
 			continue
 		}
 
@@ -168,7 +168,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
 			resMsg, err := ctrl.PostMessage(foundNode, reqMsg)
 			if err != nil {
-				t.Errorf("[%d] %s:%d is not responding", foundNodeIdx, foundNode.GetAddress(), foundNode.GetPort())
+				t.Errorf("[%d] %s:%d is not responding", foundNodeIdx, foundNode.Address(), foundNode.Port())
 				t.Error(err)
 				return
 			}

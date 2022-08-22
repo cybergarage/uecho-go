@@ -82,7 +82,7 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 		return err
 	}
 
-	_, err = node.server.SendMessage(dstNode.GetAddress(), dstNode.GetPort(), msg)
+	_, err = node.server.SendMessage(dstNode.Address(), dstNode.Port(), msg)
 
 	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
 
@@ -100,7 +100,7 @@ func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.M
 		return nil, err
 	}
 
-	resMsg, err := node.server.PostMessage(dstNode.GetAddress(), dstNode.GetPort(), reqMsg)
+	resMsg, err := node.server.PostMessage(dstNode.Address(), dstNode.Port(), reqMsg)
 
 	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
 

@@ -5,14 +5,12 @@
 package transport
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 // A MessageManager represents a multicast server list.
 type MessageManager struct {
-	Port           uint
+	port           uint
 	messageHandler protocol.MessageHandler
 	multicastMgr   *MulticastManager
 	unicastMgr     *UnicastManager
@@ -21,7 +19,7 @@ type MessageManager struct {
 // NewMessageManager returns a new message manager.
 func NewMessageManager() *MessageManager {
 	mgr := &MessageManager{
-		Port:           UDPPort,
+		port:           UDPPort,
 		messageHandler: nil,
 		multicastMgr:   NewMulticastManager(),
 		unicastMgr:     NewUnicastManager(),
@@ -43,7 +41,11 @@ func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
 func (mgr *MessageManager) GetBoundAddresses() []string {
 	ifaddrs := []string{}
 	for _, server := range mgr.GetMulticastManager().Servers {
-		ifaddrs = append(ifaddrs, server.BoundAddress)
+		ifaddr, err := server.Address()
+		if err != nil {
+			continue
+		}
+		ifaddrs = append(ifaddrs, ifaddr)
 	}
 	return ifaddrs
 }
@@ -64,8 +66,8 @@ func (mgr *MessageManager) SetPort(port int) {
 }
 
 // GetPort returns the listen port.
-func (mgr *MessageManager) GetPort() int {
-	return mgr.unicastMgr.GetPort()
+func (mgr *MessageManager) Port() int {
+	return mgr.unicastMgr.Port()
 }
 
 // SetMessageHandler set a listener to all managers.
@@ -78,14 +80,6 @@ func (mgr *MessageManager) SetMessageHandler(h protocol.MessageHandler) {
 // GetMessageHandler returns the listener of the manager.
 func (mgr *MessageManager) GetMessageHandler() protocol.MessageHandler {
 	return mgr.messageHandler
-}
-
-// GetBoundPort returns the listen port.
-func (mgr *MessageManager) GetBoundPort() (int, error) {
-	if !mgr.IsRunning() {
-		return 0, fmt.Errorf(errorMessageManagerNotRunning)
-	}
-	return mgr.unicastMgr.GetPort(), nil
 }
 
 // SendMessage send a message to the destination address.
@@ -127,7 +121,7 @@ func (mgr *MessageManager) Start() error {
 		return err
 	}
 
-	mgr.SetPort(mgr.unicastMgr.GetPort())
+	mgr.SetPort(mgr.unicastMgr.Port())
 
 	return nil
 }

@@ -29,10 +29,10 @@ type Node interface {
 	// FindProfile returns the specified profile object.
 	FindProfile(code ObjectCode) (*Profile, error)
 
-	// GetAddress returns the bound address.
-	GetAddress() string
+	// Address returns the bound address.
+	Address() string
 	// GetPort returns the bound address.
-	GetPort() int
+	Port() int
 
 	// Equals returns true whether the specified node is same, otherwise false.
 	Equals(Node) bool
@@ -40,10 +40,10 @@ type Node interface {
 
 // nodeEquals returns true whether the specified node is same, otherwise false.
 func nodeEquals(node1, node2 Node) bool {
-	if node1.GetPort() != node2.GetPort() {
+	if node1.Port() != node2.Port() {
 		return false
 	}
-	if node1.GetAddress() != node2.GetAddress() {
+	if node1.Address() != node2.Address() {
 		return false
 	}
 	return true

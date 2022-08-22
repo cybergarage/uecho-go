@@ -16,10 +16,18 @@ const (
 func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	for _, server := range ctrl.GetMulticastManager().Servers {
-		if msgNode.GetPort() != server.BoundPort {
+		port, err := server.Port()
+		if err != nil {
 			continue
 		}
-		if msgNode.GetAddress() != server.BoundAddress {
+		if msgNode.Port() != port {
+			continue
+		}
+		addr, err := server.Address()
+		if err != nil {
+			continue
+		}
+		if msgNode.Address() != addr {
 			continue
 		}
 		return true

@@ -46,17 +46,20 @@ func NewLocalNode() *LocalNode {
 	return node
 }
 
-// GetAddress returns the bound address.
-func (node *LocalNode) GetAddress() string {
+// Address returns the bound address.
+func (node *LocalNode) Address() string {
 	for _, server := range node.GeUnicastManager().Servers {
-		return server.UDPSocket.BoundAddress
+		addr, err := server.UDPSocket.Address()
+		if err == nil {
+			return addr
+		}
 	}
 	return ""
 }
 
 // GetPort returns the bound address.
-func (node *LocalNode) GetPort() int {
-	return node.GeUnicastManager().GetPort()
+func (node *LocalNode) Port() int {
+	return node.GeUnicastManager().Port()
 }
 
 // SetConfig sets all configuration flags.
@@ -222,5 +225,5 @@ func (node *LocalNode) updateNodeProfile() {
 
 // String returns the node string representation.
 func (node *LocalNode) String() string {
-	return net.JoinHostPort(node.GetAddress(), strconv.Itoa(node.GetPort()))
+	return net.JoinHostPort(node.Address(), strconv.Itoa(node.Port()))
 }

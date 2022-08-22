@@ -68,12 +68,12 @@ func (sock *UDPSocket) Close() error {
 }
 
 func (sock *UDPSocket) outputReadLog(logLevel log.Level, logType string, msgFrom string, msg string, msgSize int) {
-	msgTo, _ := sock.GetBoundIPAddr()
+	msgTo, _ := sock.IPAddr()
 	outputSocketLog(logLevel, logType, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }
 
 func (sock *UDPSocket) outputWriteLog(logLevel log.Level, msgTo string, msg string, msgSize int) {
-	msgFrom, _ := sock.GetBoundIPAddr()
+	msgFrom, _ := sock.IPAddr()
 	outputSocketLog(logLevel, logSocketTypeUDPUnicast, logSocketDirectionWrite, msgFrom, msgTo, msg, msgSize)
 }
 
@@ -120,7 +120,7 @@ func (sock *UDPSocket) SendMessage(addr string, port int, msg *protocol.Message)
 
 // AnnounceMessage announces the message to the bound multicast address.
 func (sock *UDPSocket) AnnounceMessage(msg *protocol.Message) error {
-	ifaddr, err := sock.GetBoundAddress()
+	ifaddr, err := sock.Address()
 	if err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 
 	msg.From.IP = from.IP
 	msg.From.Port = from.Port
-	msg.Interface = sock.Socket.BoundInterface
+	msg.Interface = sock.Socket.interfac
 
 	return msg, nil
 }

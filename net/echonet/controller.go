@@ -58,7 +58,7 @@ func (ctrl *Controller) Nodes() []*RemoteNode {
 // FindNode returns a node which has the specified address.
 func (ctrl *Controller) FindNode(addr string) (*RemoteNode, error) {
 	for _, node := range ctrl.Nodes() {
-		if node.GetAddress() == addr {
+		if node.Address() == addr {
 			return node, nil
 		}
 	}

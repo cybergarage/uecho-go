@@ -110,7 +110,7 @@ func (mgr *MulticastManager) IsRunning() bool {
 // setUnicastManager sets appropriate unicast servers to all multicast servers to response the multicast messages.
 func (mgr *MulticastManager) setUnicastManager(unicastMgr *UnicastManager) error {
 	for _, multicastServer := range mgr.Servers {
-		unicastServer, err := unicastMgr.getAppropriateServerForInterface(multicastServer.Socket.BoundInterface)
+		unicastServer, err := unicastMgr.getAppropriateServerForInterface(multicastServer.Socket.interfac)
 		if err != nil {
 			mgr.Stop()
 			return err

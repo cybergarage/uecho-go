@@ -89,18 +89,18 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 		srcMgr.FromPacketType = protocol.UnknownPacket
 
 		dstMgr := dstMgrs[n]
-		dstMgr.FromPort = srcMgr.GetPort()
+		dstMgr.FromPort = srcMgr.Port()
 		dstMgr.FromPacketType = protocol.UnicastPacket
 		dstMgr.lastNotificationMessage = nil
 
-		t.Run(fmt.Sprintf("Unicast:%d->%d", srcMgr.GetPort(), dstMgr.GetPort()), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Unicast:%d->%d", srcMgr.Port(), dstMgr.Port()), func(t *testing.T) {
 			msg, err := newTestMessage(uint(n))
 			if err != nil {
 				t.Error(err)
 				return
 			}
 
-			dstPort := dstMgr.GetPort()
+			dstPort := dstMgr.Port()
 			dstAddrs := dstMgr.GetBoundAddresses()
 			if len(dstAddrs) == 0 {
 				t.Errorf("Not found available interfaces ")
@@ -130,7 +130,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			}
 
 			if checkSourcePort {
-				srcPort := srcMgr.GetPort()
+				srcPort := srcMgr.Port()
 				msgPort := dstLastMsg.SourcePort()
 
 				if srcPort != msgPort {

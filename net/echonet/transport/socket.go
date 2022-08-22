@@ -14,17 +14,17 @@ import (
 
 // A Socket represents a socket.
 type Socket struct {
-	BoundInterface *net.Interface
-	BoundPort      int
-	BoundAddress   string
+	interfac *net.Interface
+	port     int
+	address  string
 }
 
 // NewSocket returns a new UDPSocket.
 func NewSocket() *Socket {
 	sock := &Socket{
-		BoundInterface: nil,
-		BoundPort:      0,
-		BoundAddress:   "",
+		interfac: nil,
+		port:     0,
+		address:  "",
 	}
 	sock.Close()
 	return sock
@@ -32,55 +32,55 @@ func NewSocket() *Socket {
 
 // Close initialize this socket.
 func (sock *Socket) Close() {
-	sock.BoundInterface = nil
-	sock.BoundAddress = ""
-	sock.BoundPort = 0
+	sock.interfac = nil
+	sock.address = ""
+	sock.port = 0
 }
 
 // SetBoundStatus sets the bound interface, port, and address.
 func (sock *Socket) SetBoundStatus(i *net.Interface, addr string, port int) {
-	sock.BoundInterface = i
-	sock.BoundAddress = addr
-	sock.BoundPort = port
+	sock.interfac = i
+	sock.address = addr
+	sock.port = port
 }
 
 // IsBound returns true whether the socket is bound, otherwise false.
 func (sock *Socket) IsBound() bool {
-	return sock.BoundPort != 0
+	return sock.port != 0
 }
 
-// GetBoundPort returns the bound port.
-func (sock *Socket) GetBoundPort() (int, error) {
+// Port returns the bound port.
+func (sock *Socket) Port() (int, error) {
 	if !sock.IsBound() {
 		return 0, fmt.Errorf(errorSocketClosed)
 	}
-	return sock.BoundPort, nil
+	return sock.port, nil
 }
 
-// GetBoundInterface returns the bound interface.
-func (sock *Socket) GetBoundInterface() (*net.Interface, error) {
+// Interface returns the bound interface.
+func (sock *Socket) Interface() (*net.Interface, error) {
 	if !sock.IsBound() {
 		return nil, fmt.Errorf(errorSocketClosed)
 	}
-	return sock.BoundInterface, nil
+	return sock.interfac, nil
 }
 
-// GetBoundAddress returns the bound address.
-func (sock *Socket) GetBoundAddress() (string, error) {
+// Address returns the bound address.
+func (sock *Socket) Address() (string, error) {
 	if !sock.IsBound() {
 		return "", fmt.Errorf(errorSocketClosed)
 	}
-	return sock.BoundAddress, nil
+	return sock.address, nil
 }
 
-// GetBoundIPAddr returns the bound address.
-func (sock *Socket) GetBoundIPAddr() (string, error) {
-	port, err := sock.GetBoundPort()
+// IPAddr returns the bound address.
+func (sock *Socket) IPAddr() (string, error) {
+	port, err := sock.Port()
 	if err != nil {
 		return "", err
 	}
 
-	addr, err := sock.GetBoundAddress()
+	addr, err := sock.Address()
 	if err != nil {
 		return "", err
 	}

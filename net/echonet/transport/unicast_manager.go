@@ -15,7 +15,7 @@ import (
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
 	*Config
-	Port    int
+	port    int
 	Servers []*UnicastServer
 	Handler UnicastHandler
 }
@@ -24,7 +24,7 @@ type UnicastManager struct {
 func NewUnicastManager() *UnicastManager {
 	mgr := &UnicastManager{
 		Config:  NewDefaultConfig(),
-		Port:    UDPPort,
+		port:    UDPPort,
 		Servers: make([]*UnicastServer, 0),
 		Handler: nil,
 	}
@@ -33,12 +33,12 @@ func NewUnicastManager() *UnicastManager {
 
 // SetPort sets a listen port.
 func (mgr *UnicastManager) SetPort(port int) {
-	mgr.Port = port
+	mgr.port = port
 }
 
 // GetPort returns the listen port.
-func (mgr *UnicastManager) GetPort() int {
-	return mgr.Port
+func (mgr *UnicastManager) Port() int {
+	return mgr.port
 }
 
 // SetHandler set a listener to all servers.
@@ -71,7 +71,7 @@ func (mgr *UnicastManager) Start() error {
 
 	var lastErr error
 
-	startPort := mgr.GetPort()
+	startPort := mgr.Port()
 	endPort := startPort
 	if mgr.IsAutoPortBindingEnabled() {
 		endPort = startPort + UDPPortRange
@@ -138,7 +138,7 @@ func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) 
 		if server == nil {
 			continue
 		}
-		if server.UDPSocket.BoundInterface == ifi {
+		if server.UDPSocket.interfac == ifi {
 			return server, nil
 		}
 	}
