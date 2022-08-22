@@ -37,8 +37,8 @@ func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
 	return mgr.unicastMgr
 }
 
-// GetBoundAddresses return the bounded interface addresses.
-func (mgr *MessageManager) GetBoundAddresses() []string {
+// Addresses return the bounded interface addresses.
+func (mgr *MessageManager) Addresses() []string {
 	ifaddrs := []string{}
 	for _, server := range mgr.GetMulticastManager().Servers {
 		ifaddr, err := server.Address()
@@ -77,8 +77,8 @@ func (mgr *MessageManager) SetMessageHandler(h protocol.MessageHandler) {
 	mgr.messageHandler = h
 }
 
-// GetMessageHandler returns the listener of the manager.
-func (mgr *MessageManager) GetMessageHandler() protocol.MessageHandler {
+// MessageHandler returns the listener of the manager.
+func (mgr *MessageManager) MessageHandler() protocol.MessageHandler {
 	return mgr.messageHandler
 }
 
