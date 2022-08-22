@@ -43,7 +43,7 @@ const (
 // Property is an instance for Echonet property.
 type Property struct {
 	Name         string
-	Code         PropertyCode
+	code         PropertyCode
 	Attr         PropertyAttr
 	Data         []byte
 	ParentObject *Object
@@ -53,7 +53,7 @@ type Property struct {
 func NewProperty() *Property {
 	return &Property{
 		Name:         "",
-		Code:         0,
+		code:         0,
 		Attr:         PropertyAttrNone,
 		Data:         make([]byte, 0),
 		ParentObject: nil,
@@ -107,12 +107,12 @@ func (prop *Property) GetName() string {
 
 // SetCode sets a specified code to the property.
 func (prop *Property) SetCode(code PropertyCode) {
-	prop.Code = code
+	prop.code = code
 }
 
-// GetCode returns the property code.
-func (prop *Property) GetCode() PropertyCode {
-	return prop.Code
+// Code returns the property code.
+func (prop *Property) Code() PropertyCode {
+	return prop.code
 }
 
 // ClearData clears the property data.
@@ -278,14 +278,14 @@ func (prop *Property) announce() error {
 // toProtocolProperty returns the new property of the property.
 func (prop *Property) toProtocolProperty() *protocol.Property {
 	newProp := protocol.NewProperty()
-	newProp.SetCode(prop.GetCode())
+	newProp.SetCode(prop.Code())
 	newProp.SetData(prop.GetData())
 	return newProp
 }
 
 // Equals returns true if the specified property is same, otherwise false.
 func (prop *Property) Equals(otherProp *Property) bool {
-	if prop.GetCode() != otherProp.GetCode() {
+	if prop.Code() != otherProp.Code() {
 		return false
 	}
 	if prop.GetAttribute() != otherProp.GetAttribute() {
@@ -301,7 +301,7 @@ func (prop *Property) Equals(otherProp *Property) bool {
 func (prop *Property) Copy() *Property {
 	return &Property{
 		Name:         prop.Name,
-		Code:         prop.Code,
+		code:         prop.code,
 		Attr:         prop.Attr,
 		Data:         make([]byte, 0),
 		ParentObject: nil,

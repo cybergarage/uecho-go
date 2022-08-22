@@ -67,7 +67,7 @@ func (node *MyNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ES
   }
 
   // Check whether the local object (device) has the requested property
-  propCode := reqProp.GetCode()
+  propCode := reqProp.Code()
   prop, ok := obj.GetProperty(propCode)
   if !ok {
     return nil

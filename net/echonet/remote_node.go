@@ -54,7 +54,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 
-	if prop.GetCode() != NodeProfileClassInstanceListNotification && prop.GetCode() != NodeProfileClassSelfNodeInstanceListS {
+	if prop.Code() != NodeProfileClassInstanceListNotification && prop.Code() != NodeProfileClassSelfNodeInstanceListS {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 

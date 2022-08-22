@@ -17,13 +17,13 @@ const (
 
 // Class is an instance for Echonet class.
 type Class struct {
-	Code []byte
+	codes []byte
 }
 
 // NewClass returns a new class.
 func NewClass() *Class {
 	cls := &Class{
-		Code: make([]byte, 2),
+		codes: make([]byte, 2),
 	}
 	return cls
 }
@@ -31,48 +31,48 @@ func NewClass() *Class {
 // NewClassWithCodes returns a new class with the specified codes.
 func NewClassWithCodes(codes []byte) *Class {
 	cls := &Class{
-		Code: codes,
+		codes: codes,
 	}
 	return cls
 }
 
 // SetGroupCode sets a group code to the class.
 func (cls *Class) SetGroupCode(code byte) {
-	cls.Code[0] = code
+	cls.codes[0] = code
 }
 
 // GetGroupCode returns the group code of the class.
 func (cls *Class) GetGroupCode() byte {
-	return cls.Code[0]
+	return cls.codes[0]
 }
 
 // SetCode sets a code to the class.
 func (cls *Class) SetCode(code byte) {
-	cls.Code[1] = code
+	cls.codes[1] = code
 }
 
-// GetCode returns the group code of the class.
-func (cls *Class) GetCode() byte {
-	return cls.Code[1]
+// Code returns the group code of the class.
+func (cls *Class) Code() byte {
+	return cls.codes[1]
 }
 
-// GetCodes returns the all codes of the class.
-func (cls *Class) GetCodes() []byte {
-	return cls.Code
+// Codes returns the all codes of the class.
+func (cls *Class) Codes() []byte {
+	return cls.codes
 }
 
 // Equals returns true whether the specified other class is same, otherwise false.
 func (cls *Class) Equals(other *Class) bool {
-	if len(cls.Code) != len(other.Code) {
+	if len(cls.codes) != len(other.codes) {
 		return false
 	}
-	if len(cls.Code) != 2 {
+	if len(cls.codes) != 2 {
 		return false
 	}
 	if cls.GetGroupCode() != other.GetGroupCode() {
 		return false
 	}
-	if cls.GetCode() != other.GetCode() {
+	if cls.Code() != other.Code() {
 		return false
 	}
 	return true

@@ -90,13 +90,13 @@ func (obj *SuperObject) updatePropertyMap() error {
 
 	for _, prop := range obj.GetProperties() {
 		if prop.IsReadable() {
-			getPropMapCodes = append(getPropMapCodes, prop.GetCode())
+			getPropMapCodes = append(getPropMapCodes, prop.Code())
 		}
 		if prop.IsWritable() {
-			setPropMapCodes = append(setPropMapCodes, prop.GetCode())
+			setPropMapCodes = append(setPropMapCodes, prop.Code())
 		}
 		if prop.isAnnounceable() {
-			annoPropMapCodes = append(annoPropMapCodes, prop.GetCode())
+			annoPropMapCodes = append(annoPropMapCodes, prop.Code())
 		}
 	}
 

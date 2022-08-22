@@ -18,7 +18,7 @@ type Object struct {
 	*PropertyMap
 	ClassName  string
 	Name       string
-	Code       []byte
+	codes      []byte
 	listener   ObjectListener
 	parentNode Node
 }
@@ -29,7 +29,7 @@ func NewObject() *Object {
 		PropertyMap: NewPropertyMap(),
 		ClassName:   "",
 		Name:        "",
-		Code:        make([]byte, ObjectCodeSize),
+		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
 		parentNode:  nil,
 	}
@@ -79,62 +79,62 @@ func (obj *Object) GetName() string {
 
 // SetCode sets a code to the object.
 func (obj *Object) SetCode(code ObjectCode) {
-	encoding.IntegerToByte(uint(code), obj.Code)
+	encoding.IntegerToByte(uint(code), obj.codes)
 }
 
-// GetCode returns the code.
-func (obj *Object) GetCode() ObjectCode {
-	return ObjectCode(encoding.ByteToInteger(obj.Code))
+// Code returns the code.
+func (obj *Object) Code() ObjectCode {
+	return ObjectCode(encoding.ByteToInteger(obj.codes))
 }
 
 // SetCodes sets codes to the object.
 func (obj *Object) SetCodes(codes []byte) {
-	copy(obj.Code, codes)
+	copy(obj.codes, codes)
 }
 
-// GetCodes returns the code byte array.
-func (obj *Object) GetCodes() []byte {
-	return obj.Code
+// Codes returns the code byte array.
+func (obj *Object) Codes() []byte {
+	return obj.codes
 }
 
 // IsCode returns true when the object code is the specified code, otherwise false.
 func (obj *Object) IsCode(code ObjectCode) bool {
-	return (code == obj.GetCode())
+	return (code == obj.Code())
 }
 
 // GetClass returns the class of the object.
 func (obj *Object) GetClass() *Class {
-	return NewClassWithCodes(obj.Code)
+	return NewClassWithCodes(obj.codes)
 }
 
 // SetClassGroupCode sets a class group code to the object.
 func (obj *Object) SetClassGroupCode(code byte) {
-	obj.Code[0] = code
+	obj.codes[0] = code
 }
 
 // GetClassGroupCode returns the class group code.
 func (obj *Object) GetClassGroupCode() byte {
-	return obj.Code[0]
+	return obj.codes[0]
 }
 
 // SetClassCode sets a class code to the object.
 func (obj *Object) SetClassCode(code byte) {
-	obj.Code[1] = code
+	obj.codes[1] = code
 }
 
 // GetClassCode returns the class group code.
 func (obj *Object) GetClassCode() byte {
-	return obj.Code[1]
+	return obj.codes[1]
 }
 
 // SetInstanceCode sets a instance code to the object.
 func (obj *Object) SetInstanceCode(code byte) {
-	obj.Code[2] = code
+	obj.codes[2] = code
 }
 
 // GetInstanceCode returns the instance code.
 func (obj *Object) GetInstanceCode() byte {
-	return obj.Code[2]
+	return obj.codes[2]
 }
 
 // IsDevice returns true when the class group code is the device code, otherwise false.
@@ -144,7 +144,7 @@ func (obj *Object) IsDevice() bool {
 
 // IsProfile returns true when the class group code is the profile code, otherwise false.
 func (obj *Object) IsProfile() bool {
-	return isProfileObjectCode(obj.Code[0])
+	return isProfileObjectCode(obj.codes[0])
 }
 
 // SetParentNode sets a parent node.
@@ -176,12 +176,12 @@ func (obj *Object) Copy() *Object {
 		PropertyMap: NewPropertyMap(),
 		ClassName:   obj.GetClassName(),
 		Name:        obj.GetName(),
-		Code:        make([]byte, ObjectCodeSize),
+		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
 		parentNode:  nil,
 	}
 
-	newObj.SetCode(newObj.GetCode())
+	newObj.SetCode(newObj.Code())
 	newObj.SetParentObject(newObj)
 	for _, prop := range obj.GetProperties() {
 		newObj.AddProperty(prop.Copy())

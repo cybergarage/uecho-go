@@ -81,7 +81,7 @@ func (msg *Message) parseFormat1PropertyBytes(data []byte) error {
 			continue
 		}
 
-		prop.Code = PropertyCode(data[offset])
+		prop.code = PropertyCode(data[offset])
 		offset++
 
 		// PDC

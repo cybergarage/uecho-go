@@ -41,7 +41,7 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg *protocol.Message, resMsg *
 	if resProp == nil {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
-	if resProp.GetCode() != testLightPropertyPowerCode {
+	if resProp.Code() != testLightPropertyPowerCode {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 

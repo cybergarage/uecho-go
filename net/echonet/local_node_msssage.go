@@ -35,7 +35,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
-	msg.SetSourceObjectCode(prop.GetParentObject().GetCode())
+	msg.SetSourceObjectCode(prop.GetParentObject().Code())
 	msg.AddProperty(prop.toProtocolProperty())
 	return node.AnnounceMessage(msg)
 }
@@ -66,7 +66,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 	if err != nil {
 		return err
 	}
-	msg.SetSourceObjectCode(nodeProp.GetParentObject().GetCode())
+	msg.SetSourceObjectCode(nodeProp.GetParentObject().Code())
 
 	return err
 }

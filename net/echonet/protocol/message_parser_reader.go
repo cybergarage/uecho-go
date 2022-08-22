@@ -27,7 +27,7 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 			return fmt.Errorf(errorShortMessageSize, n, Format1PropertyHeaderSize)
 		}
 
-		prop.Code = PropertyCode(propertyHeader[0])
+		prop.code = PropertyCode(propertyHeader[0])
 
 		propDataSize := int(propertyHeader[1])
 		prop.Data = make([]byte, propDataSize)
