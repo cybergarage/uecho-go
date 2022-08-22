@@ -26,7 +26,7 @@ func NewStandardDatabase() *StandardDatabase {
 }
 
 func (db *StandardDatabase) addManufacture(man *Manufacture) {
-	db.Manufactures[man.Code] = man
+	db.Manufactures[man.code] = man
 }
 
 // FindManufacture returns the registered manuracture by the specified manuracture code.
