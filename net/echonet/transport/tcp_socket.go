@@ -88,7 +88,7 @@ func (sock *TCPSocket) Close() error {
 }
 
 func (sock *TCPSocket) outputReadLog(logLevel log.Level, msgFrom string, msg string, msgSize int) {
-	msgTo, _ := sock.GetBoundIPAddr()
+	msgTo, _ := sock.IPAddr()
 	outputSocketLog(logLevel, logSocketTypeTCPUnicast, logSocketDirectionRead, msgFrom, msgTo, msg, msgSize)
 }
 
@@ -188,7 +188,7 @@ func (sock *TCPSocket) dialAndWriteBytes(addr string, port int, b []byte, timeou
 		return nil, 0, err
 	}
 
-	fromAddr, err := sock.GetBoundIPAddr()
+	fromAddr, err := sock.IPAddr()
 	if err != nil {
 		return nil, 0, err
 	}

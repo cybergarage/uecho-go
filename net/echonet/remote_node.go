@@ -20,16 +20,16 @@ const (
 // RemoteNode is an instance for Echonet node.
 type RemoteNode struct {
 	*baseNode
-	Address string
-	Port    int
+	address string
+	port    int
 }
 
 // NewRemoteNode returns a new remote node.
 func NewRemoteNode() *RemoteNode {
 	node := &RemoteNode{
 		baseNode: newBaseNode(),
-		Address:  "",
-		Port:     0,
+		address:  "",
+		port:     0,
 	}
 
 	return node
@@ -110,22 +110,22 @@ func NewRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *
 
 // SetAddress set the address to the node.
 func (node *RemoteNode) SetAddress(addr string) {
-	node.Address = addr
+	node.address = addr
 }
 
-// GetAddress returns the address of the node.
-func (node *RemoteNode) GetAddress() string {
-	return node.Address
+// Address returns the address of the node.
+func (node *RemoteNode) Address() string {
+	return node.address
 }
 
 // SetPort set a port to the node.
 func (node *RemoteNode) SetPort(port int) {
-	node.Port = port
+	node.port = port
 }
 
 // GetPort returns the port of the node.
-func (node *RemoteNode) GetPort() int {
-	return node.Port
+func (node *RemoteNode) Port() int {
+	return node.port
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
@@ -147,5 +147,5 @@ func (node *RemoteNode) Equals(otherNode Node) bool {
 
 // String returns the node string representation.
 func (node *RemoteNode) String() string {
-	return net.JoinHostPort(node.GetAddress(), strconv.Itoa(node.GetPort()))
+	return net.JoinHostPort(node.Address(), strconv.Itoa(node.Port()))
 }

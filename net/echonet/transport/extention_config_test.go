@@ -61,8 +61,8 @@ func TestExtensionAutoBindingConfig(t *testing.T) {
 		// t.Skip(err)
 		return
 	}
-	if mgr01.GetPort() != UDPPort {
-		t.Errorf("%d != %d", mgr01.GetPort(), UDPPort)
+	if mgr01.Port() != UDPPort {
+		t.Errorf("%d != %d", mgr01.Port(), UDPPort)
 		return
 	}
 
@@ -97,8 +97,8 @@ func TestExtensionAutoBindingConfig(t *testing.T) {
 		t.Error(err)
 	}
 
-	if mgr02.GetPort() == UDPPort {
-		t.Errorf("%d == %d", mgr02.GetPort(), UDPPort)
+	if mgr02.Port() == UDPPort {
+		t.Errorf("%d == %d", mgr02.Port(), UDPPort)
 		return
 	}
 
