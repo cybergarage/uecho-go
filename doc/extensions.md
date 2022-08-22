@@ -27,14 +27,14 @@ node := NewLocalNode()
 node.SetAutoPortBindingEnabled(true)
  ```
 
- The automatic function binds to the specified port, 3610, for UDP multicast, but it searches an available UDP and TCP unicast ports to bind when the default port, 3610, is bound. Use `Node::GetPort()` to know the bound port after the node is started.
+ The automatic function binds to the specified port, 3610, for UDP multicast, but it searches an available UDP and TCP unicast ports to bind when the default port, 3610, is bound. Use `Node::Port()` to know the bound port after the node is started.
  
 ```
 err := node.Start()
 if err != nil {
     ...
 }
-boundPort := node.GetPort()
+boundPort := node.Port()
 ```
 
 The bound UDP and TCP unicast ports are the same number. 
