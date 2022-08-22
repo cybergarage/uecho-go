@@ -58,8 +58,8 @@ func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol
 	// Output the update message
 	// NOTE : Object::GetProperty() can get the specified property always because the PropertyRequestReceived is not called when the object has no the specified property
 
-	targetProp, _ := obj.GetProperty(reqPropCode)
-	OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.GetData()), hex.EncodeToString(reqPropData))
+	targetProp, _ := obj.FindProperty(reqPropCode)
+	OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.Data()), hex.EncodeToString(reqPropData))
 
 	// Set the requested data to the local object (device)
 

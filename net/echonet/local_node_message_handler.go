@@ -53,8 +53,8 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 	// 4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.GetDestinationObjectCode()
-	msgESV := msg.GetESV()
-	msgOPC := msg.GetOPC()
+	msgESV := msg.ESV()
+	msgOPC := msg.OPC()
 
 	// (A) Processing when the controlled object does not exist
 
@@ -74,12 +74,12 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 
 	if msg.IsReadRequest() || msg.IsWriteRequest() {
 		for n := 0; n < msgOPC; n++ {
-			msgProp := msg.GetProperty(n)
+			msgProp := msg.PropertyAt(n)
 			if msgProp == nil {
 				continue
 			}
 			// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
-			prop, ok := dstObj.GetProperty(msgProp.Code())
+			prop, ok := dstObj.FindProperty(msgProp.Code())
 			if !ok {
 				return false
 			}
@@ -110,8 +110,8 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 		return err
 	}
 
-	msgESV := msg.GetESV()
-	msgOPC := msg.GetOPC()
+	msgESV := msg.ESV()
+	msgOPC := msg.OPC()
 
 	var lastErr error
 
@@ -127,7 +127,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 	// Object Listener
 
 	for n := 0; n < msgOPC; n++ {
-		msgProp := msg.GetProperty(n)
+		msgProp := msg.PropertyAt(n)
 		if msgProp == nil {
 			continue
 		}
@@ -148,15 +148,15 @@ func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 		return nil, err
 	}
 
-	msgOPC := reqMsg.GetOPC()
+	msgOPC := reqMsg.OPC()
 
 	resMsg := protocol.NewResponseMessageWithMessage(reqMsg)
 	for n := 0; n < msgOPC; n++ {
-		msgProp := reqMsg.GetProperty(n)
+		msgProp := reqMsg.PropertyAt(n)
 		if msgProp == nil {
 			continue
 		}
-		prop, ok := dstObj.GetProperty(msgProp.Code())
+		prop, ok := dstObj.FindProperty(msgProp.Code())
 		if !ok {
 			continue
 		}

@@ -115,7 +115,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	}
 
 	if ctrl.foundTestNodeCount != testControllerNodeCount {
-		for foundNodeIdx, foundNode := range ctrl.GetNodes() {
+		for foundNodeIdx, foundNode := range ctrl.Nodes() {
 			isTestNode := false
 			for _, node := range nodes {
 				if node.Equals(foundNode) {
@@ -132,7 +132,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 
 	// Send read / write request (post)
 
-	for foundNodeIdx, foundNode := range ctrl.GetNodes() {
+	for foundNodeIdx, foundNode := range ctrl.Nodes() {
 		isTestNode := false
 		for _, node := range nodes {
 			if node.Equals(foundNode) {

@@ -35,7 +35,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 func (node *LocalNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
-	msg.SetSourceObjectCode(prop.GetParentObject().Code())
+	msg.SetSourceObjectCode(prop.ParentObject().Code())
 	msg.AddProperty(prop.toProtocolProperty())
 	return node.AnnounceMessage(msg)
 }
@@ -49,7 +49,7 @@ func (node *LocalNode) Announce() error {
 		return err
 	}
 
-	nodeProp, ok := nodePropObj.GetProperty(NodeProfileClassInstanceListNotification)
+	nodeProp, ok := nodePropObj.FindProperty(NodeProfileClassInstanceListNotification)
 	if !ok {
 		return fmt.Errorf(errorObjectProfileObjectNotFound)
 	}
@@ -66,7 +66,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 	if err != nil {
 		return err
 	}
-	msg.SetSourceObjectCode(nodeProp.GetParentObject().Code())
+	msg.SetSourceObjectCode(nodeProp.ParentObject().Code())
 
 	return err
 }
@@ -124,7 +124,7 @@ func (node *LocalNode) isResponseMessage(msg *protocol.Message) bool {
 	if !node.isResponseMessageWaiting() {
 		return false
 	}
-	if msg.GetTID() != node.postRequestMsg.GetTID() {
+	if msg.TID() != node.postRequestMsg.TID() {
 		return false
 	}
 	return true
