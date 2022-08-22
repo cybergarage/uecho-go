@@ -93,7 +93,7 @@ func main() {
 			if len(objName) == 0 {
 				objName = unknown
 			}
-			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), objName)
+			fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
 
 			for _, prop := range obj.Properties() {
 				if !prop.IsReadable() {
@@ -114,7 +114,7 @@ func main() {
 						propData = hex.EncodeToString(props[0].Data())
 					}
 				}
-				fmt.Printf("    [%02X] %s: %s\n", prop.Code(), propName, propData)
+				fmt.Printf("        [%02X] %s (%s)\n", prop.Code(), propData, propName)
 			}
 		}
 	}
