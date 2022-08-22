@@ -44,7 +44,7 @@ func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, 
 	for _, prop := range msg.GetProperties() {
 		fmt.Printf("%2X%s ",
 			prop.Code(),
-			hex.EncodeToString(prop.GetData()))
+			hex.EncodeToString(prop.Data()))
 	}
 	fmt.Printf("\n")
 }

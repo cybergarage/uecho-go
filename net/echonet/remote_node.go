@@ -58,7 +58,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
 
-	propData := prop.GetData()
+	propData := prop.Data()
 	propSize := len(propData)
 	if propSize == 0 {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)

@@ -417,7 +417,7 @@ func (msg *Message) Bytes() []byte {
 			continue
 		}
 
-		propData := prop.GetData()
+		propData := prop.Data()
 		for i := 0; i < propSize; i++ {
 			msgBytes[offset+i] = propData[i]
 		}

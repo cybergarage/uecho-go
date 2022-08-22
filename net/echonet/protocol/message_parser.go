@@ -99,7 +99,7 @@ func (msg *Message) parseFormat1PropertyBytes(data []byte) error {
 			continue
 		}
 
-		prop.Data = data[offset:(offset + propDataSize)]
+		prop.data = data[offset:(offset + propDataSize)]
 
 		offset += propDataSize
 	}

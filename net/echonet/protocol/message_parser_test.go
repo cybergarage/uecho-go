@@ -54,13 +54,13 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		if prop.Code() != PropertyCode(n) {
 			t.Errorf("%d != %d", prop.Code(), n)
 		}
-		if len(prop.Data) != n {
-			t.Errorf("%d != %d", len(prop.Data), n)
+		if len(prop.data) != n {
+			t.Errorf("%d != %d", len(prop.data), n)
 		}
-		for i := 0; i < len(prop.Data); i++ {
+		for i := 0; i < len(prop.data); i++ {
 			dataByte := byte('a' + (n - 1) + i)
-			if prop.Data[i] != dataByte {
-				t.Errorf("%d != %d", prop.Data[i], dataByte)
+			if prop.data[i] != dataByte {
+				t.Errorf("%d != %d", prop.data[i], dataByte)
 			}
 		}
 	}

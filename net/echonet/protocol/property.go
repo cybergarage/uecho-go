@@ -14,7 +14,7 @@ type PropertyCode byte
 // Property is an instance for Echonet property.
 type Property struct {
 	code PropertyCode
-	Data []byte
+	data []byte
 }
 
 // NewProperty returns a new property.
@@ -26,7 +26,7 @@ func NewProperty() *Property {
 func NewPropertyWithCode(code PropertyCode) *Property {
 	prop := &Property{
 		code: code,
-		Data: make([]byte, 0),
+		data: make([]byte, 0),
 	}
 	return prop
 }
@@ -52,36 +52,36 @@ func (prop *Property) Code() PropertyCode {
 
 // SetData sets a code to the property.
 func (prop *Property) SetData(data []byte) {
-	prop.Data = make([]byte, len(data))
-	copy(prop.Data, data)
+	prop.data = make([]byte, len(data))
+	copy(prop.data, data)
 }
 
-// GetData returns the property data.
-func (prop *Property) GetData() []byte {
-	return prop.Data
+// Data returns the property data.
+func (prop *Property) Data() []byte {
+	return prop.data
 }
 
-// GetStringData returns the property string data.
-func (prop *Property) GetStringData() string {
-	return string(prop.Data)
+// StringData returns the property string data.
+func (prop *Property) StringData() string {
+	return string(prop.data)
 }
 
-// GetIntegerData returns the property integer data.
-func (prop *Property) GetIntegerData() uint {
-	return encoding.ByteToInteger(prop.Data)
+// IntegerData returns the property integer data.
+func (prop *Property) IntegerData() uint {
+	return encoding.ByteToInteger(prop.data)
 }
 
 // Size return the property data size.
 func (prop *Property) Size() int {
-	return len(prop.Data)
+	return len(prop.data)
 }
 
 // Copy returns a copy property of the property.
 func Copy(prop *Property) *Property {
 	copyProp := &Property{
 		code: prop.code,
-		Data: make([]byte, len(prop.Data)),
+		data: make([]byte, len(prop.data)),
 	}
-	copy(copyProp.Data, prop.Data)
+	copy(copyProp.data, prop.data)
 	return copyProp
 }

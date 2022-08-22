@@ -45,7 +45,7 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg *protocol.Message, resMsg *
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 
-	resData := resProp.GetData()
+	resData := resProp.Data()
 	if len(resData) != 1 {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
