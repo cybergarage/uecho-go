@@ -27,6 +27,7 @@ import (
 
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet"
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
 func main() {
@@ -63,10 +64,28 @@ func main() {
 
 	// Output all found nodes
 
+	db := echonet.GetStandardDatabase()
+
 	for i, node := range ctrl.Nodes() {
-		fmt.Printf("[%d] %-15s:%d\n", i, node.Address(), node.Port())
+		manufactureName := "unknown"
+		req := echonet.NewMessage()
+		req.SetESV(echonet.ESVReadRequest)
+		req.SetDEOJ(0x0EF001)
+		req.AddProperty(echonet.NewProperty().SetCode(0x8A))
+		res, err := ctrl.PostMessage(node, req)
+		if err == nil {
+			if props := res.Properties(); len(props) == 1 {
+				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
+				if ok {
+					manufactureName = manufacture.Name
+				}
+			}
+		}
+
+		fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
+
 		for j, obj := range node.Objects() {
-			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), obj.Name())
+			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), obj.ClassName())
 			for _, prop := range obj.Properties() {
 				propData := ""
 				if prop.IsReadable() {
@@ -77,7 +96,7 @@ func main() {
 					res, err := ctrl.PostMessage(node, req)
 					if err == nil {
 						if props := res.Properties(); len(props) == 1 {
-							propData += hex.EncodeToString(props[0].Data())
+							propData = hex.EncodeToString(props[0].Data())
 						}
 					}
 				}
