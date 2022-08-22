@@ -76,10 +76,10 @@ func (ctrl *Controller) GetObject(code ObjectCode) (*Object, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetDevice returns a device object which has the specified object code.
-func (ctrl *Controller) GetDevice(code ObjectCode) (*Device, error) {
+// FindDevice returns a device object which has the specified object code.
+func (ctrl *Controller) FindDevice(code ObjectCode) (*Device, error) {
 	for _, node := range ctrl.GetNodes() {
-		dev, err := node.GetDevice(code)
+		dev, err := node.FindDevice(code)
 		if err == nil {
 			return dev, nil
 		}

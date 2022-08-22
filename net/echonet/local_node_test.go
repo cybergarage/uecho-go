@@ -112,7 +112,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 			continue
 		}
 		// Skip other Echonet nodes
-		_, err := ctrlNode.GetDevice(testLightDeviceCode)
+		_, err := ctrlNode.FindDevice(testLightDeviceCode)
 		if err != nil {
 			continue
 		}

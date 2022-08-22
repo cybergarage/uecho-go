@@ -50,7 +50,7 @@ func newTestSampleNode() (*testLocalNode, error) {
 }
 
 func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {
-	dev, err := node.GetDevice(testLightDeviceCode)
+	dev, err := node.FindDevice(testLightDeviceCode)
 	if err != nil {
 		return err
 	}
