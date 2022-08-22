@@ -20,11 +20,13 @@ uechosearch is a search utility for Echonet Lite.
 package main
 
 import (
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"time"
 
 	"github.com/cybergarage/go-logger/log"
+	"github.com/cybergarage/uecho-go/net/echonet"
 )
 
 func main() {
@@ -61,14 +63,26 @@ func main() {
 
 	// Output all found nodes
 
-	for _, node := range ctrl.Nodes() {
-		objs := node.Objects()
-		if len(objs) == 0 {
-			fmt.Printf("%-15s\n", node.Address())
-			continue
-		}
-		for _, obj := range objs {
-			fmt.Printf("%-15s : %06X\n", node.Address(), obj.Code())
+	for i, node := range ctrl.Nodes() {
+		fmt.Printf("[%d] %-15s:%d\n", i, node.Address(), node.Port())
+		for j, obj := range node.Objects() {
+			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), obj.Name())
+			for _, prop := range obj.Properties() {
+				propData := ""
+				if prop.IsReadable() {
+					req := echonet.NewMessage()
+					req.SetESV(echonet.ESVReadRequest)
+					req.SetDEOJ(obj.Code())
+					req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
+					res, err := ctrl.PostMessage(node, req)
+					if err == nil {
+						if props := res.Properties(); len(props) == 1 {
+							propData += hex.EncodeToString(props[0].Data())
+						}
+					}
+				}
+				fmt.Printf("    [%02X] %s: %s\n", prop.Code(), prop.Name(), propData)
+			}
 		}
 	}
 
