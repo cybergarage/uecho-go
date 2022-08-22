@@ -147,7 +147,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		}
 
 		// Skip other Echonet nodes
-		_, err := foundNode.GetDevice(testLightDeviceCode)
+		_, err := foundNode.FindDevice(testLightDeviceCode)
 		if err != nil {
 			continue
 		}

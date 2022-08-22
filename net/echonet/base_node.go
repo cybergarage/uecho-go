@@ -39,8 +39,8 @@ func (node *baseNode) Devices() []*Device {
 	return node.devices
 }
 
-// GetDevice returns a specified device object.
-func (node *baseNode) GetDevice(code ObjectCode) (*Device, error) {
+// FindDevice returns a specified device object.
+func (node *baseNode) FindDevice(code ObjectCode) (*Device, error) {
 	for _, dev := range node.devices {
 		objCode := dev.GetCode()
 		if objCode == code {
@@ -112,7 +112,7 @@ func (node *baseNode) GetObjects() []*Object {
 
 // GetObject returns a specified object.
 func (node *baseNode) GetObject(code ObjectCode) (*Object, error) {
-	dev, err := node.GetDevice(code)
+	dev, err := node.FindDevice(code)
 	if err == nil {
 		return dev.Object, nil
 	}
