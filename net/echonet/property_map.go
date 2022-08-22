@@ -49,6 +49,7 @@ func (propMap *PropertyMap) GetParentObject() *Object {
 // AddProperty adds a new property into the property map.
 func (propMap *PropertyMap) AddProperty(prop *Property) {
 	propMap.properties[prop.GetCode()] = prop
+	prop.SetParentObject(propMap.parentObject)
 }
 
 // CreateProperty creates a new property to the property map.
@@ -65,6 +66,15 @@ func (propMap *PropertyMap) ClearAllProperties(prop *Property) {
 	for code := range propMap.properties {
 		delete(propMap.properties, code)
 	}
+}
+
+// GetProperies returns the all properties in the property map.
+func (propMap *PropertyMap) GetProperties() []*Property {
+	props := []*Property{}
+	for _, prop := range propMap.properties {
+		props = append(props, prop)
+	}
+	return props
 }
 
 // GetProperty returns the specified property in the property map.
@@ -90,8 +100,8 @@ func (propMap *PropertyMap) GetPropertyCount() int {
 	return len(propMap.properties)
 }
 
-// SetPropertyAttr sets an attribute to the existing property.
-func (propMap *PropertyMap) SetPropertyAttr(propCode PropertyCode, propAttr PropertyAttr) error {
+// SetPropertyAttribute sets an attribute to the existing property.
+func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr PropertyAttr) error {
 	prop, ok := propMap.GetProperty(propCode)
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
@@ -100,8 +110,8 @@ func (propMap *PropertyMap) SetPropertyAttr(propCode PropertyCode, propAttr Prop
 	return nil
 }
 
-// GetPropertyAttr returns the specified property attribute in the property map.
-func (propMap *PropertyMap) GetPropertyAttr(propCode PropertyCode) (PropertyAttr, error) {
+// GetPropertyAttribute returns the specified property attribute in the property map.
+func (propMap *PropertyMap) GetPropertyAttribute(propCode PropertyCode) (PropertyAttr, error) {
 	prop, ok := propMap.GetProperty(propCode)
 	if !ok {
 		return PropertyAttrNone, fmt.Errorf(errorPropertyNotFound, uint(propCode))

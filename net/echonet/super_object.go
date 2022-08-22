@@ -88,7 +88,7 @@ func (obj *SuperObject) updatePropertyMap() error {
 	setPropMapCodes := make([]PropertyCode, 0)
 	annoPropMapCodes := make([]PropertyCode, 0)
 
-	for _, prop := range obj.properties {
+	for _, prop := range obj.GetProperties() {
 		if prop.IsReadable() {
 			getPropMapCodes = append(getPropMapCodes, prop.GetCode())
 		}

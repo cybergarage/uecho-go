@@ -183,7 +183,7 @@ func (obj *Object) Copy() *Object {
 
 	newObj.SetCode(newObj.GetCode())
 	newObj.SetParentObject(newObj)
-	for _, prop := range obj.properties {
+	for _, prop := range obj.GetProperties() {
 		newObj.AddProperty(prop.Copy())
 	}
 
