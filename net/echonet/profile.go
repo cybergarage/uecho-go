@@ -69,10 +69,12 @@ func NewProfile() *Profile {
 }
 
 // addProfileMandatoryProperties sets mandatory properties for node profile.
-func (prof *Profile) addProfileMandatoryProperties() error {
-	// Manufacture Code
-	prof.CreateProperty(ProfileManufacturerCode, PropertyAttrGet)
-	prof.SetManufacturerCode(ProfileManufacturerUnknown)
-
-	return nil
+func (prof *Profile) addProfileMandatoryProperties() {
+	stdObj, ok := GetStandardDatabase().NodeProfile()
+	if !ok {
+		return
+	}
+	for _, stdProp := range stdObj.Properties() {
+		prof.AddProperty(stdProp.Copy())
+	}
 }
