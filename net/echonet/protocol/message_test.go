@@ -49,8 +49,8 @@ func TestNewFormat1TestMessage(t *testing.T) {
 		t.Errorf("%d != %d", msg.TID(), tid)
 	}
 
-	if !msg.IsSourceObjectCode(0xA0B0C0) {
-		t.Errorf("%X != %X", msg.GetSourceObjectCode(), 0xA0B0C0)
+	if !msg.IsSEOJ(0xA0B0C0) {
+		t.Errorf("%X != %X", msg.SEOJ(), 0xA0B0C0)
 	}
 
 	if !msg.IsDestinationObjectCode(0xD0E0F0) {
