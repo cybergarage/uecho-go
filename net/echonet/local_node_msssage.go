@@ -44,7 +44,7 @@ func (node *LocalNode) AnnounceProperty(prop *Property) error {
 func (node *LocalNode) Announce() error {
 	// 4.3.1 Basic Sequence for ECHONET Lite Node Startup
 
-	nodePropObj, err := node.GetNodeProfile()
+	nodePropObj, err := node.NodeProfile()
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 	msg.SetTID(node.getNextTID())
 
 	// SEOJ
-	nodeProp, err := node.GetNodeProfile()
+	nodeProp, err := node.NodeProfile()
 	if err != nil {
 		return err
 	}

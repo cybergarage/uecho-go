@@ -71,8 +71,8 @@ func (node *baseNode) GetProfile(code ObjectCode) (*Profile, error) {
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }
 
-// GetNodeProfile returns a node profile in the node.
-func (node *baseNode) GetNodeProfile() (*Profile, error) {
+// NodeProfile returns a node profile in the node.
+func (node *baseNode) NodeProfile() (*Profile, error) {
 	prof, err := node.GetProfile(NodeProfileObject)
 	if err == nil {
 		return prof, nil

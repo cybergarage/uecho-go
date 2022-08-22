@@ -27,7 +27,7 @@ const (
 func TestNewLocalNode(t *testing.T) {
 	node := NewLocalNode()
 
-	if _, err := node.GetNodeProfile(); err != nil {
+	if _, err := node.NodeProfile(); err != nil {
 		t.Error(err)
 	}
 }
