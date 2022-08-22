@@ -62,7 +62,7 @@ func main() {
 	// Output all found nodes
 
 	for _, node := range ctrl.GetNodes() {
-		objs := node.GetObjects()
+		objs := node.Objects()
 		if len(objs) == 0 {
 			fmt.Printf("%-15s\n", node.GetAddress())
 			continue

@@ -93,8 +93,8 @@ func (node *baseNode) AddObject(obj interface{}) error {
 	return fmt.Errorf(errorUnknownObjectType, obj)
 }
 
-// GetObjects returns all objects.
-func (node *baseNode) GetObjects() []*Object {
+// Objects returns all objects.
+func (node *baseNode) Objects() []*Object {
 	objs := make([]*Object, 0)
 
 	devs := node.Devices()

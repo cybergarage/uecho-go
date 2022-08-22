@@ -37,14 +37,14 @@ if err != nil {
 
 ### 3. Getting Nodes and Objects
 
-After the searching, use `Controller::GetNodes()` to get all found nodes. [ECHONETLite](http://www.echonet.gr.jp/english/index.htm) node can have multiple objects, use `Node::GetObjects()` to get the all objects in the node.
+After the searching, use `Controller::GetNodes()` to get all found nodes. [ECHONETLite](http://www.echonet.gr.jp/english/index.htm) node can have multiple objects, use `Node::Objects()` to get the all objects in the node.
 
 ```
 ctrl := echonet.NewController()
 ....
 for _, node := range ctrl.GetNodes() {
     ....
-    objs := node.GetObjects()
+    objs := node.Objects()
     for _, obj := range objs {
     ....
     }
