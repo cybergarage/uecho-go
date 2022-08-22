@@ -51,7 +51,7 @@ func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, 
 
 func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
 	sourceAddr := ""
-	boundAddrs := ctrl.GetBoundAddresses()
+	boundAddrs := ctrl.Addresses()
 	if 0 < len(boundAddrs) {
 		sourceAddr = boundAddrs[0]
 	}
