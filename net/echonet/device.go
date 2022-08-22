@@ -127,8 +127,8 @@ func (dev *Device) SetInstallationLocation(locByte byte) error {
 	return dev.SetPropertyByteData(DeviceInstallationLocation, locByte)
 }
 
-// GetInstallationLocation return the installation location of the device.
-func (dev *Device) GetInstallationLocation() (byte, error) {
+// InstallationLocation return the installation location of the device.
+func (dev *Device) InstallationLocation() (byte, error) {
 	return dev.FindPropertyByteData(DeviceInstallationLocation)
 }
 
