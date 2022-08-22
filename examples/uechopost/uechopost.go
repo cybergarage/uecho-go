@@ -59,7 +59,7 @@ func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
 }
 
 func outputResponseMessage(msg *echonet.Message) {
-	outputTransportMessage("<-", msg.SourceAddress(), msg.GetSourceObjectCode(), msg)
+	outputTransportMessage("<-", msg.SourceAddress(), msg.SEOJ(), msg)
 }
 
 func outputUsage() {
