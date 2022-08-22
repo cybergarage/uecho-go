@@ -96,22 +96,23 @@ func main() {
 			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), objName)
 
 			for _, prop := range obj.Properties() {
-				propData := ""
-				if prop.IsReadable() {
-					req := echonet.NewMessage()
-					req.SetESV(echonet.ESVReadRequest)
-					req.SetDEOJ(obj.Code())
-					req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
-					res, err := ctrl.PostMessage(node, req)
-					if err == nil {
-						if props := res.Properties(); len(props) == 1 {
-							propData = hex.EncodeToString(props[0].Data())
-						}
-					}
+				if !prop.IsReadable() {
+					continue
 				}
 				propName := prop.Name()
 				if len(propName) == 0 {
 					propName = "(" + unknown + ")"
+				}
+				propData := ""
+				req := echonet.NewMessage()
+				req.SetESV(echonet.ESVReadRequest)
+				req.SetDEOJ(obj.Code())
+				req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
+				res, err := ctrl.PostMessage(node, req)
+				if err == nil {
+					if props := res.Properties(); len(props) == 1 {
+						propData = hex.EncodeToString(props[0].Data())
+					}
 				}
 				fmt.Printf("    [%02X] %s: %s\n", prop.Code(), propName, propData)
 			}
