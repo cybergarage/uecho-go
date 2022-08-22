@@ -30,6 +30,10 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
+const (
+	unknown = "unknown"
+)
+
 func main() {
 	verbose := flag.Bool("v", false, "Enable verbose output")
 	flag.Parse()
@@ -67,7 +71,7 @@ func main() {
 	db := echonet.GetStandardDatabase()
 
 	for i, node := range ctrl.Nodes() {
-		manufactureName := "unknown"
+		manufactureName := unknown
 		req := echonet.NewMessage()
 		req.SetESV(echonet.ESVReadRequest)
 		req.SetDEOJ(0x0EF001)
@@ -77,7 +81,7 @@ func main() {
 			if props := res.Properties(); len(props) == 1 {
 				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
 				if ok {
-					manufactureName = manufacture.Name
+					manufactureName = manufacture.Name()
 				}
 			}
 		}
@@ -85,7 +89,12 @@ func main() {
 		fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
 
 		for j, obj := range node.Objects() {
-			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), obj.ClassName())
+			objName := obj.ClassName()
+			if len(objName) == 0 {
+				objName = unknown
+			}
+			fmt.Printf("  [%d] %06X (%s)\n", j, obj.Code(), objName)
+
 			for _, prop := range obj.Properties() {
 				propData := ""
 				if prop.IsReadable() {
@@ -100,7 +109,11 @@ func main() {
 						}
 					}
 				}
-				fmt.Printf("    [%02X] %s: %s\n", prop.Code(), prop.Name(), propData)
+				propName := prop.Name()
+				if len(propName) == 0 {
+					propName = "(" + unknown + ")"
+				}
+				fmt.Printf("    [%02X] %s: %s\n", prop.Code(), propName, propData)
 			}
 		}
 	}
