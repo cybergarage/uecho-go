@@ -44,7 +44,7 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface, ifaddr string) error {
 	}
 
 	sock.SetBoundStatus(ifi, ifaddr, Port)
-	sock.Conn.SetReadBuffer(sock.GetReadBufferSize())
+	sock.Conn.SetReadBuffer(sock.ReadBufferSize())
 
 	f, err := sock.Conn.File()
 	if err != nil {
