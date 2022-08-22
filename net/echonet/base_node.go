@@ -55,8 +55,8 @@ func (node *baseNode) AddProfile(prof *Profile) {
 	node.profiles = append(node.profiles, prof)
 }
 
-// GetProfiles returns all profile objects.
-func (node *baseNode) GetProfiles() []*Profile {
+// Profiles returns all profile objects.
+func (node *baseNode) Profiles() []*Profile {
 	return node.profiles
 }
 
@@ -102,7 +102,7 @@ func (node *baseNode) GetObjects() []*Object {
 		objs = append(objs, dev.Object)
 	}
 
-	profs := node.GetProfiles()
+	profs := node.Profiles()
 	for _, prof := range profs {
 		objs = append(objs, prof.Object)
 	}
