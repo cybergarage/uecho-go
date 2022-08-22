@@ -10,8 +10,8 @@ const (
 
 // Node is an interface for Echonet node.
 type Node interface {
-	// GetObjects returns all objects.
-	GetObjects() []*Object
+	// Objects returns all objects.
+	Objects() []*Object
 	// GetObject returns the specified object.
 	GetObject(code ObjectCode) (*Object, error)
 
