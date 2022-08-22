@@ -304,8 +304,8 @@ func (msg *Message) PropertyAt(n int) *Property {
 	return msg.ep[n]
 }
 
-// GetProperties returns the all properties.
-func (msg *Message) GetProperties() []*Property {
+// Properties returns the all properties.
+func (msg *Message) Properties() []*Property {
 	return msg.ep
 }
 
