@@ -24,8 +24,8 @@ type Node interface {
 
 	// AddProfile adds a new profile object into the node.
 	AddProfile(prof *Profile)
-	// GetProfiles returns all profile objects.
-	GetProfiles() []*Profile
+	// Profiles returns all profile objects.
+	Profiles() []*Profile
 	// GetProfile returns the specified profile object.
 	GetProfile(code ObjectCode) (*Profile, error)
 
