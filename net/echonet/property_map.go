@@ -49,6 +49,7 @@ func (propMap *PropertyMap) GetParentObject() *Object {
 // AddProperty adds a new property into the property map.
 func (propMap *PropertyMap) AddProperty(prop *Property) {
 	propMap.properties[prop.Code()] = prop
+	prop.SetParentObject(propMap.parentObject)
 }
 
 // CreateProperty creates a new property to the property map.
