@@ -82,9 +82,11 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 		if err != nil {
 			return nil, err
 		}
-		err = node.AddObject(obj)
-		if err != nil {
-			return nil, err
+		switch v := obj.(type) {
+		case *Device:
+			node.AddDevice(v)
+		case *Profile:
+			node.AddProfile(v)
 		}
 	}
 
