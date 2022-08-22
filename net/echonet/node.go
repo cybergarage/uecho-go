@@ -17,8 +17,8 @@ type Node interface {
 
 	// AddDevice adds a new device into the node.
 	AddDevice(dev *Device)
-	// GetDevices returns all device objects.
-	GetDevices() []*Device
+	// Devices returns all device objects.
+	Devices() []*Device
 	// GetDevice returns the specified device object.
 	GetDevice(code ObjectCode) (*Device, error)
 

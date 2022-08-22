@@ -34,8 +34,8 @@ func (node *baseNode) AddDevice(dev *Device) {
 	node.devices = append(node.devices, dev)
 }
 
-// GetDevices returns all device objects.
-func (node *baseNode) GetDevices() []*Device {
+// Devices returns all device objects.
+func (node *baseNode) Devices() []*Device {
 	return node.devices
 }
 
@@ -97,7 +97,7 @@ func (node *baseNode) AddObject(obj interface{}) error {
 func (node *baseNode) GetObjects() []*Object {
 	objs := make([]*Object, 0)
 
-	devs := node.GetDevices()
+	devs := node.Devices()
 	for _, dev := range devs {
 		objs = append(objs, dev.Object)
 	}
