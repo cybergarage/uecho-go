@@ -67,8 +67,8 @@ func TestNewFormat1TestMessage(t *testing.T) {
 
 	for n := 1; n <= opc; n++ {
 		prop := msg.GetProperty(n - 1)
-		if prop.Code != PropertyCode(n) {
-			t.Errorf("%d != %d", prop.Code, n)
+		if prop.Code() != PropertyCode(n) {
+			t.Errorf("%d != %d", prop.Code(), n)
 		}
 		if prop.Size() != n {
 			t.Errorf("%d != %d", prop.Size(), n)

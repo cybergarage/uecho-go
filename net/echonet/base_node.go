@@ -42,7 +42,7 @@ func (node *baseNode) Devices() []*Device {
 // FindDevice returns a specified device object.
 func (node *baseNode) FindDevice(code ObjectCode) (*Device, error) {
 	for _, dev := range node.devices {
-		objCode := dev.GetCode()
+		objCode := dev.Code()
 		if objCode == code {
 			return dev, nil
 		}
@@ -63,7 +63,7 @@ func (node *baseNode) Profiles() []*Profile {
 // FindProfile returns a specified profile object.
 func (node *baseNode) FindProfile(code ObjectCode) (*Profile, error) {
 	for _, prof := range node.profiles {
-		objCode := prof.GetCode()
+		objCode := prof.Code()
 		if objCode == code {
 			return prof, nil
 		}

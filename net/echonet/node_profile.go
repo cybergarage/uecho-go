@@ -127,7 +127,7 @@ func (prof *Profile) SetInstanceList(devices []*Device) error {
 	}
 
 	for _, dev := range devices {
-		instanceList = append(instanceList, dev.GetCodes()...)
+		instanceList = append(instanceList, dev.Codes()...)
 	}
 
 	err := prof.SetPropertyData(NodeProfileClassInstanceListNotification, instanceList)
@@ -158,7 +158,7 @@ func (prof *Profile) SetClassList(classes []*Class) error {
 	}
 
 	for _, class := range classes {
-		classList = append(classList, class.GetCodes()...)
+		classList = append(classList, class.Codes()...)
 	}
 	return prof.SetPropertyData(NodeProfileClassSelfNodeClassListS, classList)
 }
