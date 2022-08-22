@@ -60,8 +60,8 @@ func (node *baseNode) Profiles() []*Profile {
 	return node.profiles
 }
 
-// GetProfile returns a specified profile object.
-func (node *baseNode) GetProfile(code ObjectCode) (*Profile, error) {
+// FindProfile returns a specified profile object.
+func (node *baseNode) FindProfile(code ObjectCode) (*Profile, error) {
 	for _, prof := range node.profiles {
 		objCode := prof.GetCode()
 		if objCode == code {
@@ -73,11 +73,11 @@ func (node *baseNode) GetProfile(code ObjectCode) (*Profile, error) {
 
 // NodeProfile returns a node profile in the node.
 func (node *baseNode) NodeProfile() (*Profile, error) {
-	prof, err := node.GetProfile(NodeProfileObject)
+	prof, err := node.FindProfile(NodeProfileObject)
 	if err == nil {
 		return prof, nil
 	}
-	return node.GetProfile(NodeProfileObjectReadOnly)
+	return node.FindProfile(NodeProfileObjectReadOnly)
 }
 
 // AddObject adds a new object into the node.
@@ -117,7 +117,7 @@ func (node *baseNode) GetObject(code ObjectCode) (*Object, error) {
 		return dev.Object, nil
 	}
 
-	prof, err := node.GetProfile(code)
+	prof, err := node.FindProfile(code)
 	if err == nil {
 		return prof.Object, nil
 	}
