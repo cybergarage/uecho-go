@@ -19,8 +19,8 @@ type Node interface {
 	AddDevice(dev *Device)
 	// Devices returns all device objects.
 	Devices() []*Device
-	// GetDevice returns the specified device object.
-	GetDevice(code ObjectCode) (*Device, error)
+	// FindDevice returns the specified device object.
+	FindDevice(code ObjectCode) (*Device, error)
 
 	// AddProfile adds a new profile object into the node.
 	AddProfile(prof *Profile)
