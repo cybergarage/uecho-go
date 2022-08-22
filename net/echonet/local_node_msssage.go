@@ -150,13 +150,13 @@ func (node *LocalNode) closeResponseChannel() {
 }
 
 // PostMessage posts a message to the node, and wait the response message.
-func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protocol.Message, error) {
+func (node *LocalNode) PostMessage(dstNode Node, msg *Message) (*Message, error) {
 	// Use TCP connection when the function is enabled
 
 	if node.IsTCPEnabled() {
-		resMsg, err := node.postMessageSynchronously(dstNode, msg)
+		resMsg, err := node.postMessageSynchronously(dstNode, msg.protocolMessage())
 		if err == nil {
-			return resMsg, nil
+			return newMessageWithProtocolMessage(resMsg), nil
 		}
 	}
 
@@ -171,11 +171,11 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 	defer node.closeResponseChannel()
 
 	node.postResponseCh = make(chan *protocol.Message)
-	node.postRequestMsg = msg
+	node.postRequestMsg = msg.protocolMessage()
 
 	// log.Trace(logLocalNodePostMessageFormat, msg.String()))
 
-	err := node.SendMessage(dstNode, msg)
+	err := node.SendMessage(dstNode, msg.protocolMessage())
 	if err != nil {
 		return nil, err
 	}
@@ -187,15 +187,15 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *protocol.Message) (*protoc
 		err = fmt.Errorf(errorNodeRequestTimeout, msg)
 	}
 
-	return resMsg, err
+	return newMessageWithProtocolMessage(resMsg), err
 }
 
 // SendRequest sends a specified request to the object.
 func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
-	return node.SendMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
+	return node.SendMessage(dstNode, NewMessageWithParameters(objCode, esv, props).Message)
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*protocol.Message, error) {
+func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
 	return node.PostMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
 }

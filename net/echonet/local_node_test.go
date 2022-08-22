@@ -32,7 +32,7 @@ func TestNewLocalNode(t *testing.T) {
 	}
 }
 
-func localNodeCheckResponseMessagePowerStatus(reqMsg *protocol.Message, resMsg *protocol.Message, powerStatus byte) error {
+func localNodeCheckResponseMessagePowerStatus(reqMsg *Message, resMsg *Message, powerStatus byte) error {
 	if resOpc := resMsg.OPC(); resOpc != 1 {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
