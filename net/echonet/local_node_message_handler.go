@@ -52,7 +52,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 	// 4.2.2 Basic Sequences for Object Control in General
 
-	msgDstObjCode := msg.GetDestinationObjectCode()
+	msgDstObjCode := msg.DEOJ()
 	msgESV := msg.ESV()
 	msgOPC := msg.OPC()
 
@@ -104,7 +104,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 
 // executeMessageListeners post the received message to the listeners.
 func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
-	msgDstObjCode := msg.GetDestinationObjectCode()
+	msgDstObjCode := msg.DEOJ()
 	dstObj, err := node.FindObject(msgDstObjCode)
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 
 // createResponseMessageForRequestMessage retunrs the response message for the specified request message.
 func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.Message) (*protocol.Message, error) {
-	msgDstObjCode := reqMsg.GetDestinationObjectCode()
+	msgDstObjCode := reqMsg.DEOJ()
 	dstObj, err := node.FindObject(msgDstObjCode)
 	if err != nil {
 		return nil, err

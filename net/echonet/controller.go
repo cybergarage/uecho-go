@@ -114,7 +114,7 @@ func (ctrl *Controller) SearchAllObjects() error {
 func (ctrl *Controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) error {
 	msg := NewSearchMessage()
 	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(code)
+	msg.SetDEOJ(code)
 	return ctrl.AnnounceMessage(msg)
 }
 
