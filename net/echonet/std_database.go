@@ -52,3 +52,13 @@ func (db *StandardDatabase) FindObjectByCodes(codes []byte) (*Object, bool) {
 	}
 	return db.FindObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
 }
+
+// SuperObject returns the super object.
+func (db *StandardDatabase) SuperObject() (*Object, bool) {
+	return db.FindObjectByCode(0x000000)
+}
+
+// NodeProfile returns the node profile object.
+func (db *StandardDatabase) NodeProfile() (*Object, bool) {
+	return db.FindObjectByCode(0x0EF0)
+}
