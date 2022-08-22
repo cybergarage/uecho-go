@@ -82,6 +82,9 @@ func (node *LocalNode) SendMessage(dstNode Node, msg *protocol.Message) error {
 		return err
 	}
 
+	if node.server == nil {
+		return fmt.Errorf(errorNodeIsNotRunning, node)
+	}
 	_, err = node.server.SendMessage(dstNode.GetAddress(), dstNode.GetPort(), msg)
 
 	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
