@@ -39,16 +39,16 @@ func (db *StandardDatabase) addObject(obj *Object) {
 	db.Objects[obj.GetCode()] = obj
 }
 
-// GetObjectByCode returns the registered object by the specified object code.
-func (db *StandardDatabase) GetObjectByCode(code ObjectCode) (*Object, bool) {
+// FindObjectByCode returns the registered object by the specified object code.
+func (db *StandardDatabase) FindObjectByCode(code ObjectCode) (*Object, bool) {
 	obj, ok := db.Objects[(code & 0xFFFF00)]
 	return obj, ok
 }
 
-// GetObjectByCodes returns the registered object by the specified object code.
-func (db *StandardDatabase) GetObjectByCodes(codes []byte) (*Object, bool) {
+// FindObjectByCodes returns the registered object by the specified object code.
+func (db *StandardDatabase) FindObjectByCodes(codes []byte) (*Object, bool) {
 	if len(codes) != ObjectCodeSize {
 		return nil, false
 	}
-	return db.GetObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
+	return db.FindObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
 }

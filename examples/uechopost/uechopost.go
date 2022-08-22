@@ -118,7 +118,7 @@ func main() {
 		exitWithErrorMessage(fmt.Sprintf("The destination object (%s) is invalid", dstObjStr))
 	}
 	dstObjCode := echonet.ObjectCode(dstObjVal)
-	_, err = dstNode.GetObject(dstObjCode)
+	_, err = dstNode.FindObject(dstObjCode)
 	if err != nil {
 		exitWithErrorMessage(fmt.Sprintf("The destination object (%06X) is not found", dstObjCode))
 	}

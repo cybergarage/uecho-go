@@ -12,8 +12,8 @@ const (
 type Node interface {
 	// Objects returns all objects.
 	Objects() []*Object
-	// GetObject returns the specified object.
-	GetObject(code ObjectCode) (*Object, error)
+	// FindObject returns the specified object.
+	FindObject(code ObjectCode) (*Object, error)
 
 	// AddDevice adds a new device into the node.
 	AddDevice(dev *Device)

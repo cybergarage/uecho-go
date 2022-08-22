@@ -126,7 +126,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	// Check a found device
 
-	dev, err := ctrl.GetObject(testLightDeviceCode)
+	dev, err := ctrl.FindObject(testLightDeviceCode)
 	if err != nil {
 		t.Error(err)
 		return

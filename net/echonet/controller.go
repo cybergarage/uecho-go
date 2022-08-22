@@ -65,10 +65,10 @@ func (ctrl *Controller) GetNode(addr string) (*RemoteNode, error) {
 	return nil, fmt.Errorf(errorNodeNotFound, addr)
 }
 
-// GetObject returns a object which has the specified object code.
-func (ctrl *Controller) GetObject(code ObjectCode) (*Object, error) {
+// FindObject returns a object which has the specified object code.
+func (ctrl *Controller) FindObject(code ObjectCode) (*Object, error) {
 	for _, node := range ctrl.GetNodes() {
-		obj, err := node.GetObject(code)
+		obj, err := node.FindObject(code)
 		if err == nil {
 			return obj, nil
 		}

@@ -35,7 +35,7 @@ func (ctrl *testController) ControllerMessageReceived(*protocol.Message) {
 }
 
 func (ctrl *testController) ControllerNewNodeFound(node *RemoteNode) {
-	_, err := node.GetObject(testLightDeviceCode)
+	_, err := node.FindObject(testLightDeviceCode)
 	if err != nil {
 		return
 	}

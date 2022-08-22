@@ -110,8 +110,8 @@ func (node *baseNode) Objects() []*Object {
 	return objs
 }
 
-// GetObject returns a specified object.
-func (node *baseNode) GetObject(code ObjectCode) (*Object, error) {
+// FindObject returns a specified object.
+func (node *baseNode) FindObject(code ObjectCode) (*Object, error) {
 	dev, err := node.FindDevice(code)
 	if err == nil {
 		return dev.Object, nil
