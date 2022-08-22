@@ -6,7 +6,7 @@ package echonet
 
 func addStandardProperties(obj *Object) {
 	db := GetStandardDatabase()
-	stdObj, ok := db.FindObjectByCode(obj.GetCode())
+	stdObj, ok := db.FindObjectByCode(obj.Code())
 	if !ok {
 		return
 	}

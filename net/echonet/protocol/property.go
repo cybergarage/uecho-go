@@ -13,7 +13,7 @@ type PropertyCode byte
 
 // Property is an instance for Echonet property.
 type Property struct {
-	Code PropertyCode
+	code PropertyCode
 	Data []byte
 }
 
@@ -25,7 +25,7 @@ func NewProperty() *Property {
 // NewPropertyWithCode returns a new property with the specified code.
 func NewPropertyWithCode(code PropertyCode) *Property {
 	prop := &Property{
-		Code: code,
+		code: code,
 		Data: make([]byte, 0),
 	}
 	return prop
@@ -42,12 +42,12 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 
 // SetCode sets a code to the property.
 func (prop *Property) SetCode(code PropertyCode) {
-	prop.Code = code
+	prop.code = code
 }
 
-// GetCode returns the property code.
-func (prop *Property) GetCode() PropertyCode {
-	return prop.Code
+// Code returns the property code.
+func (prop *Property) Code() PropertyCode {
+	return prop.code
 }
 
 // SetData sets a code to the property.
@@ -79,7 +79,7 @@ func (prop *Property) Size() int {
 // Copy returns a copy property of the property.
 func Copy(prop *Property) *Property {
 	copyProp := &Property{
-		Code: prop.Code,
+		code: prop.code,
 		Data: make([]byte, len(prop.Data)),
 	}
 	copy(copyProp.Data, prop.Data)

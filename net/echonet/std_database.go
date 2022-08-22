@@ -36,7 +36,7 @@ func (db *StandardDatabase) GetManufacture(code ManufactureCode) (*Manufacture, 
 }
 
 func (db *StandardDatabase) addObject(obj *Object) {
-	db.Objects[obj.GetCode()] = obj
+	db.Objects[obj.Code()] = obj
 }
 
 // FindObjectByCode returns the registered object by the specified object code.

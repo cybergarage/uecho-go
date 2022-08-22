@@ -68,7 +68,7 @@ func main() {
 			continue
 		}
 		for _, obj := range objs {
-			fmt.Printf("%-15s : %06X\n", node.GetAddress(), obj.GetCode())
+			fmt.Printf("%-15s : %06X\n", node.GetAddress(), obj.Code())
 		}
 	}
 

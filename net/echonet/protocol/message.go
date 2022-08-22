@@ -312,7 +312,7 @@ func (msg *Message) GetProperties() []*Property {
 // HasProperty returns true when the message has the specified property, otherwise false.
 func (msg *Message) HasProperty(propCode PropertyCode) bool {
 	for _, prop := range msg.EP {
-		if prop.GetCode() == propCode {
+		if prop.Code() == propCode {
 			return true
 		}
 	}
@@ -407,7 +407,7 @@ func (msg *Message) Bytes() []byte {
 		if prop == nil {
 			continue
 		}
-		msgBytes[offset] = byte(prop.GetCode())
+		msgBytes[offset] = byte(prop.Code())
 		offset++
 
 		propSize := prop.Size()
