@@ -96,8 +96,9 @@ func (prop *Property) Node() Node {
 }
 
 // SetName sets a name to the property.
-func (prop *Property) SetName(name string) {
+func (prop *Property) SetName(name string) *Property {
 	prop.name = name
+	return prop
 }
 
 // Name returns the property name.
@@ -106,8 +107,9 @@ func (prop *Property) Name() string {
 }
 
 // SetCode sets a specified code to the property.
-func (prop *Property) SetCode(code PropertyCode) {
+func (prop *Property) SetCode(code PropertyCode) *Property {
 	prop.code = code
+	return prop
 }
 
 // Code returns the property code.
@@ -126,8 +128,9 @@ func (prop *Property) Size() int {
 }
 
 // SetAttribute sets an attribute to the property.
-func (prop *Property) SetAttribute(attr PropertyAttr) {
+func (prop *Property) SetAttribute(attr PropertyAttr) *Property {
 	prop.attr = attr
+	return prop
 }
 
 // Attribute returns the property attribute.
@@ -212,7 +215,7 @@ func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 }
 
 // SetData sets a specified data to the property.
-func (prop *Property) SetData(data []byte) {
+func (prop *Property) SetData(data []byte) *Property {
 	prop.data = make([]byte, len(data))
 	copy(prop.data, data)
 
@@ -221,18 +224,20 @@ func (prop *Property) SetData(data []byte) {
 	if prop.isAnnounceable() {
 		prop.announce()
 	}
+
+	return prop
 }
 
 // SetByteData is an alias of SetData.
-func (prop *Property) SetByteData(data []byte) {
-	prop.SetData(data)
+func (prop *Property) SetByteData(data []byte) *Property {
+	return prop.SetData(data)
 }
 
 // SetIntegerData sets a specified integer data to the property.
-func (prop *Property) SetIntegerData(data uint, size uint) {
+func (prop *Property) SetIntegerData(data uint, size uint) *Property {
 	binData := make([]byte, size)
 	encoding.IntegerToByte(data, binData)
-	prop.SetData(binData)
+	return prop.SetData(binData)
 }
 
 // Data returns the property data.
