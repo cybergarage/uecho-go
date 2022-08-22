@@ -29,8 +29,8 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		t.Errorf("%d != %d", msg.TID(), 0)
 	}
 
-	if msg.GetSourceObjectCode() != 0xA0B0C0 {
-		t.Errorf("%03X != %03X", msg.GetSourceObjectCode(), 0xA0B0C0)
+	if msg.SEOJ() != 0xA0B0C0 {
+		t.Errorf("%03X != %03X", msg.SEOJ(), 0xA0B0C0)
 	}
 
 	if msg.GetDestinationObjectCode() != 0xD0E0F0 {
