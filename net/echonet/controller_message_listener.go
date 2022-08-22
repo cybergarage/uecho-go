@@ -49,7 +49,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 		if !msg.IsNotification() && !msg.IsReadResponse() {
 			return false
 		}
-		if !isNodeProfileObjectCode(msg.GetDestinationObjectCode()) {
+		if !isNodeProfileObjectCode(msg.DEOJ()) {
 			return false
 		}
 		return true

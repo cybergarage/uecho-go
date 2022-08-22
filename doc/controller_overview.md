@@ -59,7 +59,7 @@ To control the found objects, create the control message using `NewMessage()` as
 ctrl := echonet.NewController()
 ....
 msg := echonet.NewMessage()
-msg.SetDestinationObjectCode(0xXXXXXX)
+msg.SetDEOJ(0xXXXXXX)
 msg.SetESV(0xXX)
 ...
 prop := echonet.NewProperty()
@@ -68,7 +68,7 @@ prop.SetData(....)
 msg.AddProperty((prop.toProtocolProperty())
 ```
 
-To create the message, developer should only set the following message objects using the `Message::SetDestinationObjectCode()`, `SetESV()` and `AddProperty()` functions.
+To create the message, developer should only set the following message objects using the `Message::SetDEOJ()`, `SetESV()` and `AddProperty()` functions.
 
 - DEOJ : Destination ECHONET Lite object specification
 - ESV : ECHONET Lite service

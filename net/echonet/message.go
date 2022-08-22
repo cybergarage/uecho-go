@@ -23,7 +23,7 @@ func NewMessage() *Message {
 func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []*Property) *Message {
 	msg := NewMessage()
 	msg.SetESV(esv)
-	msg.SetDestinationObjectCode(objCode)
+	msg.SetDEOJ(objCode)
 	for _, prop := range props {
 		msg.AddProperty(prop.toProtocolProperty())
 	}

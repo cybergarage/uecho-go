@@ -15,7 +15,7 @@ func NewSearchMessage() *protocol.Message {
 	msg.SetESV(protocol.ESVReadRequest)
 
 	msg.SetSEOJ(NodeProfileObject)
-	msg.SetDestinationObjectCode(NodeProfileObject)
+	msg.SetDEOJ(NodeProfileObject)
 
 	prop := protocol.NewProperty()
 	prop.SetCode(NodeProfileClassSelfNodeInstanceListS)
