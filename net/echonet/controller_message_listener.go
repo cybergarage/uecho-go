@@ -15,7 +15,7 @@ const (
 // NodeMessageReceived is a listener of the local node.
 func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
-	for _, server := range ctrl.GetMulticastManager().Servers {
+	for _, server := range ctrl.MulticastManager().Servers {
 		port, err := server.Port()
 		if err != nil {
 			continue

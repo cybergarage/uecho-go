@@ -27,8 +27,8 @@ func NewMessageManager() *MessageManager {
 	return mgr
 }
 
-// GetMulticastManager returns the multicast manager.
-func (mgr *MessageManager) GetMulticastManager() *MulticastManager {
+// MulticastManager returns the multicast manager.
+func (mgr *MessageManager) MulticastManager() *MulticastManager {
 	return mgr.multicastMgr
 }
 
@@ -40,7 +40,7 @@ func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
 // Addresses return the bounded interface addresses.
 func (mgr *MessageManager) Addresses() []string {
 	ifaddrs := []string{}
-	for _, server := range mgr.GetMulticastManager().Servers {
+	for _, server := range mgr.MulticastManager().Servers {
 		ifaddr, err := server.Address()
 		if err != nil {
 			continue

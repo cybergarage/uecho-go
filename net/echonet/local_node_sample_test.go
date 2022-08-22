@@ -56,7 +56,7 @@ func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {
 	}
 
 	if msg.IsWriteRequest() {
-		for _, msgProp := range msg.GetProperties() {
+		for _, msgProp := range msg.Properties() {
 			if msgProp.Code() == testLightPropertyPowerCode {
 				prop, ok := dev.FindProperty(testLightPropertyPowerCode)
 				if ok {
