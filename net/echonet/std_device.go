@@ -4,17 +4,14 @@
 
 package echonet
 
-import (
-	"fmt"
-)
-
 // NewStandardDeviceWithCodes returns a new device of the specified object codes.
 func NewStandardDeviceWithCodes(codes []byte) (*Device, error) {
-	if len(codes) != ObjectCodeSize {
-		return nil, fmt.Errorf(errorInvalidObjectCodes, string(codes))
+	objCode, err := BytesToObjectCode(codes)
+	if err != nil {
+		return nil, err
 	}
 	obj := NewDevice()
-	obj.SetCodes(codes)
+	obj.SetCode(objCode)
 	addStandardProperties(obj.Object)
 	return obj, nil
 }

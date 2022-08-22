@@ -5,26 +5,13 @@
 package echonet
 
 import (
-	"fmt"
-
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
-	errorInvalidObjectCodes = "invalid object code : %s"
 	errorParentNodeNotFound = "parent node not found"
 )
-
-const (
-	ObjectCodeMin     = 0x000000
-	ObjectCodeMax     = 0xFFFFFF
-	ObjectCodeSize    = 3
-	ObjectCodeUnknown = ObjectCodeMin
-)
-
-// ObjectCode is a type for object code.
-type ObjectCode = protocol.ObjectCode
 
 // Object is an instance for Echonet object.
 type Object struct {
@@ -54,18 +41,19 @@ func NewObject() *Object {
 
 // NewObjectWithCodes returns a new object of the specified object codes.
 func NewObjectWithCodes(codes []byte) (interface{}, error) {
-	if len(codes) != ObjectCodeSize {
-		return nil, fmt.Errorf(errorInvalidObjectCodes, string(codes))
+	objCode, err := BytesToObjectCode(codes)
+	if err != nil {
+		return nil, err
 	}
 
 	if isProfileObjectCode(codes[0]) {
 		obj := NewProfile()
-		obj.SetCodes(codes)
+		obj.SetCode(objCode)
 		return obj, nil
 	}
 
 	obj := NewDevice()
-	obj.SetCodes(codes)
+	obj.SetCode(objCode)
 	return obj, nil
 }
 
