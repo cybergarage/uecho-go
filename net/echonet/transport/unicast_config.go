@@ -12,20 +12,20 @@ import (
 // UnicastConfig represents a cofiguration for unicast server.
 type UnicastConfig struct {
 	TCPEnabled        bool
-	ConnectionTimeout time.Duration
-	RequestTimeout    time.Duration
-	BindRetryCount    uint
-	BindRetryWaitTime time.Duration
+	connectionTimeout time.Duration
+	requestTimeout    time.Duration
+	bindRetryCount    uint
+	bindRetryWaitTime time.Duration
 }
 
 // NewDefaultUnicastConfig returns a default configuration.
 func NewDefaultUnicastConfig() *UnicastConfig {
 	conf := &UnicastConfig{
 		TCPEnabled:        false,
-		ConnectionTimeout: DefaultConnectimeTimeOut,
-		RequestTimeout:    DefaultRequestTimeout,
-		BindRetryCount:    DefaultBindRetryCount,
-		BindRetryWaitTime: 0,
+		connectionTimeout: DefaultConnectimeTimeOut,
+		requestTimeout:    DefaultRequestTimeout,
+		bindRetryCount:    DefaultBindRetryCount,
+		bindRetryWaitTime: 0,
 	}
 	return conf
 }
@@ -33,7 +33,7 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 // SetConfig sets all flags.
 func (conf *UnicastConfig) SetConfig(newConfig *UnicastConfig) {
 	conf.TCPEnabled = newConfig.TCPEnabled
-	conf.ConnectionTimeout = newConfig.ConnectionTimeout
+	conf.connectionTimeout = newConfig.connectionTimeout
 }
 
 // SetTCPEnabled sets a flag for TCP functions.
@@ -48,56 +48,56 @@ func (conf *UnicastConfig) IsTCPEnabled() bool {
 
 // SetConnectionTimeout sets a connection timeout setting.
 func (conf *UnicastConfig) SetConnectionTimeout(timeout time.Duration) {
-	conf.ConnectionTimeout = timeout
+	conf.connectionTimeout = timeout
 }
 
-// GetConnectionTimeout returns the current connection timeout setting.
-func (conf *UnicastConfig) GetConnectionTimeout() time.Duration {
-	return conf.ConnectionTimeout
+// ConnectionTimeout returns the current connection timeout setting.
+func (conf *UnicastConfig) ConnectionTimeout() time.Duration {
+	return conf.connectionTimeout
 }
 
 // SetRequestTimeout sets a request timeout.
 func (conf *Config) SetRequestTimeout(d time.Duration) {
-	conf.RequestTimeout = d
+	conf.requestTimeout = d
 }
 
-// GetRequestTimeout return the request timeout.
-func (conf *Config) GetRequestTimeout() time.Duration {
-	return conf.RequestTimeout
+// RequestTimeout return the request timeout.
+func (conf *Config) RequestTimeout() time.Duration {
+	return conf.requestTimeout
 }
 
 // SetBindRetryEnabled sets a flag for the bind retry function.
 func (conf *UnicastConfig) SetBindRetryEnabled(flag bool) {
 	if !flag {
-		conf.BindRetryCount = 0
+		conf.bindRetryCount = 0
 		return
 	}
-	conf.BindRetryCount = DefaultBindRetryCount
+	conf.bindRetryCount = DefaultBindRetryCount
 }
 
 // IsBindRetryEnabled returns true whether the bind retry function is enabled, otherwise false.
 func (conf *UnicastConfig) IsBindRetryEnabled() bool {
-	return conf.BindRetryCount != 0
+	return conf.bindRetryCount != 0
 }
 
 // SetBindRetryCount sets a retry count when the binding is failed.
 func (conf *Config) SetBindRetryCount(n uint) {
-	conf.BindRetryCount = n
+	conf.bindRetryCount = n
 }
 
-// GetBindRetryCount returns the retry count when the binding is failed.
-func (conf *Config) GetBindRetryCount() uint {
-	return conf.BindRetryCount
+// BindRetryCount returns the retry count when the binding is failed.
+func (conf *Config) BindRetryCount() uint {
+	return conf.bindRetryCount
 }
 
 // SetBindRetryWaitTime sets a wait time when the binding is failed.
 func (conf *Config) SetBindRetryWaitTime(d time.Duration) {
-	conf.BindRetryWaitTime = d
+	conf.bindRetryWaitTime = d
 }
 
-// GetBindRetryWaitTime return the wait time when the binding is failed.
-func (conf *Config) GetBindRetryWaitTime() time.Duration {
-	return conf.BindRetryWaitTime
+// BindRetryWaitTime return the wait time when the binding is failed.
+func (conf *Config) BindRetryWaitTime() time.Duration {
+	return conf.bindRetryWaitTime
 }
 
 // Equals returns true whether the specified other class is same, otherwise false.

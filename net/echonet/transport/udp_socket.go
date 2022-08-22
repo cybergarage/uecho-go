@@ -19,8 +19,8 @@ import (
 type UDPSocket struct {
 	*Socket
 	Conn           *net.UDPConn
-	ReadBufferSize int
-	ReadBuffer     []byte
+	readBufferSize int
+	readBuffer     []byte
 }
 
 // NewUDPSocket returns a new UDPSocket.
@@ -28,8 +28,8 @@ func NewUDPSocket() *UDPSocket {
 	sock := &UDPSocket{
 		Socket:         NewSocket(),
 		Conn:           nil,
-		ReadBufferSize: MaxPacketSize,
-		ReadBuffer:     make([]byte, 0),
+		readBufferSize: MaxPacketSize,
+		readBuffer:     make([]byte, 0),
 	}
 	sock.SetReadBufferSize(MaxPacketSize)
 	return sock
@@ -37,13 +37,13 @@ func NewUDPSocket() *UDPSocket {
 
 // SetReadBufferSize sets the read buffer size.
 func (sock *UDPSocket) SetReadBufferSize(n int) {
-	sock.ReadBufferSize = n
-	sock.ReadBuffer = make([]byte, n)
+	sock.readBufferSize = n
+	sock.readBuffer = make([]byte, n)
 }
 
-// GetReadBufferSize returns the read buffer size.
-func (sock *UDPSocket) GetReadBufferSize() int {
-	return sock.ReadBufferSize
+// ReadBufferSize returns the read buffer size.
+func (sock *UDPSocket) ReadBufferSize() int {
+	return sock.readBufferSize
 }
 
 // Close closes the current opened socket.
@@ -138,14 +138,14 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 		return nil, errors.New(errorSocketClosed)
 	}
 
-	n, from, err := sock.Conn.ReadFromUDP(sock.ReadBuffer)
+	n, from, err := sock.Conn.ReadFromUDP(sock.readBuffer)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := protocol.NewMessageWithBytes(sock.ReadBuffer[:n])
+	msg, err := protocol.NewMessageWithBytes(sock.readBuffer[:n])
 	if err != nil {
-		sock.outputReadLog(log.LevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.ReadBuffer[:n]), n)
+		sock.outputReadLog(log.LevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.readBuffer[:n]), n)
 		log.Error(err.Error())
 		return nil, err
 	}
