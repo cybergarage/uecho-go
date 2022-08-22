@@ -70,7 +70,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	node.SetConfig(config)
 
-	startTID := ctrl.GetLastTID()
+	startTID := ctrl.LastTID()
 
 	// Start
 
@@ -229,7 +229,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		}
 	}
 
-	lastTID := ctrl.GetLastTID()
+	lastTID := ctrl.LastTID()
 	if lastTID < startTID {
 		t.Errorf("%d < %d", lastTID, startTID)
 	}

@@ -91,18 +91,18 @@ func (node *LocalNode) SetListener(l NodeListener) {
 	node.listener = l
 }
 
-// GetListener returns the listener of the node.
-func (node *LocalNode) GetListener() NodeListener {
+// Listener returns the listener of the node.
+func (node *LocalNode) Listener() NodeListener {
 	return node.listener
 }
 
-// GetLastTID returns a last sent TID.
-func (node *LocalNode) GetLastTID() uint {
+// LastTID returns a last sent TID.
+func (node *LocalNode) LastTID() uint {
 	return node.lastTID
 }
 
-// getNextTID returns a next TID.
-func (node *LocalNode) getNextTID() uint {
+// NextTID returns a next TID.
+func (node *LocalNode) NextTID() uint {
 	if TIDMax <= node.lastTID {
 		node.lastTID = TIDMin
 	} else {
