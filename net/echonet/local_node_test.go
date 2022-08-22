@@ -92,8 +92,8 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	defer node.Stop()
 
-	ctrlPort := ctrl.GetPort()
-	nodePort := node.GetPort()
+	ctrlPort := ctrl.Port()
+	nodePort := node.Port()
 	if ctrlPort == nodePort {
 		t.Errorf("%d == %d", ctrlPort, nodePort)
 		return
@@ -121,7 +121,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 
 	if foundNode == nil {
-		t.Errorf(errorTestNodeNotFound, node.GetAddress(), node.GetPort())
+		t.Errorf(errorTestNodeNotFound, node.Address(), node.Port())
 		return
 	}
 	// Check a found device
