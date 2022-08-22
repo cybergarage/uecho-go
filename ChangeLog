@@ -2,7 +2,7 @@
 	* v1.1.1
 	* Support write and read request protocol (0x6E)
 
-2022-XX-XX The uecho-go Authors <skonno@cybergarage.org>
+2022-08-23 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.0
 	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium
 
