@@ -73,7 +73,7 @@ func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
 		return
 	}
 
-	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.GetConfig())
+	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.TransportConfig)
 	if err != nil {
 		return
 	}
