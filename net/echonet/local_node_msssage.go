@@ -26,7 +26,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
-	msg.SetTID(node.getNextTID())
+	msg.SetTID(node.NextTID())
 	msg.SetDestinationObjectCode(NodeProfileObject)
 	return node.server.AnnounceMessage(msg)
 }
@@ -59,7 +59,7 @@ func (node *LocalNode) Announce() error {
 
 // updateMessageDestinationHeader update the message header using the local node status.
 func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) error {
-	msg.SetTID(node.getNextTID())
+	msg.SetTID(node.NextTID())
 
 	// SEOJ
 	nodeProp, err := node.NodeProfile()
