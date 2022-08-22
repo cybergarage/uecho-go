@@ -29,8 +29,8 @@ func (db *StandardDatabase) addManufacture(man *Manufacture) {
 	db.Manufactures[man.Code] = man
 }
 
-// GetManufacture returns the registered manuracture by the specified manuracture code.
-func (db *StandardDatabase) GetManufacture(code ManufactureCode) (*Manufacture, bool) {
+// Manufacture returns the registered manuracture by the specified manuracture code.
+func (db *StandardDatabase) Manufacture(code ManufactureCode) (*Manufacture, bool) {
 	m, ok := db.Manufactures[code]
 	return m, ok
 }

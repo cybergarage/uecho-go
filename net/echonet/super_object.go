@@ -116,8 +116,8 @@ func (obj *SuperObject) SetOperatingStatus(stats bool) error {
 	return obj.SetPropertyByteData(ObjectOperatingStatus, statsByte)
 }
 
-// GetOperatingStatus return the operating status of the object.
-func (obj *SuperObject) GetOperatingStatus() (bool, error) {
+// OperatingStatus return the operating status of the object.
+func (obj *SuperObject) OperatingStatus() (bool, error) {
 	statsByte, err := obj.FindPropertyByteData(ObjectOperatingStatus)
 	if err != nil {
 		return false, err
@@ -133,7 +133,7 @@ func (obj *SuperObject) SetManufacturerCode(code uint) error {
 	return obj.SetPropertyIntegerData(ObjectManufacturerCode, code, ObjectManufacturerCodeSize)
 }
 
-// GetManufacturerCode return the manufacture codes of the object.
-func (obj *SuperObject) GetManufacturerCode() (uint, error) {
+// ManufacturerCode return the manufacture codes of the object.
+func (obj *SuperObject) ManufacturerCode() (uint, error) {
 	return obj.FindPropertyIntegerData(ObjectManufacturerCode)
 }
