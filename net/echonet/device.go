@@ -93,19 +93,7 @@ func NewDevice() *Device {
 	dev := &Device{
 		SuperObject: NewSuperObject(),
 	}
-	dev.addDeviceMandatoryProperties()
 	return dev
-}
-
-// addDeviceMandatoryProperties sets mandatory properties for device object.
-func (dev *Device) addDeviceMandatoryProperties() {
-	stdObj, ok := GetStandardDatabase().SuperObject()
-	if !ok {
-		return
-	}
-	for _, stdProp := range stdObj.Properties() {
-		dev.AddProperty(stdProp.Copy())
-	}
 }
 
 // SetInstallationLocation sets a installation location to the device.
