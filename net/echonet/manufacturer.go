@@ -9,14 +9,24 @@ type ManufactureCode int
 
 // Manufacture represents a manufacture object.
 type Manufacture struct {
-	Code ManufactureCode
-	Name string
+	code ManufactureCode
+	name string
 }
 
 // NewManufacture returns a manufacture instance.
 func NewManufacture(code ManufactureCode, name string) *Manufacture {
 	return &Manufacture{
-		Code: code,
-		Name: name,
+		code: code,
+		name: name,
 	}
+}
+
+// Name returns the manufacture name.
+func (man *Manufacture) Name() string {
+	return man.name
+}
+
+// Code returns the manufacture code.
+func (man *Manufacture) Code() ManufactureCode {
+	return man.code
 }
