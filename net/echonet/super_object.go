@@ -88,7 +88,7 @@ func (obj *SuperObject) updatePropertyMap() error {
 	setPropMapCodes := make([]PropertyCode, 0)
 	annoPropMapCodes := make([]PropertyCode, 0)
 
-	for _, prop := range obj.GetProperties() {
+	for _, prop := range obj.Properties() {
 		if prop.IsReadable() {
 			getPropMapCodes = append(getPropMapCodes, prop.Code())
 		}
@@ -118,7 +118,7 @@ func (obj *SuperObject) SetOperatingStatus(stats bool) error {
 
 // GetOperatingStatus return the operating status of the object.
 func (obj *SuperObject) GetOperatingStatus() (bool, error) {
-	statsByte, err := obj.GetPropertyByteData(ObjectOperatingStatus)
+	statsByte, err := obj.FindPropertyByteData(ObjectOperatingStatus)
 	if err != nil {
 		return false, err
 	}
@@ -135,5 +135,5 @@ func (obj *SuperObject) SetManufacturerCode(code uint) error {
 
 // GetManufacturerCode return the manufacture codes of the object.
 func (obj *SuperObject) GetManufacturerCode() (uint, error) {
-	return obj.GetPropertyIntegerData(ObjectManufacturerCode)
+	return obj.FindPropertyIntegerData(ObjectManufacturerCode)
 }

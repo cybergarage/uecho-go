@@ -42,21 +42,21 @@ const (
 
 // Property is an instance for Echonet property.
 type Property struct {
-	Name         string
+	name         string
 	code         PropertyCode
-	Attr         PropertyAttr
-	Data         []byte
-	ParentObject *Object
+	attr         PropertyAttr
+	data         []byte
+	parentObject *Object
 }
 
 // NewProperty returns a new property.
 func NewProperty() *Property {
 	return &Property{
-		Name:         "",
+		name:         "",
 		code:         0,
-		Attr:         PropertyAttrNone,
-		Data:         make([]byte, 0),
-		ParentObject: nil,
+		attr:         PropertyAttrNone,
+		data:         make([]byte, 0),
+		parentObject: nil,
 	}
 }
 
@@ -78,17 +78,17 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 
 // SetParentObject sets a parent object into the property.
 func (prop *Property) SetParentObject(obj *Object) {
-	prop.ParentObject = obj
+	prop.parentObject = obj
 }
 
-// GetParentObject returns the parent object.
-func (prop *Property) GetParentObject() *Object {
-	return prop.ParentObject
+// ParentObject returns the parent object.
+func (prop *Property) ParentObject() *Object {
+	return prop.parentObject
 }
 
-// GetNode returns a parent node of the parent object.
-func (prop *Property) GetNode() Node {
-	parentObj := prop.GetParentObject()
+// Node returns a parent node of the parent object.
+func (prop *Property) Node() Node {
+	parentObj := prop.ParentObject()
 	if parentObj == nil {
 		return nil
 	}
@@ -97,12 +97,12 @@ func (prop *Property) GetNode() Node {
 
 // SetName sets a name to the property.
 func (prop *Property) SetName(name string) {
-	prop.Name = name
+	prop.name = name
 }
 
-// GetName returns the property name.
-func (prop *Property) GetName() string {
-	return prop.Name
+// Name returns the property name.
+func (prop *Property) Name() string {
+	return prop.name
 }
 
 // SetCode sets a specified code to the property.
@@ -117,41 +117,41 @@ func (prop *Property) Code() PropertyCode {
 
 // ClearData clears the property data.
 func (prop *Property) ClearData() {
-	prop.Data = make([]byte, 0)
+	prop.data = make([]byte, 0)
 }
 
 // Size return the property data size.
 func (prop *Property) Size() int {
-	return len(prop.Data)
+	return len(prop.data)
 }
 
 // SetAttribute sets an attribute to the property.
 func (prop *Property) SetAttribute(attr PropertyAttr) {
-	prop.Attr = attr
+	prop.attr = attr
 }
 
-// GetAttribute returns the property attribute.
-func (prop *Property) GetAttribute() PropertyAttr {
-	return prop.Attr
+// Attribute returns the property attribute.
+func (prop *Property) Attribute() PropertyAttr {
+	return prop.attr
 }
 
 // IsReadable returns true when the property attribute is readable, otherwise false.
 func (prop *Property) IsReadable() bool {
-	return ((prop.Attr & PropertyAttrGet) != 0)
+	return ((prop.attr & PropertyAttrGet) != 0)
 }
 
 // IsWritable returns true when the property attribute is writable, otherwise false.
 func (prop *Property) IsWritable() bool {
-	return ((prop.Attr & PropertyAttrSet) != 0)
+	return ((prop.attr & PropertyAttrSet) != 0)
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
 func (prop *Property) IsReadOnly() bool {
-	if (prop.Attr & PropertyAttrGet) == 0 {
+	if (prop.attr & PropertyAttrGet) == 0 {
 		return false
 	}
 
-	if (prop.Attr & PropertyAttrSet) != 0 {
+	if (prop.attr & PropertyAttrSet) != 0 {
 		return false
 	}
 
@@ -160,10 +160,10 @@ func (prop *Property) IsReadOnly() bool {
 
 // IsWriteOnly returns true when the property attribute is write only, otherwise false.
 func (prop *Property) IsWriteOnly() bool {
-	if (prop.Attr & PropertyAttrSet) == 0 {
+	if (prop.attr & PropertyAttrSet) == 0 {
 		return false
 	}
-	if (prop.Attr & PropertyAttrGet) != 0 {
+	if (prop.attr & PropertyAttrGet) != 0 {
 		return false
 	}
 	return true
@@ -171,7 +171,7 @@ func (prop *Property) IsWriteOnly() bool {
 
 // isAnnounceable returns true when the property attribute is announcement, otherwise false.
 func (prop *Property) isAnnounceable() bool {
-	return ((prop.Attr & PropertyAttrAnno) != 0)
+	return ((prop.attr & PropertyAttrAnno) != 0)
 }
 
 // IsAvailableService returns true whether the specified service can execute, otherwise false.
@@ -213,8 +213,8 @@ func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 
 // SetData sets a specified data to the property.
 func (prop *Property) SetData(data []byte) {
-	prop.Data = make([]byte, len(data))
-	copy(prop.Data, data)
+	prop.data = make([]byte, len(data))
+	copy(prop.data, data)
 
 	// (D) Basic sequence for autonomous notification.
 
@@ -235,35 +235,35 @@ func (prop *Property) SetIntegerData(data uint, size uint) {
 	prop.SetData(binData)
 }
 
-// GetData returns the property data.
-func (prop *Property) GetData() []byte {
-	return prop.Data
+// Data returns the property data.
+func (prop *Property) Data() []byte {
+	return prop.data
 }
 
-// GetByteData returns a byte value of the property data.
-func (prop *Property) GetByteData() (byte, error) {
-	if len(prop.Data) == 0 {
+// ByteData returns a byte value of the property data.
+func (prop *Property) ByteData() (byte, error) {
+	if len(prop.data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
-	return prop.Data[0], nil
+	return prop.data[0], nil
 }
 
-// GetStringData returns a byte value of the property string data.
-func (prop *Property) GetStringData() (string, error) {
-	return string(prop.Data), nil
+// StringData returns a byte value of the property string data.
+func (prop *Property) StringData() (string, error) {
+	return string(prop.data), nil
 }
 
-// GetIntegerData returns a integer value of the property integer data.
-func (prop *Property) GetIntegerData() (uint, error) {
-	if len(prop.Data) == 0 {
+// IntegerData returns a integer value of the property integer data.
+func (prop *Property) IntegerData() (uint, error) {
+	if len(prop.data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
-	return encoding.ByteToInteger(prop.GetData()), nil
+	return encoding.ByteToInteger(prop.Data()), nil
 }
 
 // announce announces the property.
 func (prop *Property) announce() error {
-	parentNode, ok := prop.GetNode().(*LocalNode)
+	parentNode, ok := prop.Node().(*LocalNode)
 	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
 	}
@@ -279,7 +279,7 @@ func (prop *Property) announce() error {
 func (prop *Property) toProtocolProperty() *protocol.Property {
 	newProp := protocol.NewProperty()
 	newProp.SetCode(prop.Code())
-	newProp.SetData(prop.GetData())
+	newProp.SetData(prop.Data())
 	return newProp
 }
 
@@ -288,10 +288,10 @@ func (prop *Property) Equals(otherProp *Property) bool {
 	if prop.Code() != otherProp.Code() {
 		return false
 	}
-	if prop.GetAttribute() != otherProp.GetAttribute() {
+	if prop.Attribute() != otherProp.Attribute() {
 		return false
 	}
-	if !bytes.Equal(prop.GetData(), otherProp.GetData()) {
+	if !bytes.Equal(prop.Data(), otherProp.Data()) {
 		return false
 	}
 	return true
@@ -300,10 +300,10 @@ func (prop *Property) Equals(otherProp *Property) bool {
 // Copy copies the property instance without the data.
 func (prop *Property) Copy() *Property {
 	return &Property{
-		Name:         prop.Name,
+		name:         prop.name,
 		code:         prop.code,
-		Attr:         prop.Attr,
-		Data:         make([]byte, 0),
-		ParentObject: nil,
+		attr:         prop.attr,
+		data:         make([]byte, 0),
+		parentObject: nil,
 	}
 }

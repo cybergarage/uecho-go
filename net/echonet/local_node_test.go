@@ -33,11 +33,11 @@ func TestNewLocalNode(t *testing.T) {
 }
 
 func localNodeCheckResponseMessagePowerStatus(reqMsg *protocol.Message, resMsg *protocol.Message, powerStatus byte) error {
-	if resOpc := resMsg.GetOPC(); resOpc != 1 {
+	if resOpc := resMsg.OPC(); resOpc != 1 {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 
-	resProp := resMsg.GetProperty(0)
+	resProp := resMsg.PropertyAt(0)
 	if resProp == nil {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
@@ -106,7 +106,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	// Check a found node
 
 	var foundNode *RemoteNode
-	for _, ctrlNode := range ctrl.GetNodes() {
+	for _, ctrlNode := range ctrl.Nodes() {
 		// Skip deprecated nodes
 		if !ctrlNode.Equals(node) {
 			continue

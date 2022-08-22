@@ -129,7 +129,7 @@ func (dev *Device) SetInstallationLocation(locByte byte) error {
 
 // GetInstallationLocation return the installation location of the device.
 func (dev *Device) GetInstallationLocation() (byte, error) {
-	return dev.GetPropertyByteData(DeviceInstallationLocation)
+	return dev.FindPropertyByteData(DeviceInstallationLocation)
 }
 
 // SetStandardVersion sets a standard version to the device.
@@ -140,7 +140,7 @@ func (dev *Device) SetStandardVersion(ver byte) error {
 
 // GetStandardVersion return the standard version of the device.
 func (dev *Device) GetStandardVersion() (byte, error) {
-	verBytes, err := dev.GetPropertyData(DeviceStandardVersion)
+	verBytes, err := dev.FindPropertyData(DeviceStandardVersion)
 	if err != nil {
 		return 0, err
 	}
@@ -161,7 +161,7 @@ func (dev *Device) SetFaultStatus(stats bool) error {
 
 // GetFaultStatus return the fault status of the device.
 func (dev *Device) GetFaultStatus() (bool, error) {
-	statsByte, err := dev.GetPropertyByteData(DeviceFaultStatus)
+	statsByte, err := dev.FindPropertyByteData(DeviceFaultStatus)
 	if err != nil {
 		return false, err
 	}

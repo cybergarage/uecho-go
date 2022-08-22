@@ -131,7 +131,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 
 			if checkSourcePort {
 				srcPort := srcMgr.GetPort()
-				msgPort := dstLastMsg.GetSourcePort()
+				msgPort := dstLastMsg.SourcePort()
 
 				if srcPort != msgPort {
 					t.Errorf("%d -!-> %d", srcPort, msgPort)

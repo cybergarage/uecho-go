@@ -10,7 +10,7 @@ func addStandardProperties(obj *Object) {
 	if !ok {
 		return
 	}
-	for _, prop := range stdObj.GetProperties() {
+	for _, prop := range stdObj.Properties() {
 		obj.AddProperty(prop.Copy())
 	}
 }

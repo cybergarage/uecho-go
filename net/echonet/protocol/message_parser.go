@@ -26,8 +26,8 @@ func (msg *Message) parseFrameHeaderBytes(data []byte) error {
 
 	// TID
 
-	msg.TID[0] = data[2]
-	msg.TID[1] = data[3]
+	msg.tid[0] = data[2]
+	msg.tid[1] = data[3]
 
 	return nil
 }
@@ -40,19 +40,19 @@ func (msg *Message) parseFormat1HeaderBytes(data []byte) error {
 
 	// SEOJ
 
-	msg.SEOJ[0] = data[0]
-	msg.SEOJ[1] = data[1]
-	msg.SEOJ[2] = data[2]
+	msg.seoj[0] = data[0]
+	msg.seoj[1] = data[1]
+	msg.seoj[2] = data[2]
 
 	// DEOJ
 
-	msg.DEOJ[0] = data[3]
-	msg.DEOJ[1] = data[4]
-	msg.DEOJ[2] = data[5]
+	msg.deoj[0] = data[3]
+	msg.deoj[1] = data[4]
+	msg.deoj[2] = data[5]
 
 	// ESV
 
-	msg.ESV = ESV(data[6])
+	msg.esv = ESV(data[6])
 
 	// OPC
 
@@ -69,8 +69,8 @@ func (msg *Message) parseFormat1PropertyBytes(data []byte) error {
 	dataSize := len(data)
 
 	offset := 0
-	for n := 0; n < int(msg.OPC); n++ {
-		prop := msg.GetProperty(n)
+	for n := 0; n < int(msg.opc); n++ {
+		prop := msg.PropertyAt(n)
 		if prop == nil {
 			continue
 		}

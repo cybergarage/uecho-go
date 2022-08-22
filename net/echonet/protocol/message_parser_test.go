@@ -25,8 +25,8 @@ var testMessageBytes = []byte{
 func testParsedMessage(t *testing.T, msg *Message) {
 	t.Helper()
 
-	if msg.GetTID() != 0 {
-		t.Errorf("%d != %d", msg.GetTID(), 0)
+	if msg.TID() != 0 {
+		t.Errorf("%d != %d", msg.TID(), 0)
 	}
 
 	if msg.GetSourceObjectCode() != 0xA0B0C0 {
@@ -37,16 +37,16 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		t.Errorf("%03X != %03X", msg.GetDestinationObjectCode(), 0xD0E0F0)
 	}
 
-	if msg.GetESV() != ESVReadRequest {
-		t.Errorf("%03X != %03X", msg.GetESV(), ESVReadRequest)
+	if msg.ESV() != ESVReadRequest {
+		t.Errorf("%03X != %03X", msg.ESV(), ESVReadRequest)
 	}
 
-	if msg.GetOPC() != 3 {
-		t.Errorf("%d != %d", msg.GetESV(), 3)
+	if msg.OPC() != 3 {
+		t.Errorf("%d != %d", msg.ESV(), 3)
 	}
 
-	for n := 1; n <= msg.GetOPC(); n++ {
-		prop := msg.GetProperty(n - 1)
+	for n := 1; n <= msg.OPC(); n++ {
+		prop := msg.PropertyAt(n - 1)
 		if prop == nil {
 			t.Errorf("%d", n)
 			continue

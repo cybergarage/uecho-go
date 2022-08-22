@@ -40,7 +40,7 @@ func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, 
 		prefix,
 		addr,
 		obj,
-		msg.GetESV())
+		msg.ESV())
 	for _, prop := range msg.GetProperties() {
 		fmt.Printf("%2X%s ",
 			prop.Code(),
@@ -59,7 +59,7 @@ func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
 }
 
 func outputResponseMessage(msg *echonet.Message) {
-	outputTransportMessage("<-", msg.GetSourceAddress(), msg.GetSourceObjectCode(), msg)
+	outputTransportMessage("<-", msg.SourceAddress(), msg.GetSourceObjectCode(), msg)
 }
 
 func outputUsage() {
@@ -105,7 +105,7 @@ func main() {
 	// Find the specified destination node
 
 	dstNodeAddr := os.Args[1]
-	dstNode, err := ctrl.GetNode(dstNodeAddr)
+	dstNode, err := ctrl.FindNode(dstNodeAddr)
 	if err != nil {
 		exitWithErrorMessage(fmt.Sprintf("The destination node (%s) is not found", dstNodeAddr))
 	}
