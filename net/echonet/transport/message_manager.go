@@ -55,8 +55,8 @@ func (mgr *MessageManager) SetConfig(newConfig *Config) {
 	mgr.unicastMgr.SetConfig(newConfig)
 }
 
-// GetConfig returns all current configurations.
-func (mgr *MessageManager) GetConfig() *Config {
+// Config returns all current configurations.
+func (mgr *MessageManager) Config() *Config {
 	return mgr.unicastMgr.Config
 }
 
