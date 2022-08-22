@@ -4,10 +4,6 @@
 
 package echonet
 
-import (
-	"fmt"
-)
-
 func addStandardProperties(obj *Object) {
 	db := GetStandardDatabase()
 	stdObj, ok := db.GetObjectByCode(obj.GetCode())
@@ -21,12 +17,13 @@ func addStandardProperties(obj *Object) {
 
 // NewStandardObjectWithCodes returns a new object of the specified object codes.
 func NewStandardObjectWithCodes(codes []byte) (interface{}, error) {
-	if len(codes) != ObjectCodeSize {
-		return nil, fmt.Errorf(errorInvalidObjectCodes, string(codes))
+	objCode, err := BytesToObjectCode(codes)
+	if err != nil {
+		return nil, err
 	}
 	if isProfileObjectCode(codes[0]) {
 		obj := NewProfile()
-		obj.SetCodes(codes)
+		obj.SetCode(objCode)
 		addStandardProperties(obj.Object)
 		return obj, nil
 	}
