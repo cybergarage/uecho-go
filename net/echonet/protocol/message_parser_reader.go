@@ -30,8 +30,8 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 		prop.code = PropertyCode(propertyHeader[0])
 
 		propDataSize := int(propertyHeader[1])
-		prop.Data = make([]byte, propDataSize)
-		nRead, err = reader.Read(prop.Data)
+		prop.data = make([]byte, propDataSize)
+		nRead, err = reader.Read(prop.data)
 		if err != nil {
 			return err
 		}

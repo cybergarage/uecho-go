@@ -39,7 +39,7 @@ func (node *LightNode) PropertyRequestReceived(obj *echonet.Object, esv protocol
 	// Check whether the local object (device) has the requested property
 
 	reqPropCode := reqProp.Code()
-	reqPropData := reqProp.GetData()
+	reqPropData := reqProp.Data()
 
 	switch reqPropCode {
 	case 0x80: // Operation status
