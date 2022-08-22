@@ -6,7 +6,7 @@ package echonet
 
 func newStandardObject(clsName string, grpCode byte, clsCode byte) *Object {
 	obj := NewObject()
-	obj.SetName(clsName)
+	obj.SetClassName(clsName)
 	obj.SetClassGroupCode(grpCode)
 	obj.SetClassCode(clsCode)
 	return obj
