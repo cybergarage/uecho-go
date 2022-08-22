@@ -55,7 +55,7 @@ func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
 	if 0 < len(boundAddrs) {
 		sourceAddr = boundAddrs[0]
 	}
-	outputTransportMessage("->", sourceAddr, msg.GetDestinationObjectCode(), msg)
+	outputTransportMessage("->", sourceAddr, msg.DEOJ(), msg)
 }
 
 func outputResponseMessage(msg *echonet.Message) {

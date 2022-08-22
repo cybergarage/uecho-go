@@ -104,8 +104,8 @@ func NewMessageWithMessage(msg *Message) (*Message, error) {
 func NewResponseMessageWithMessage(reqMsg *Message) *Message {
 	msg := NewMessage()
 	msg.SetTID(reqMsg.TID())
-	msg.SetSEOJ(reqMsg.GetDestinationObjectCode())
-	msg.SetDestinationObjectCode(reqMsg.SEOJ())
+	msg.SetSEOJ(reqMsg.DEOJ())
+	msg.SetDEOJ(reqMsg.SEOJ())
 
 	switch reqMsg.ESV() {
 	case ESVWriteRequestResponseRequired:
@@ -129,8 +129,8 @@ func NewResponseMessageWithMessage(reqMsg *Message) *Message {
 func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
 	msg := NewMessage()
 	msg.SetTID(reqMsg.TID())
-	msg.SetSEOJ(reqMsg.GetDestinationObjectCode())
-	msg.SetDestinationObjectCode(reqMsg.SEOJ())
+	msg.SetSEOJ(reqMsg.DEOJ())
+	msg.SetDEOJ(reqMsg.SEOJ())
 
 	switch reqMsg.ESV() {
 	case ESVWriteRequest:
@@ -193,19 +193,19 @@ func (msg *Message) IsSEOJ(code ObjectCode) bool {
 	return msg.SEOJ() == code
 }
 
-// SetDestinationObjectCode sets a source object code.
-func (msg *Message) SetDestinationObjectCode(code ObjectCode) {
+// SetDEOJ sets a source object code.
+func (msg *Message) SetDEOJ(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), msg.deoj)
 }
 
-// GetDestinationObjectCode returns the source object code.
-func (msg *Message) GetDestinationObjectCode() ObjectCode {
+// DEOJ returns the source object code.
+func (msg *Message) DEOJ() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.deoj))
 }
 
-// IsDestinationObjectCode returns true whether the specified value equals the message destination object code, otherwise false.
-func (msg *Message) IsDestinationObjectCode(code ObjectCode) bool {
-	return msg.GetDestinationObjectCode() == code
+// IsDEOJ returns true whether the specified value equals the message destination object code, otherwise false.
+func (msg *Message) IsDEOJ(code ObjectCode) bool {
+	return msg.DEOJ() == code
 }
 
 // SetESV sets the specified ESV.

@@ -33,8 +33,8 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		t.Errorf("%03X != %03X", msg.SEOJ(), 0xA0B0C0)
 	}
 
-	if msg.GetDestinationObjectCode() != 0xD0E0F0 {
-		t.Errorf("%03X != %03X", msg.GetDestinationObjectCode(), 0xD0E0F0)
+	if msg.DEOJ() != 0xD0E0F0 {
+		t.Errorf("%03X != %03X", msg.DEOJ(), 0xD0E0F0)
 	}
 
 	if msg.ESV() != ESVReadRequest {

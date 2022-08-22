@@ -53,8 +53,8 @@ func TestNewFormat1TestMessage(t *testing.T) {
 		t.Errorf("%X != %X", msg.SEOJ(), 0xA0B0C0)
 	}
 
-	if !msg.IsDestinationObjectCode(0xD0E0F0) {
-		t.Errorf("%X != %X", msg.GetDestinationObjectCode(), 0xD0E0F0)
+	if !msg.IsDEOJ(0xD0E0F0) {
+		t.Errorf("%X != %X", msg.DEOJ(), 0xD0E0F0)
 	}
 
 	if !msg.IsESV(ESVNotification) {
