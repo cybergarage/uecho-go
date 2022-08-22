@@ -60,7 +60,7 @@ func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {
 			if msgProp.Code() == testLightPropertyPowerCode {
 				prop, ok := dev.FindProperty(testLightPropertyPowerCode)
 				if ok {
-					prop.SetData(msgProp.GetData())
+					prop.SetData(msgProp.Data())
 				}
 			}
 		}
