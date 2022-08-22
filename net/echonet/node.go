@@ -26,8 +26,8 @@ type Node interface {
 	AddProfile(prof *Profile)
 	// Profiles returns all profile objects.
 	Profiles() []*Profile
-	// GetProfile returns the specified profile object.
-	GetProfile(code ObjectCode) (*Profile, error)
+	// FindProfile returns the specified profile object.
+	FindProfile(code ObjectCode) (*Profile, error)
 
 	// GetAddress returns the bound address.
 	GetAddress() string
