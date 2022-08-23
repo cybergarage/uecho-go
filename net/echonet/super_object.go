@@ -5,6 +5,10 @@
 package echonet
 
 const (
+	SuperObjectCode = 0x000000
+)
+
+const (
 	ObjectOperatingStatus  = 0x80
 	ObjectManufacturerCode = 0x8A
 	ObjectAnnoPropertyMap  = 0x9D
@@ -39,13 +43,25 @@ func NewSuperObject() *SuperObject {
 	obj := &SuperObject{
 		Object: NewObject(),
 	}
-	obj.addDeviceMandatoryProperties()
+	obj.SetCode(SuperObjectCode)
 	return obj
 }
 
-// addDeviceMandatoryProperties sets mandatory properties for the super object.
-func (obj *SuperObject) addDeviceMandatoryProperties() {
-	stdObj, ok := GetStandardDatabase().SuperObject()
+// SetCode sets a code to the object.
+func (obj *SuperObject) SetCode(code ObjectCode) {
+	obj.Object.SetCode(code)
+	obj.addStandardProperties()
+}
+
+// SetCodes sets codes to the object.
+func (obj *SuperObject) SetCodes(codes []byte) {
+	obj.Object.SetCodes(codes)
+	obj.addStandardProperties()
+}
+
+// addStandardProperties sets mandatory properties of the object code.
+func (obj *SuperObject) addStandardProperties() {
+	stdObj, ok := GetStandardDatabase().FindObjectByCode(obj.Code())
 	if !ok {
 		return
 	}
@@ -54,18 +70,14 @@ func (obj *SuperObject) addDeviceMandatoryProperties() {
 	}
 }
 
-// CreateProperty creates a new property to the property map. (Override function for PropertyMap).
-func (obj *SuperObject) CreateProperty(propCode PropertyCode, propAttr PropertyAttr) {
-	obj.PropertyMap.CreateProperty(propCode, propAttr)
+// AddProperty adds a new property into the property map.
+func (obj *SuperObject) AddProperty(prop *Property) {
+	obj.Object.AddProperty(prop)
 	obj.updatePropertyMap()
 }
 
 // setPropertyMapProperty sets a specified property map to the object.
 func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
-	if !obj.HasProperty(propMapCode) {
-		obj.PropertyMap.CreateProperty(propMapCode, PropertyAttrGet)
-	}
-
 	// Description Format 1
 
 	if len(propCodes) <= PropertyMapFormat1MaxSize {
@@ -107,7 +119,7 @@ func (obj *SuperObject) updatePropertyMap() error {
 		if prop.IsWritable() {
 			setPropMapCodes = append(setPropMapCodes, prop.Code())
 		}
-		if prop.isAnnounceable() {
+		if prop.IsAnnounceable() {
 			annoPropMapCodes = append(annoPropMapCodes, prop.Code())
 		}
 	}

@@ -61,20 +61,6 @@ func NewProfile() *Profile {
 	prof := &Profile{
 		SuperObject: NewSuperObject(),
 	}
-
 	prof.SetClassGroupCode(ProfileClassGroupCode)
-	prof.addProfileMandatoryProperties()
-
 	return prof
-}
-
-// addProfileMandatoryProperties sets mandatory properties for node profile.
-func (prof *Profile) addProfileMandatoryProperties() {
-	stdObj, ok := GetStandardDatabase().NodeProfile()
-	if !ok {
-		return
-	}
-	for _, stdProp := range stdObj.Properties() {
-		prof.AddProperty(stdProp.Copy())
-	}
 }
