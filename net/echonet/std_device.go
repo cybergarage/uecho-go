@@ -12,7 +12,6 @@ func NewStandardDeviceWithCodes(codes []byte) (*Device, error) {
 	}
 	obj := NewDevice()
 	obj.SetCode(objCode)
-	addStandardProperties(obj.Object)
 	return obj, nil
 }
 
@@ -20,6 +19,5 @@ func NewStandardDeviceWithCodes(codes []byte) (*Device, error) {
 func NewStandardDeviceWithCode(code ObjectCode) *Device {
 	obj := NewDevice()
 	obj.SetCode(code)
-	addStandardProperties(obj.Object)
 	return obj
 }

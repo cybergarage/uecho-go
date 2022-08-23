@@ -4,7 +4,9 @@
 
 package echonet
 
-import "github.com/cybergarage/uecho-go/net/echonet/encoding"
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+)
 
 const (
 	NodeProfileObject                       = 0x0EF001
@@ -53,44 +55,8 @@ const (
 // NewLocalNodeProfile returns a new node profile object.
 func NewLocalNodeProfile() *Profile {
 	prof := NewProfile()
-
 	prof.SetCode(NodeProfileObject)
-
-	prof.addNodeProfileMandatoryProperties()
-
 	return prof
-}
-
-// addNodeProfileMandatoryProperties sets mandatory properties for node profile.
-func (prof *Profile) addNodeProfileMandatoryProperties() error {
-	// Operation Status
-	prof.CreateProperty(NodeProfileClassOperatingStatus, PropertyAttrGetAnno)
-	prof.SetOperatingStatus(true)
-
-	// Version Information
-	prof.CreateProperty(NodeProfileClassVersionInformation, PropertyAttrGet)
-	prof.SetVersion(MajorVersion, MinorVersion)
-
-	// Identification Number
-	prof.CreateProperty(NodeProfileClassIdentificationNumber, PropertyAttrGet)
-	prof.SetID(ProfileManufacturerUnknown)
-
-	// Number Of Self Node Instances
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeInstances, PropertyAttrGet)
-
-	// Number Of Self Node Classes
-	prof.CreateProperty(NodeProfileClassNumberOfSelfNodeClasses, PropertyAttrGet)
-
-	// Instance List Notification
-	prof.CreateProperty(NodeProfileClassInstanceListNotification, PropertyAttrAnno)
-
-	// Self Node Instance ListS
-	prof.CreateProperty(NodeProfileClassSelfNodeInstanceListS, PropertyAttrGet)
-
-	// Self Node Class List S
-	prof.CreateProperty(NodeProfileClassSelfNodeClassListS, PropertyAttrGet)
-
-	return nil
 }
 
 // SetVersion sets a version to the profile.
@@ -162,81 +128,3 @@ func (prof *Profile) SetClassList(classes []*Class) error {
 	}
 	return prof.SetPropertyData(NodeProfileClassSelfNodeClassListS, classList)
 }
-
-/*
-  bool _nodeprofileclass_setclasscount(Object *obj, int count)
- {
-   return _object_setpropertyintegerdata(obj, NodeProfileClassNumberOfSelfNodeClasses, count, NodeProfileClassNumberOfSelfNodeClassesLen);
- }
-
-
- bool _nodeprofileclass_setclasslist(Object *obj, int listCnt, byte *listBytes)
- {
-   if (NodeProfileClassSelfNodeClassListSMax < listCnt) {
-	 listCnt = NodeProfileClassSelfNodeClassListSMax;
-   }
-   listBytes[0] = listCnt;
-   return _object_setpropertydata(obj, NodeProfileClassSelfNodeClassListS, listBytes, ((listCnt * 2) + 1));
- }
-
- bool _nodeprofileclass_setinstancelist(Object *obj, int listCnt, byte *listBytes)
- {
-   bool isSuccess;
-
-   if (NodeProfileClassSelfNodeInstanceListSMax < listCnt) {
-	 listCnt = NodeProfileClassSelfNodeInstanceListSMax;
-   }
-   listBytes[0] = listCnt;
-
-   isSuccess = true;
-   isSuccess &= _object_setpropertydata(obj, NodeProfileClassSelfNodeInstanceListS, listBytes, ((listCnt * 3) + 1));
-   isSuccess &= _object_setpropertydata(obj, NodeProfileClassInstanceListNotification, listBytes, ((listCnt * 3) + 1));
-
-   return isSuccess;
- }
-
- bool _nodeprofileclass_isoperatingstatus(Object *obj)
- {
-   byte statsByte;
-
-   if (!_object_getpropertybytedata(obj, NodeProfileClassOperatingStatus, &statsByte))
-	 return false;
-
-   return (statsByte == NodeProfileClassBooting) ? true : false;
- }
-
- int _nodeprofileclass_getinstancecount(Object *obj)
- {
-   int count;
-
-   if (!_object_getpropertyintegerdata(obj, NodeProfileClassNumberOfSelfNodeInstances, NodeProfileClassNumberOfSelfNodeInstancesLen, &count))
-	 return 0;
-
-   return count;
- }
-
- int _nodeprofileclass_getclasscount(Object *obj)
- {
-   int count;
-
-   if (!_object_getpropertyintegerdata(obj, NodeProfileClassNumberOfSelfNodeClasses, NodeProfileClassNumberOfSelfNodeClassesLen, &count))
-	 return 0;
-
-   return count;
- }
-
- byte *_nodeprofileclass_getnotificationinstancelist(Object *obj)
- {
-   return _object_getpropertydata(obj, NodeProfileClassInstanceListNotification);
- }
-
- byte *_nodeprofileclass_getinstancelist(Object *obj)
- {
-   return _object_getpropertydata(obj, NodeProfileClassSelfNodeInstanceListS);
- }
-
- byte *_nodeprofileclass_getclasslist(Object *obj)
- {
-   return _object_getpropertydata(obj, NodeProfileClassSelfNodeClassListS);
- }
-*/
