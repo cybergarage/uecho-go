@@ -105,7 +105,7 @@ func main() {
 			// Prints only read required properties with the current property data.
 
 			for _, prop := range obj.Properties() {
-				if prop.IsReadRequired() {
+				if !prop.IsReadRequired() {
 					continue
 				}
 				propName := prop.Name()
@@ -123,7 +123,7 @@ func main() {
 						propData = hex.EncodeToString(props[0].Data())
 					}
 				}
-				fmt.Printf("        [%02X] %s (%s)\n", prop.Code(), propData, propName)
+				fmt.Printf("        [%02X] %s: %s\n", prop.Code(), propName, propData)
 			}
 		}
 	}
