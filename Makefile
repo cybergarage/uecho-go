@@ -13,6 +13,7 @@ SHELL := bash
 #PREFIX?=$(shell pwd)
 #GOPATH:=$(shell pwd)
 #export GOPATH
+export CGO_ENABLED=0
 
 PACKAGE_NAME=net/echonet
 
@@ -54,7 +55,7 @@ vet: format
 	go vet ${PACKAGE_ROOT}
 
 lint: vet
-	-@golangci-lint run ${SOURCES}
+	golangci-lint run ${SOURCES}
 
 build: lint
 	go build -v ${PACKAGES}
