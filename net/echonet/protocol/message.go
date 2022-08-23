@@ -193,12 +193,12 @@ func (msg *Message) IsSEOJ(code ObjectCode) bool {
 	return msg.SEOJ() == code
 }
 
-// SetDEOJ sets a source object code.
+// SetDEOJ sets a destination object code.
 func (msg *Message) SetDEOJ(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), msg.deoj)
 }
 
-// DEOJ returns the source object code.
+// DEOJ returns the destination object code.
 func (msg *Message) DEOJ() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.deoj))
 }
