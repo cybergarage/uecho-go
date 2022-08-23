@@ -29,21 +29,21 @@ func newStandardObject(clsName string, grpCode byte, clsCode byte) *Object {
 }
 
 func newStandardProperty(code PropertyCode, name string, dataType string, dataSize int, getRule string, setRule string, annoRule string) *Property {
-	required := "required"
+	strAttrToPropertyAttr := func(strAttr string) PropertyAttr {
+		switch strAttr {
+		case "required":
+			return Required
+		case "optional":
+			return Optional
+		}
+		return Prohibited
+	}
 	prop := NewProperty()
 	prop.SetCode(code)
 	prop.SetName(name)
-	attr := PropertyAttrNone
-	if getRule == required {
-		attr |= PropertyAttrGet
-	}
-	if setRule == required {
-		attr |= PropertyAttrSet
-	}
-	if annoRule == required {
-		attr |= PropertyAttrAnno
-	}
-	prop.SetAttribute(attr)
+	prop.setReadAttribute(strAttrToPropertyAttr(getRule))
+	prop.setWriteAttribute(strAttrToPropertyAttr(setRule))
+	prop.setAnnoAttribute(strAttrToPropertyAttr(annoRule))
 	return prop
 }
 
