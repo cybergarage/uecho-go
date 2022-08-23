@@ -6,6 +6,7 @@ package echonet
 
 import (
 	"fmt"
+	"sort"
 	"time"
 )
 
@@ -61,8 +62,21 @@ func (propMap *PropertyMap) ClearAllProperties(prop *Property) {
 
 // Properties returns the all properties in the property map.
 func (propMap *PropertyMap) Properties() []*Property {
+	codes := make([]PropertyCode, len(propMap.properties))
+	n := 0
+	for code := range propMap.properties {
+		codes[n] = code
+		n++
+	}
+
+	sort.Slice(codes, func(i, j int) bool { return codes[i] < codes[j] })
+
 	props := []*Property{}
-	for _, prop := range propMap.properties {
+	for _, code := range codes {
+		prop, ok := propMap.properties[code]
+		if !ok {
+			continue
+		}
 		props = append(props, prop)
 	}
 	return props
