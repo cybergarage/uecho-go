@@ -52,15 +52,6 @@ func (propMap *PropertyMap) AddProperty(prop *Property) {
 	prop.SetParentObject(propMap.parentObject)
 }
 
-// CreateProperty creates a new property to the property map.
-func (propMap *PropertyMap) CreateProperty(propCode PropertyCode, propAttr PropertyAttr) {
-	prop := NewProperty()
-	prop.SetCode(propCode)
-	prop.SetAttribute(propAttr)
-	prop.SetParentObject(propMap.parentObject)
-	propMap.AddProperty(prop)
-}
-
 // ClearAllProperties removes all properties in the property map.
 func (propMap *PropertyMap) ClearAllProperties(prop *Property) {
 	for code := range propMap.properties {
@@ -98,25 +89,6 @@ func (propMap *PropertyMap) FindPropertyWait(code PropertyCode, waitTime time.Du
 // PropertyCount returns the property count in the property map.
 func (propMap *PropertyMap) PropertyCount() int {
 	return len(propMap.properties)
-}
-
-// SetPropertyAttribute sets an attribute to the existing property.
-func (propMap *PropertyMap) SetPropertyAttribute(propCode PropertyCode, propAttr PropertyAttr) error {
-	prop, ok := propMap.FindProperty(propCode)
-	if !ok {
-		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
-	}
-	prop.SetAttribute(propAttr)
-	return nil
-}
-
-// FindPropertyAttribute returns the specified property attribute in the property map.
-func (propMap *PropertyMap) FindPropertyAttribute(propCode PropertyCode) (PropertyAttr, error) {
-	prop, ok := propMap.FindProperty(propCode)
-	if !ok {
-		return PropertyAttrNone, fmt.Errorf(errorPropertyNotFound, uint(propCode))
-	}
-	return prop.Attribute(), nil
 }
 
 // SetPropertyData sets a data to the existing property.
