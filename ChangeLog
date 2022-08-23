@@ -3,14 +3,10 @@
 	* Support write and read request protocol (0x6E)
 
 2022-08-24 The uecho-go Authors <skonno@cybergarage.org>
-	* v1.1.1
-	* Update the standard ECHONET Lite device database to set the standard properties more correctly
-	* Remove depredated methods
-
-2022-08-23 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.0
 	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium
 	* Remove 'Get' prefix from all getter methods
+	* Extend Property::*Attr() to set the standard properties more correctly
 
 2022-08-20 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.0.2
