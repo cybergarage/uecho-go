@@ -54,7 +54,7 @@ vet: format
 	go vet ${PACKAGE_ROOT}
 
 lint: vet
-	golangci-lint run ${SOURCES}
+	-@golangci-lint run ${SOURCES}
 
 build: lint
 	go build -v ${PACKAGES}
