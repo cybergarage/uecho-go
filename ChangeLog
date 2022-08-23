@@ -2,6 +2,11 @@
 	* v1.2.0
 	* Support write and read request protocol (0x6E)
 
+2022-08-24 Satoshi Konno <skonno@cybergarage.org>
+	* v1.1.1
+	* Update the standard ECHONET Lite device database to set the standard properties more correctly
+	* Remove depredated methods
+
 2022-08-23 Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.0
 	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium
