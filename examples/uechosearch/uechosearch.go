@@ -38,13 +38,13 @@ func main() {
 	verbose := flag.Bool("v", false, "Enable verbose output")
 	flag.Parse()
 
-	// Setup logger
+	// Enables protocol logger
 
 	if *verbose {
 		log.SetSharedLogger(log.NewStdoutLogger(log.LevelTrace))
 	}
 
-	// Start a controller for Echonet Lite node
+	// Starts a controller for Echonet Lite node
 
 	ctrl := NewSearchController()
 
@@ -62,15 +62,18 @@ func main() {
 		return
 	}
 
-	// Wait node responses in the local network
+	// Waits node responses in the local network
 
 	time.Sleep(time.Second * 1)
 
-	// Output all found nodes
+	// Outputs all found nodes
 
 	db := echonet.GetStandardDatabase()
 
 	for i, node := range ctrl.Nodes() {
+
+		// Gets manufacture code.
+
 		manufactureName := unknown
 		req := echonet.NewMessage()
 		req.SetESV(echonet.ESVReadRequest)
@@ -86,24 +89,30 @@ func main() {
 			}
 		}
 
+		// Prints node data.
+
 		fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
 
 		for j, obj := range node.Objects() {
+			// Prints object data.
+
 			objName := obj.ClassName()
 			if len(objName) == 0 {
 				objName = unknown
 			}
 			fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
 
+			// Prints only read required properties with the current property data.
+
 			for _, prop := range obj.Properties() {
-				if !prop.IsReadable() {
+				if prop.IsReadRequired() {
 					continue
 				}
 				propName := prop.Name()
 				if len(propName) == 0 {
 					propName = "(" + unknown + ")"
 				}
-				propData := ""
+				propData := "--"
 				req := echonet.NewMessage()
 				req.SetESV(echonet.ESVReadRequest)
 				req.SetDEOJ(obj.Code())
@@ -119,7 +128,7 @@ func main() {
 		}
 	}
 
-	// Stop the controller
+	// Stops the controller
 
 	err = ctrl.Stop()
 	if err != nil {
