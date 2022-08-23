@@ -65,6 +65,7 @@ func (obj *SuperObject) addStandardProperties() {
 	if !ok {
 		return
 	}
+	obj.SetClassName(stdObj.ClassName())
 	for _, stdProp := range stdObj.Properties() {
 		obj.AddProperty(stdProp.Copy())
 	}
