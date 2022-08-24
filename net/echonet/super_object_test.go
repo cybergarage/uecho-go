@@ -10,12 +10,9 @@ import (
 )
 
 func TestSuperObject(t *testing.T) {
-	// db := GetStandardDatabase()
-	// std_obj, _ := db.FindManufacture()
 	obj := NewSuperObject()
 
 	mandatoryPropertyCodes := []PropertyCode{
-		// Profile
 		ProfileManufacturerCode,
 		ProfileGetPropertyMap,
 		ProfileSetPropertyMap,
@@ -29,5 +26,4 @@ func TestSuperObject(t *testing.T) {
 			}
 		})
 	}
-
 }
