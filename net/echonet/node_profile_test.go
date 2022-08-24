@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -18,9 +19,6 @@ func TestNewLocalNodeProfile(t *testing.T) {
 	mandatoryPropertyCodes := []PropertyCode{
 		// Profile
 		ProfileManufacturerCode,
-		ProfileGetPropertyMap,
-		ProfileSetPropertyMap,
-		ProfileAnnoPropertyMap,
 		// Node Profile
 		NodeProfileClassOperatingStatus,
 		NodeProfileClassVersionInformation,
@@ -33,8 +31,12 @@ func TestNewLocalNodeProfile(t *testing.T) {
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {
-		if !prof.HasProperty(propCode) {
-			t.Errorf(errorMandatoryPropertyNotFound, propCode)
-		}
+		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
+			if !prof.HasProperty(propCode) {
+				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+			}
+		})
 	}
+
+	testObjectPropertyMaps(t, prof.SuperObject.Object)
 }
