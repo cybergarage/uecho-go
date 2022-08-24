@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	NodeProfileObject                       = 0x0EF001
-	NodeProfileObjectReadOnly               = 0x0EF002
+	NodeProfileObjectCode                   = ObjectCode(0x0EF001)
+	NodeProfileObjectReadOnlyCode           = ObjectCode(0x0EF002)
 	NodeProfileClassCode                    = 0xF0
 	NodeProfileInstanceGeneralCode          = 0x01
 	NodeProfileInstanceTransmissionOnlyCode = 0x02
@@ -55,7 +55,7 @@ const (
 // NewLocalNodeProfile returns a new node profile object.
 func NewLocalNodeProfile() *Profile {
 	prof := NewProfile()
-	prof.SetCode(NodeProfileObject)
+	prof.SetCode(NodeProfileObjectCode)
 	return prof
 }
 

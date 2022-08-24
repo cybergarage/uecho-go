@@ -5,7 +5,7 @@
 package echonet
 
 const (
-	SuperObjectCode = 0x000000
+	SuperObjectCode = ObjectCode(0x000000)
 )
 
 const (
