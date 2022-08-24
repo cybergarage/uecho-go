@@ -128,20 +128,20 @@ func (prop *Property) Size() int {
 	return len(prop.data)
 }
 
-// setReadAttribute sets an attribute to the read property.
-func (prop *Property) setReadAttribute(attr PropertyAttr) *Property {
+// SetReadAttribute sets an attribute to the read property.
+func (prop *Property) SetReadAttribute(attr PropertyAttr) *Property {
 	prop.getAttr = attr
 	return prop
 }
 
-// setWriteAttribute sets an attribute to the write property.
-func (prop *Property) setWriteAttribute(attr PropertyAttr) *Property {
+// SetWriteAttribute sets an attribute to the write property.
+func (prop *Property) SetWriteAttribute(attr PropertyAttr) *Property {
 	prop.setAttr = attr
 	return prop
 }
 
-// setAnnoAttribute sets an attribute to the announce property.
-func (prop *Property) setAnnoAttribute(attr PropertyAttr) *Property {
+// SetAnnoAttribute sets an attribute to the announce property.
+func (prop *Property) SetAnnoAttribute(attr PropertyAttr) *Property {
 	prop.annoAttr = attr
 	return prop
 }
