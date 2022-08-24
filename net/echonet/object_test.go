@@ -21,8 +21,8 @@ func TestNewObject(t *testing.T) {
 
 func TestObjectCodes(t *testing.T) {
 	objCodes := []uint{
-		NodeProfileObject,
-		NodeProfileObjectReadOnly,
+		uint(NodeProfileObjectCode),
+		uint(NodeProfileObjectReadOnlyCode),
 	}
 
 	objCodeBytes := make([]byte, 3)
