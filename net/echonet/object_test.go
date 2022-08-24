@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	errorMandatoryPropertyNotFound = "Mandatory Property (%0X) Not Found"
-	errorInvalidGroupClassCode     = "Invalid Group Class Code (%0X)"
+	errorInvalidGroupClassCode = "Invalid Group Class Code (%0X)"
 )
 
 func TestNewObject(t *testing.T) {
