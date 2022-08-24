@@ -73,11 +73,11 @@ func (node *baseNode) FindProfile(code ObjectCode) (*Profile, error) {
 
 // NodeProfile returns a node profile in the node.
 func (node *baseNode) NodeProfile() (*Profile, error) {
-	prof, err := node.FindProfile(NodeProfileObject)
+	prof, err := node.FindProfile(NodeProfileObjectCode)
 	if err == nil {
 		return prof, nil
 	}
-	return node.FindProfile(NodeProfileObjectReadOnly)
+	return node.FindProfile(NodeProfileObjectReadOnlyCode)
 }
 
 // AddObject adds a new object into the node.
