@@ -44,6 +44,7 @@ func NewSuperObject() *SuperObject {
 		Object: NewObject(),
 	}
 	obj.SetCode(SuperObjectCode)
+	obj.updatePropertyMap()
 	return obj
 }
 
@@ -87,8 +88,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 		for n, propCode := range propCodes {
 			propMapData[n+1] = byte(propCode)
 		}
-		obj.SetPropertyData(propMapCode, propMapData)
-		return nil
+		return obj.SetPropertyData(propMapCode, propMapData)
 	}
 
 	// Description Format 2
@@ -104,7 +104,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
 	}
 
-	return nil
+	return obj.SetPropertyData(propMapCode, propMapData)
 }
 
 // updatePropertyMaps updates property maps  in the object.
@@ -125,11 +125,18 @@ func (obj *SuperObject) updatePropertyMap() error {
 		}
 	}
 
-	obj.setPropertyMapProperty(ObjectGetPropertyMap, getPropMapCodes)
-	obj.setPropertyMapProperty(ObjectSetPropertyMap, setPropMapCodes)
-	obj.setPropertyMapProperty(ObjectAnnoPropertyMap, annoPropMapCodes)
+	var lastErr error
+	if err := obj.setPropertyMapProperty(ObjectGetPropertyMap, getPropMapCodes); err != nil {
+		lastErr = err
+	}
+	if err := obj.setPropertyMapProperty(ObjectSetPropertyMap, setPropMapCodes); err != nil {
+		lastErr = err
+	}
+	if err := obj.setPropertyMapProperty(ObjectAnnoPropertyMap, annoPropMapCodes); err != nil {
+		lastErr = err
+	}
 
-	return nil
+	return lastErr
 }
 
 // SetOperatingStatus sets a operating status to the object.
