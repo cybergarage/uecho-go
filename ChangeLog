@@ -2,12 +2,9 @@
 	* v1.2.0
 	* Support write and read request protocol (0x6E)
 
-2022-08-xx Satoshi Konno <skonno@cybergarage.org>
-	* v1.1.1
-	* Fix to set correct description format 2 property maps
-
 2022-08-25 Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.0
+	* Fix to set correct description format 2 property maps
 	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium
 	* Remove 'Get' prefix from all getter methods
 	* Extend Property::*Attribute() to set the standard properties more correctly
