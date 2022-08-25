@@ -47,8 +47,20 @@ func testObjectPropertyMaps(t *testing.T, obj *Object) {
 			if !ok {
 				t.Errorf(errorMandatoryPropertyNotFound, propCode)
 			}
-			if len(prop.Data()) == 0 {
+			propData := prop.Data()
+			if len(propData) < 1 {
 				t.Errorf(errorMandatoryPropertyDataNotFound, propCode)
+			}
+			propCnt := int(propData[0])
+			if propCnt <= PropertyMapFormat1MaxSize {
+				for n, code := range propData {
+					if n == 0 {
+						continue
+					}
+					if code == 0x00 {
+						t.Errorf("[%03d] %02X", n, code)
+					}
+				}
 			}
 		})
 	}
