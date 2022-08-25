@@ -107,14 +107,23 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 	propMapData[0] = byte(len(propCodes))
 
 	for _, propCode := range propCodes {
-		if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
+		propCodeIdx, propCodeBit, ok := propCodeToFormat2(propCode)
+		if !ok {
 			continue
 		}
-		propByteIdx := ((propCode - PropertyCodeMin) & 0x0F) + 1
-		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
+		propMapData[propCodeIdx] |= byte((0x01 << propCodeBit) & 0x0F)
 	}
 
 	return obj.SetPropertyData(propMapCode, propMapData)
+}
+
+func propCodeToFormat2(propCode PropertyCode) (int, int, bool) {
+	if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
+		return 0, 0, false
+	}
+	propCodeIdx := int(((propCode - PropertyCodeMin) & 0x0F)) + 1
+	propCodeBit := (((int(propCode-PropertyCodeMin) & 0xF0) >> 4) & 0x0F)
+	return propCodeIdx, propCodeBit, true
 }
 
 // updatePropertyMaps updates property maps  in the object.
