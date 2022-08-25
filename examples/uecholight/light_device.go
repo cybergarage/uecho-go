@@ -9,7 +9,7 @@ import (
 
 func NewLightDevice() *echonet.Device {
 
-	dev := echonet.NewStandardDeviceWithCode(LightObjectCode)
+	dev := echonet.NewDeviceWithCode(LightObjectCode)
 
 	// TODO : Set your manufacture code
 	dev.SetManufacturerCode(echonet.DeviceManufacturerUnknown)
