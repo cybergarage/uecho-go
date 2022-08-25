@@ -4,7 +4,7 @@
 
 package echonet
 
-// NewStandardObjectWithCodes returns a new object of the specified object codes.
+// NewStandardObjectWithCodes returns a new standard object of the specified object codes.
 func NewStandardObjectWithCodes(codes []byte) (interface{}, error) {
 	objCode, err := BytesToObjectCode(codes)
 	if err != nil {
@@ -16,4 +16,9 @@ func NewStandardObjectWithCodes(codes []byte) (interface{}, error) {
 		return obj, nil
 	}
 	return NewStandardDeviceWithCodes(codes)
+}
+
+// NewStandardObjectWithCode returns a new standard object of the specified object code.
+func NewStandardObjectWithCode(code ObjectCode) (interface{}, error) {
+	return NewStandardObjectWithCodes(ObjectCodeToBytes(code))
 }
