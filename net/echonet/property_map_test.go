@@ -130,7 +130,7 @@ func TestObjectPropertyMap(t *testing.T) {
 	objs := []*Object{
 		NewSuperObject().Object,
 		// NewLocalNodeProfile().SuperObject.Object,
-		NewStandardDeviceWithCode(0x03CE).SuperObject.Object,
+		NewDeviceWithCode(0x03CE).SuperObject.Object,
 	}
 	// objCodes := []ObjectCode{SuperObjectCode}
 	for _, obj := range objs {
