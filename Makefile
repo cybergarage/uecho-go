@@ -13,6 +13,7 @@ SHELL := bash
 #PREFIX?=$(shell pwd)
 #GOPATH:=$(shell pwd)
 #export GOPATH
+export CGO_ENABLED=0
 
 PACKAGE_NAME=net/echonet
 

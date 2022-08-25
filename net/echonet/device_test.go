@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -17,14 +18,15 @@ func TestNewDevice(t *testing.T) {
 		DeviceStandardVersion,
 		DeviceFaultStatus,
 		DeviceManufacturerCode,
-		DeviceGetPropertyMap,
-		DeviceSetPropertyMap,
-		DeviceAnnoPropertyMap,
 	}
 
 	for _, propCode := range mandatoryPropertyCodes {
-		if !dev.HasProperty(propCode) {
-			t.Errorf(errorMandatoryPropertyNotFound, propCode)
-		}
+		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
+			if !dev.HasProperty(propCode) {
+				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+			}
+		})
 	}
+
+	testObjectPropertyMaps(t, dev.SuperObject.Object)
 }

@@ -16,7 +16,7 @@ const (
 	PropertyCodeMin           = 0x80
 	PropertyCodeMax           = 0xFF
 	PropertyMapFormat1MaxSize = 15
-	PropertyMapFormat2Size    = 18
+	PropertyMapFormat2Size    = 17
 	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
 )
 
