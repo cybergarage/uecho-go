@@ -4,7 +4,7 @@
 
 2022-08-xx Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.1
-	* Fix SuperObject::setPropertyMapProperty() to set correct description format 2 property maps
+	* Fix to set correct description format 2 property maps
 
 2022-08-24 Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.0
