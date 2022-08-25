@@ -32,3 +32,10 @@ func BytesToObjectCode(codes []byte) (ObjectCode, error) {
 	}
 	return ObjectCode(encoding.ByteToInteger(codes)), nil
 }
+
+// ObjectCodeToBytes returns a object byte array with the the specified object code.
+func ObjectCodeToBytes(code ObjectCode) []byte {
+	codes := make([]byte, 3)
+	encoding.IntegerToByte(uint(code), codes)
+	return codes
+}

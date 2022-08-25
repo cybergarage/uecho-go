@@ -96,6 +96,24 @@ func NewDevice() *Device {
 	return dev
 }
 
+// NewDeviceWithCodes returns a new device of the specified object codes.
+func NewDeviceWithCodes(codes []byte) (*Device, error) {
+	objCode, err := BytesToObjectCode(codes)
+	if err != nil {
+		return nil, err
+	}
+	obj := NewDevice()
+	obj.SetCode(objCode)
+	return obj, nil
+}
+
+// NewDeviceWithCode returns a new device of the specified object code.
+func NewDeviceWithCode(code ObjectCode) *Device {
+	obj := NewDevice()
+	obj.SetCode(code)
+	return obj
+}
+
 // SetInstallationLocation sets a installation location to the device.
 func (dev *Device) SetInstallationLocation(locByte byte) error {
 	return dev.SetPropertyByteData(DeviceInstallationLocation, locByte)

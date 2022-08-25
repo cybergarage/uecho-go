@@ -57,6 +57,11 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 	return obj, nil
 }
 
+// NewObjectWithCode returns a new object of the specified object code.
+func NewObjectWithCode(code ObjectCode) (interface{}, error) {
+	return NewObjectWithCodes(ObjectCodeToBytes(code))
+}
+
 // SetClassName sets a class name to the object.
 func (obj *Object) SetClassName(name string) {
 	obj.clsName = name

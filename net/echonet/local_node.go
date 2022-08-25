@@ -40,7 +40,7 @@ func NewLocalNode() *LocalNode {
 		listener:         nil,
 	}
 
-	node.AddProfile(NewLocalNodeProfile())
+	node.AddProfile(NewNodeProfile())
 	node.server.SetMessageHandler(node)
 
 	return node
