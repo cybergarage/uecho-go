@@ -30,6 +30,7 @@ linters:
     - forbidigo
     - scopelint
     - gochecknoinits
+    - interfacebloat
 
 linters-settings:
   gocritic:
