@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func TestNewLocalNodeProfile(t *testing.T) {
-	prof := NewLocalNodeProfile()
+func TestNewNodeProfile(t *testing.T) {
+	prof := NewNodeProfile()
 
 	if !prof.IsProfile() {
 		t.Errorf(errorInvalidGroupClassCode, prof.ClassGroupCode())
