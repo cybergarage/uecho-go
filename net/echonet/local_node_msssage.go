@@ -27,7 +27,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
 	msg.SetTID(node.NextTID())
-	msg.SetDEOJ(NodeProfileObject)
+	msg.SetDEOJ(NodeProfileObjectCode)
 	return node.server.AnnounceMessage(msg)
 }
 
