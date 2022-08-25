@@ -129,7 +129,7 @@ func TestPropertyMapFormat2ToCode(t *testing.T) {
 func TestObjectPropertyMap(t *testing.T) {
 	objs := []*Object{
 		NewSuperObject().Object,
-		// NewLocalNodeProfile().SuperObject.Object,
+		// NewNodeProfile().SuperObject.Object,
 		NewDeviceWithCode(0x03CE).SuperObject.Object,
 	}
 	// objCodes := []ObjectCode{SuperObjectCode}
