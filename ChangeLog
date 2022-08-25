@@ -4,7 +4,7 @@
 
 2022-08-xx The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.1
-	* Fix SuperObject::setPropertyMapProperty() to set correct description format 2 property maps
+	* Fix to set correct description format 2 property maps
 
 2022-08-24 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.0
