@@ -129,6 +129,8 @@ func TestPropertyMapFormat2ToCode(t *testing.T) {
 func TestObjectPropertyMap(t *testing.T) {
 	objs := []*Object{
 		NewSuperObject().Object,
+		// NewLocalNodeProfile().SuperObject.Object,
+		NewStandardDeviceWithCode(0x03CE).SuperObject.Object,
 	}
 	// objCodes := []ObjectCode{SuperObjectCode}
 	for _, obj := range objs {
@@ -136,6 +138,54 @@ func TestObjectPropertyMap(t *testing.T) {
 			propMapCodes := []PropertyCode{ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap}
 			for _, propMapCode := range propMapCodes {
 				t.Run(fmt.Sprintf("%02X", propMapCode), func(t *testing.T) {
+					expectedCodes := make([]PropertyCode, 0)
+					for _, prop := range obj.Properties() {
+						switch propMapCode {
+						case ObjectGetPropertyMap:
+							if prop.IsReadable() {
+								expectedCodes = append(expectedCodes, prop.Code())
+							}
+						case ObjectSetPropertyMap:
+							if prop.IsWritable() {
+								expectedCodes = append(expectedCodes, prop.Code())
+							}
+						case ObjectAnnoPropertyMap:
+							if prop.IsAnnounceable() {
+								expectedCodes = append(expectedCodes, prop.Code())
+							}
+						}
+					}
+					prop, ok := obj.FindProperty(propMapCode)
+					if !ok {
+						t.Errorf("%02X is not found", propMapCode)
+						return
+					}
+					propCodes, err := prop.PropertyMapData()
+					if err != nil {
+						t.Error(err)
+						return
+					}
+					propMapEquals := func(m, o []PropertyCode) bool {
+						if len(m) != len(o) {
+							return false
+						}
+						for _, mcode := range m {
+							hasCode := false
+							for _, ocode := range o {
+								if ocode == mcode {
+									hasCode = true
+									break
+								}
+							}
+							if !hasCode {
+								return false
+							}
+						}
+						return true
+					}
+					if !propMapEquals(propCodes, expectedCodes) {
+						t.Errorf("%v != %v", propCodes, expectedCodes)
+					}
 				})
 			}
 		})

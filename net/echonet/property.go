@@ -6,6 +6,7 @@ package echonet
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
@@ -16,13 +17,15 @@ const (
 	PropertyCodeMin           = 0x80
 	PropertyCodeMax           = 0xFF
 	PropertyMapFormat1MaxSize = 15
-	PropertyMapFormat2Size    = 17
-	PropertyMapFormatMaxSize  = PropertyMapFormat2Size
+	PropertyMapFormat2MapSize = 16
+	PropertyMapFormatMaxSize  = PropertyMapFormat2MapSize + 1
 )
 
 const (
-	errorPropertyNoParentNode = "Property has no parent node"
-	errorPropertyNoData       = "Property has no data"
+	errorPropertyNoParentNode   = "property has no parent node"
+	errorPropertyNoData         = "property has no data"
+	errorInvalidPropertyCode    = "invalid property code: %02X"
+	errorInvalidPropertyMapData = "invalid property map data: %0s"
 )
 
 // PropertyCode is a type for property code.
@@ -300,6 +303,38 @@ func (prop *Property) IntegerData() (uint, error) {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
 	return encoding.ByteToInteger(prop.Data()), nil
+}
+
+// PropertyMapData returns a property map.
+func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
+	switch prop.code {
+	case ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap:
+		if len(prop.data) == 0 {
+			return nil, fmt.Errorf(errorInvalidPropertyMapData, "")
+		}
+		propMapCount := int(prop.data[0])
+		switch {
+		case isPropertyMapDescriptionFormat1(propMapCount):
+			if len(prop.data) != (propMapCount + 1) {
+				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
+			}
+			codes := make([]PropertyCode, 0)
+			for n := 0; n < propMapCount; n++ {
+				codes = append(codes, PropertyCode(prop.data[n+1]))
+			}
+			return codes, nil
+		case isPropertyMapDescriptionFormat2(propMapCount):
+			if len(prop.data) != (PropertyMapFormat2MapSize + 1) {
+				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
+			}
+			codes := make([]PropertyCode, 0)
+			for n := 0; n < PropertyMapFormat2MapSize; n++ {
+				codes = append(codes, propertyMapFormat2ByteToCodes(n, prop.data[n+1])...)
+			}
+			return codes, nil
+		}
+	}
+	return nil, fmt.Errorf(errorInvalidPropertyCode, prop.code)
 }
 
 // announce announces the property.
