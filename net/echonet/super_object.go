@@ -92,7 +92,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 
 	// Description Format 1
 
-	if len(propCodes) <= PropertyMapFormat1MaxSize {
+	if isPropertyMapDescriptionFormat2(len(propCodes)) {
 		propMapData := make([]byte, len(propCodes)+1)
 		propMapData[0] = byte(len(propCodes))
 		for n, propCode := range propCodes {
@@ -115,15 +115,6 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 	}
 
 	return obj.SetPropertyData(propMapCode, propMapData)
-}
-
-func propCodeToFormat2(propCode PropertyCode) (int, int, bool) {
-	if (propCode < PropertyCodeMin) || (PropertyCodeMax < propCode) {
-		return 0, 0, false
-	}
-	propCodeIdx := int(((propCode - PropertyCodeMin) & 0x0F)) + 1
-	propCodeBit := (((int(propCode-PropertyCodeMin) & 0xF0) >> 4) & 0x0F)
-	return propCodeIdx, propCodeBit, true
 }
 
 // updatePropertyMaps updates property maps  in the object.
