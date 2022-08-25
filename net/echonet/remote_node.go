@@ -78,7 +78,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 	for n := 0; n < instanceCount; n++ {
 		objCodes := make([]byte, ObjectCodeSize)
 		copy(objCodes, propData[((n*ObjectCodeSize)+1):])
-		obj, err := NewStandardObjectWithCodes(objCodes)
+		obj, err := NewObjectWithCodes(objCodes)
 		if err != nil {
 			return nil, err
 		}
