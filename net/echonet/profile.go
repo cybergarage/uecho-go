@@ -47,10 +47,10 @@ func isProfileObjectCode(code byte) bool {
 
 // isNodeProfileObjectCode returns true when the code is the node profile code, otherwise false.
 func isNodeProfileObjectCode(code ObjectCode) bool {
-	if code == NodeProfileObject {
+	if code == NodeProfileObjectCode {
 		return true
 	}
-	if code == NodeProfileObjectReadOnly {
+	if code == NodeProfileObjectReadOnlyCode {
 		return true
 	}
 	return false

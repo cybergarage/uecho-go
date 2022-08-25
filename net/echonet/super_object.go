@@ -4,8 +4,14 @@
 
 package echonet
 
+import "fmt"
+
 const (
-	SuperObjectCode = 0x000000
+	SuperObjectCode = ObjectCode(0x000000)
+)
+
+const (
+	errorPropertyMapNotFound = "property map (%2X) not found"
 )
 
 const (
@@ -44,6 +50,7 @@ func NewSuperObject() *SuperObject {
 		Object: NewObject(),
 	}
 	obj.SetCode(SuperObjectCode)
+	obj.updatePropertyMap()
 	return obj
 }
 
@@ -79,6 +86,10 @@ func (obj *SuperObject) AddProperty(prop *Property) {
 
 // setPropertyMapProperty sets a specified property map to the object.
 func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
+	if !obj.HasProperty(propMapCode) {
+		return fmt.Errorf(errorPropertyMapNotFound, propMapCode)
+	}
+
 	// Description Format 1
 
 	if len(propCodes) <= PropertyMapFormat1MaxSize {
@@ -87,8 +98,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 		for n, propCode := range propCodes {
 			propMapData[n+1] = byte(propCode)
 		}
-		obj.SetPropertyData(propMapCode, propMapData)
-		return nil
+		return obj.SetPropertyData(propMapCode, propMapData)
 	}
 
 	// Description Format 2
@@ -104,32 +114,41 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 		propMapData[propByteIdx] |= byte(((int(propCode-PropertyCodeMin) & 0xF0) >> 8) & 0x0F)
 	}
 
-	return nil
+	return obj.SetPropertyData(propMapCode, propMapData)
 }
 
 // updatePropertyMaps updates property maps  in the object.
 func (obj *SuperObject) updatePropertyMap() error {
-	getPropMapCodes := make([]PropertyCode, 0)
-	setPropMapCodes := make([]PropertyCode, 0)
-	annoPropMapCodes := make([]PropertyCode, 0)
+	propMaps := []struct {
+		code  PropertyCode
+		codes []PropertyCode
+	}{
+		{code: ObjectGetPropertyMap, codes: make([]PropertyCode, 0)},
+		{code: ObjectSetPropertyMap, codes: make([]PropertyCode, 0)},
+		{code: ObjectAnnoPropertyMap, codes: make([]PropertyCode, 0)},
+	}
 
 	for _, prop := range obj.Properties() {
+		propCode := prop.Code()
 		if prop.IsReadable() {
-			getPropMapCodes = append(getPropMapCodes, prop.Code())
+			propMaps[0].codes = append(propMaps[0].codes, propCode)
 		}
 		if prop.IsWritable() {
-			setPropMapCodes = append(setPropMapCodes, prop.Code())
+			propMaps[1].codes = append(propMaps[1].codes, propCode)
 		}
 		if prop.IsAnnounceable() {
-			annoPropMapCodes = append(annoPropMapCodes, prop.Code())
+			propMaps[2].codes = append(propMaps[2].codes, propCode)
 		}
 	}
 
-	obj.setPropertyMapProperty(ObjectGetPropertyMap, getPropMapCodes)
-	obj.setPropertyMapProperty(ObjectSetPropertyMap, setPropMapCodes)
-	obj.setPropertyMapProperty(ObjectAnnoPropertyMap, annoPropMapCodes)
+	var lastErr error
+	for _, propMap := range propMaps {
+		if err := obj.setPropertyMapProperty(propMap.code, propMap.codes); err != nil {
+			lastErr = err
+		}
+	}
 
-	return nil
+	return lastErr
 }
 
 // SetOperatingStatus sets a operating status to the object.
