@@ -103,11 +103,11 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 
 	// Description Format 2
 
-	propMapData := make([]byte, PropertyMapFormat2Size)
+	propMapData := make([]byte, (PropertyMapFormat2MapSize + 1))
 	propMapData[0] = byte(len(propCodes))
 
 	for _, propCode := range propCodes {
-		propCodeIdx, propCodeBit, ok := propCodeToFormat2(propCode)
+		propCodeIdx, propCodeBit, ok := propertyMapCodeToFormat2(propCode)
 		if !ok {
 			continue
 		}
