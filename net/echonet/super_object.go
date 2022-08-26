@@ -49,7 +49,8 @@ func NewSuperObject() *SuperObject {
 	obj := &SuperObject{
 		Object: NewObject(),
 	}
-	obj.SetCode(SuperObjectCode)
+	obj.Object.SetCode(SuperObjectCode)
+	obj.addStandardPropertiesWithCode(SuperObjectCode)
 	obj.updatePropertyMap()
 	return obj
 }
