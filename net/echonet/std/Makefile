@@ -15,8 +15,8 @@
 SHELL := bash
 
 SOURCE_FILES= \
-	../std_manufacturers.go \
-	../std_mra_objects.go
+	../database_manufacturers.go \
+	../database_mra_objects.go
 
 .PHONY: all ${SOURCE_FILES} clean
 
@@ -33,7 +33,7 @@ MANUFACTURE_XLSX=list_code_e.xlsx
 MANUFACTURE_CSV=list_code_e.csv
 MANUFACTURE_LIST_URL=https://echonet.jp/wp/wp-content/uploads/pdf/General/Echonet/ManufacturerCode_en/${MANUFACTURE_XLSX}
 
-../std_manufacturers.go : ${MANUFACTURE_CSV}
+../database_manufacturers.go : ${MANUFACTURE_CSV}
 	@./manufacturers.pl ${MANUFACTURE_CSV} > $@
 
 ${MANUFACTURE_XLSX}:
@@ -48,5 +48,5 @@ ${MANUFACTURE_CSV}: ${MANUFACTURE_XLSX}
 
 MRA_JSON_DIR=MRA_en_V1.1.1
 
-../std_mra_objects.go :
+../database_mra_objects.go :
 	@./objects_mra.pl ${MRA_JSON_DIR} > $@
