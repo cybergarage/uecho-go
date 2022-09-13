@@ -167,7 +167,7 @@ func (node *LocalNode) Equals(otherNode Node) bool {
 func (node *LocalNode) updateNodeProfile() {
 	nodeProf, err := node.NodeProfile()
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf(err.Error())
 		return
 	}
 
