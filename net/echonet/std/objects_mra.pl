@@ -41,9 +41,9 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 	prop := NewProperty()
 	prop.SetCode(code)
 	prop.SetName(name)
-	prop.setReadAttribute(strAttrToPropertyAttr(getRule))
-	prop.setWriteAttribute(strAttrToPropertyAttr(setRule))
-	prop.setAnnoAttribute(strAttrToPropertyAttr(annoRule))
+	prop.SetReadAttribute(strAttrToPropertyAttr(getRule))
+	prop.SetWriteAttribute(strAttrToPropertyAttr(setRule))
+	prop.SetAnnoAttribute(strAttrToPropertyAttr(annoRule))
 	return prop
 }
 
