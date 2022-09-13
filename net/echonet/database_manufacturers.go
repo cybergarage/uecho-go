@@ -49,6 +49,7 @@ func (db *StandardDatabase) initManufactures() {
 	db.addManufacture(NewManufacture(0x0000DD, "EneStone Corporation"))
 	db.addManufacture(NewManufacture(0x000055, "FAMILYNET JAPAN CORPORATION"))
 	db.addManufacture(NewManufacture(0x0000F6, "Field Logic Inc."))
+	db.addManufacture(NewManufacture(0x00012F, "FORMOSA BIO AND ENERGY CORP JAPAN"))
 	db.addManufacture(NewManufacture(0x0000CB, "Fuji Electric Co.,Ltd"))
 	db.addManufacture(NewManufacture(0x0000FC, "FUJI INDUSTRIAL CO.,Ltd."))
 	db.addManufacture(NewManufacture(0x000051, "Fuji IT Co.,Ltd."))
