@@ -1,5 +1,5 @@
 module github.com/cybergarage/uecho-go
 
-go 1.18
+go 1.19
 
-require github.com/cybergarage/go-logger v1.3.0
+require github.com/cybergarage/go-logger v1.3.2
