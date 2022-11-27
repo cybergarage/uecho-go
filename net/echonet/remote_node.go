@@ -90,6 +90,8 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 		}
 	}
 
+	node.AddProfile(NewNodeProfile())
+
 	return node, nil
 }
 
