@@ -32,7 +32,7 @@ const (
 const (
 	ProfileFaultEncountered    = 0x41
 	ProfileNoFaultEncountered  = 0x42
-	ProfileManufacturerUnknown = ObjectManufacturerUnknown
+	ProfileManufacturerUnknown = ObjectManufacturerExperimental
 )
 
 // Profile represents an instance for a profile object of Echonet.
