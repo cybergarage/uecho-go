@@ -5,7 +5,7 @@
 package echonet
 
 const (
-	NodeManufacturerUnknown = ObjectManufacturerUnknown
+	NodeManufacturerUnknown = ObjectManufacturerExperimental
 )
 
 // Node is an interface for Echonet node.

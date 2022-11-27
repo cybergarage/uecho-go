@@ -36,7 +36,7 @@ const (
 )
 
 const (
-	ObjectManufacturerUnknown = ObjectManufacturerEvaluationCodeMin
+	ObjectManufacturerExperimental = 0xFFFFFF
 )
 
 // SuperObject represents a super object of Echonet device and profile objects.

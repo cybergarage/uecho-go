@@ -34,7 +34,7 @@ import (
 
 func main() {
 	verbose := flag.Bool("v", false, "Enable verbose output")
-	manufacturerCode := flag.Int("m", echonet.ObjectManufacturerUnknown, "Set manufacturer code")
+	manufacturerCode := flag.Int("m", echonet.ObjectManufacturerExperimental, "Set manufacturer code")
 	flag.Parse()
 
 	// Setup logger
