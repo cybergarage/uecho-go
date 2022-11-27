@@ -219,4 +219,6 @@ func (db *StandardDatabase) initManufactures() {
 	db.addManufacture(NewManufacture(0x00009E, "YASKAWA ELECTRIC CORPORATION"))
 	db.addManufacture(NewManufacture(0x00007A, "ZUKEN ELMIC,INC."))
 	db.addManufacture(NewManufacture(0x0000B4, "4R Energy Corporation"))
+	db.addManufacture(NewManufacture(0xFFFFFF, "Experimental"))
+	db.addManufacture(NewManufacture(0xFFFFFE, "Undefined"))
 }
