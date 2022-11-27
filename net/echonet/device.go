@@ -76,7 +76,7 @@ const (
 	DeviceFaultOccurred               = 0x41
 	DeviceNoFaultOccurred             = 0x42
 	DeviceInstallationLocationUnknown = 0x00
-	DeviceManufacturerUnknown         = ObjectManufacturerUnknown
+	DeviceManufacturerExperimental    = ObjectManufacturerUnknown
 )
 
 const (
