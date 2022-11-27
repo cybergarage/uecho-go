@@ -7,7 +7,7 @@ package echonet
 import "github.com/cybergarage/uecho-go/net/echonet/protocol"
 
 const (
-	testNodeManufacturerCode            = NodeManufacturerUnknown + 1
+	testNodeManufacturerCode            = NodeManufacturerExperimental + 1
 	testLightDeviceCode                 = 0x029101
 	testLightPropertyPowerCode          = 0x80
 	testLightPropertyPowerOn            = 0x30

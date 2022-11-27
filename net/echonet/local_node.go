@@ -32,7 +32,7 @@ func NewLocalNode() *LocalNode {
 		baseNode:         newBaseNode(),
 		server:           newServer(),
 		Mutex:            new(sync.Mutex),
-		manufacturerCode: NodeManufacturerUnknown,
+		manufacturerCode: NodeManufacturerExperimental,
 		Config:           NewDefaultConfig(),
 		lastTID:          TIDMin,
 		postResponseCh:   nil,
