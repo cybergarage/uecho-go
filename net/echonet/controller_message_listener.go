@@ -69,9 +69,9 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 // parseNodeProfileMessage parses the specified message to check new objects.
 func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
 	// Ignores the controller's own messages.
-	if ctrl.isOwnMessage(msg) {
-		return
-	}
+	// if ctrl.isOwnMessage(msg) {
+	// 	return
+	// }
 
 	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.TransportConfig)
 	if err != nil {
