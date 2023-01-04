@@ -16,10 +16,10 @@ const (
 // ProtocolMessageReceived is a listener for the server.
 func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	// Ignore own messages
-	msgNode := NewRemoteNodeWithRequestMessage(msg)
-	if msgNode.Equals(node) {
-		return nil, nil
-	}
+	// msgNode := NewRemoteNodeWithRequestMessage(msg)
+	// if msgNode.Equals(node) {
+	// 	return nil, nil
+	// }
 
 	if node.isResponseMessageWaiting() {
 		if node.isResponseMessage(msg) {
