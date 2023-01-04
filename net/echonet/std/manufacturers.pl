@@ -15,6 +15,7 @@ print<<HEADER;
 
 package echonet
 
+// nolint: maintidx
 func (db *StandardDatabase) initManufactures() {
 HEADER
 
@@ -38,6 +39,8 @@ while(<MANLIST>){
   }
   printf("db.addManufacture(NewManufacture(0x%s, %s))\n", $code, $name);
 }
+printf("db.addManufacture(NewManufacture(0xFFFFFF, \"Experimental\"))\n");
+printf("db.addManufacture(NewManufacture(0xFFFFFE, \"Undefined\"))\n");
 close(MANLIST);
 print<<FOTTER;
 }
