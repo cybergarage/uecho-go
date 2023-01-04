@@ -124,6 +124,9 @@ func (node *LocalNode) isResponseMessage(msg *protocol.Message) bool {
 	if !node.isResponseMessageWaiting() {
 		return false
 	}
+	if msg.Equals(node.postRequestMsg) {
+		return false
+	}
 	if msg.TID() != node.postRequestMsg.TID() {
 		return false
 	}
