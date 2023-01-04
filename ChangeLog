@@ -2,8 +2,9 @@
 	* v1.2.0
 	* Support write and read request protocol (0x6E)
 
-2023-01-04 The uecho-go Authors <skonno@cybergarage.org>
+2023-01-05 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.1
+	* Update the standard ECHONET Lite device and manufacture databases
 	* Update logger
 
 2022-08-23 The uecho-go Authors <skonno@cybergarage.org>
