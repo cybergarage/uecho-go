@@ -42,7 +42,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 
 	resMsg, err := node.createResponseMessageForRequestMessage(msg)
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf(err.Error())
 	}
 
 	return resMsg, err
