@@ -2,8 +2,9 @@
 	* v1.2.0
 	* Support write and read request protocol (0x6E)
 
-2023-01-04 Satoshi Konno <skonno@cybergarage.org>
+2023-01-05 Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.1
+	* Update the standard ECHONET Lite device and manufacture databases
 	* Update logger
 
 2022-08-23 Satoshi Konno <skonno@cybergarage.org>
