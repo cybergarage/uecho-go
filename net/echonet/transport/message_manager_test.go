@@ -67,7 +67,7 @@ func (mgr *testMessageManager) ProtocolMessageReceived(msg *protocol.Message) (*
 			// log.Trace("lastNotificationMessage (O) : %s", copyMsg.String())
 			mgr.lastNotificationMessage = copyMsg
 		} else {
-			log.Error("ProtocolMessageReceived (X) : %s", msg.String())
+			log.Errorf("ProtocolMessageReceived (X) : %s", msg.String())
 		}
 	} else {
 		// log.Trace("ProtocolMessageReceived (-) : %s", msg.String())
@@ -125,7 +125,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 			// log.Trace("CMP(U) : %s ?= %s", msg.String(), dstLastMsg.String())
 
 			if !bytes.Equal(msg.Bytes(), dstLastMsg.Bytes()) {
-				log.Error("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
+				log.Errorf("CMP(U) : %s != %s", msg.String(), dstLastMsg.String())
 				t.Errorf("CMP(U) : %s != %s", msg, dstLastMsg)
 			}
 
