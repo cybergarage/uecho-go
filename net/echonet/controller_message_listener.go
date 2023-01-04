@@ -38,11 +38,11 @@ func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
 // NodeMessageReceived is a listener of the local node.
 func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 	// Ignores the controller's own messages.
-	if ctrl.isOwnMessage(msg) {
-		return nil
-	}
+	// if ctrl.isOwnMessage(msg) {
+	// 	return nil
+	// }
 
-	// log.Trace(logControllerListenerFormat, msg.String()))
+	// log.Trace(logControllerListenerFormat, msg.String())
 
 	// NodeProfile message ?
 	isNodeProfileMessage := func(msg *protocol.Message) bool {
