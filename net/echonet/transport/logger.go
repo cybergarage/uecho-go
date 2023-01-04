@@ -25,11 +25,11 @@ func outputSocketLog(logLevel log.Level, socketType string, socketDirection int,
 	switch socketDirection {
 	case logSocketDirectionWrite:
 		{
-			log.Output(logLevel, logSocketWriteFormat, socketType, msgFrom, msgTo, msgSize, msg)
+			log.Outputf(logLevel, logSocketWriteFormat, socketType, msgFrom, msgTo, msgSize, msg)
 		}
 	case logSocketDirectionRead:
 		{
-			log.Output(logLevel, logSocketReadFormat, socketType, msgTo, msgFrom, msgSize, msg)
+			log.Outputf(logLevel, logSocketReadFormat, socketType, msgTo, msgFrom, msgSize, msg)
 		}
 	}
 }
