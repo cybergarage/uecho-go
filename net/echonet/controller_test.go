@@ -52,6 +52,13 @@ func TestNewController(t *testing.T) {
 		t.Error(err)
 	}
 
+	err = ctrl.SearchAllObjects()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// time.Sleep(time.Second * 120)
+
 	err = ctrl.Stop()
 	if err != nil {
 		t.Error(err)
