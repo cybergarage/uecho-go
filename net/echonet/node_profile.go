@@ -67,6 +67,7 @@ func (prof *Profile) addNodeProfileMandatoryProperties() {
 	if !ok {
 		return
 	}
+	prof.SetClassName(stdObj.ClassName())
 	for _, stdProp := range stdObj.Properties() {
 		prof.AddProperty(stdProp.Copy())
 	}
