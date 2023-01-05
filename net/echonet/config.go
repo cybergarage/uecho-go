@@ -20,7 +20,7 @@ type Config struct {
 // NewDefaultConfig returns a default configuration.
 func NewDefaultConfig() *Config {
 	conf := &Config{
-		SelfMessageEnabled: false,
+		SelfMessageEnabled: true,
 		TransportConfig:    transport.NewDefaultConfig(),
 	}
 	return conf
