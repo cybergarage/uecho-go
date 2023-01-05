@@ -4,6 +4,7 @@
 
 2023-01-05 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.1
+	* Update to enable self messages
 	* Update the standard ECHONET Lite device and manufacture databases
 	* Update logger
 
