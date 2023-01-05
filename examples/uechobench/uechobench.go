@@ -3,10 +3,10 @@
 // license that can be found in the LICENSE file.
 
 /*
-uechosearch is a search utility for Echonet Lite.
+uechobench is a search utility for Echonet Lite.
 
 	NAME
-	uechosearch
+	uechobench
 
 	SYNOPSIS
 	uechosearch [OPTIONS]
@@ -35,6 +35,7 @@ const (
 )
 
 func main() {
+	numRepeat := flag.Int("n", 1, "Number of repeat")
 	verbose := flag.Bool("v", false, "Enable verbose output")
 	flag.Parse()
 
@@ -70,53 +71,55 @@ func main() {
 
 	db := echonet.GetStandardDatabase()
 
-	for i, node := range ctrl.Nodes() {
-		manufactureName := unknown
-		req := echonet.NewMessage()
-		req.SetESV(echonet.ESVReadRequest)
-		req.SetDEOJ(0x0EF001)
-		req.AddProperty(echonet.NewProperty().SetCode(0x8A))
-		res, err := ctrl.PostMessage(node, req)
-		if err == nil {
-			if props := res.Properties(); len(props) == 1 {
-				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
-				if ok {
-					manufactureName = manufacture.Name()
-				}
-			}
-		}
-
-		fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
-
-		for j, obj := range node.Objects() {
-			objName := obj.ClassName()
-			if len(objName) == 0 {
-				objName = unknown
-			}
-			fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
-
-			for _, prop := range obj.Properties() {
-				if !prop.IsReadable() {
-					continue
-				}
-				propName := prop.Name()
-				if len(propName) == 0 {
-					propName = "(" + unknown + ")"
-				}
-				propData := ""
-				req := echonet.NewMessage()
-				req.SetESV(echonet.ESVReadRequest)
-				req.SetDEOJ(obj.Code())
-				req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
-				res, err := ctrl.PostMessage(node, req)
-				if err == nil {
-					if props := res.Properties(); len(props) == 1 {
-						propData = hex.EncodeToString(props[0].Data())
+	for n := 0; n < *numRepeat; n++ {
+		for i, node := range ctrl.Nodes() {
+			manufactureName := unknown
+			req := echonet.NewMessage()
+			req.SetESV(echonet.ESVReadRequest)
+			req.SetDEOJ(0x0EF001)
+			req.AddProperty(echonet.NewProperty().SetCode(0x8A))
+			res, err := ctrl.PostMessage(node, req)
+			if err == nil {
+				if props := res.Properties(); len(props) == 1 {
+					manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
+					if ok {
+						manufactureName = manufacture.Name()
 					}
-				} else {
-					propData = err.Error()
 				}
-				fmt.Printf("        [%02X] %s (%s)\n", prop.Code(), propData, propName)
+			}
+
+			fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
+
+			for j, obj := range node.Objects() {
+				objName := obj.ClassName()
+				if len(objName) == 0 {
+					objName = unknown
+				}
+				fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
+
+				for _, prop := range obj.Properties() {
+					if !prop.IsReadable() {
+						continue
+					}
+					propName := prop.Name()
+					if len(propName) == 0 {
+						propName = "(" + unknown + ")"
+					}
+					propData := ""
+					req := echonet.NewMessage()
+					req.SetESV(echonet.ESVReadRequest)
+					req.SetDEOJ(obj.Code())
+					req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
+					res, err := ctrl.PostMessage(node, req)
+					if err == nil {
+						if props := res.Properties(); len(props) == 1 {
+							propData = hex.EncodeToString(props[0].Data())
+						}
+					} else {
+						propData = err.Error()
+					}
+					fmt.Printf("        [%02X] %s (%s)\n", prop.Code(), propData, propName)
+				}
 			}
 		}
 	}
