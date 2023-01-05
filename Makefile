@@ -38,7 +38,8 @@ BINARY_ROOT=${MODULE_ROOT}/examples
 BINARIES=\
 	${BINARY_ROOT}/uechopost \
 	${BINARY_ROOT}/uechosearch \
-	${BINARY_ROOT}/uecholight
+	${BINARY_ROOT}/uecholight \
+	${BINARY_ROOT}/uechobench
 
 .PHONY: version clean
 
