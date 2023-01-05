@@ -3,10 +3,14 @@
 	* Support write and read request protocol (0x6E)
 
 2023-01-05 The uecho-go Authors <skonno@cybergarage.org>
-	* v1.1.1
+	* v1.1.2
 	* Update to enable self messages
 	* Update the standard ECHONET Lite device and manufacture databases
-	* Update logger
+
+2022-11-27 The uecho-go Authors <skonno@cybergarage.org>
+	* v1.1.1
+	* Update Controller to add the standard node profile object as default
+	* Added experimental manufacture codes to the standard database
 
 2022-08-23 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.0
