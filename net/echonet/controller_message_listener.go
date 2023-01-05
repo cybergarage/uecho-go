@@ -12,8 +12,7 @@ const (
 	logControllerListenerFormat = "Controller::NodeMessageReceived : %s"
 )
 
-// NodeMessageReceived is a listener of the local node.
-func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
+func (ctrl *Controller) isSelfMessage(msg *protocol.Message) bool {
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	for _, server := range ctrl.MulticastManager().Servers {
 		port, err := server.Port()
@@ -38,7 +37,7 @@ func (ctrl *Controller) isOwnMessage(msg *protocol.Message) bool {
 // NodeMessageReceived is a listener of the local node.
 func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 	if !ctrl.IsSelfMessageEnabled() {
-		if ctrl.isOwnMessage(msg) {
+		if ctrl.isSelfMessage(msg) {
 			return nil
 		}
 	}
@@ -70,7 +69,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 // parseNodeProfileMessage parses the specified message to check new objects.
 func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
 	if !ctrl.IsSelfMessageEnabled() {
-		if ctrl.isOwnMessage(msg) {
+		if ctrl.isSelfMessage(msg) {
 			return
 		}
 	}
