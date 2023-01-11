@@ -4,6 +4,7 @@
 
 package echonet
 
+// nolint: maintidx
 func (db *StandardDatabase) initManufactures() {
 	db.addManufacture(NewManufacture(0x00002F, "AIPHONE CO., LTD."))
 	db.addManufacture(NewManufacture(0x00011A, "ACCESS CO.,LTD."))
@@ -23,6 +24,7 @@ func (db *StandardDatabase) initManufactures() {
 	db.addManufacture(NewManufacture(0x0000FB, "CICO CORPORATION"))
 	db.addManufacture(NewManufacture(0x0000F8, "CIMX INITIATIVE INC."))
 	db.addManufacture(NewManufacture(0x000123, "Contec Co., Ltd."))
+	db.addManufacture(NewManufacture(0x000130, "COOLDESIGN Corporation"))
 	db.addManufacture(NewManufacture(0x000067, "CORONA CORPORATION"))
 	db.addManufacture(NewManufacture(0x00009C, "Diamond Electric Mfg.Co.,Ltd."))
 	db.addManufacture(NewManufacture(0x000080, "DIAMOND&ZEBRA ELECTRIC MFG.CO.,LTD."))

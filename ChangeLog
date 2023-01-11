@@ -1,21 +1,20 @@
-2022-XX-XX The uecho-go Authors <skonno@cybergarage.org>
+2023-XX-XX The uecho-go Authors <skonno@cybergarage.org>
 	* v1.2.0
 	* Support write and read request protocol (0x6E)
 
-2022-11-xx The uecho-go Authors <skonno@cybergarage.org>
-	* v1.1.3
+2023-01-05 The uecho-go Authors <skonno@cybergarage.org>
+	* v1.1.2
+	* Update to enable self messages
+	* Update the standard ECHONET Lite device and manufacture databases
 	* Update StandardDatabase to store property types and capacities more collectly
+	* Add uechobench for benchmarking
 
 2022-11-27 The uecho-go Authors <skonno@cybergarage.org>
-	* v1.1.2
+	* v1.1.1
 	* Update Controller to add the standard node profile object as default
 	* Added experimental manufacture codes to the standard database
 
-2022-11-20 The uecho-go Authors <skonno@cybergarage.org>
-	* v1.1.1
-	* Update manufacturer codes
-
-2022-08-25 The uecho-go Authors <skonno@cybergarage.org>
+2022-08-26 The uecho-go Authors <skonno@cybergarage.org>
 	* v1.1.0
 	* Fix to set correct description format 2 property maps
 	* Add a standard ECHONET Lite device database based on Machine Readable Appendix of ECHONET Consortium

@@ -60,5 +60,5 @@ func (db *StandardDatabase) SuperObject() (*Object, bool) {
 
 // NodeProfile returns the node profile object.
 func (db *StandardDatabase) NodeProfile() (*Object, bool) {
-	return db.FindObjectByCode(0x0EF0)
+	return db.FindObjectByCode(0x0EF000)
 }

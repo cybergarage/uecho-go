@@ -15,6 +15,7 @@ print<<HEADER;
 
 package echonet
 
+// nolint: maintidx
 func (db *StandardDatabase) initManufactures() {
 HEADER
 

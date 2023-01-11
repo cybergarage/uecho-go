@@ -59,6 +59,18 @@ func NewNodeProfile() *Profile {
 	return prof
 }
 
+// addNodeProfileMandatoryProperties sets mandatory properties for node profile.
+func (prof *Profile) addNodeProfileMandatoryProperties() {
+	stdObj, ok := GetStandardDatabase().NodeProfile()
+	if !ok {
+		return
+	}
+	prof.SetClassName(stdObj.ClassName())
+	for _, stdProp := range stdObj.Properties() {
+		prof.AddProperty(stdProp.Copy())
+	}
+}
+
 // SetVersion sets a version to the profile.
 func (prof *Profile) SetVersion(major int, minor int) error {
 	verBytes := []byte{

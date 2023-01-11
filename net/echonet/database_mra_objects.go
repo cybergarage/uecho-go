@@ -863,6 +863,11 @@ func (db *StandardDatabase) initObjects() {
 	obj.AddProperty(newStandardProperty(0xEA, "Power consumption measurement method", "state", 1, "optional", "notApplicable", "optional"))
 	db.addObject(obj)
 
+	// Air pressure sensor (0x002D)
+	obj = newStandardObject("Air pressure sensor", 0x00, 0x2D)
+	obj.AddProperty(newStandardProperty(0xE0, "Air pressure measurement", "", 0, "required", "notApplicable", "optional"))
+	db.addObject(obj)
+
 	// Bath heating status sensor (0x0016)
 	obj = newStandardObject("Bath heating status sensor", 0x00, 0x16)
 	obj.AddProperty(newStandardProperty(0xB0, "Detection threshold level", "level", 0, "optional", "optional", "optional"))
