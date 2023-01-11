@@ -1,4 +1,4 @@
-[![Go](https://github.com/cybergarage/uecho-go/actions/workflows/make.yml/badge.svg)](https://github.com/cybergarage/uecho-go/actions/workflows/make.yml)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/cybergarage/uecho-go)[![Go](https://github.com/cybergarage/uecho-go/actions/workflows/make.yml/badge.svg)](https://github.com/cybergarage/uecho-go/actions/workflows/make.yml)
  [![Go Reference](https://pkg.go.dev/badge/github.com/cybergarage/uecho-go.svg)](https://pkg.go.dev/github.com/cybergarage/uecho-go)
 
 ![logo](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/logo.png)
