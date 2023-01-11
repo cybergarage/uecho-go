@@ -74,6 +74,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 	node := NewRemoteNode()
 	node.SetAddress(msg.SourceAddress())
 	node.SetPort(msg.SourcePort())
+	node.AddProfile(NewNodeProfile())
 
 	for n := 0; n < instanceCount; n++ {
 		objCodes := make([]byte, ObjectCodeSize)

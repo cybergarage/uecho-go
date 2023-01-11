@@ -25,7 +25,7 @@ const (
 // ObjectCode is a type for object code.
 type ObjectCode = protocol.ObjectCode
 
-// BytesToObjectCode returns a object code with the specified object code bytes.
+// BytesToObjectCode converts the specified object code bytes to the object code.
 func BytesToObjectCode(codes []byte) (ObjectCode, error) {
 	if len(codes) != ObjectCodeSize {
 		return 0, fmt.Errorf(errorInvalidObjectCodes, string(codes))

@@ -122,6 +122,8 @@ func main() {
 					if props := res.Properties(); len(props) == 1 {
 						propData = hex.EncodeToString(props[0].Data())
 					}
+				} else {
+					propData = err.Error()
 				}
 				fmt.Printf("        [%02X] %s: %s\n", prop.Code(), propName, propData)
 			}
