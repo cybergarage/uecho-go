@@ -21,7 +21,7 @@
 2022-08-26 Satoshi Konno <skonno@cybergarage.org>
 	* v1.1.0
 	* Fix to set correct description format 2 property maps
-	* Updated the standard object database based on the latest MRA (Machine Readable Appendix) version 1.1.0 from the ECHONET Consortium
+	* Updated the standard object database based on the latest MRA (Machine Readable Appendix) version 1.1.1 from the ECHONET Consortium
 	* Remove 'Get' prefix from all getter methods
 	* Extend Property::*Attribute() to set the standard properties more correctly
 
