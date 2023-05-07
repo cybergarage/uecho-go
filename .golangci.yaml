@@ -32,6 +32,7 @@ linters:
     - gochecknoinits
     - interfacebloat
     - maintidx
+    - revive
 
 linters-settings:
   gocritic:
