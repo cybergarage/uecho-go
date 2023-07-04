@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !windows
-// +build !windows
+//go:build windows
+// +build windows
 
 package transport
 
@@ -41,20 +41,6 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, ifaddr string, port int) 
 
 	sock.Conn, err = net.ListenUDP("udp", boundAddr)
 	if err != nil {
-		return err
-	}
-
-	f, err := sock.Conn.File()
-	if err != nil {
-		sock.Close()
-		return err
-	}
-
-	defer f.Close()
-
-	err = sock.SetReuseAddr(f, true)
-	if err != nil {
-		sock.Close()
 		return err
 	}
 
