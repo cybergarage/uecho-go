@@ -11,8 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-
-	"golang.org/x/net/ipv4"
 )
 
 // A MulticastSocket represents a socket.
