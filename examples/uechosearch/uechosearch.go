@@ -54,11 +54,13 @@ func main() {
 
 	err := ctrl.Start()
 	if err != nil {
+		log.Fatalf("%s", err)
 		return
 	}
 
 	err = ctrl.SearchAllObjects()
 	if err != nil {
+		log.Fatalf("%s", err)
 		return
 	}
 
@@ -134,6 +136,7 @@ func main() {
 
 	err = ctrl.Stop()
 	if err != nil {
+		log.Fatalf("%s", err)
 		return
 	}
 }

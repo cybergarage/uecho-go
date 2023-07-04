@@ -1,6 +1,6 @@
-github.com/cybergarage/go-logger v1.3.0 h1:5NYcPLBpmKfkC+oH0GPZXoOggHO/tBZCE9RW3kKwLyQ=
-github.com/cybergarage/go-logger v1.3.0/go.mod h1:4N4xo4/FUVjvc0mILUwFItBGhVglCPN4hSLK38zRLTk=
-github.com/cybergarage/go-logger v1.2.0 h1:pHfFFxVvaNE3pWmiEGGlguborEzwCH7DAJtkjeYQSUE=
-github.com/cybergarage/go-logger v1.2.0/go.mod h1:m6rxERUs6audClnM1+FI2+8kIIaSWrBfH/ZV3wc/dYo=
-github.com/cybergarage/go-logger v1.3.2 h1:eFLeIsBS5/bRpyQoh8QoGX8sTUfdGww1P/dT41Qa9BY=
-github.com/cybergarage/go-logger v1.3.2/go.mod h1:4N4xo4/FUVjvc0mILUwFItBGhVglCPN4hSLK38zRLTk=
+github.com/cybergarage/go-logger v1.3.4 h1:UTgYZr/LwQtYVOncS3NJ64We5kCe7ce6L85y/MOYfrM=
+github.com/cybergarage/go-logger v1.3.4/go.mod h1:2iMjinHam5oqyKEGsKIzeQQmmOPxpCgro95LOlEC2ks=
+golang.org/x/net v0.11.0 h1:Gi2tvZIJyBtO9SDr1q9h5hEQCp/4L2RQ+ar0qjx2oNU=
+golang.org/x/net v0.11.0/go.mod h1:2L/ixqYpgIVXmeoSA/4Lu7BzTG4KIyPIryS4IsOd1oQ=
+golang.org/x/sys v0.9.0 h1:KS/R3tvhPqvJvwcKfnBHJwwthS11LRhmM5D59eEXa0s=
+golang.org/x/sys v0.9.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
