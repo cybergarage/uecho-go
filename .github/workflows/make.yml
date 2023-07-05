@@ -22,4 +22,4 @@ jobs:
         go-version: 1.18
 
     - name: Test
-      run: export CGO_ENABLED=0 make test_only
+      run: make test_only
