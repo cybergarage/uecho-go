@@ -62,10 +62,10 @@ build: lint
 	go build -v ${PACKAGES}
 
 test: lint
-	go test -v -cover -timeout 300s ${PACKAGES}
+	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
 
 test_only:
-	go test -v -cover -timeout 300s ${PACKAGES}
+	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
 
 install:
 	go install ${BINARIES}
