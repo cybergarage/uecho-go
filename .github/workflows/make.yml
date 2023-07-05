@@ -21,8 +21,5 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Set up golangci-lint
-      run: sudo snap install golangci-lint
-
     - name: Test
-      run: export CGO_ENABLED=0 make test
+      run: export CGO_ENABLED=0 make test_only
