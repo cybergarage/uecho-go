@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !windows
-// +build !windows
+//go:build windows
+// +build windows
 
 package transport
 
@@ -19,7 +19,7 @@ func (sock *Socket) SetReuseAddr(fd uintptr, flag bool) error {
 		opt = 1
 	}
 
-	err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
+	err := syscall.SetsockoptInt(syscall.Handle(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
 	if err != nil {
 		return err
 	}

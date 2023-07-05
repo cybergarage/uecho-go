@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !windows
-// +build !windows
+//go:build windows
+// +build windows
 
 package transport
 
@@ -53,14 +53,18 @@ func (sock *TCPSocket) Bind(ifi *net.Interface, ifaddr string, port int) error {
 		return err
 	}
 
-	f, err := sock.Listener.File()
+	rawConn, err := sock.Listener.SyscallConn()
 	if err != nil {
 		return err
 	}
-
-	defer f.Close()
-	fd := f.Fd()
-
+	fdCh := make(chan uintptr, 1)
+	err = rawConn.Control(func(fd uintptr) {
+		fdCh <- fd
+	})
+	if err != nil {
+		return err
+	}
+	fd := <-fdCh
 	err = sock.SetReuseAddr(fd, true)
 	if err != nil {
 		return err
