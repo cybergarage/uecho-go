@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !windows
-// +build !windows
-
 package transport
 
 import (
 	"fmt"
 	"net"
-	"os"
-	"runtime"
 	"strconv"
 	"syscall"
 )
@@ -94,23 +89,14 @@ func (sock *Socket) IPAddr() (string, error) {
 
 // SetMulticastLoop sets a flag to IP_MULTICAST_LOOP.
 // nolint: nosnakecase
-func (sock *Socket) SetMulticastLoop(file *os.File, addr string, flag bool) error {
-	fd := file.Fd()
-
+func (sock *Socket) SetMulticastLoop(fd uintptr, addr string, flag bool) error {
 	opt := 0
 	if flag {
 		opt = 1
 	}
 
-	if runtime.GOOS == "windows" {
-		if IsIPv6Address(addr) {
-			return syscall.SetsockoptInt(fd, syscall.IPPROTO_IPV6, syscall.IPV6_MULTICAST_LOOP, opt)
-		}
-		return syscall.SetsockoptInt(fd, syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
-	} else {
-		if IsIPv6Address(addr) {
-			return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IPV6, syscall.IPV6_MULTICAST_LOOP, opt)
-		}
-		return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
+	if IsIPv6Address(addr) {
+		return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IPV6, syscall.IPV6_MULTICAST_LOOP, opt)
 	}
+	return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
 }

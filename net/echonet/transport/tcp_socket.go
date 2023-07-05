@@ -59,8 +59,9 @@ func (sock *TCPSocket) Bind(ifi *net.Interface, ifaddr string, port int) error {
 	}
 
 	defer f.Close()
+	fd := f.Fd()
 
-	err = sock.SetReuseAddr(f, true)
+	err = sock.SetReuseAddr(fd, true)
 	if err != nil {
 		return err
 	}
