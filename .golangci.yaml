@@ -33,7 +33,7 @@ linters:
     - interfacebloat
     - maintidx
     - revive
-
+    - depguard
 linters-settings:
   gocritic:
     disabled-checks:
