@@ -68,18 +68,9 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface, ifaddr string) error {
 		return err
 	}
 
-	pc := ipv4.NewPacketConn(sock.Conn)
-
-	if err := pc.JoinGroup(ifi, &net.UDPAddr{IP: net.ParseIP(MulticastIPv4Address), Port: Port}); err != nil {
+	err = sock.SetMulticastLoop(fd, ifaddr, true)
+	if err != nil {
 		return err
-	}
-
-	if loop, err := pc.MulticastLoopback(); err == nil {
-		if !loop {
-			if err := pc.SetMulticastLoopback(true); err != nil {
-				return err
-			}
-		}
 	}
 
 	return nil

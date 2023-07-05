@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:build !windows
-// +build !windows
-
 package transport
 
 import (
 	"errors"
 	"fmt"
 	"net"
-
-	"golang.org/x/net/ipv4"
 )
 
 // A MulticastSocket represents a socket.
@@ -57,13 +52,14 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface, ifaddr string) error {
 	}
 
 	defer f.Close()
+	fd := f.Fd()
 
-	err = sock.SetReuseAddr(f, true)
+	err = sock.SetReuseAddr(fd, true)
 	if err != nil {
 		return err
 	}
 
-	err = sock.SetMulticastLoop(f, ifaddr, true)
+	err = sock.SetMulticastLoop(fd, ifaddr, true)
 	if err != nil {
 		return err
 	}
