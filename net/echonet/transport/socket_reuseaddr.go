@@ -8,15 +8,12 @@
 package transport
 
 import (
-	"os"
 	"syscall"
 )
 
 // SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT.
 // nolint: nosnakecase
-func (sock *Socket) SetReuseAddr(file *os.File, flag bool) error {
-	fd := file.Fd()
-
+func (sock *Socket) SetReuseAddr(fd uintptr, flag bool) error {
 	opt := 0
 	if flag {
 		opt = 1
