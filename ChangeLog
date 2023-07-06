@@ -1,6 +1,9 @@
 # 2023-XX-XX v1.3.0
 * Added support for the write and read request protocol (0x6E).
 
+# 2023-xx-xx v1.2.1
+* Enable ubuntu-latest testing on Github actions
+
 # 2023-07-06 v1.2.0
 * Added support for Windows platforms (Thanks to David González Filoso).
 * Updated the codebase to be compatible with golang 1.20.
