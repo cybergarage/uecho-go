@@ -126,7 +126,7 @@ func handleUnicastUDPConnection(server *UnicastServer, cancel chan interface{}) 
 		default:
 			reqMsg, err := server.UDPSocket.ReadMessage()
 			if err != nil {
-				break
+				return
 			}
 			reqMsg.SetPacketType(protocol.UDPUnicastPacket)
 
@@ -164,7 +164,7 @@ func handleUnicastTCPListener(server *UnicastServer, cancel chan interface{}) {
 		default:
 			conn, err := server.TCPSocket.Listener.AcceptTCP()
 			if err != nil {
-				break
+				return
 			}
 
 			go handleUnicastTCPConnection(server, conn)
