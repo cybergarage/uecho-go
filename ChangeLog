@@ -1,8 +1,9 @@
 # 2023-XX-XX v1.3.0
 * Added support for the write and read request protocol (0x6E).
 
-# 2023-xx-xx v1.2.1
-* Enable ubuntu-latest testing on Github actions
+# 2024-01-16 v1.2.1
+* Fixed Update transport servers to exit normally when the socket encounters any errors
+* Enabled ubuntu-latest testing on Github actions
 
 # 2023-07-06 v1.2.0
 * Added support for Windows platforms (Thanks to David González Filoso).
