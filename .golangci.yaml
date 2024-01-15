@@ -34,6 +34,7 @@ linters:
     - maintidx
     - revive
     - depguard
+    - inamedparam
 linters-settings:
   gocritic:
     disabled-checks:
