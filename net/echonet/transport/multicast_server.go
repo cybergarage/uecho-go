@@ -84,7 +84,7 @@ func handleMulticastConnection(server *MulticastServer, cancel chan interface{})
 		default:
 			reqMsg, err := server.MulticastSocket.ReadMessage()
 			if err != nil {
-				break
+				return
 			}
 			reqMsg.SetPacketType(protocol.MulticastPacket)
 
