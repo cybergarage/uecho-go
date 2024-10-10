@@ -43,13 +43,15 @@ BINARIES=\
 	${BINARY_ROOT}/uechobench
 
 .PHONY: version clean
+.IGNORE: lint
 
 all: test
 
 version:
 	@pushd ${SOURCE_ROOT} && ./version.gen > version.go && popd
+	-git commit ${SOURCE_ROOT}/version.go -m "Update version"
 
-format:
+format: version
 	gofmt -w ${SOURCE_ROOT}
 
 vet: format
