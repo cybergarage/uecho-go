@@ -9,10 +9,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	logNodeListenerFormat = "LocalNode::ProtocolMessageReceived : %s"
-)
-
 // ProtocolMessageReceived is a listener for the server.
 func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	if !node.IsSelfMessageEnabled() {
@@ -43,7 +39,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 
 	resMsg, err := node.createResponseMessageForRequestMessage(msg)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Errorf("%v", err)
 	}
 
 	return resMsg, err

@@ -236,8 +236,8 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 }
 
 func TestLocalNode(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-	defer log.SetStdoutDebugEnbled(false)
+	log.EnableStdoutDebug(true)
+	defer log.EnableStdoutDebug(false)
 
 	t.Run("Default", func(t *testing.T) {
 		conf := newTestDefaultConfig()

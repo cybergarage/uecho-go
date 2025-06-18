@@ -185,8 +185,8 @@ func testUnicastMessagingWithConfig(t *testing.T, conf *Config, checkSourcePort 
 }
 
 func TestUnicastMessaging(t *testing.T) {
-	log.SetStdoutDebugEnbled(true)
-	defer log.SetStdoutDebugEnbled(false)
+	log.EnableStdoutDebug(true)
+	defer log.EnableStdoutDebug(false)
 
 	t.Run("Default", func(t *testing.T) {
 		conf := newTestDefaultConfig()
