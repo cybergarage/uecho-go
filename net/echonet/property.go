@@ -319,7 +319,7 @@ func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
 				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
 			}
 			codes := make([]PropertyCode, 0)
-			for n := 0; n < propMapCount; n++ {
+			for n := range propMapCount {
 				codes = append(codes, PropertyCode(prop.data[n+1]))
 			}
 			return codes, nil
@@ -328,7 +328,7 @@ func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
 				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
 			}
 			codes := make([]PropertyCode, 0)
-			for n := 0; n < PropertyMapFormat2MapSize; n++ {
+			for n := range PropertyMapFormat2MapSize {
 				codes = append(codes, propertyMapFormat2ByteToCodes(n, prop.data[n+1])...)
 			}
 			return codes, nil

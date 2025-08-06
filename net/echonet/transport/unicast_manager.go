@@ -15,6 +15,7 @@ import (
 // A UnicastManager represents a multicast server manager.
 type UnicastManager struct {
 	*Config
+
 	port    int
 	Servers []*UnicastServer
 	Handler UnicastHandler

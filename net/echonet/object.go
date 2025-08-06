@@ -16,6 +16,7 @@ const (
 // Object is an instance for Echonet object.
 type Object struct {
 	*PropertyMap
+
 	clsName    string
 	name       string
 	codes      []byte

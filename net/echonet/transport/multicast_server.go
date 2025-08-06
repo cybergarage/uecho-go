@@ -15,6 +15,7 @@ import (
 type MulticastServer struct {
 	*Server
 	*MulticastSocket
+
 	Channel       chan interface{}
 	Handler       MulticastHandler
 	UnicastServer *UnicastServer

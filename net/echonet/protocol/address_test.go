@@ -24,7 +24,7 @@ func TestNewAddressParse(t *testing.T) {
 		80,
 	}
 
-	for n := 0; n < len(testHosts); n++ {
+	for n := range testHosts {
 		testHost := testHosts[n]
 		testPort := testPorts[n]
 

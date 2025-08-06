@@ -22,6 +22,7 @@ import (
 // A TCPSocket represents a socket for TCP.
 type TCPSocket struct {
 	*Socket
+
 	Listener *net.TCPListener
 	readBuf  []byte
 }

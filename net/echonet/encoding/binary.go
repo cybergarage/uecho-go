@@ -7,7 +7,7 @@ package encoding
 // IntegerToByte converts a specified integer to bytes.
 func IntegerToByte(v uint, b []byte) {
 	byteSize := len(b)
-	for n := 0; n < byteSize; n++ {
+	for n := range byteSize {
 		idx := ((byteSize - 1) - n)
 		b[idx] = byte((v >> (uint(n) * 8)) & 0xFF)
 	}
@@ -17,7 +17,7 @@ func IntegerToByte(v uint, b []byte) {
 func ByteToInteger(b []byte) uint {
 	var v uint
 	byteSize := len(b)
-	for n := 0; n < byteSize; n++ {
+	for n := range byteSize {
 		idx := ((byteSize - 1) - n)
 		v += (uint(b[idx]) << (uint(n) * 8))
 	}

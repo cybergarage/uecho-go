@@ -15,6 +15,7 @@ import (
 
 type testMulticastServer struct {
 	*MulticastServer
+
 	lastMessage *protocol.Message
 }
 

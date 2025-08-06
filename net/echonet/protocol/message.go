@@ -151,7 +151,7 @@ func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
 
 	reqMsgOPC := reqMsg.OPC()
 	msg.SetOPC(reqMsgOPC)
-	for n := 0; n < reqMsgOPC; n++ {
+	for n := range reqMsgOPC {
 		reqProp := msg.PropertyAt(n)
 		msg.AddProperty(reqProp)
 	}
@@ -272,7 +272,7 @@ func (msg *Message) IsResponseRequired() bool {
 func (msg *Message) SetOPC(value int) error {
 	msg.opc = byte(value & 0xFF)
 	msg.ep = make([]*Property, msg.opc)
-	for n := 0; n < int(msg.opc); n++ {
+	for n := range msg.opc {
 		msg.ep[n] = NewProperty()
 	}
 	return nil
@@ -368,8 +368,8 @@ func (msg *Message) IsUDPUnicastPacket() bool {
 func (msg *Message) Size() int {
 	msgSize := Format1MinSize
 
-	for n := 0; n < int(msg.opc); n++ {
-		prop := msg.PropertyAt(n)
+	for n := range msg.opc {
+		prop := msg.PropertyAt(int(n))
 		if prop == nil {
 			continue
 		}
@@ -402,8 +402,8 @@ func (msg *Message) Bytes() []byte {
 	msgBytes[11] = msg.opc
 
 	offset := 12
-	for n := 0; n < int(msg.opc); n++ {
-		prop := msg.PropertyAt(n)
+	for n := range msg.opc {
+		prop := msg.PropertyAt(int(n))
 		if prop == nil {
 			continue
 		}
@@ -418,7 +418,7 @@ func (msg *Message) Bytes() []byte {
 		}
 
 		propData := prop.Data()
-		for i := 0; i < propSize; i++ {
+		for i := range propSize {
 			msgBytes[offset+i] = propData[i]
 		}
 

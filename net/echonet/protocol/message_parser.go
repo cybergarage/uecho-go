@@ -69,8 +69,8 @@ func (msg *Message) parseFormat1PropertyBytes(data []byte) error {
 	dataSize := len(data)
 
 	offset := 0
-	for n := 0; n < int(msg.opc); n++ {
-		prop := msg.PropertyAt(n)
+	for n := range msg.opc {
+		prop := msg.PropertyAt(int(n))
 		if prop == nil {
 			continue
 		}

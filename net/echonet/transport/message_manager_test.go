@@ -17,6 +17,7 @@ import (
 
 type testMessageManager struct {
 	*MessageManager
+
 	FromPort                int
 	FromPacketType          int
 	lastNotificationMessage *protocol.Message
@@ -84,7 +85,7 @@ func testUnicastMessagingWithRunningManagers(t *testing.T, mgrs []*testMessageMa
 
 	// Send unicast messages, and check the received message
 
-	for n := 0; n < len(srcMgrs); n++ {
+	for n := range srcMgrs {
 		srcMgr := srcMgrs[n]
 		srcMgr.FromPacketType = protocol.UnknownPacket
 

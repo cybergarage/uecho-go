@@ -18,6 +18,7 @@ import (
 // A UDPSocket represents a socket for UDP.
 type UDPSocket struct {
 	*Socket
+
 	Conn           *net.UDPConn
 	readBufferSize int
 	readBuffer     []byte

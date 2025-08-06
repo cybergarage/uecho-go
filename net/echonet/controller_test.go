@@ -18,6 +18,7 @@ const (
 
 type testController struct {
 	*Controller
+
 	foundTestNodeCount int
 }
 
@@ -71,7 +72,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	// Create test nodes
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
-	for n := 0; n < testControllerNodeCount; n++ {
+	for n := range testControllerNodeCount {
 		node, err := newTestSampleNode()
 		if err != nil {
 			t.Error(err)
@@ -158,7 +159,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		if err != nil {
 			continue
 		}
-		for n := 0; n < testNodeRequestCount; n++ {
+		for n := range testNodeRequestCount {
 			var lastLightPowerStatus byte
 			if (n % 2) == 0 {
 				lastLightPowerStatus = testLightPropertyPowerOn

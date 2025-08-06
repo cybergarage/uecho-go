@@ -22,6 +22,7 @@ const (
 // Controller is an instance for Echonet controller.
 type Controller struct {
 	*LocalNode
+
 	foundNodes []*RemoteNode
 
 	controllerListener ControllerListener

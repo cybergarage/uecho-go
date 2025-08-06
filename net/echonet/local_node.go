@@ -19,6 +19,7 @@ type LocalNode struct {
 	*server
 	*sync.Mutex
 	*Config
+
 	manufacturerCode uint
 	lastTID          uint
 	postResponseCh   chan *protocol.Message

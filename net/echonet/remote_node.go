@@ -20,6 +20,7 @@ const (
 // RemoteNode is an instance for Echonet node.
 type RemoteNode struct {
 	*baseNode
+
 	address string
 	port    int
 }
@@ -76,7 +77,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 	node.SetPort(msg.SourcePort())
 	node.AddProfile(NewNodeProfile())
 
-	for n := 0; n < instanceCount; n++ {
+	for n := range instanceCount {
 		objCodes := make([]byte, ObjectCodeSize)
 		copy(objCodes, propData[((n*ObjectCodeSize)+1):])
 		obj, err := NewObjectWithCodes(objCodes)

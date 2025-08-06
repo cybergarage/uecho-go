@@ -57,7 +57,7 @@ func testParsedMessage(t *testing.T, msg *Message) {
 		if len(prop.data) != n {
 			t.Errorf("%d != %d", len(prop.data), n)
 		}
-		for i := 0; i < len(prop.data); i++ {
+		for i := range len(prop.data) {
 			dataByte := byte('a' + (n - 1) + i)
 			if prop.data[i] != dataByte {
 				t.Errorf("%d != %d", prop.data[i], dataByte)

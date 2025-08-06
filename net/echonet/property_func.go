@@ -33,7 +33,7 @@ func propertyMapFormat2BitToCode(row int, bit int) PropertyCode {
 
 func propertyMapFormat2ByteToCodes(row int, b byte) []PropertyCode {
 	codes := make([]PropertyCode, 0)
-	for n := 0; n < 8; n++ {
+	for n := range 8 {
 		bit := byte((0x01 << n) & 0x0F)
 		if (b & bit) == 0 {
 			continue

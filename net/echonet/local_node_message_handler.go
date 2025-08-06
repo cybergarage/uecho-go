@@ -70,7 +70,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 	// (C), (D), (E)
 
 	if msg.IsReadRequest() || msg.IsWriteRequest() {
-		for n := 0; n < msgOPC; n++ {
+		for n := range msgOPC {
 			msgProp := msg.PropertyAt(n)
 			if msgProp == nil {
 				continue
@@ -123,7 +123,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 
 	// Object Listener
 
-	for n := 0; n < msgOPC; n++ {
+	for n := range msgOPC {
 		msgProp := msg.PropertyAt(n)
 		if msgProp == nil {
 			continue
@@ -148,7 +148,7 @@ func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 	msgOPC := reqMsg.OPC()
 
 	resMsg := protocol.NewResponseMessageWithMessage(reqMsg)
-	for n := 0; n < msgOPC; n++ {
+	for n := range msgOPC {
 		msgProp := reqMsg.PropertyAt(n)
 		if msgProp == nil {
 			continue

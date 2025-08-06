@@ -90,7 +90,7 @@ func (propMap *PropertyMap) FindProperty(code PropertyCode) (*Property, bool) {
 
 // FindPropertyWait returns the specified property in the property map with the specified waiting time.
 func (propMap *PropertyMap) FindPropertyWait(code PropertyCode, waitTime time.Duration) (*Property, bool) {
-	for n := 0; n < propertyWaitRetryCount; n++ {
+	for range propertyWaitRetryCount {
 		time.Sleep(waitTime / propertyWaitRetryCount)
 		prop, ok := propMap.FindProperty(code)
 		if ok {

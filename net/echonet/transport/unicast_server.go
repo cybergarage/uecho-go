@@ -15,6 +15,7 @@ import (
 type UnicastServer struct {
 	*UnicastConfig
 	*Server
+
 	TCPSocket  *UnicastTCPSocket
 	TCPChannel chan interface{}
 	UDPSocket  *UnicastUDPSocket
