@@ -24,3 +24,10 @@ jobs:
 
     - name: Test
       run: make test_only
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: uecho-cover.out
+        slug: cybergarage/uecho-go
