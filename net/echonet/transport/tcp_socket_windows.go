@@ -109,14 +109,14 @@ func (sock *TCPSocket) ReadMessage(conn net.Conn) (*protocol.Message, error) {
 	msg, err := protocol.NewMessageWithReader(reader)
 	if err != nil {
 		sock.outputReadLog(log.LevelError, retemoAddr.String(), "", 0)
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nil, err
 	}
 
 	err = msg.From.ParseString(retemoAddr.String())
 	if err != nil {
 		sock.outputReadLog(log.LevelError, retemoAddr.String(), msg.String(), msg.Size())
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nil, err
 	}
 
@@ -179,7 +179,7 @@ func (sock *TCPSocket) writeBytesToConnection(conn *net.TCPConn, b []byte) (int,
 	nWrote, err := conn.Write(b)
 	if err != nil {
 		sock.outputWriteLog(log.LevelError, localAddr.String(), toAddr.String(), hex.EncodeToString(b), 0)
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nWrote, err
 	}
 
@@ -193,7 +193,7 @@ func (sock *TCPSocket) dialAndWriteBytes(addr string, port int, b []byte, timeou
 	toAddr, err := net.ResolveTCPAddr("tcp", net.JoinHostPort(addr, strconv.Itoa(port)))
 	if err != nil {
 		sock.outputWriteLog(log.LevelError, "", toAddr.String(), hex.EncodeToString(b), 0)
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nil, 0, err
 	}
 
@@ -205,7 +205,7 @@ func (sock *TCPSocket) dialAndWriteBytes(addr string, port int, b []byte, timeou
 	conn, err := net.DialTCP("tcp", nil, toAddr)
 	if err != nil {
 		sock.outputWriteLog(log.LevelError, fromAddr, toAddr.String(), hex.EncodeToString(b), 0)
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nil, 0, err
 	}
 

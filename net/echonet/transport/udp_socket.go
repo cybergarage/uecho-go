@@ -91,7 +91,7 @@ func (sock *UDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
 		n, err := sock.Conn.WriteToUDP(b, toAddr)
 		sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 		if err != nil {
-			log.Errorf(err.Error())
+			log.Error(err)
 		}
 		return n, err
 	}
@@ -100,14 +100,14 @@ func (sock *UDPSocket) SendBytes(addr string, port int, b []byte) (int, error) {
 
 	conn, err := net.Dial("udp", toAddr.String())
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Error(err)
 		return 0, err
 	}
 
 	n, err := conn.Write(b)
 	sock.outputWriteLog(log.LevelTrace, toAddr.String(), hex.EncodeToString(b), n)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Error(err)
 	}
 	conn.Close()
 
@@ -147,7 +147,7 @@ func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	msg, err := protocol.NewMessageWithBytes(sock.readBuffer[:n])
 	if err != nil {
 		sock.outputReadLog(log.LevelError, logSocketTypeUDPUnicast, (*from).String(), hex.EncodeToString(sock.readBuffer[:n]), n)
-		log.Errorf(err.Error())
+		log.Error(err)
 		return nil, err
 	}
 
