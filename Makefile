@@ -75,9 +75,6 @@ test: lint
 cover: test
 	open ${PACKAGE_COVER}.html || xdg-open ${PACKAGE_COVER}.html || gnome-open ${PACKAGE_COVER}.html
 
-test_only:
-	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
-
 install:
 	go install ${BINARIES}
 
