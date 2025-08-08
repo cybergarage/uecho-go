@@ -21,6 +21,8 @@ MODULE_ROOT=github.com/cybergarage/uecho-go
 SOURCE_ROOT=${PACKAGE_NAME}
 PACKAGE_ROOT=${MODULE_ROOT}/${PACKAGE_NAME}
 
+PACKAGE_COVER=${PACKAGE_NAME}-cover
+
 SOURCES=\
 	${SOURCE_ROOT} \
 	${SOURCE_ROOT}/encoding \
@@ -65,6 +67,13 @@ build: lint
 
 test: lint
 	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
+
+test: lint
+	go test -v -p 1 -timeout 10m -cover -coverpkg=${PACKAGE_ROOT}/... -coverprofile=${PACKAGE_COVER}.out ${PACKAGE_ROOT}/...
+	go tool cover -html=${PACKAGE_COVER}.out -o ${PACKAGE_COVER}.html
+
+cover: test
+	open ${PACKAGE_COVER}.html || xdg-open ${PACKAGE_COVER}.html || gnome-open ${PACKAGE_COVER}.html
 
 test_only:
 	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
