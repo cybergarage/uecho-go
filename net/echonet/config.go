@@ -13,8 +13,9 @@ type TransportConfig = transport.Config
 
 // Config represents a cofiguration for transport.
 type Config struct {
-	SelfMessageEnabled bool
 	*TransportConfig
+
+	SelfMessageEnabled bool
 }
 
 // NewDefaultConfig returns a default configuration.
