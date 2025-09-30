@@ -15,34 +15,39 @@ SHELL := bash
 #export GOPATH
 export CGO_ENABLED=0
 
-PACKAGE_NAME=net/echonet
+PKG_NAME=net/echonet
 
 MODULE_ROOT=github.com/cybergarage/uecho-go
-SOURCE_ROOT=${PACKAGE_NAME}
-PACKAGE_ROOT=${MODULE_ROOT}/${PACKAGE_NAME}
+PKG_SOURCE_ROOT=${PKG_NAME}
+PKG_ROOT=${MODULE_ROOT}/${PKG_NAME}
 
-PACKAGE_COVER=uecho-cover
+PKG_COVER=uecho-cover
 
-SOURCES=\
-	${SOURCE_ROOT} \
-	${SOURCE_ROOT}/encoding \
-	${SOURCE_ROOT}/protocol \
-	${SOURCE_ROOT}/transport
+PKG_SOURCES=\
+	${PKG_SOURCE_ROOT} \
+	${PKG_SOURCE_ROOT}/encoding \
+	${PKG_SOURCE_ROOT}/protocol \
+	${PKG_SOURCE_ROOT}/transport
 
-PACKAGE_ID=${PACKAGE_ROOT}
-PACKAGES=\
-	${PACKAGE_ID} \
-	${PACKAGE_ID}/encoding \
-	${PACKAGE_ID}/protocol \
-	${PACKAGE_ID}/transport
+PKG_ID=${PKG_ROOT}
+PKGES=\
+	${PKG_ID} \
+	${PKG_ID}/encoding \
+	${PKG_ID}/protocol \
+	${PKG_ID}/transport
 
-BINARY_ROOT=${MODULE_ROOT}/examples
+EXAMPLE_PKG_SOURCE_ROOT=examples
+EXAMPLE_ROOT=${MODULE_ROOT}/${EXAMPLE_PKG_SOURCE_ROOT}
+
+CMD_PKG_SOURCE_ROOT=cmd
+CMD_ROOT=${MODULE_ROOT}/${CMD_PKG_SOURCE_ROOT}
 
 BINARIES=\
-	${BINARY_ROOT}/uechopost \
-	${BINARY_ROOT}/uechosearch \
-	${BINARY_ROOT}/uecholight \
-	${BINARY_ROOT}/uechobench
+	${CMD_ROOT}/uechoctl \
+	${EXAMPLE_ROOT}/uechopost \
+	${EXAMPLE_ROOT}/uechosearch \
+	${EXAMPLE_ROOT}/uecholight \
+	${EXAMPLE_ROOT}/uechobench
 
 .PHONY: version clean
 .IGNORE: lint
@@ -50,33 +55,30 @@ BINARIES=\
 all: test
 
 version:
-	@pushd ${SOURCE_ROOT} && ./version.gen > version.go && popd
-	-git commit ${SOURCE_ROOT}/version.go -m "Update version"
+	@pushd ${PKG_SOURCE_ROOT} && ./version.gen > version.go && popd
+	-git commit ${PKG_SOURCE_ROOT}/version.go -m "Update version"
 
 format: version
-	gofmt -w ${SOURCE_ROOT}
+	gofmt -w ${PKG_SOURCE_ROOT} ${CMD_PKG_SOURCE_ROOT} ${EXAMPLE_PKG_SOURCE_ROOT}
 
 vet: format
-	go vet ${PACKAGE_ROOT}
+	go vet ${PKG_ROOT}
 
 lint: vet
-	golangci-lint run ${SOURCES}
+	golangci-lint run ${PKG_SOURCES}
 
 build: lint
-	go build -v ${PACKAGES}
+	go build -v ${PKGES}
 
 test: lint
-	go test -v -p=1 -cover -timeout 300s ${PACKAGES}
-
-test: lint
-	go test -v -p 1 -timeout 10m -cover -coverpkg=${PACKAGE_ROOT}/... -coverprofile=${PACKAGE_COVER}.out ${PACKAGE_ROOT}/...
-	go tool cover -html=${PACKAGE_COVER}.out -o ${PACKAGE_COVER}.html
+	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG_ROOT}/... -coverprofile=${PKG_COVER}.out ${PKG_ROOT}/...
+	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
 cover: test
-	open ${PACKAGE_COVER}.html || xdg-open ${PACKAGE_COVER}.html || gnome-open ${PACKAGE_COVER}.html
+	open ${PKG_COVER}.html || xdg-open ${PKG_COVER}.html || gnome-open ${PKG_COVER}.html
 
 install:
 	go install ${BINARIES}
 
 clean:
-	go clean -i ${PACKAGES}
+	go clean -i ${PKGES}
