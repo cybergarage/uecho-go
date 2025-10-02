@@ -5,7 +5,13 @@
 package cli
 
 import (
+	"encoding/hex"
+	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/cybergarage/uecho-go/net/echonet"
+	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -20,6 +26,105 @@ func NewController() *Controller {
 		Controller: echonet.NewController(),
 	}
 	return c
+}
+
+// DiscoveredNodeTable returns the discovered node table.
+func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
+	db := echonet.GetStandardDatabase()
+
+	cols := []string{
+		"address",
+		"port",
+		"manufacture",
+		"object_code",
+		"object_name",
+		"property_code",
+		"property_name",
+		"property_attribute",
+		"property_data",
+	}
+	rows := [][]string{}
+
+	for _, node := range ctrl.Nodes() {
+
+		// Gets manufacture code.
+
+		manufactureName := unknown
+		req := echonet.NewMessage()
+		req.SetESV(echonet.ESVReadRequest)
+		req.SetDEOJ(0x0EF001)
+		req.AddProperty(echonet.NewProperty().SetCode(0x8A))
+		res, err := ctrl.PostMessage(node, req)
+		if err == nil {
+			if props := res.Properties(); len(props) == 1 {
+				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
+				if ok {
+					manufactureName = manufacture.Name()
+				}
+			}
+		}
+
+		for _, obj := range node.Objects() {
+			objName := obj.ClassName()
+			if len(objName) == 0 {
+				objName = unknown
+			}
+
+			for _, prop := range obj.Properties() {
+
+				propName := prop.Name()
+				if len(propName) == 0 {
+					propName = "(" + unknown + ")"
+				}
+
+				propAttrString := func(attr echonet.PropertyAttr, s string) string {
+					switch attr {
+					case echonet.Required:
+						return strings.ToUpper(s)
+					case echonet.Optional:
+						return s
+					default:
+						return "-"
+					}
+				}
+
+				propAttr := propAttrString(prop.ReadAttribute(), "r")
+				propAttr += propAttrString(prop.WriteAttribute(), "w")
+				propAttr += propAttrString(prop.AnnoAttribute(), "a")
+
+				propData := ""
+				if prop.IsReadRequired() {
+					req := echonet.NewMessage()
+					req.SetESV(echonet.ESVReadRequest)
+					req.SetDEOJ(obj.Code())
+					req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
+					res, err := ctrl.PostMessage(node, req)
+					if err == nil {
+						if props := res.Properties(); len(props) == 1 {
+							propData = hex.EncodeToString(props[0].Data())
+						}
+					} else {
+						propData = err.Error()
+					}
+				}
+
+				row := []string{
+					node.Address(),
+					strconv.Itoa(node.Port()),
+					manufactureName,
+					fmt.Sprintf("%06X", obj.Code()),
+					objName,
+					fmt.Sprintf("%06X", prop.Code()),
+					propName,
+					propAttr,
+					propData,
+				}
+				rows = append(rows, row)
+			}
+		}
+	}
+
+	return cols, rows, nil
 }
 
 // ControllerMessageReceived is called when a message is received.
