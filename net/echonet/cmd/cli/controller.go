@@ -45,7 +45,7 @@ func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
 	}
 	rows := [][]string{}
 
-	for _, node := range ctrl.Nodes() {
+	for n, node := range ctrl.Nodes() {
 
 		// Gets manufacture code.
 
@@ -114,11 +114,33 @@ func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
 					manufactureName,
 					fmt.Sprintf("%06X", obj.Code()),
 					objName,
-					fmt.Sprintf("%06X", prop.Code()),
+					fmt.Sprintf("%02X", prop.Code()),
 					propName,
 					propAttr,
 					propData,
 				}
+
+				// Skip duplicate values for better readability.
+				if 0 < n {
+					prevRows := rows[len(rows)-1]
+					skipColumnIndexes := []int{0, 3}
+					for _, skipColumnIndex := range skipColumnIndexes {
+						if prevRows[skipColumnIndex] != row[skipColumnIndex] {
+							break
+						}
+						switch skipColumnIndex {
+						case 0:
+							row[0] = ""
+							row[1] = ""
+							row[2] = ""
+						case 3:
+							row[3] = ""
+							row[4] = ""
+						}
+					}
+
+				}
+
 				rows = append(rows, row)
 			}
 		}
