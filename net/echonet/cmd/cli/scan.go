@@ -5,12 +5,12 @@
 package cli
 
 import (
-	"encoding/hex"
-	"fmt"
+	"encoding/json"
+	"os"
+	"strings"
+	"text/tabwriter"
 	"time"
 
-	"github.com/cybergarage/uecho-go/net/echonet"
-	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +33,7 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			enableStdoutVerbose(true)
 		}
 
-		_, err := NewFormatFromString(viper.GetString(FormatParamStr))
+		format, err := NewFormatFromString(viper.GetString(FormatParamStr))
 		if err != nil {
 			return err
 		}
@@ -60,163 +60,65 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 
 		time.Sleep(time.Second * 1)
 
-		// Outputs all found nodes
-
-		db := echonet.GetStandardDatabase()
-
-		for i, node := range ctrl.Nodes() {
-
-			// Gets manufacture code.
-
-			manufactureName := unknown
-			req := echonet.NewMessage()
-			req.SetESV(echonet.ESVReadRequest)
-			req.SetDEOJ(0x0EF001)
-			req.AddProperty(echonet.NewProperty().SetCode(0x8A))
-			res, err := ctrl.PostMessage(node, req)
-			if err == nil {
-				if props := res.Properties(); len(props) == 1 {
-					manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
-					if ok {
-						manufactureName = manufacture.Name()
-					}
+		printDevicesTable := func(columns []string, rows [][]string) error {
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+			printRow := func(cols ...string) {
+				if len(cols) == 0 {
+					return
 				}
-			}
-
-			// Prints node data.
-
-			fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
-
-			for j, obj := range node.Objects() {
-				// Prints object data.
-
-				objName := obj.ClassName()
-				if len(objName) == 0 {
-					objName = unknown
-				}
-				fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
-
-				// Prints only read required properties with the current property data.
-
-				for _, prop := range obj.Properties() {
-					if !prop.IsReadRequired() {
-						continue
-					}
-					propName := prop.Name()
-					if len(propName) == 0 {
-						propName = "(" + unknown + ")"
-					}
-					propData := "--"
-					req := echonet.NewMessage()
-					req.SetESV(echonet.ESVReadRequest)
-					req.SetDEOJ(obj.Code())
-					req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
-					res, err := ctrl.PostMessage(node, req)
-					if err == nil {
-						if props := res.Properties(); len(props) == 1 {
-							propData = hex.EncodeToString(props[0].Data())
-						}
+				for i, col := range cols {
+					if i == len(cols)-1 {
+						_, _ = w.Write([]byte(col + "\n"))
 					} else {
-						propData = err.Error()
+						_, _ = w.Write([]byte(col + "\t"))
 					}
-					fmt.Printf("        [%02X] %s: %s\n", prop.Code(), propName, propData)
 				}
 			}
+			printRow(columns...)
+			for _, row := range rows {
+				printRow(row...)
+			}
+			w.Flush()
+			return nil
 		}
 
-		/*
-			scanner := SharedCommissioner().Scannar()
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-			err = scanner.Scan(ctx)
+		printDevicesCSV := func(columns []string, rows [][]string) error {
+			printRow := func(cols ...string) {
+				if len(cols) == 0 {
+					return
+				}
+				outputf("%s\n", strings.Join(cols, ","))
+			}
+			printRow(columns...)
+			for _, row := range rows {
+				printRow(row...)
+			}
+			return nil
+		}
+
+		printDevicesJSON := func(columns []string, rows [][]string) error {
+			devObjs := make([]any, 0)
+			b, err := json.MarshalIndent(devObjs, "", "  ")
 			if err != nil {
 				return err
 			}
-			deviceColumns := func(dev ble.Device) ([]string, error) {
-				service, err := dev.Service()
-				if err != nil {
-					return nil, err
-				}
-				return []string{
-					dev.LocalName(),
-					dev.Address().String(),
-					strconv.Itoa(int(service.VendorID())),
-					strconv.Itoa(int(service.ProductID())),
-					strconv.Itoa(int(service.Discriminator())),
-				}, nil
-			}
+			outputf("%s\n", string(b))
+			return nil
+		}
 
-			printDevicesTable := func(devs []ble.Device) error {
-				w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-				printRow := func(cols ...string) {
-					if len(cols) == 0 {
-						return
-					}
-					for i, col := range cols {
-						if i == len(cols)-1 {
-							_, _ = w.Write([]byte(col + "\n"))
-						} else {
-							_, _ = w.Write([]byte(col + "\t"))
-						}
-					}
-				}
-				printRow(columns...)
-				for _, dev := range devs {
-					devColumns, err := deviceColumns(dev)
-					if err != nil {
-						return err
-					}
-					printRow(devColumns...)
-				}
-				w.Flush()
-				return nil
-			}
+		columns, rows, err := ctrl.DiscoveredNodeTable()
+		if err != nil {
+			return err
+		}
 
-			printDevicesCSV := func(devs []ble.Device) error {
-				printRow := func(cols ...string) {
-					if len(cols) == 0 {
-						return
-					}
-					outputf("%s\n", strings.Join(cols, ","))
-				}
-				printRow(columns...)
-				for _, dev := range devs {
-					devColumns, err := deviceColumns(dev)
-					if err != nil {
-						return err
-					}
-					printRow(devColumns...)
-				}
-				return nil
-			}
-
-			printDevicesJSON := func(devs []ble.Device) error {
-				devObjs := make([]any, 0)
-				for _, dev := range devs {
-					devObjs = append(devObjs, dev.MarshalObject())
-				}
-				b, err := json.MarshalIndent(devObjs, "", "  ")
-				if err != nil {
-					return err
-				}
-				outputf("%s\n", string(b))
-				return nil
-			}
-
-			devs := scanner.DiscoveredDevices()
-			if len(devs) == 0 {
-				return nil
-			}
-
-			switch format {
-			case FormatJSON:
-				return printDevicesJSON(devs)
-			case FormatCSV:
-				return printDevicesCSV(devs)
-			default:
-				return printDevicesTable(devs)
-			}
-		*/
+		switch format {
+		case FormatJSON:
+			return printDevicesJSON(columns, rows)
+		case FormatCSV:
+			return printDevicesCSV(columns, rows)
+		default:
+			return printDevicesTable(columns, rows)
+		}
 
 		// Stops the controller
 
