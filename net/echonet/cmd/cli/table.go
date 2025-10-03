@@ -50,8 +50,13 @@ func (t *table) StripDuplicateRowColumns(columnIdxes ...int) Table {
 				lastRowContext = row[columnIdx]
 			default:
 				if row[columnIdx] == lastRowContext {
-					if 0 < columnIdx && row[columnIdx-1] == "" {
-						uniqRow[columnIdx-1] = ""
+					switch columnIdx {
+					case 0:
+						uniqRow[columnIdx] = ""
+					default:
+						if uniqRow[columnIdx-1] == "" {
+							uniqRow[columnIdx] = ""
+						}
 					}
 				} else {
 					lastRowContext = row[columnIdx]
