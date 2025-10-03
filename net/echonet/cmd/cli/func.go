@@ -25,3 +25,4 @@ func enableStdoutVerbose(flag bool) {
 		log.SetSharedLogger(nil)
 	}
 }
+

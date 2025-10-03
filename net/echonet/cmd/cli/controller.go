@@ -7,7 +7,6 @@ package cli
 import (
 	"encoding/hex"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
@@ -29,7 +28,7 @@ func NewController() *Controller {
 }
 
 // DiscoveredNodeTable returns the discovered node table.
-func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
+func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
 	db := echonet.GetStandardDatabase()
 
 	cols := []string{
@@ -45,7 +44,7 @@ func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
 	}
 	rows := [][]string{}
 
-	for n, node := range ctrl.Nodes() {
+	for _, node := range ctrl.Nodes() {
 
 		// Gets manufacture code.
 
@@ -110,7 +109,7 @@ func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
 
 				row := []string{
 					node.Address(),
-					strconv.Itoa(node.Port()),
+					fmt.Sprintf("%d", node.Port()),
 					manufactureName,
 					fmt.Sprintf("%06X", obj.Code()),
 					objName,
@@ -120,33 +119,12 @@ func (ctrl *Controller) DiscoveredNodeTable() ([]string, [][]string, error) {
 					propData,
 				}
 
-				// Skip duplicate values for better readability.
-				if 0 < n {
-					prevRows := rows[len(rows)-1]
-					skipColumnIndexes := []int{0, 3}
-					for _, skipColumnIndex := range skipColumnIndexes {
-						if prevRows[skipColumnIndex] != row[skipColumnIndex] {
-							break
-						}
-						switch skipColumnIndex {
-						case 0:
-							row[0] = ""
-							row[1] = ""
-							row[2] = ""
-						case 3:
-							row[3] = ""
-							row[4] = ""
-						}
-					}
-
-				}
-
 				rows = append(rows, row)
 			}
 		}
 	}
 
-	return cols, rows, nil
+	return NewTable(cols, rows), nil
 }
 
 // ControllerMessageReceived is called when a message is received.

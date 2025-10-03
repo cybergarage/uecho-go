@@ -60,7 +60,9 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 
 		time.Sleep(time.Second * 1)
 
-		printDevicesTable := func(columns []string, rows [][]string) error {
+		printDevicesTable := func(tbl Table) {
+			tbl = tbl.StripDuplicateRowColumns(0, 1, 2, 3, 4)
+			columns, rows := tbl.Columns(), tbl.Rows()
 			w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 			printRow := func(cols ...string) {
 				if len(cols) == 0 {
@@ -79,10 +81,10 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 				printRow(row...)
 			}
 			w.Flush()
-			return nil
 		}
 
-		printDevicesCSV := func(columns []string, rows [][]string) error {
+		printDevicesCSV := func(tbl Table) {
+			columns, rows := tbl.Columns(), tbl.Rows()
 			printRow := func(cols ...string) {
 				if len(cols) == 0 {
 					return
@@ -93,11 +95,18 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			for _, row := range rows {
 				printRow(row...)
 			}
-			return nil
 		}
 
-		printDevicesJSON := func(columns []string, rows [][]string) error {
-			devObjs := make([]any, 0)
+		printDevicesJSON := func(tbl Table) error {
+			columns, rows := tbl.Columns(), tbl.Rows()
+			devObjs := make([]map[string]string, 0, len(rows))
+			for _, row := range rows {
+				obj := make(map[string]string)
+				for i, col := range columns {
+					obj[col] = row[i]
+				}
+				devObjs = append(devObjs, obj)
+			}
 			b, err := json.MarshalIndent(devObjs, "", "  ")
 			if err != nil {
 				return err
@@ -106,18 +115,18 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			return nil
 		}
 
-		columns, rows, err := ctrl.DiscoveredNodeTable()
+		table, err := ctrl.DiscoveredNodeTable()
 		if err != nil {
 			return err
 		}
 
 		switch format {
 		case FormatJSON:
-			return printDevicesJSON(columns, rows)
+			printDevicesJSON(table)
 		case FormatCSV:
-			return printDevicesCSV(columns, rows)
+			printDevicesCSV(table)
 		default:
-			return printDevicesTable(columns, rows)
+			printDevicesTable(table)
 		}
 
 		// Stops the controller
