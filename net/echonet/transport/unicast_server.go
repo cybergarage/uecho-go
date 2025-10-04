@@ -17,9 +17,9 @@ type UnicastServer struct {
 	*Server
 
 	TCPSocket  *UnicastTCPSocket
-	TCPChannel chan interface{}
+	TCPChannel chan any
 	UDPSocket  *UnicastUDPSocket
-	UDPChannel chan interface{}
+	UDPChannel chan any
 	Handler    UnicastHandler
 }
 
@@ -65,7 +65,7 @@ func (server *UnicastServer) Start(ifi *net.Interface, ifaddr string, port int) 
 		server.TCPSocket.Close()
 		return err
 	}
-	server.UDPChannel = make(chan interface{})
+	server.UDPChannel = make(chan any)
 	go handleUnicastUDPConnection(server, server.UDPChannel)
 
 	if server.IsTCPEnabled() {
@@ -73,7 +73,7 @@ func (server *UnicastServer) Start(ifi *net.Interface, ifaddr string, port int) 
 		if err != nil {
 			return err
 		}
-		server.TCPChannel = make(chan interface{})
+		server.TCPChannel = make(chan any)
 		go handleUnicastTCPListener(server, server.TCPChannel)
 	}
 
@@ -119,7 +119,7 @@ func handleUnicastUDPRequestMessage(server *UnicastServer, reqMsg *protocol.Mess
 	server.UDPSocket.ResponseMessageForRequestMessage(reqMsg, resMsg)
 }
 
-func handleUnicastUDPConnection(server *UnicastServer, cancel chan interface{}) {
+func handleUnicastUDPConnection(server *UnicastServer, cancel chan any) {
 	for {
 		select {
 		case <-cancel:
@@ -157,7 +157,7 @@ func handleUnicastTCPConnection(server *UnicastServer, conn *net.TCPConn) {
 	server.TCPSocket.ResponseMessageToConnection(conn, resMsg)
 }
 
-func handleUnicastTCPListener(server *UnicastServer, cancel chan interface{}) {
+func handleUnicastTCPListener(server *UnicastServer, cancel chan any) {
 	for {
 		select {
 		case <-cancel:

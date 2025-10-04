@@ -41,7 +41,7 @@ func NewObject() *Object {
 }
 
 // NewObjectWithCodes returns a new object of the specified object codes.
-func NewObjectWithCodes(codes []byte) (interface{}, error) {
+func NewObjectWithCodes(codes []byte) (any, error) {
 	objCode, err := NewObjectCodeFromBytes(codes)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 }
 
 // NewObjectWithCode returns a new object of the specified object code.
-func NewObjectWithCode(code ObjectCode) (interface{}, error) {
+func NewObjectWithCode(code ObjectCode) (any, error) {
 	return NewObjectWithCodes(code.Bytes())
 }
 

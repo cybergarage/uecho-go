@@ -81,7 +81,7 @@ func (node *baseNode) NodeProfile() (*Profile, error) {
 }
 
 // AddObject adds a new object into the node.
-func (node *baseNode) AddObject(obj interface{}) error {
+func (node *baseNode) AddObject(obj any) error {
 	switch v := obj.(type) {
 	case *Device:
 		node.AddDevice(v)

@@ -11,6 +11,6 @@ func OutputError(err error) {
 	fmt.Println(fmt.Sprintf("ERROR : %s", err.Error()))
 }
 
-func OutputMessage(format string, args ...interface{}) {
+func OutputMessage(format string, args ...any) {
 	fmt.Println(fmt.Sprintf(format, args...))
 }
