@@ -29,8 +29,8 @@ func (db *StandardDatabase) addManufacture(man *Manufacture) {
 	db.Manufactures[man.code] = man
 }
 
-// FindManufacture returns the registered manuracture by the specified manuracture code.
-func (db *StandardDatabase) FindManufacture(code ManufactureCode) (*Manufacture, bool) {
+// LookupManufacture returns the registered manuracture by the specified manuracture code.
+func (db *StandardDatabase) LookupManufacture(code ManufactureCode) (*Manufacture, bool) {
 	m, ok := db.Manufactures[code]
 	return m, ok
 }
@@ -39,26 +39,26 @@ func (db *StandardDatabase) addObject(obj *Object) {
 	db.Objects[obj.Code()] = obj
 }
 
-// FindObjectByCode returns the registered object by the specified object code.
-func (db *StandardDatabase) FindObjectByCode(code ObjectCode) (*Object, bool) {
+// LookupObjectByCode returns the registered object by the specified object code.
+func (db *StandardDatabase) LookupObjectByCode(code ObjectCode) (*Object, bool) {
 	obj, ok := db.Objects[(code & 0xFFFF00)]
 	return obj, ok
 }
 
-// FindObjectByCodes returns the registered object by the specified object code.
-func (db *StandardDatabase) FindObjectByCodes(codes []byte) (*Object, bool) {
+// LookupObjectByCodes returns the registered object by the specified object code.
+func (db *StandardDatabase) LookupObjectByCodes(codes []byte) (*Object, bool) {
 	if len(codes) != ObjectCodeSize {
 		return nil, false
 	}
-	return db.FindObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
+	return db.LookupObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
 }
 
 // SuperObject returns the super object.
 func (db *StandardDatabase) SuperObject() (*Object, bool) {
-	return db.FindObjectByCode(0x000000)
+	return db.LookupObjectByCode(0x000000)
 }
 
 // NodeProfile returns the node profile object.
 func (db *StandardDatabase) NodeProfile() (*Object, bool) {
-	return db.FindObjectByCode(0x0EF000)
+	return db.LookupObjectByCode(0x0EF000)
 }
