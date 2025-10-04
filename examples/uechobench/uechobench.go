@@ -20,6 +20,7 @@ uechobench is a search utility for Echonet Lite.
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"flag"
 	"fmt"
@@ -58,7 +59,7 @@ func main() {
 		return
 	}
 
-	err = ctrl.SearchAllObjects()
+	err = ctrl.Search(context.Background())
 	if err != nil {
 		return
 	}

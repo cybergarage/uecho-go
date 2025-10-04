@@ -5,22 +5,40 @@
 package echonet
 
 import (
-	"fmt"
+	"context"
+	"time"
 
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
+	// TIDMin is the minimum value of transaction ID.
 	TIDMin = 0
+	// TIDMax is the maximum value of transaction ID.
 	TIDMax = 65535
+	// DefaultResponseTimeout is the default timeout value to wait for a response message.
+	DefaultResponseTimeout = time.Duration(3) * time.Second
 )
 
-const (
-	errorNodeNotFound = "Node (%s) not found"
-)
+// Controller represents the Echonet controller.
+type Controller interface {
+	// SetConfig sets a configuration.
+	SetConfig(*Config)
+	// SetListener sets a listener to receive the Echonet messages.
+	SetListener(ControllerListener)
+	// Search searches echonet nodes until the context is done.
+	Search(ctx context.Context) error
+	// Nodes returns discovered nodes.
+	Nodes() []*RemoteNode
+	// PostMessage posts a message to the node, and wait the response message.
+	PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error)
+	// Start starts the controller.
+	Start() error
+	// Stop stops the controller.
+	Stop() error
+}
 
-// Controller is an instance for Echonet controller.
-type Controller struct {
+type controller struct {
 	*LocalNode
 
 	foundNodes []*RemoteNode
@@ -29,8 +47,12 @@ type Controller struct {
 }
 
 // NewController returns a new controller.
-func NewController() *Controller {
-	ctrl := &Controller{
+func NewController() *controller {
+	return newController()
+}
+
+func newController() *controller {
+	ctrl := &controller{
 		LocalNode:          NewLocalNode(),
 		foundNodes:         make([]*RemoteNode, 0),
 		controllerListener: nil,
@@ -42,72 +64,39 @@ func NewController() *Controller {
 }
 
 // SetListener sets a listener to receive the Echonet messages.
-func (ctrl *Controller) SetListener(l ControllerListener) {
+func (ctrl *controller) SetListener(l ControllerListener) {
 	ctrl.controllerListener = l
 }
 
 // Nodes returns found nodes.
-func (ctrl *Controller) Nodes() []*RemoteNode {
+func (ctrl *controller) Nodes() []*RemoteNode {
 	return ctrl.foundNodes
 }
 
-// FindNode returns a node which has the specified address.
-func (ctrl *Controller) FindNode(addr string) (*RemoteNode, error) {
+// LookupNode returns a node which has the specified address.
+func (ctrl *controller) LookupNode(addr string) (*RemoteNode, bool) {
 	for _, node := range ctrl.Nodes() {
 		if node.Address() == addr {
-			return node, nil
+			return node, true
 		}
 	}
-	return nil, fmt.Errorf(errorNodeNotFound, addr)
-}
-
-// FindObject returns a object which has the specified object code.
-func (ctrl *Controller) FindObject(code ObjectCode) (*Object, error) {
-	for _, node := range ctrl.Nodes() {
-		obj, err := node.FindObject(code)
-		if err == nil {
-			return obj, nil
-		}
-	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
-}
-
-// FindDevice returns a device object which has the specified object code.
-func (ctrl *Controller) FindDevice(code ObjectCode) (*Device, error) {
-	for _, node := range ctrl.Nodes() {
-		dev, err := node.FindDevice(code)
-		if err == nil {
-			return dev, nil
-		}
-	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
-}
-
-// FindProfile returns a profile object which has the specified object code.
-func (ctrl *Controller) FindProfile(code ObjectCode) (*Profile, error) {
-	for _, node := range ctrl.Nodes() {
-		prof, err := node.FindProfile(code)
-		if err == nil {
-			return prof, nil
-		}
-	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
+	return nil, false
 }
 
 // SearchAllObjectsWithESV searches all specified objects.
-func (ctrl *Controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
+func (ctrl *controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
 	msg := NewSearchMessage()
 	msg.SetESV(esv)
 	return ctrl.AnnounceMessage(msg)
 }
 
 // SearchAllObjects searches all objects.
-func (ctrl *Controller) SearchAllObjects() error {
+func (ctrl *controller) SearchAllObjects() error {
 	return ctrl.SearchAllObjectsWithESV(protocol.ESVReadRequest)
 }
 
 // SearchObjectWithESV searches a specified object.
-func (ctrl *Controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) error {
+func (ctrl *controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) error {
 	msg := NewSearchMessage()
 	msg.SetESV(esv)
 	msg.SetDEOJ(code)
@@ -115,18 +104,39 @@ func (ctrl *Controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) e
 }
 
 // SearchObject searches a specified object.
-func (ctrl *Controller) SearchObject(code ObjectCode) error {
+func (ctrl *controller) SearchObject(code ObjectCode) error {
 	return ctrl.SearchObjectWithESV(code, protocol.ESVReadRequest)
 }
 
+// Search searches echonet nodes until the context is done.
+func (ctrl *controller) Search(ctx context.Context) error {
+	if _, ok := ctx.Deadline(); !ok {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, DefaultResponseTimeout)
+		defer cancel()
+	}
+	err := ctrl.SearchAllObjects()
+	if err != nil {
+		return err
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			time.Sleep(time.Millisecond * 200)
+		}
+	}
+}
+
 // Clear clears all found nodes.
-func (ctrl *Controller) Clear() error {
+func (ctrl *controller) Clear() error {
 	ctrl.foundNodes = make([]*RemoteNode, 0)
 	return nil
 }
 
 // Start starts the controller.
-func (ctrl *Controller) Start() error {
+func (ctrl *controller) Start() error {
 	if err := ctrl.Clear(); err != nil {
 		return err
 	}
@@ -137,7 +147,7 @@ func (ctrl *Controller) Start() error {
 }
 
 // Stop stop the controller.
-func (ctrl *Controller) Stop() error {
+func (ctrl *controller) Stop() error {
 	if err := ctrl.LocalNode.Stop(); err != nil {
 		return err
 	}

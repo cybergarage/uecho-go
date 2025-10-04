@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"testing"
 )
 
@@ -16,7 +17,7 @@ func TestPostController(t *testing.T) {
 		return
 	}
 
-	err = ctrl.SearchAllObjects()
+	err = ctrl.Search(context.Background())
 	if err != nil {
 		t.Error(err)
 	}

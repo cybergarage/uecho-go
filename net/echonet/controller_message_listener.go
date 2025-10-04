@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	logControllerListenerFormat = "Controller::NodeMessageReceived : %s"
+	logControllerListenerFormat = "controller::NodeMessageReceived : %s"
 )
 
-func (ctrl *Controller) isSelfMessage(msg *protocol.Message) bool {
+func (ctrl *controller) isSelfMessage(msg *protocol.Message) bool {
 	msgNode := NewRemoteNodeWithRequestMessage(msg)
 	for _, server := range ctrl.MulticastManager().Servers {
 		port, err := server.Port()
@@ -35,7 +35,7 @@ func (ctrl *Controller) isSelfMessage(msg *protocol.Message) bool {
 }
 
 // NodeMessageReceived is a listener of the local node.
-func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
+func (ctrl *controller) NodeMessageReceived(msg *protocol.Message) error {
 	if !ctrl.IsSelfMessageEnabled() {
 		if ctrl.isSelfMessage(msg) {
 			return nil
@@ -67,7 +67,7 @@ func (ctrl *Controller) NodeMessageReceived(msg *protocol.Message) error {
 }
 
 // parseNodeProfileMessage parses the specified message to check new objects.
-func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
+func (ctrl *controller) parseNodeProfileMessage(msg *protocol.Message) {
 	if !ctrl.IsSelfMessageEnabled() {
 		if ctrl.isSelfMessage(msg) {
 			return
@@ -83,7 +83,7 @@ func (ctrl *Controller) parseNodeProfileMessage(msg *protocol.Message) {
 }
 
 // addNode adds a specified node if the node is not added.
-func (ctrl *Controller) addNode(notifyNode *RemoteNode) bool {
+func (ctrl *controller) addNode(notifyNode *RemoteNode) bool {
 	for _, node := range ctrl.foundNodes {
 		if notifyNode.Equals(node) {
 			return false

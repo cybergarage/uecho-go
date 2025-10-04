@@ -5,6 +5,7 @@
 package cli
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"strings"
@@ -51,7 +52,7 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		err = ctrl.SearchAllObjects()
+		err = ctrl.Search(context.Background())
 		if err != nil {
 			return err
 		}

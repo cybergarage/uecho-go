@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -153,7 +154,13 @@ func (node *LocalNode) closeResponseChannel() {
 }
 
 // PostMessage posts a message to the node, and wait the response message.
-func (node *LocalNode) PostMessage(dstNode Node, msg *Message) (*Message, error) {
+func (node *LocalNode) PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error) {
+	if _, ok := ctx.Deadline(); !ok {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, DefaultResponseTimeout)
+		defer cancel()
+	}
+
 	// Use TCP connection when the function is enabled
 
 	if node.IsTCPEnabled() {
@@ -194,11 +201,11 @@ func (node *LocalNode) PostMessage(dstNode Node, msg *Message) (*Message, error)
 }
 
 // SendRequest sends a specified request to the object.
-func (node *LocalNode) SendRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
+func (node *LocalNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
 	return node.SendMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *LocalNode) PostRequest(dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
-	return node.PostMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
+func (node *LocalNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
+	return node.PostMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }

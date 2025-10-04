@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -17,7 +18,7 @@ const (
 )
 
 type testController struct {
-	*Controller
+	Controller
 
 	foundTestNodeCount int
 }
@@ -53,7 +54,7 @@ func TestNewController(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = ctrl.SearchAllObjects()
+	err = ctrl.Search(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,7 +105,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	}
 	defer ctrl.Stop()
 
-	err = ctrl.SearchAllObjects()
+	err = ctrl.Search(context.Background())
 	if err != nil {
 		t.Error(err)
 		return
@@ -174,7 +175,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 			prop := NewPropertyWithCode(testLightPropertyPowerCode)
 			prop.SetData([]byte{lastLightPowerStatus})
 			reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
-			resMsg, err := ctrl.PostMessage(foundNode, reqMsg)
+			resMsg, err := ctrl.PostMessage(context.Background(), foundNode, reqMsg)
 			if err != nil {
 				t.Errorf("[%d] %s:%d is not responding", foundNodeIdx, foundNode.Address(), foundNode.Port())
 				t.Error(err)

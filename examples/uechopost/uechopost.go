@@ -20,6 +20,7 @@ uechodump is a dump utility for Echonet Lite.
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -92,7 +93,7 @@ func main() {
 		return
 	}
 
-	err = ctrl.SearchAllObjects()
+	err = ctrl.Search(context.Background())
 	if err != nil {
 		exitWithError(err)
 		return
@@ -105,8 +106,8 @@ func main() {
 	// Find the specified destination node
 
 	dstNodeAddr := os.Args[1]
-	dstNode, err := ctrl.FindNode(dstNodeAddr)
-	if err != nil {
+	dstNode, ok := ctrl.LookupNode(dstNodeAddr)
+	if !ok {
 		exitWithErrorMessage(fmt.Sprintf("The destination node (%s) is not found", dstNodeAddr))
 	}
 

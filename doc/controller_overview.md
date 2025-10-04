@@ -24,12 +24,12 @@ err := ctrl.Start()
 
 ### 2. Searching Nodes
 
-Next, use `Controller::SearchAllObjects()` to search other nodes in the local area network as the following:
+Next, use `Controller::Search()` to search other nodes in the local area network as the following:
 
 ```
 ctrl := echonet.NewController()
 ....
-err = ctrl.SearchAllObjects()
+err = ctrl.Search(context.Background())
 if err != nil {
     ....
 }

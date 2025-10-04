@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -136,7 +137,12 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	prop := NewPropertyWithCode(testLightPropertyPowerCode)
 	for n := 0; n < testNodeRequestCount; n++ {
-		err = ctrl.SendRequest(dev.ParentNode(), testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
+		err = ctrl.SendRequest(
+			context.Background(),
+			dev.ParentNode(),
+			testLightDeviceCode,
+			protocol.ESVReadRequest,
+			[]*Property{prop})
 		if err != nil {
 			t.Error(err)
 			return
@@ -149,7 +155,10 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	for n := 0; n < testNodeRequestCount; n++ {
 		time.Sleep(testNodeRequestSleep)
 		reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
-		resMsg, err := ctrl.PostMessage(dev.ParentNode(), reqMsg)
+		resMsg, err := ctrl.PostMessage(
+			context.Background(),
+			dev.ParentNode(),
+			reqMsg)
 		if err != nil {
 			t.Error(err)
 			return
@@ -178,7 +187,12 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
-		err = ctrl.SendRequest(dev.ParentNode(), testLightDeviceCode, protocol.ESVWriteRequest, []*Property{prop})
+		err = ctrl.SendRequest(
+			context.Background(),
+			dev.ParentNode(),
+			testLightDeviceCode,
+			protocol.ESVWriteRequest,
+			[]*Property{prop})
 		if err != nil {
 			t.Error(err)
 			return
@@ -190,7 +204,10 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		prop = NewPropertyWithCode(testLightPropertyPowerCode)
 		reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVReadRequest, []*Property{prop})
-		resMsg, err := ctrl.PostMessage(dev.ParentNode(), reqMsg)
+		resMsg, err := ctrl.PostMessage(
+			context.Background(),
+			dev.ParentNode(),
+			reqMsg)
 		if err != nil {
 			t.Error(err)
 			return
@@ -218,7 +235,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		prop := NewPropertyWithCode(testLightPropertyPowerCode)
 		prop.SetData([]byte{lastLightPowerStatus})
 		reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
-		resMsg, err := ctrl.PostMessage(dev.ParentNode(), reqMsg)
+		resMsg, err := ctrl.PostMessage(context.Background(), dev.ParentNode(), reqMsg)
 		if err != nil {
 			t.Error(err)
 			return
