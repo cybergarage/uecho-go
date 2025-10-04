@@ -98,7 +98,7 @@ func NewDevice() *Device {
 
 // NewDeviceWithCodes returns a new device of the specified object codes.
 func NewDeviceWithCodes(codes []byte) (*Device, error) {
-	objCode, err := BytesToObjectCode(codes)
+	objCode, err := NewObjectCodeFromBytes(codes)
 	if err != nil {
 		return nil, err
 	}

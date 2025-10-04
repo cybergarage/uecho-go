@@ -42,7 +42,7 @@ func NewObject() *Object {
 
 // NewObjectWithCodes returns a new object of the specified object codes.
 func NewObjectWithCodes(codes []byte) (interface{}, error) {
-	objCode, err := BytesToObjectCode(codes)
+	objCode, err := NewObjectCodeFromBytes(codes)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func NewObjectWithCodes(codes []byte) (interface{}, error) {
 
 // NewObjectWithCode returns a new object of the specified object code.
 func NewObjectWithCode(code ObjectCode) (interface{}, error) {
-	return NewObjectWithCodes(ObjectCodeToBytes(code))
+	return NewObjectWithCodes(code.Bytes())
 }
 
 // SetClassName sets a class name to the object.

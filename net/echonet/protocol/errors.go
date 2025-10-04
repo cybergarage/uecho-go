@@ -8,4 +8,5 @@ const (
 	errorShortMessageSize     = "short message length : %d < %d"
 	errorInvalidMessageHeader = "invalid message header [%d] : %02X != %02X"
 	errorInvalidAddress       = "invalid address string : %s"
+	errorInvalidObjectCodes   = "invalid object code : %s"
 )

@@ -5,37 +5,20 @@
 package echonet
 
 import (
-	"fmt"
-
-	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
-	errorInvalidObjectCodes = "invalid object code : %s"
-)
-
-const (
-	ObjectCodeMin     = 0x000000
-	ObjectCodeMax     = 0xFFFFFF
-	ObjectCodeSize    = 3
+	ObjectCodeMin     = protocol.ObjectCodeMin
+	ObjectCodeMax     = protocol.ObjectCodeMax
+	ObjectCodeSize    = protocol.ObjectCodeSize
 	ObjectCodeUnknown = ObjectCodeMin
 )
 
 // ObjectCode is a type for object code.
 type ObjectCode = protocol.ObjectCode
 
-// BytesToObjectCode converts the specified object code bytes to the object code.
-func BytesToObjectCode(codes []byte) (ObjectCode, error) {
-	if len(codes) != ObjectCodeSize {
-		return 0, fmt.Errorf(errorInvalidObjectCodes, string(codes))
-	}
-	return ObjectCode(encoding.ByteToInteger(codes)), nil
-}
-
-// ObjectCodeToBytes returns a object byte array with the specified object code.
-func ObjectCodeToBytes(code ObjectCode) []byte {
-	codes := make([]byte, 3)
-	encoding.IntegerToByte(uint(code), codes)
-	return codes
+// NewObjectCodeFromBytes converts the specified object code bytes to the object code.
+func NewObjectCodeFromBytes(codes []byte) (ObjectCode, error) {
+	return protocol.NewObjectCodeFromBytes(codes)
 }
