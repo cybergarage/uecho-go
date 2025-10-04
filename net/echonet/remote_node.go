@@ -25,8 +25,8 @@ type RemoteNode struct {
 	port    int
 }
 
-// NewRemoteNode returns a new remote node.
-func NewRemoteNode() *RemoteNode {
+// newRemoteNode returns a new remote node.
+func newRemoteNode() *RemoteNode {
 	node := &RemoteNode{
 		baseNode: newBaseNode(),
 		address:  "",
@@ -36,16 +36,16 @@ func NewRemoteNode() *RemoteNode {
 	return node
 }
 
-// NewRemoteNodeWithRequestMessage returns a new node with the specified request message.
-func NewRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
-	node := NewRemoteNode()
+// newRemoteNodeWithRequestMessage returns a new node with the specified request message.
+func newRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
+	node := newRemoteNode()
 	node.SetAddress(msg.From.IP.String())
 	node.SetPort(msg.From.Port)
 	return node
 }
 
-// NewRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
-func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, error) {
+// newRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
+func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, error) {
 	if msgOPC := msg.OPC(); msgOPC < 1 {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
@@ -72,7 +72,7 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 
 	// Create a new remote Node
 
-	node := NewRemoteNode()
+	node := newRemoteNode()
 	node.SetAddress(msg.SourceAddress())
 	node.SetPort(msg.SourcePort())
 	node.AddProfile(NewNodeProfile())
@@ -97,9 +97,9 @@ func NewRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 	return node, nil
 }
 
-// NewRemoteNodeWithInstanceListMessageAndConfig returns a new node with the specified notification message and configuration.
-func NewRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *transport.Config) (*RemoteNode, error) {
-	remoteNode, err := NewRemoteNodeWithInstanceListMessage(msg)
+// newRemoteNodeWithInstanceListMessageAndConfig returns a new node with the specified notification message and configuration.
+func newRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *transport.Config) (*RemoteNode, error) {
+	remoteNode, err := newRemoteNodeWithInstanceListMessage(msg)
 	if err != nil {
 		return nil, err
 	}

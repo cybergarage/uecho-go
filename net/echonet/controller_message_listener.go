@@ -13,7 +13,7 @@ const (
 )
 
 func (ctrl *controller) isSelfMessage(msg *protocol.Message) bool {
-	msgNode := NewRemoteNodeWithRequestMessage(msg)
+	msgNode := newRemoteNodeWithRequestMessage(msg)
 	for _, server := range ctrl.MulticastManager().Servers {
 		port, err := server.Port()
 		if err != nil {
@@ -74,7 +74,7 @@ func (ctrl *controller) parseNodeProfileMessage(msg *protocol.Message) {
 		}
 	}
 
-	node, err := NewRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.TransportConfig)
+	node, err := newRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.TransportConfig)
 	if err != nil {
 		return
 	}
