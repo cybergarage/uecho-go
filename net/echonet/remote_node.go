@@ -80,15 +80,15 @@ func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*remoteNode, e
 	for n := range instanceCount {
 		objCodes := make([]byte, ObjectCodeSize)
 		copy(objCodes, propData[((n*ObjectCodeSize)+1):])
-		obj, err := NewObjectWithCodes(objCodes)
+		obj, err := NewObjectWithCodeBytes(objCodes)
 		if err != nil {
 			return nil, err
 		}
 		switch v := obj.(type) {
-		case *Device:
-			node.AddDevice(v)
-		case *Profile:
+		case Profile:
 			node.AddProfile(v)
+		case Device:
+			node.AddDevice(v)
 		}
 	}
 
@@ -133,13 +133,13 @@ func (node *remoteNode) Port() int {
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
-func (node *remoteNode) AddDevice(dev *Device) {
+func (node *remoteNode) AddDevice(dev Device) {
 	node.baseNode.AddDevice(dev)
 	dev.SetParentNode(node)
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
-func (node *remoteNode) AddProfile(prof *Profile) {
+func (node *remoteNode) AddProfile(prof Profile) {
 	node.baseNode.AddProfile(prof)
 	prof.SetParentNode(node)
 }

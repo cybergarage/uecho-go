@@ -36,8 +36,14 @@ const (
 )
 
 // Profile represents an instance for a profile object of Echonet.
-type Profile struct {
-	*SuperObject
+type Profile interface {
+	SuperObject
+	// IsNodeProfile indicates whether the profile is a node profile or not.
+	IsNodeProfile() bool
+}
+
+type profile struct {
+	SuperObject
 }
 
 // isProfileObjectCode returns true when the class group code is the profile code, otherwise false.
@@ -45,22 +51,16 @@ func isProfileObjectCode(code byte) bool {
 	return (code == ProfileClassGroupCode)
 }
 
-// isNodeProfileObjectCode returns true when the code is the node profile code, otherwise false.
-func isNodeProfileObjectCode(code ObjectCode) bool {
-	if code == NodeProfileObjectCode {
-		return true
-	}
-	if code == NodeProfileObjectReadOnlyCode {
-		return true
-	}
-	return false
-}
-
 // NewProfile returns a new profile object.
-func NewProfile() *Profile {
-	prof := &Profile{
+func NewProfile() Profile {
+	prof := &profile{
 		SuperObject: NewSuperObject(),
 	}
 	prof.SetClassGroupCode(ProfileClassGroupCode)
 	return prof
+}
+
+// IsNodeProfile indicates whether the profile is a node profile or not.
+func (prof *profile) IsNodeProfile() bool {
+	return isNodeProfileObjectCode(prof.Code())
 }

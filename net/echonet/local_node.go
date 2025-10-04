@@ -22,7 +22,7 @@ type LocalNode interface {
 	// SetManufacturerCode sets a manufacture codes to the node and all its devices.
 	SetManufacturerCode(code uint)
 	// AddDevice adds a new device into the node, and set the manufacturer code and update the node profile.
-	AddDevice(*Device)
+	AddDevice(Device)
 	// SetListener sets a listener to the node.
 	SetListener(NodeListener)
 	// Start starts the node.
@@ -41,7 +41,7 @@ func WithLocalNodeManufacturerCode(code uint) LocalNodeOption {
 }
 
 // WithLocalNodeDevices adds devices to the node.
-func WithLocalNodeDevices(devs ...*Device) LocalNodeOption {
+func WithLocalNodeDevices(devs ...Device) LocalNodeOption {
 	return func(node *localNode) {
 		for _, dev := range devs {
 			node.AddDevice(dev)
@@ -169,7 +169,7 @@ func (node *localNode) NextTID() uint {
 }
 
 // AddDevice adds a new device into the node, and set the manufacturer code and update the node profile.
-func (node *localNode) AddDevice(dev *Device) {
+func (node *localNode) AddDevice(dev Device) {
 	node.baseNode.AddDevice(dev)
 	dev.SetManufacturerCode(node.manufacturerCode)
 	dev.SetParentNode(node)
@@ -177,7 +177,7 @@ func (node *localNode) AddDevice(dev *Device) {
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
-func (node *localNode) AddProfile(prof *Profile) {
+func (node *localNode) AddProfile(prof Profile) {
 	node.baseNode.AddProfile(prof)
 	prof.SetManufacturerCode(node.manufacturerCode)
 	prof.SetParentNode(node)

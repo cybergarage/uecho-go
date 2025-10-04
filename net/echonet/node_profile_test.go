@@ -38,5 +38,5 @@ func TestNewNodeProfile(t *testing.T) {
 		})
 	}
 
-	testObjectPropertyMaps(t, prof.SuperObject.Object)
+	testObjectPropertyMaps(t, prof)
 }

@@ -45,7 +45,7 @@ type Property struct {
 	name         string
 	code         PropertyCode
 	data         []byte
-	parentObject *Object
+	parentObject Object
 	getAttr      PropertyAttr
 	setAttr      PropertyAttr
 	annoAttr     PropertyAttr
@@ -81,12 +81,12 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 }
 
 // SetParentObject sets a parent object into the property.
-func (prop *Property) SetParentObject(obj *Object) {
+func (prop *Property) SetParentObject(obj Object) {
 	prop.parentObject = obj
 }
 
 // ParentObject returns the parent object.
-func (prop *Property) ParentObject() *Object {
+func (prop *Property) ParentObject() Object {
 	return prop.parentObject
 }
 

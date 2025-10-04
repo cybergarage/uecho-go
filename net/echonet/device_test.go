@@ -28,5 +28,5 @@ func TestNewDevice(t *testing.T) {
 		})
 	}
 
-	testObjectPropertyMaps(t, dev.SuperObject.Object)
+	testObjectPropertyMaps(t, dev)
 }

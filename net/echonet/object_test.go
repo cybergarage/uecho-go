@@ -15,7 +15,7 @@ const (
 )
 
 func TestNewObject(t *testing.T) {
-	NewObject()
+	newObject()
 }
 
 func TestObjectCodes(t *testing.T) {

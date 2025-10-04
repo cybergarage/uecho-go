@@ -52,27 +52,56 @@ const (
 	LowerCommunicationLayerProtocolType = 0xFE
 )
 
-// NewNodeProfile returns a new node profile object.
-func NewNodeProfile() *Profile {
-	prof := NewProfile()
-	prof.SetCode(NodeProfileObjectCode)
-	return prof
+type NodeProfile interface {
+	Profile
+	// IsReadOnly returns true when the profile is read-only, otherwise false.
+	IsReadOnly() bool
+	// SetInstanceCount sets a instance count.
+	SetInstanceCount(count uint) error
+	// SetInstanceList sets a instance list.
+	SetInstanceList(devices []Device) error
+	// SetClassCount sets a class count.
+	SetClassCount(count uint) error
+	// SetClassCount sets a class count.
+	SetClassList(classes []*Class) error
 }
 
-// addNodeProfileMandatoryProperties sets mandatory properties for node profile.
-func (prof *Profile) addNodeProfileMandatoryProperties() {
-	stdObj, ok := SharedStandardDatabase().NodeProfile()
-	if !ok {
-		return
+// NewNodeProfile returns a new node profile object.
+func NewNodeProfile() NodeProfile {
+	prof := NewProfile()
+	prof.SetCode(NodeProfileObjectCode)
+	return NewNodeProfileWith(prof)
+}
+
+// NewNodeProfileWith returns a new node profile object with the specified profile.
+func NewNodeProfileWith(profile Profile) NodeProfile {
+	return &nodeProfile{
+		Profile: profile,
 	}
-	prof.SetClassName(stdObj.ClassName())
-	for _, stdProp := range stdObj.Properties() {
-		prof.AddProperty(stdProp.Copy())
+}
+
+type nodeProfile struct {
+	Profile
+}
+
+// isNodeProfileObjectCode returns true when the code is the node profile code, otherwise false.
+func isNodeProfileObjectCode(code ObjectCode) bool {
+	if code == NodeProfileObjectCode {
+		return true
 	}
+	if code == NodeProfileObjectReadOnlyCode {
+		return true
+	}
+	return false
+}
+
+// IsReadOnly returns true when the profile is read-only, otherwise false.
+func (prof *nodeProfile) IsReadOnly() bool {
+	return prof.Code() == NodeProfileObjectReadOnlyCode
 }
 
 // SetVersion sets a version to the profile.
-func (prof *Profile) SetVersion(major int, minor int) error {
+func (prof *nodeProfile) SetVersion(major int, minor int) error {
 	verBytes := []byte{
 		byte(major),
 	}
@@ -80,7 +109,7 @@ func (prof *Profile) SetVersion(major int, minor int) error {
 }
 
 // SetID sets a ID to the profile.
-func (prof *Profile) SetID(manufactureCode uint) error {
+func (prof *nodeProfile) SetID(manufactureCode uint) error {
 	manufactureCodeBytes := make([]byte, NodeProfileClassIdentificationManufacturerCodeSize)
 	encoding.IntegerToByte(manufactureCode, manufactureCodeBytes)
 
@@ -91,12 +120,12 @@ func (prof *Profile) SetID(manufactureCode uint) error {
 }
 
 // SetInstanceCount sets a instance count in a node.
-func (prof *Profile) SetInstanceCount(count uint) error {
-	return prof.SetPropertyIntegerData(NodeProfileClassNumberOfSelfNodeInstances, count, NodeProfileClassNumberOfSelfNodeInstancesSize)
+func (prof *nodeProfile) SetInstanceCount(count uint) error {
+	return prof.SetPropertyInteger(NodeProfileClassNumberOfSelfNodeInstances, count, NodeProfileClassNumberOfSelfNodeInstancesSize)
 }
 
 // SetInstanceList sets a instance list in a node.
-func (prof *Profile) SetInstanceList(devices []*Device) error {
+func (prof *nodeProfile) SetInstanceList(devices []Device) error {
 	instanceList := make([]byte, 1)
 	if instanceCount := len(devices); instanceCount <= (NodeProfileClassSelfNodeInstanceListSMax - 1) {
 		instanceList[0] = byte(instanceCount)
@@ -122,12 +151,12 @@ func (prof *Profile) SetInstanceList(devices []*Device) error {
 }
 
 // SetClassCount sets a class count in a node.
-func (prof *Profile) SetClassCount(count uint) error {
-	return prof.SetPropertyIntegerData(NodeProfileClassNumberOfSelfNodeClasses, count, NodeProfileClassNumberOfSelfNodeClassesSize)
+func (prof *nodeProfile) SetClassCount(count uint) error {
+	return prof.SetPropertyInteger(NodeProfileClassNumberOfSelfNodeClasses, count, NodeProfileClassNumberOfSelfNodeClassesSize)
 }
 
 // SetClassList sets a class list in a node.
-func (prof *Profile) SetClassList(classes []*Class) error {
+func (prof *nodeProfile) SetClassList(classes []*Class) error {
 	classList := make([]byte, 1)
 	if classCount := len(classes); classCount <= (NodeProfileClassSelfNodeClassListSMax - 1) {
 		classList[0] = byte(classCount)

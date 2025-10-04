@@ -11,14 +11,14 @@ import (
 // StandardDatabase represents a standard database of Echonet.
 type StandardDatabase struct {
 	Manufactures map[ManufactureCode]*Manufacture
-	Objects      map[ObjectCode]*Object
+	Objects      map[ObjectCode]Object
 }
 
 // NewStandardDatabase returns a standard database instance.
 func NewStandardDatabase() *StandardDatabase {
 	db := &StandardDatabase{
 		Manufactures: map[ManufactureCode]*Manufacture{},
-		Objects:      map[ObjectCode]*Object{},
+		Objects:      map[ObjectCode]Object{},
 	}
 	db.initManufactures()
 	db.initObjects()
@@ -35,18 +35,18 @@ func (db *StandardDatabase) LookupManufacture(code ManufactureCode) (*Manufactur
 	return m, ok
 }
 
-func (db *StandardDatabase) addObject(obj *Object) {
+func (db *StandardDatabase) addObject(obj Object) {
 	db.Objects[obj.Code()] = obj
 }
 
 // LookupObjectByCode returns the registered object by the specified object code.
-func (db *StandardDatabase) LookupObjectByCode(code ObjectCode) (*Object, bool) {
+func (db *StandardDatabase) LookupObjectByCode(code ObjectCode) (Object, bool) {
 	obj, ok := db.Objects[(code & 0xFFFF00)]
 	return obj, ok
 }
 
 // LookupObjectByCodes returns the registered object by the specified object code.
-func (db *StandardDatabase) LookupObjectByCodes(codes []byte) (*Object, bool) {
+func (db *StandardDatabase) LookupObjectByCodes(codes []byte) (Object, bool) {
 	if len(codes) != ObjectCodeSize {
 		return nil, false
 	}
@@ -54,11 +54,11 @@ func (db *StandardDatabase) LookupObjectByCodes(codes []byte) (*Object, bool) {
 }
 
 // SuperObject returns the super object.
-func (db *StandardDatabase) SuperObject() (*Object, bool) {
+func (db *StandardDatabase) SuperObject() (Object, bool) {
 	return db.LookupObjectByCode(0x000000)
 }
 
 // NodeProfile returns the node profile object.
-func (db *StandardDatabase) NodeProfile() (*Object, bool) {
+func (db *StandardDatabase) NodeProfile() (Object, bool) {
 	return db.LookupObjectByCode(0x0EF000)
 }

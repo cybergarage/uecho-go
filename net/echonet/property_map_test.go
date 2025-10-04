@@ -127,10 +127,9 @@ func TestPropertyMapFormat2ToCode(t *testing.T) {
 }
 
 func TestObjectPropertyMap(t *testing.T) {
-	objs := []*Object{
-		NewSuperObject().Object,
-		// NewNodeProfile().SuperObject.Object,
-		NewDeviceWithCode(0x03CE).SuperObject.Object,
+	objs := []Object{
+		NewSuperObject(),
+		NewDeviceWithCode(0x03CE),
 	}
 	// objCodes := []ObjectCode{SuperObjectCode}
 	for _, obj := range objs {
@@ -155,7 +154,7 @@ func TestObjectPropertyMap(t *testing.T) {
 							}
 						}
 					}
-					prop, ok := obj.FindProperty(propMapCode)
+					prop, ok := obj.LookupProperty(propMapCode)
 					if !ok {
 						t.Errorf("%02X is not found", propMapCode)
 						return

@@ -16,31 +16,31 @@ const (
 
 // baseNode is an instance for Echonet node.
 type baseNode struct {
-	devices  []*Device
-	profiles []*Profile
+	devices  []Device
+	profiles []Profile
 }
 
 // NewbaseNode returns a new node.
 func newBaseNode() *baseNode {
 	node := &baseNode{
-		devices:  make([]*Device, 0),
-		profiles: make([]*Profile, 0),
+		devices:  make([]Device, 0),
+		profiles: make([]Profile, 0),
 	}
 	return node
 }
 
 // AddDevice adds a new device into the node.
-func (node *baseNode) AddDevice(dev *Device) {
+func (node *baseNode) AddDevice(dev Device) {
 	node.devices = append(node.devices, dev)
 }
 
 // Devices returns all device objects.
-func (node *baseNode) Devices() []*Device {
+func (node *baseNode) Devices() []Device {
 	return node.devices
 }
 
 // LookupDevice returns a specified device object.
-func (node *baseNode) LookupDevice(code ObjectCode) (*Device, error) {
+func (node *baseNode) LookupDevice(code ObjectCode) (Device, error) {
 	for _, dev := range node.devices {
 		objCode := dev.Code()
 		if objCode == code {
@@ -51,17 +51,17 @@ func (node *baseNode) LookupDevice(code ObjectCode) (*Device, error) {
 }
 
 // AddProfile adds a new profile object into the node.
-func (node *baseNode) AddProfile(prof *Profile) {
+func (node *baseNode) AddProfile(prof Profile) {
 	node.profiles = append(node.profiles, prof)
 }
 
 // Profiles returns all profile objects.
-func (node *baseNode) Profiles() []*Profile {
+func (node *baseNode) Profiles() []Profile {
 	return node.profiles
 }
 
 // LookupProfile returns a specified profile object.
-func (node *baseNode) LookupProfile(code ObjectCode) (*Profile, error) {
+func (node *baseNode) LookupProfile(code ObjectCode) (Profile, error) {
 	for _, prof := range node.profiles {
 		objCode := prof.Code()
 		if objCode == code {
@@ -72,55 +72,57 @@ func (node *baseNode) LookupProfile(code ObjectCode) (*Profile, error) {
 }
 
 // NodeProfile returns a node profile in the node.
-func (node *baseNode) NodeProfile() (*Profile, error) {
+func (node *baseNode) NodeProfile() (NodeProfile, error) {
 	prof, err := node.LookupProfile(NodeProfileObjectCode)
 	if err == nil {
-		return prof, nil
+		return NewNodeProfileWith(prof), nil
 	}
-	return node.LookupProfile(NodeProfileObjectReadOnlyCode)
+	prof, err = node.LookupProfile(NodeProfileObjectReadOnlyCode)
+	if err == nil {
+		return NewNodeProfileWith(prof), nil
+	}
+	return nil, fmt.Errorf(errorObjectProfileObjectNotFound)
 }
 
 // AddObject adds a new object into the node.
 func (node *baseNode) AddObject(obj any) error {
 	switch v := obj.(type) {
-	case *Device:
-		node.AddDevice(v)
-		return nil
-	case *Profile:
+	case Profile:
 		node.AddProfile(v)
+		return nil
+	case Device:
+		node.AddDevice(v)
 		return nil
 	}
 	return fmt.Errorf(errorUnknownObjectType, obj)
 }
 
 // Objects returns all objects.
-func (node *baseNode) Objects() []*Object {
-	objs := make([]*Object, 0)
+func (node *baseNode) Objects() []Object {
+	objs := make([]Object, 0)
 
 	devs := node.Devices()
 	for _, dev := range devs {
-		objs = append(objs, dev.Object)
+		objs = append(objs, dev)
 	}
 
 	profs := node.Profiles()
 	for _, prof := range profs {
-		objs = append(objs, prof.Object)
+		objs = append(objs, prof)
 	}
 
 	return objs
 }
 
 // LookupObject returns a specified object.
-func (node *baseNode) LookupObject(code ObjectCode) (*Object, error) {
+func (node *baseNode) LookupObject(code ObjectCode) (Object, error) {
 	dev, err := node.LookupDevice(code)
 	if err == nil {
-		return dev.Object, nil
+		return dev, nil
 	}
-
 	prof, err := node.LookupProfile(code)
 	if err == nil {
-		return prof.Object, nil
+		return prof, nil
 	}
-
 	return nil, fmt.Errorf(errorObjectNotFound, code)
 }

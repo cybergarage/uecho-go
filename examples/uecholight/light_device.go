@@ -7,13 +7,13 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet"
 )
 
-func NewLightDevice() *echonet.Device {
+func NewLightDevice() echonet.Device {
 
 	dev := echonet.NewDeviceWithCode(LightObjectCode)
 
 	// TODO : Set your manufacture code
 	dev.SetManufacturerCode(echonet.DeviceManufacturerExperimental)
-	dev.SetPropertyIntegerData(LightPropertyPowerCode, LightPropertyPowerOn, 1)
+	dev.SetPropertyInteger(LightPropertyPowerCode, LightPropertyPowerOn, 1)
 
 	return dev
 }

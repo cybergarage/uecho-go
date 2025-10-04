@@ -76,7 +76,7 @@ func (node *localNode) validateReceivedMessage(msg *protocol.Message) bool {
 				continue
 			}
 			// (C) Processing when the controlled object exists but the controlled property does not exist or can be processed only partially
-			prop, ok := dstObj.FindProperty(msgProp.Code())
+			prop, ok := dstObj.LookupProperty(msgProp.Code())
 			if !ok {
 				return false
 			}
@@ -128,9 +128,13 @@ func (node *localNode) executeMessageListeners(msg *protocol.Message) error {
 		if msgProp == nil {
 			continue
 		}
-		err := dstObj.notifyPropertyRequest(msgESV, msgProp)
-		if err != nil {
-			lastErr = err
+		if notifier, ok := dstObj.(objectInternal); ok {
+			err := notifier.notifyPropertyRequest(msgESV, msgProp)
+			if err != nil {
+				lastErr = err
+			}
+		} else {
+			log.Warnf("object does not implement objectInternal: %v", dstObj)
 		}
 	}
 
@@ -153,7 +157,7 @@ func (node *localNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 		if msgProp == nil {
 			continue
 		}
-		prop, ok := dstObj.FindProperty(msgProp.Code())
+		prop, ok := dstObj.LookupProperty(msgProp.Code())
 		if !ok {
 			continue
 		}

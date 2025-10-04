@@ -29,10 +29,10 @@ func TestSuperObject(t *testing.T) {
 		})
 	}
 
-	testObjectPropertyMaps(t, obj.Object)
+	testObjectPropertyMaps(t, obj)
 }
 
-func testObjectPropertyMaps(t *testing.T, obj *Object) {
+func testObjectPropertyMaps(t *testing.T, obj Object) {
 	t.Helper()
 
 	propMapCodes := []PropertyCode{
@@ -43,7 +43,7 @@ func testObjectPropertyMaps(t *testing.T, obj *Object) {
 
 	for _, propCode := range propMapCodes {
 		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
-			prop, ok := obj.FindProperty(propCode)
+			prop, ok := obj.LookupProperty(propCode)
 			if !ok {
 				t.Errorf(errorMandatoryPropertyNotFound, propCode)
 			}

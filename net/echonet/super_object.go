@@ -40,14 +40,26 @@ const (
 )
 
 // SuperObject represents a super object of Echonet device and profile objects.
-type SuperObject struct {
-	*Object
+type SuperObject interface {
+	Object
+	// SetOperatingStatus sets a operating status to the object.
+	SetOperatingStatus(stats bool) error
+	// OperatingStatus return the operating status of the object.
+	OperatingStatus() (bool, error)
+	// SetManufacturerCode sets a manufacture codes to the object.
+	SetManufacturerCode(code uint) error
+	// ManufacturerCode return the manufacture codes of the object.
+	ManufacturerCode() (uint, error)
+}
+
+type superObject struct {
+	Object
 }
 
 // NewSuperObject returns a new device Object.
-func NewSuperObject() *SuperObject {
-	obj := &SuperObject{
-		Object: NewObject(),
+func NewSuperObject() SuperObject {
+	obj := &superObject{
+		Object: newObject(),
 	}
 	obj.Object.SetCode(SuperObjectCode)
 	obj.addStandardPropertiesWithCode(SuperObjectCode)
@@ -56,24 +68,24 @@ func NewSuperObject() *SuperObject {
 }
 
 // SetCode sets a code to the object.
-func (obj *SuperObject) SetCode(code ObjectCode) {
+func (obj *superObject) SetCode(code ObjectCode) {
 	obj.Object.SetCode(code)
 	obj.addStandardProperties()
 }
 
 // SetCodes sets codes to the object.
-func (obj *SuperObject) SetCodes(codes []byte) {
+func (obj *superObject) SetCodes(codes []byte) {
 	obj.Object.SetCodes(codes)
 	obj.addStandardProperties()
 }
 
 // addStandardProperties sets mandatory properties of the object code.
-func (obj *SuperObject) addStandardProperties() {
+func (obj *superObject) addStandardProperties() {
 	obj.addStandardPropertiesWithCode(obj.Code())
 }
 
 // addStandardPropertiesWithCode sets mandatory properties with the specified the object code.
-func (obj *SuperObject) addStandardPropertiesWithCode(objCode ObjectCode) {
+func (obj *superObject) addStandardPropertiesWithCode(objCode ObjectCode) {
 	stdObj, ok := SharedStandardDatabase().LookupObjectByCode(objCode)
 	if !ok {
 		return
@@ -85,13 +97,13 @@ func (obj *SuperObject) addStandardPropertiesWithCode(objCode ObjectCode) {
 }
 
 // AddProperty adds a new property into the property map.
-func (obj *SuperObject) AddProperty(prop *Property) {
+func (obj *superObject) AddProperty(prop *Property) {
 	obj.Object.AddProperty(prop)
 	obj.updatePropertyMap()
 }
 
 // setPropertyMapProperty sets a specified property map to the object.
-func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
+func (obj *superObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
 	if !obj.HasProperty(propMapCode) {
 		return fmt.Errorf(errorPropertyMapNotFound, propMapCode)
 	}
@@ -124,7 +136,7 @@ func (obj *SuperObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 }
 
 // updatePropertyMaps updates property maps  in the object.
-func (obj *SuperObject) updatePropertyMap() error {
+func (obj *superObject) updatePropertyMap() error {
 	propMaps := []struct {
 		code  PropertyCode
 		codes []PropertyCode
@@ -158,17 +170,17 @@ func (obj *SuperObject) updatePropertyMap() error {
 }
 
 // SetOperatingStatus sets a operating status to the object.
-func (obj *SuperObject) SetOperatingStatus(stats bool) error {
+func (obj *superObject) SetOperatingStatus(stats bool) error {
 	statsByte := byte(ObjectOperatingStatusOff)
 	if stats {
 		statsByte = ObjectOperatingStatusOn
 	}
-	return obj.SetPropertyByteData(ObjectOperatingStatus, statsByte)
+	return obj.SetPropertyByte(ObjectOperatingStatus, statsByte)
 }
 
 // OperatingStatus return the operating status of the object.
-func (obj *SuperObject) OperatingStatus() (bool, error) {
-	statsByte, err := obj.FindPropertyByteData(ObjectOperatingStatus)
+func (obj *superObject) OperatingStatus() (bool, error) {
+	statsByte, err := obj.LookupPropertyByte(ObjectOperatingStatus)
 	if err != nil {
 		return false, err
 	}
@@ -179,11 +191,11 @@ func (obj *SuperObject) OperatingStatus() (bool, error) {
 }
 
 // SetManufacturerCode sets a manufacture codes to the object.
-func (obj *SuperObject) SetManufacturerCode(code uint) error {
-	return obj.SetPropertyIntegerData(ObjectManufacturerCode, code, ObjectManufacturerCodeSize)
+func (obj *superObject) SetManufacturerCode(code uint) error {
+	return obj.SetPropertyInteger(ObjectManufacturerCode, code, ObjectManufacturerCodeSize)
 }
 
 // ManufacturerCode return the manufacture codes of the object.
-func (obj *SuperObject) ManufacturerCode() (uint, error) {
-	return obj.FindPropertyIntegerData(ObjectManufacturerCode)
+func (obj *superObject) ManufacturerCode() (uint, error) {
+	return obj.LookupPropertyInteger(ObjectManufacturerCode)
 }

@@ -84,55 +84,63 @@ const (
 )
 
 // Device represents an instance for a device object of Echonet.
-type Device struct {
-	*SuperObject
+type Device interface {
+	SuperObject
 }
 
-// NewDevice returns a new device Object.
-func NewDevice() *Device {
-	dev := &Device{
+type device struct {
+	SuperObject
+}
+
+// NewDevice returns a new device object.
+func NewDevice() Device {
+	return newDevice()
+}
+
+func newDevice() *device {
+	dev := &device{
 		SuperObject: NewSuperObject(),
 	}
 	return dev
 }
 
 // NewDeviceWithCodes returns a new device of the specified object codes.
-func NewDeviceWithCodes(codes []byte) (*Device, error) {
+func NewDeviceWithCodes(codes []byte) (Device, error) {
 	objCode, err := NewObjectCodeFromBytes(codes)
 	if err != nil {
 		return nil, err
 	}
-	obj := NewDevice()
+	obj := newDevice()
 	obj.SetCode(objCode)
 	return obj, nil
 }
 
 // NewDeviceWithCode returns a new device of the specified object code.
-func NewDeviceWithCode(code ObjectCode) *Device {
-	obj := NewDevice()
+func NewDeviceWithCode(code ObjectCode) Device {
+	obj := newDevice()
 	obj.SetCode(code)
 	return obj
 }
 
 // SetInstallationLocation sets a installation location to the device.
-func (dev *Device) SetInstallationLocation(locByte byte) error {
-	return dev.SetPropertyByteData(DeviceInstallationLocation, locByte)
+func (dev *device) SetInstallationLocation(locByte byte) error {
+	return dev.SetPropertyByte(DeviceInstallationLocation, locByte)
 }
 
 // InstallationLocation return the installation location of the device.
-func (dev *Device) InstallationLocation() (byte, error) {
-	return dev.FindPropertyByteData(DeviceInstallationLocation)
+func (dev *device) InstallationLocation() (byte, error) {
+	return dev.LookupPropertyByte(DeviceInstallationLocation)
 }
 
 // SetStandardVersion sets a standard version to the device.
-func (dev *Device) SetStandardVersion(ver byte) error {
+func (dev *device) SetStandardVersion(ver byte) error {
 	verBytes := []byte{0x00, 0x00, ver, 0x00}
 	return dev.SetPropertyData(DeviceStandardVersion, verBytes)
 }
 
 // StandardVersion return the standard version of the device.
-func (dev *Device) StandardVersion() (byte, error) {
-	verBytes, err := dev.FindPropertyData(DeviceStandardVersion)
+func (dev *device) StandardVersion() (byte, error) {
+	verBytes, err := dev.LookupPropertyData(DeviceStandardVersion)
 	if err != nil {
 		return 0, err
 	}
@@ -143,17 +151,17 @@ func (dev *Device) StandardVersion() (byte, error) {
 }
 
 // SetFaultStatus sets a fault status to the device.
-func (dev *Device) SetFaultStatus(stats bool) error {
+func (dev *device) SetFaultStatus(stats bool) error {
 	statsByte := byte(DeviceNoFaultOccurred)
 	if stats {
 		statsByte = DeviceFaultOccurred
 	}
-	return dev.SetPropertyByteData(DeviceFaultStatus, statsByte)
+	return dev.SetPropertyByte(DeviceFaultStatus, statsByte)
 }
 
 // FaultStatus return the fault status of the device.
-func (dev *Device) FaultStatus() (bool, error) {
-	statsByte, err := dev.FindPropertyByteData(DeviceFaultStatus)
+func (dev *device) FaultStatus() (bool, error) {
+	statsByte, err := dev.LookupPropertyByte(DeviceFaultStatus)
 	if err != nil {
 		return false, err
 	}

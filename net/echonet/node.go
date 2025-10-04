@@ -11,21 +11,21 @@ const (
 // Node is an interface for Echonet node.
 type Node interface {
 	// Objects returns all objects.
-	Objects() []*Object
+	Objects() []Object
 	// LookupObject returns the specified object.
-	LookupObject(code ObjectCode) (*Object, error)
+	LookupObject(code ObjectCode) (Object, error)
 
 	// Devices returns all device objects.
-	Devices() []*Device
+	Devices() []Device
 	// LookupDevice returns the specified device object.
-	LookupDevice(code ObjectCode) (*Device, error)
+	LookupDevice(code ObjectCode) (Device, error)
 
 	// Profiles returns all profile objects.
-	Profiles() []*Profile
+	Profiles() []Profile
 	// LookupProfile returns the specified profile object.
-	LookupProfile(code ObjectCode) (*Profile, error)
+	LookupProfile(code ObjectCode) (Profile, error)
 	// NodeProfile returns the node profile object.
-	NodeProfile() (*Profile, error)
+	NodeProfile() (NodeProfile, error)
 
 	// Address returns the bound address.
 	Address() string

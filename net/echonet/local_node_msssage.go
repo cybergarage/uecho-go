@@ -50,7 +50,7 @@ func (node *localNode) Announce() error {
 		return err
 	}
 
-	nodeProp, ok := nodePropObj.FindProperty(NodeProfileClassInstanceListNotification)
+	nodeProp, ok := nodePropObj.LookupProperty(NodeProfileClassInstanceListNotification)
 	if !ok {
 		return fmt.Errorf(errorObjectProfileObjectNotFound)
 	}
@@ -67,7 +67,7 @@ func (node *localNode) updateMessageDestinationHeader(msg *protocol.Message) err
 	if err != nil {
 		return err
 	}
-	msg.SetSEOJ(nodeProp.ParentObject().Code())
+	msg.SetSEOJ(nodeProp.Code())
 
 	return err
 }
