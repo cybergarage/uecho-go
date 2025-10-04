@@ -12,7 +12,7 @@ type Table interface {
 }
 
 type TableHelper interface {
-	StripDuplicateRowColumns(indexes ...int) Table
+	HideDuplicateColumns(indexes ...int) Table
 }
 
 type table struct {
@@ -38,7 +38,7 @@ func (t *table) Rows() [][]string {
 	return t.rows
 }
 
-func (t *table) StripDuplicateRowColumns(columnIdxes ...int) Table {
+func (t *table) HideDuplicateColumns(columnIdxes ...int) Table {
 	stripDuplicateRowColumns := func(rows [][]string, columnIdx int) [][]string {
 		uniqRows := [][]string{}
 		lastRowContext := ""
