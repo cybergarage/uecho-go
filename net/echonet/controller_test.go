@@ -74,7 +74,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
 	for n := range testControllerNodeCount {
-		node, err := newTestSampleNode()
+		node, err := newTestSampleNode(config)
 		if err != nil {
 			t.Error(err)
 			return
@@ -85,7 +85,6 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	// Start a test node
 
 	for _, node := range nodes {
-		node.SetConfig(config)
 		err := node.Start()
 		if err != nil {
 			t.Error(err)

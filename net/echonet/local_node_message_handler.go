@@ -10,7 +10,7 @@ import (
 )
 
 // ProtocolMessageReceived is a listener for the server.
-func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
+func (node *localNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
 	if !node.IsSelfMessageEnabled() {
 		msgNode := newRemoteNodeWithRequestMessage(msg)
 		if msgNode.Equals(node) {
@@ -46,7 +46,7 @@ func (node *LocalNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 }
 
 // validateReceivedMessage checks whether the received message is a valid message.
-func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
+func (node *localNode) validateReceivedMessage(msg *protocol.Message) bool {
 	// 4.2.2 Basic Sequences for Object Control in General
 
 	msgDstObjCode := msg.DEOJ()
@@ -100,7 +100,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 }
 
 // executeMessageListeners post the received message to the listeners.
-func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
+func (node *localNode) executeMessageListeners(msg *protocol.Message) error {
 	msgDstObjCode := msg.DEOJ()
 	dstObj, err := node.LookupObject(msgDstObjCode)
 	if err != nil {
@@ -138,7 +138,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 }
 
 // createResponseMessageForRequestMessage retunrs the response message for the specified request message.
-func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.Message) (*protocol.Message, error) {
+func (node *localNode) createResponseMessageForRequestMessage(reqMsg *protocol.Message) (*protocol.Message, error) {
 	msgDstObjCode := reqMsg.DEOJ()
 	dstObj, err := node.LookupObject(msgDstObjCode)
 	if err != nil {

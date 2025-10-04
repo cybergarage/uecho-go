@@ -339,7 +339,7 @@ func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
 
 // announce announces the property.
 func (prop *Property) announce() error {
-	parentNode, ok := prop.Node().(*LocalNode)
+	parentNode, ok := prop.Node().(localNodeHelper)
 	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
 	}

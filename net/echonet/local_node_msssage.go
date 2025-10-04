@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	logLocalNodeSendMessageFormat = "LocalNode::SendMessage : %s (%d)"
-	logLocalNodePostMessageFormat = "LocalNode::PostMessage : %s"
+	logLocalNodeSendMessageFormat = "localNode::SendMessage : %s (%d)"
+	logLocalNodePostMessageFormat = "localNode::PostMessage : %s"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 )
 
 // AnnounceMessage announces a message.
-func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
+func (node *localNode) AnnounceMessage(msg *protocol.Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
@@ -33,7 +33,7 @@ func (node *LocalNode) AnnounceMessage(msg *protocol.Message) error {
 }
 
 // AnnounceProperty announces a specified property.
-func (node *LocalNode) AnnounceProperty(prop *Property) error {
+func (node *localNode) AnnounceProperty(prop *Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
 	msg.SetSEOJ(prop.ParentObject().Code())
@@ -42,7 +42,7 @@ func (node *LocalNode) AnnounceProperty(prop *Property) error {
 }
 
 // Announce announces the node.
-func (node *LocalNode) Announce() error {
+func (node *localNode) Announce() error {
 	// 4.3.1 Basic Sequence for ECHONET Lite Node Startup
 
 	nodePropObj, err := node.NodeProfile()
@@ -59,7 +59,7 @@ func (node *LocalNode) Announce() error {
 }
 
 // updateMessageDestinationHeader update the message header using the local node status.
-func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) error {
+func (node *localNode) updateMessageDestinationHeader(msg *protocol.Message) error {
 	msg.SetTID(node.NextTID())
 
 	// SEOJ
@@ -73,7 +73,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 }
 
 // SendMessage sends a message to the destination node.
-func (node *LocalNode) SendMessage(ctx context.Context, dstNode Node, msg *Message) error {
+func (node *localNode) SendMessage(ctx context.Context, dstNode Node, msg *Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
@@ -91,7 +91,7 @@ func (node *LocalNode) SendMessage(ctx context.Context, dstNode Node, msg *Messa
 }
 
 // postMessageSynchronously posts a message to the destination node using a TCP connection and gets the response message.
-func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.Message) (*protocol.Message, error) {
+func (node *localNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.Message) (*protocol.Message, error) {
 	if !node.IsRunning() {
 		return nil, fmt.Errorf(errorNodeIsNotRunning, node)
 	}
@@ -109,7 +109,7 @@ func (node *LocalNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.M
 }
 
 // isResponseMessageWaiting returns true when the node is waiting the response message, otherwise false.
-func (node *LocalNode) isResponseMessageWaiting() bool {
+func (node *localNode) isResponseMessageWaiting() bool {
 	if node.postRequestMsg == nil {
 		return false
 	}
@@ -120,7 +120,7 @@ func (node *LocalNode) isResponseMessageWaiting() bool {
 }
 
 // isResponseMessage returns true when it is the response message, otherwise false.
-func (node *LocalNode) isResponseMessage(msg *protocol.Message) bool {
+func (node *localNode) isResponseMessage(msg *protocol.Message) bool {
 	// TODO : Check the response message more strictly
 	if !node.isResponseMessageWaiting() {
 		return false
@@ -135,7 +135,7 @@ func (node *LocalNode) isResponseMessage(msg *protocol.Message) bool {
 }
 
 // setResponseMessage sets a message to the response channel.
-func (node *LocalNode) setResponseMessage(msg *protocol.Message) bool {
+func (node *localNode) setResponseMessage(msg *protocol.Message) bool {
 	if !node.isResponseMessageWaiting() {
 		return false
 	}
@@ -144,7 +144,7 @@ func (node *LocalNode) setResponseMessage(msg *protocol.Message) bool {
 }
 
 // closeResponseChannel closes the response channel.
-func (node *LocalNode) closeResponseChannel() {
+func (node *localNode) closeResponseChannel() {
 	if node.postResponseCh == nil {
 		return
 	}
@@ -154,7 +154,7 @@ func (node *LocalNode) closeResponseChannel() {
 }
 
 // PostMessage posts a message to the node, and wait the response message.
-func (node *LocalNode) PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error) {
+func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error) {
 	if _, ok := ctx.Deadline(); !ok {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, DefaultResponseTimeout)
@@ -201,11 +201,11 @@ func (node *LocalNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 }
 
 // SendRequest sends a specified request to the object.
-func (node *LocalNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
+func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
 	return node.SendMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *LocalNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
+func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
 	return node.PostMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }

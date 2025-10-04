@@ -12,20 +12,17 @@ import (
 )
 
 type LightNode struct {
-	*echonet.LocalNode
+	echonet.LocalNode
 }
 
 // NewLightNode returns a new light device.
 func NewLightNode() *LightNode {
-
 	node := &LightNode{
 		LocalNode: echonet.NewLocalNode(),
 	}
-
 	dev := NewLightDevice()
 	node.AddDevice(dev)
 	dev.SetListener(node)
-
 	return node
 }
 

@@ -64,12 +64,11 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	ctrl := NewController()
 	ctrl.SetConfig(config)
 
-	node, err := newTestSampleNode()
+	node, err := newTestSampleNode(config)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	node.SetConfig(config)
 
 	startTID := ctrl.LastTID()
 

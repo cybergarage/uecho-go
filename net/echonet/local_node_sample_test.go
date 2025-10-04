@@ -20,17 +20,10 @@ const (
 )
 
 type testLocalNode struct {
-	*LocalNode
+	LocalNode
 }
 
 func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
-	node := &testLocalNode{
-		LocalNode: NewLocalNode(),
-	}
-
-	node.SetManufacturerCode(testNodeManufacturerCode)
-	node.SetListener(node)
-
 	dev := NewDevice()
 	dev.SetCode(testLightDeviceCode)
 	powerData := []byte{testLightPropertyInitialPowerStatus}
@@ -38,14 +31,21 @@ func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	node.AddDevice(dev)
-	node.SetConfig(config)
+
+	node := &testLocalNode{
+		LocalNode: NewLocalNode(
+			WithLocalNodeConfig(config),
+			WithLocalNodeDevices(dev),
+			WithLocalNodeManufacturerCode(testNodeManufacturerCode),
+		),
+	}
+	node.SetListener(node)
 
 	return node, nil
 }
 
-func newTestSampleNode() (*testLocalNode, error) {
-	return newTestSampleNodeWithConfig(newTestDefaultConfig())
+func newTestSampleNode(config *Config) (*testLocalNode, error) {
+	return newTestSampleNodeWithConfig(config)
 }
 
 func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {

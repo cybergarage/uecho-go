@@ -45,10 +45,8 @@ type Controller interface {
 }
 
 type controller struct {
-	*LocalNode
-
-	foundNodes []Node
-
+	*localNode
+	foundNodes         []Node
 	controllerListener ControllerListener
 }
 
@@ -59,13 +57,11 @@ func NewController() *controller {
 
 func newController() *controller {
 	ctrl := &controller{
-		LocalNode:          NewLocalNode(),
+		localNode:          newLocalNode(),
 		foundNodes:         make([]Node, 0),
 		controllerListener: nil,
 	}
-
-	ctrl.LocalNode.SetListener(ctrl)
-
+	ctrl.localNode.SetListener(ctrl)
 	return ctrl
 }
 
@@ -146,7 +142,7 @@ func (ctrl *controller) Start() error {
 	if err := ctrl.Clear(); err != nil {
 		return err
 	}
-	if err := ctrl.LocalNode.Start(); err != nil {
+	if err := ctrl.localNode.Start(); err != nil {
 		return err
 	}
 	return nil
@@ -154,7 +150,7 @@ func (ctrl *controller) Start() error {
 
 // Stop stop the controller.
 func (ctrl *controller) Stop() error {
-	if err := ctrl.LocalNode.Stop(); err != nil {
+	if err := ctrl.localNode.Stop(); err != nil {
 		return err
 	}
 	return nil
