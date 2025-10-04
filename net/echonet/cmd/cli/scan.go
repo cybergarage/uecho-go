@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -56,10 +55,6 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 		if err != nil {
 			return err
 		}
-
-		// Waits node responses in the local network
-
-		time.Sleep(time.Second * 1)
 
 		printDevicesTable := func(tbl Table) {
 			tbl = tbl.HideDuplicateColumns(0, 1, 2, 3, 4)

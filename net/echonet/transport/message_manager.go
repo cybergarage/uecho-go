@@ -37,7 +37,7 @@ func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
 	return mgr.unicastMgr
 }
 
-// Addresses return the bounded interface addresses.
+// Addresses return the bound interface addresses.
 func (mgr *MessageManager) Addresses() []string {
 	ifaddrs := []string{}
 	for _, server := range mgr.MulticastManager().Servers {

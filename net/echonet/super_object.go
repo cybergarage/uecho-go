@@ -74,7 +74,7 @@ func (obj *SuperObject) addStandardProperties() {
 
 // addStandardPropertiesWithCode sets mandatory properties with the specified the object code.
 func (obj *SuperObject) addStandardPropertiesWithCode(objCode ObjectCode) {
-	stdObj, ok := GetStandardDatabase().FindObjectByCode(objCode)
+	stdObj, ok := SharedStandardDatabase().LookupObjectByCode(objCode)
 	if !ok {
 		return
 	}

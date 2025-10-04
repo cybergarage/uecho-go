@@ -13,7 +13,7 @@ import (
 )
 
 type PostController struct {
-	*echonet.Controller
+	echonet.Controller
 }
 
 func NewPostController() *PostController {

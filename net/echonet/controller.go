@@ -26,10 +26,16 @@ type Controller interface {
 	SetConfig(*Config)
 	// SetListener sets a listener to receive the Echonet messages.
 	SetListener(ControllerListener)
+	// Addresses returns the local addresses that this controller is bound to.
+	Addresses() []string
 	// Search searches echonet nodes until the context is done.
 	Search(ctx context.Context) error
 	// Nodes returns discovered nodes.
 	Nodes() []*RemoteNode
+	// LookupNode returns a node which has the specified address.
+	LookupNode(addr string) (*RemoteNode, bool)
+	// SendMessage sends a message to the node.
+	SendMessage(ctx context.Context, dstNode Node, msg *Message) error
 	// PostMessage posts a message to the node, and wait the response message.
 	PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error)
 	// Start starts the controller.

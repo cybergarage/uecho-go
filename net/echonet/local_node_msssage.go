@@ -73,7 +73,7 @@ func (node *LocalNode) updateMessageDestinationHeader(msg *protocol.Message) err
 }
 
 // SendMessage sends a message to the destination node.
-func (node *LocalNode) SendMessage(dstNode Node, msg *Message) error {
+func (node *LocalNode) SendMessage(ctx context.Context, dstNode Node, msg *Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
@@ -185,7 +185,7 @@ func (node *LocalNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 
 	// log.Trace(logLocalNodePostMessageFormat, msg.String()))
 
-	err := node.SendMessage(dstNode, msg)
+	err := node.SendMessage(ctx, dstNode, msg)
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func (node *LocalNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 
 // SendRequest sends a specified request to the object.
 func (node *LocalNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
-	return node.SendMessage(dstNode, NewMessageWithParameters(objCode, esv, props))
+	return node.SendMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }
 
 // PostRequest posts a message to the node, and wait the response message.

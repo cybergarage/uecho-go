@@ -43,7 +43,7 @@ func Example() {
 
 	// Outputs all found nodes
 
-	db := echonet.GetStandardDatabase()
+	db := echonet.SharedStandardDatabase()
 
 	for i, node := range ctrl.Nodes() {
 		// Gets manufacture code.
@@ -56,7 +56,7 @@ func Example() {
 		res, err := ctrl.PostMessage(context.Background(), node, req)
 		if err == nil {
 			if props := res.Properties(); len(props) == 1 {
-				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
+				manufacture, ok := db.LookupManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
 				if ok {
 					manufactureName = manufacture.Name()
 				}

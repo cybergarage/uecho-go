@@ -30,7 +30,7 @@ func NewController() *Controller {
 
 // DiscoveredNodeTable returns the discovered node table.
 func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
-	db := echonet.GetStandardDatabase()
+	db := echonet.SharedStandardDatabase()
 
 	cols := []string{
 		"address",
@@ -57,7 +57,7 @@ func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
 		res, err := ctrl.PostMessage(context.Background(), node, req)
 		if err == nil {
 			if props := res.Properties(); len(props) == 1 {
-				manufacture, ok := db.FindManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
+				manufacture, ok := db.LookupManufacture(echonet.ManufactureCode(encoding.ByteToInteger(props[0].Data())))
 				if ok {
 					manufactureName = manufacture.Name()
 				}

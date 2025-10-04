@@ -10,6 +10,6 @@ func init() {
 	sharedStandardDatabase = NewStandardDatabase()
 }
 
-func GetStandardDatabase() *StandardDatabase {
+func SharedStandardDatabase() *StandardDatabase {
 	return sharedStandardDatabase
 }

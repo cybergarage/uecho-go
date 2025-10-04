@@ -10,7 +10,7 @@ import (
 )
 
 type SearchController struct {
-	*echonet.Controller
+	echonet.Controller
 }
 
 func NewSearchController() *SearchController {

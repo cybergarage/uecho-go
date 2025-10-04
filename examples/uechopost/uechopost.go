@@ -160,13 +160,13 @@ func main() {
 	outputRequestMessage(ctrl, reqMsg)
 
 	if reqMsg.IsResponseRequired() {
-		resMsg, err := ctrl.PostMessage(dstNode, reqMsg)
+		resMsg, err := ctrl.PostMessage(context.Background(), dstNode, reqMsg)
 		if err != nil {
 			exitWithError(err)
 		}
 		outputResponseMessage(resMsg)
 	} else {
-		err := ctrl.SendMessage(dstNode, reqMsg)
+		err := ctrl.SendMessage(context.Background(), dstNode, reqMsg)
 		if err != nil {
 			exitWithError(err)
 		}

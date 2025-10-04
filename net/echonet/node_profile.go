@@ -61,7 +61,7 @@ func NewNodeProfile() *Profile {
 
 // addNodeProfileMandatoryProperties sets mandatory properties for node profile.
 func (prof *Profile) addNodeProfileMandatoryProperties() {
-	stdObj, ok := GetStandardDatabase().NodeProfile()
+	stdObj, ok := SharedStandardDatabase().NodeProfile()
 	if !ok {
 		return
 	}
