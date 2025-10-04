@@ -27,5 +27,5 @@ func (ctrl *PostController) ControllerMessageReceived(msg *protocol.Message) {
 	fmt.Printf("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
-func (ctrl *PostController) ControllerNewNodeFound(*echonet.RemoteNode) {
+func (ctrl *PostController) ControllerNewNodeFound(echonet.Node) {
 }

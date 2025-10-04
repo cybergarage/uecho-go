@@ -12,22 +12,20 @@ const (
 type Node interface {
 	// Objects returns all objects.
 	Objects() []*Object
-	// FindObject returns the specified object.
-	FindObject(code ObjectCode) (*Object, error)
+	// LookupObject returns the specified object.
+	LookupObject(code ObjectCode) (*Object, error)
 
-	// AddDevice adds a new device into the node.
-	AddDevice(dev *Device)
 	// Devices returns all device objects.
 	Devices() []*Device
-	// FindDevice returns the specified device object.
-	FindDevice(code ObjectCode) (*Device, error)
+	// LookupDevice returns the specified device object.
+	LookupDevice(code ObjectCode) (*Device, error)
 
-	// AddProfile adds a new profile object into the node.
-	AddProfile(prof *Profile)
 	// Profiles returns all profile objects.
 	Profiles() []*Profile
-	// FindProfile returns the specified profile object.
-	FindProfile(code ObjectCode) (*Profile, error)
+	// LookupProfile returns the specified profile object.
+	LookupProfile(code ObjectCode) (*Profile, error)
+	// NodeProfile returns the node profile object.
+	NodeProfile() (*Profile, error)
 
 	// Address returns the bound address.
 	Address() string

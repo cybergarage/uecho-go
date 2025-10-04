@@ -17,8 +17,8 @@ const (
 	errorInvalidNotificationMessage = "invalid notification message : %s"
 )
 
-// RemoteNode is an instance for Echonet node.
-type RemoteNode struct {
+// remoteNode is an instance for Echonet node.
+type remoteNode struct {
 	*baseNode
 
 	address string
@@ -26,8 +26,8 @@ type RemoteNode struct {
 }
 
 // newRemoteNode returns a new remote node.
-func newRemoteNode() *RemoteNode {
-	node := &RemoteNode{
+func newRemoteNode() *remoteNode {
+	node := &remoteNode{
 		baseNode: newBaseNode(),
 		address:  "",
 		port:     0,
@@ -37,7 +37,7 @@ func newRemoteNode() *RemoteNode {
 }
 
 // newRemoteNodeWithRequestMessage returns a new node with the specified request message.
-func newRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
+func newRemoteNodeWithRequestMessage(msg *protocol.Message) *remoteNode {
 	node := newRemoteNode()
 	node.SetAddress(msg.From.IP.String())
 	node.SetPort(msg.From.Port)
@@ -45,7 +45,7 @@ func newRemoteNodeWithRequestMessage(msg *protocol.Message) *RemoteNode {
 }
 
 // newRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
-func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, error) {
+func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*remoteNode, error) {
 	if msgOPC := msg.OPC(); msgOPC < 1 {
 		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
 	}
@@ -98,7 +98,7 @@ func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*RemoteNode, e
 }
 
 // newRemoteNodeWithInstanceListMessageAndConfig returns a new node with the specified notification message and configuration.
-func newRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *transport.Config) (*RemoteNode, error) {
+func newRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *transport.Config) (*remoteNode, error) {
 	remoteNode, err := newRemoteNodeWithInstanceListMessage(msg)
 	if err != nil {
 		return nil, err
@@ -113,43 +113,43 @@ func newRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *
 }
 
 // SetAddress set the address to the node.
-func (node *RemoteNode) SetAddress(addr string) {
+func (node *remoteNode) SetAddress(addr string) {
 	node.address = addr
 }
 
 // Address returns the address of the node.
-func (node *RemoteNode) Address() string {
+func (node *remoteNode) Address() string {
 	return node.address
 }
 
 // SetPort set a port to the node.
-func (node *RemoteNode) SetPort(port int) {
+func (node *remoteNode) SetPort(port int) {
 	node.port = port
 }
 
 // GetPort returns the port of the node.
-func (node *RemoteNode) Port() int {
+func (node *remoteNode) Port() int {
 	return node.port
 }
 
 // AddDevice adds a new device into the node, and set the node profile and manufacture code.
-func (node *RemoteNode) AddDevice(dev *Device) {
+func (node *remoteNode) AddDevice(dev *Device) {
 	node.baseNode.AddDevice(dev)
 	dev.SetParentNode(node)
 }
 
 // AddProfile adds a new profile object into the node, and set the node profile and manufacture code.
-func (node *RemoteNode) AddProfile(prof *Profile) {
+func (node *remoteNode) AddProfile(prof *Profile) {
 	node.baseNode.AddProfile(prof)
 	prof.SetParentNode(node)
 }
 
 // Equals returns true whether the specified node is same, otherwise false.
-func (node *RemoteNode) Equals(otherNode Node) bool {
+func (node *remoteNode) Equals(otherNode Node) bool {
 	return nodeEquals(node, otherNode)
 }
 
 // String returns the node string representation.
-func (node *RemoteNode) String() string {
+func (node *remoteNode) String() string {
 	return net.JoinHostPort(node.Address(), strconv.Itoa(node.Port()))
 }

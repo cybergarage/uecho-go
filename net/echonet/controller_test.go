@@ -36,8 +36,8 @@ func (ctrl *testController) ControllerMessageReceived(*protocol.Message) {
 
 }
 
-func (ctrl *testController) ControllerNewNodeFound(node *RemoteNode) {
-	_, err := node.FindObject(testLightDeviceCode)
+func (ctrl *testController) ControllerNewNodeFound(node Node) {
+	_, err := node.LookupObject(testLightDeviceCode)
 	if err != nil {
 		return
 	}
@@ -156,7 +156,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		}
 
 		// Skip other Echonet nodes
-		_, err := foundNode.FindDevice(testLightDeviceCode)
+		_, err := foundNode.LookupDevice(testLightDeviceCode)
 		if err != nil {
 			continue
 		}

@@ -106,14 +106,14 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	// Check a found node
 
-	var foundNode *RemoteNode
+	var foundNode Node
 	for _, ctrlNode := range ctrl.Nodes() {
 		// Skip deprecated nodes
 		if !ctrlNode.Equals(node) {
 			continue
 		}
 		// Skip other Echonet nodes
-		_, err := ctrlNode.FindDevice(testLightDeviceCode)
+		_, err := ctrlNode.LookupDevice(testLightDeviceCode)
 		if err != nil {
 			continue
 		}
@@ -127,7 +127,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	// Check a found device
 
-	dev, err := ctrl.FindObject(testLightDeviceCode)
+	dev, err := ctrl.LookupObject(testLightDeviceCode)
 	if err != nil {
 		t.Error(err)
 		return

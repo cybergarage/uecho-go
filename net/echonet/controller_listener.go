@@ -11,5 +11,5 @@ import (
 // ControllerListener is a listener for Echonet messages.
 type ControllerListener interface {
 	ControllerMessageReceived(*protocol.Message)
-	ControllerNewNodeFound(*RemoteNode)
+	ControllerNewNodeFound(Node)
 }

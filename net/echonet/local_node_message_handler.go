@@ -55,7 +55,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 
 	// (A) Processing when the controlled object does not exist
 
-	dstObj, err := node.FindObject(msgDstObjCode)
+	dstObj, err := node.LookupObject(msgDstObjCode)
 	if err != nil {
 		// TODO : Check the DEOJ code based on Echonet specification
 		return false
@@ -102,7 +102,7 @@ func (node *LocalNode) validateReceivedMessage(msg *protocol.Message) bool {
 // executeMessageListeners post the received message to the listeners.
 func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 	msgDstObjCode := msg.DEOJ()
-	dstObj, err := node.FindObject(msgDstObjCode)
+	dstObj, err := node.LookupObject(msgDstObjCode)
 	if err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (node *LocalNode) executeMessageListeners(msg *protocol.Message) error {
 // createResponseMessageForRequestMessage retunrs the response message for the specified request message.
 func (node *LocalNode) createResponseMessageForRequestMessage(reqMsg *protocol.Message) (*protocol.Message, error) {
 	msgDstObjCode := reqMsg.DEOJ()
-	dstObj, err := node.FindObject(msgDstObjCode)
+	dstObj, err := node.LookupObject(msgDstObjCode)
 	if err != nil {
 		return nil, err
 	}

@@ -24,5 +24,5 @@ func (ctrl *SearchController) ControllerMessageReceived(msg *protocol.Message) {
 	// log.Infof("%s : %s\n", msg.From.String(), hex.EncodeToString(msg.Bytes()))
 }
 
-func (ctrl *SearchController) ControllerNewNodeFound(*echonet.RemoteNode) {
+func (ctrl *SearchController) ControllerNewNodeFound(echonet.Node) {
 }

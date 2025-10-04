@@ -134,5 +134,5 @@ func (ctrl *Controller) ControllerMessageReceived(msg *protocol.Message) {
 }
 
 // ControllerNewNodeFound is called when a new node is found.
-func (ctrl *Controller) ControllerNewNodeFound(*echonet.RemoteNode) {
+func (ctrl *Controller) ControllerNewNodeFound(echonet.Node) {
 }

@@ -39,8 +39,8 @@ func (node *baseNode) Devices() []*Device {
 	return node.devices
 }
 
-// FindDevice returns a specified device object.
-func (node *baseNode) FindDevice(code ObjectCode) (*Device, error) {
+// LookupDevice returns a specified device object.
+func (node *baseNode) LookupDevice(code ObjectCode) (*Device, error) {
 	for _, dev := range node.devices {
 		objCode := dev.Code()
 		if objCode == code {
@@ -60,8 +60,8 @@ func (node *baseNode) Profiles() []*Profile {
 	return node.profiles
 }
 
-// FindProfile returns a specified profile object.
-func (node *baseNode) FindProfile(code ObjectCode) (*Profile, error) {
+// LookupProfile returns a specified profile object.
+func (node *baseNode) LookupProfile(code ObjectCode) (*Profile, error) {
 	for _, prof := range node.profiles {
 		objCode := prof.Code()
 		if objCode == code {
@@ -73,11 +73,11 @@ func (node *baseNode) FindProfile(code ObjectCode) (*Profile, error) {
 
 // NodeProfile returns a node profile in the node.
 func (node *baseNode) NodeProfile() (*Profile, error) {
-	prof, err := node.FindProfile(NodeProfileObjectCode)
+	prof, err := node.LookupProfile(NodeProfileObjectCode)
 	if err == nil {
 		return prof, nil
 	}
-	return node.FindProfile(NodeProfileObjectReadOnlyCode)
+	return node.LookupProfile(NodeProfileObjectReadOnlyCode)
 }
 
 // AddObject adds a new object into the node.
@@ -110,14 +110,14 @@ func (node *baseNode) Objects() []*Object {
 	return objs
 }
 
-// FindObject returns a specified object.
-func (node *baseNode) FindObject(code ObjectCode) (*Object, error) {
-	dev, err := node.FindDevice(code)
+// LookupObject returns a specified object.
+func (node *baseNode) LookupObject(code ObjectCode) (*Object, error) {
+	dev, err := node.LookupDevice(code)
 	if err == nil {
 		return dev.Object, nil
 	}
 
-	prof, err := node.FindProfile(code)
+	prof, err := node.LookupProfile(code)
 	if err == nil {
 		return prof.Object, nil
 	}

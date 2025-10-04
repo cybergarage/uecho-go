@@ -31,9 +31,9 @@ type Controller interface {
 	// Search searches echonet nodes until the context is done.
 	Search(ctx context.Context) error
 	// Nodes returns discovered nodes.
-	Nodes() []*RemoteNode
+	Nodes() []Node
 	// LookupNode returns a node which has the specified address.
-	LookupNode(addr string) (*RemoteNode, bool)
+	LookupNode(addr string) (Node, bool)
 	// SendMessage sends a message to the node.
 	SendMessage(ctx context.Context, dstNode Node, msg *Message) error
 	// PostMessage posts a message to the node, and wait the response message.
@@ -47,7 +47,7 @@ type Controller interface {
 type controller struct {
 	*LocalNode
 
-	foundNodes []*RemoteNode
+	foundNodes []Node
 
 	controllerListener ControllerListener
 }
@@ -60,7 +60,7 @@ func NewController() *controller {
 func newController() *controller {
 	ctrl := &controller{
 		LocalNode:          NewLocalNode(),
-		foundNodes:         make([]*RemoteNode, 0),
+		foundNodes:         make([]Node, 0),
 		controllerListener: nil,
 	}
 
@@ -75,12 +75,12 @@ func (ctrl *controller) SetListener(l ControllerListener) {
 }
 
 // Nodes returns found nodes.
-func (ctrl *controller) Nodes() []*RemoteNode {
+func (ctrl *controller) Nodes() []Node {
 	return ctrl.foundNodes
 }
 
 // LookupNode returns a node which has the specified address.
-func (ctrl *controller) LookupNode(addr string) (*RemoteNode, bool) {
+func (ctrl *controller) LookupNode(addr string) (Node, bool) {
 	for _, node := range ctrl.Nodes() {
 		if node.Address() == addr {
 			return node, true
@@ -137,7 +137,7 @@ func (ctrl *controller) Search(ctx context.Context) error {
 
 // Clear clears all found nodes.
 func (ctrl *controller) Clear() error {
-	ctrl.foundNodes = make([]*RemoteNode, 0)
+	ctrl.foundNodes = make([]Node, 0)
 	return nil
 }
 
