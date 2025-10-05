@@ -77,7 +77,7 @@ func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
 					propName = "(" + unknown + ")"
 				}
 
-				propAttrString := func(attr echonet.PropertyAttr, s string) string {
+				propAttrString := func(attr echonet.PropertyAttribute, s string) string {
 					switch attr {
 					case echonet.Required:
 						return strings.ToUpper(s)

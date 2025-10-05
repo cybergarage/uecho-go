@@ -13,7 +13,7 @@ func newStandardObject(clsName string, grpCode byte, clsCode byte) Object {
 }
 
 func newStandardProperty(code PropertyCode, name string, dataType string, dataSize int, getRule string, setRule string, annoRule string) Property {
-	strAttrToPropertyAttr := func(strAttr string) PropertyAttr {
+	strAttrToPropertyAttr := func(strAttr string) PropertyAttribute {
 		switch strAttr {
 		case "required":
 			return Required

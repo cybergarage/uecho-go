@@ -31,15 +31,6 @@ const (
 // PropertyCode is a type for property code.
 type PropertyCode = protocol.PropertyCode
 
-// PropertyAttr is a type for property attribute.
-type PropertyAttr uint
-
-const (
-	Prohibited = PropertyAttr(0x00)
-	Required   = PropertyAttr(0x01)
-	Optional   = PropertyAttr(0x02)
-)
-
 type Property interface {
 	// SetParentObject sets a parent object into the property.
 	SetParentObject(obj Object)
@@ -60,17 +51,17 @@ type Property interface {
 	// SetCode sets a specified code to the property.
 	SetCode(code PropertyCode) Property
 	// SetReadAttribute sets an attribute to the read property.
-	SetReadAttribute(attr PropertyAttr) Property
+	SetReadAttribute(attr PropertyAttribute) Property
 	// SetWriteAttribute sets an attribute to the write property.
-	SetWriteAttribute(attr PropertyAttr) Property
+	SetWriteAttribute(attr PropertyAttribute) Property
 	// SetAnnoAttribute sets an attribute to the announce property.
-	SetAnnoAttribute(attr PropertyAttr) Property
+	SetAnnoAttribute(attr PropertyAttribute) Property
 	// GetAttribute returns the get attribute.
-	ReadAttribute() PropertyAttr
+	ReadAttribute() PropertyAttribute
 	// SetAttribute returns the set attribute.
-	WriteAttribute() PropertyAttr
+	WriteAttribute() PropertyAttribute
 	// AnnoAttribute returns the announce attribute.
-	AnnoAttribute() PropertyAttr
+	AnnoAttribute() PropertyAttribute
 	// IsReadable returns true when the get attribute is readable, otherwise false.
 	IsReadable() bool
 	// IsWritable returns true when the set attribute is writable, otherwise false.
@@ -121,9 +112,9 @@ type property struct {
 	code         PropertyCode
 	data         []byte
 	parentObject Object
-	getAttr      PropertyAttr
-	setAttr      PropertyAttr
-	annoAttr     PropertyAttr
+	getAttr      PropertyAttribute
+	setAttr      PropertyAttribute
+	annoAttr     PropertyAttribute
 }
 
 // NewProperty returns a new property.
@@ -207,66 +198,66 @@ func (prop *property) Size() int {
 }
 
 // SetReadAttribute sets an attribute to the read property.
-func (prop *property) SetReadAttribute(attr PropertyAttr) Property {
+func (prop *property) SetReadAttribute(attr PropertyAttribute) Property {
 	prop.getAttr = attr
 	return prop
 }
 
 // SetWriteAttribute sets an attribute to the write property.
-func (prop *property) SetWriteAttribute(attr PropertyAttr) Property {
+func (prop *property) SetWriteAttribute(attr PropertyAttribute) Property {
 	prop.setAttr = attr
 	return prop
 }
 
 // SetAnnoAttribute sets an attribute to the announce property.
-func (prop *property) SetAnnoAttribute(attr PropertyAttr) Property {
+func (prop *property) SetAnnoAttribute(attr PropertyAttribute) Property {
 	prop.annoAttr = attr
 	return prop
 }
 
 // GetAttribute returns the get attribute.
-func (prop *property) ReadAttribute() PropertyAttr {
+func (prop *property) ReadAttribute() PropertyAttribute {
 	return prop.getAttr
 }
 
 // SetAttribute returns the set attribute.
-func (prop *property) WriteAttribute() PropertyAttr {
+func (prop *property) WriteAttribute() PropertyAttribute {
 	return prop.setAttr
 }
 
 // AnnoAttribute returns the announce attribute.
-func (prop *property) AnnoAttribute() PropertyAttr {
+func (prop *property) AnnoAttribute() PropertyAttribute {
 	return prop.annoAttr
 }
 
 // IsReadable returns true when the get attribute is readable, otherwise false.
 func (prop *property) IsReadable() bool {
-	return (prop.getAttr != Prohibited)
+	return !prop.getAttr.IsProhibited()
 }
 
 // IsWritable returns true when the set attribute is writable, otherwise false.
 func (prop *property) IsWritable() bool {
-	return (prop.setAttr != Prohibited)
+	return !prop.setAttr.IsProhibited()
 }
 
 // IsAnnounceable returns true when the anno attribute is announcement, otherwise false.
 func (prop *property) IsAnnounceable() bool {
-	return (prop.annoAttr != Prohibited)
+	return !prop.annoAttr.IsProhibited()
 }
 
 // IsReadRequired returns true when the get attribute is required, otherwise false.
 func (prop *property) IsReadRequired() bool {
-	return (prop.getAttr == Required)
+	return (prop.getAttr.IsRequired())
 }
 
 // IsWriteRequired returns true when the set attribute is required, otherwise false.
 func (prop *property) IsWriteRequired() bool {
-	return (prop.setAttr == Required)
+	return (prop.setAttr.IsRequired())
 }
 
 // IsAnnounceRequired returns true when the announce attribute is required, otherwise false.
 func (prop *property) IsAnnounceRequired() bool {
-	return (prop.annoAttr == Required)
+	return (prop.annoAttr.IsRequired())
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
