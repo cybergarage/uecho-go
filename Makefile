@@ -10,9 +10,9 @@
 
 SHELL := bash
 
-#PREFIX?=$(shell pwd)
-#GOPATH:=$(shell pwd)
-#export GOPATH
+GOBIN := $(shell go env GOPATH)/bin
+PATH := $(GOBIN):$(PATH)
+
 export CGO_ENABLED=0
 
 PKG_NAME=net/echonet
@@ -76,6 +76,11 @@ test: lint
 
 cover: test
 	open ${PKG_COVER}.html || xdg-open ${PKG_COVER}.html || gnome-open ${PKG_COVER}.html
+
+godoc:
+	go install golang.org/x/tools/cmd/godoc@latest
+	open http://localhost:6060/pkg/${PKG_ID}/ || xdg-open http://localhost:6060/pkg/${PKG_ID}/ || gnome-open http://localhost:6060/pkg/${PKG_ID}/
+	godoc -http=:6060 -play
 
 install:
 	go install ${BINARIES}
