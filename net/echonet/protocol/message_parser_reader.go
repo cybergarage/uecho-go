@@ -14,7 +14,7 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 	propertyHeader := make([]byte, Format1PropertyHeaderSize)
 
 	for n := range msg.opc {
-		prop := msg.PropertyAt(int(n))
+		prop := msg.Property(int(n))
 		if prop == nil {
 			continue
 		}

@@ -46,7 +46,7 @@ func testParsedMessage(t *testing.T, msg *Message) {
 	}
 
 	for n := 1; n <= msg.OPC(); n++ {
-		prop := msg.PropertyAt(n - 1)
+		prop := msg.Property(n - 1)
 		if prop == nil {
 			t.Errorf("%d", n)
 			continue

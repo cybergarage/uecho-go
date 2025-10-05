@@ -70,7 +70,7 @@ func (msg *Message) parseFormat1PropertyBytes(data []byte) error {
 
 	offset := 0
 	for n := range msg.opc {
-		prop := msg.PropertyAt(int(n))
+		prop := msg.Property(int(n))
 		if prop == nil {
 			continue
 		}

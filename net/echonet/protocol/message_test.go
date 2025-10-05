@@ -66,7 +66,7 @@ func TestNewFormat1TestMessage(t *testing.T) {
 	}
 
 	for n := 1; n <= opc; n++ {
-		prop := msg.PropertyAt(n - 1)
+		prop := msg.Property(n - 1)
 		if prop.Code() != PropertyCode(n) {
 			t.Errorf("%d != %d", prop.Code(), n)
 		}

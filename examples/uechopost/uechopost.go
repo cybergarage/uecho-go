@@ -36,7 +36,7 @@ const (
 	EXIT_FAIL    = 1
 )
 
-func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, msg *echonet.Message) {
+func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, msg echonet.Message) {
 	fmt.Printf("%s %-15s : %06X %02X ",
 		prefix,
 		addr,
@@ -50,7 +50,7 @@ func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, 
 	fmt.Printf("\n")
 }
 
-func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
+func outputRequestMessage(ctrl *PostController, msg echonet.Message) {
 	sourceAddr := ""
 	boundAddrs := ctrl.Addresses()
 	if 0 < len(boundAddrs) {
@@ -59,7 +59,7 @@ func outputRequestMessage(ctrl *PostController, msg *echonet.Message) {
 	outputTransportMessage("->", sourceAddr, msg.DEOJ(), msg)
 }
 
-func outputResponseMessage(msg *echonet.Message) {
+func outputResponseMessage(msg echonet.Message) {
 	outputTransportMessage("<-", msg.SourceAddress(), msg.SEOJ(), msg)
 }
 
@@ -159,7 +159,7 @@ func main() {
 
 	outputRequestMessage(ctrl, reqMsg)
 
-	if reqMsg.IsResponseRequired() {
+	if reqMsg.ESV().IsResponseRequired() {
 		resMsg, err := ctrl.PostMessage(context.Background(), dstNode, reqMsg)
 		if err != nil {
 			exitWithError(err)

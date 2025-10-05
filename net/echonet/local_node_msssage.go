@@ -73,17 +73,17 @@ func (node *localNode) updateMessageDestinationHeader(msg *protocol.Message) err
 }
 
 // SendMessage sends a message to the destination node.
-func (node *localNode) SendMessage(ctx context.Context, dstNode Node, msg *Message) error {
+func (node *localNode) SendMessage(ctx context.Context, dstNode Node, msg Message) error {
 	if !node.IsRunning() {
 		return fmt.Errorf(errorNodeIsNotRunning, node)
 	}
 
-	err := node.updateMessageDestinationHeader(msg.protocolMessage())
+	err := node.updateMessageDestinationHeader(msg.ToProtocol())
 	if err != nil {
 		return err
 	}
 
-	_, err = node.server.SendMessage(dstNode.Address(), dstNode.Port(), msg.protocolMessage())
+	_, err = node.server.SendMessage(dstNode.Address(), dstNode.Port(), msg.ToProtocol())
 
 	// log.Trace(logLocalNodeSendMessageFormat, msg.String(), n))
 
@@ -154,7 +154,7 @@ func (node *localNode) closeResponseChannel() {
 }
 
 // PostMessage posts a message to the node, and wait the response message.
-func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error) {
+func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg Message) (Message, error) {
 	if _, ok := ctx.Deadline(); !ok {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, DefaultResponseTimeout)
@@ -164,7 +164,7 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 	// Use TCP connection when the function is enabled
 
 	if node.IsTCPEnabled() {
-		resMsg, err := node.postMessageSynchronously(dstNode, msg.protocolMessage())
+		resMsg, err := node.postMessageSynchronously(dstNode, msg.ToProtocol())
 		if err == nil {
 			return newMessageWithProtocolMessage(resMsg), nil
 		}
@@ -181,7 +181,7 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 	defer node.closeResponseChannel()
 
 	node.postResponseCh = make(chan *protocol.Message)
-	node.postRequestMsg = msg.protocolMessage()
+	node.postRequestMsg = msg.ToProtocol()
 
 	// log.Trace(logLocalNodePostMessageFormat, msg.String()))
 
@@ -206,6 +206,6 @@ func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode Ob
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) (*Message, error) {
+func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) (Message, error) {
 	return node.PostMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }

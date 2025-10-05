@@ -32,13 +32,13 @@ func TestNewLocalNode(t *testing.T) {
 	}
 }
 
-func localNodeCheckResponseMessagePowerStatus(reqMsg *Message, resMsg *Message, powerStatus byte) error {
+func localNodeCheckResponseMessagePowerStatus(reqMsg Message, resMsg Message, powerStatus byte) error {
 	if resOpc := resMsg.OPC(); resOpc != 1 {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 
-	resProp := resMsg.PropertyAt(0)
-	if resProp == nil {
+	resProp, ok := resMsg.Property(0)
+	if !ok {
 		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
 	}
 	if resProp.Code() != testLightPropertyPowerCode {

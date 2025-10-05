@@ -152,7 +152,7 @@ func NewImpossibleMessageWithMessage(reqMsg *Message) *Message {
 	reqMsgOPC := reqMsg.OPC()
 	msg.SetOPC(reqMsgOPC)
 	for n := range reqMsgOPC {
-		reqProp := msg.PropertyAt(n)
+		reqProp := msg.Property(n)
 		msg.AddProperty(reqProp)
 	}
 	return msg
@@ -251,8 +251,8 @@ func (msg *Message) AddProperties(props []*Property) {
 	}
 }
 
-// PropertyAt returns the specified property.
-func (msg *Message) PropertyAt(n int) *Property {
+// Property returns the specified property.
+func (msg *Message) Property(n int) *Property {
 	if (len(msg.ep) - 1) < n {
 		return nil
 	}
@@ -324,7 +324,7 @@ func (msg *Message) Size() int {
 	msgSize := Format1MinSize
 
 	for n := range msg.opc {
-		prop := msg.PropertyAt(int(n))
+		prop := msg.Property(int(n))
 		if prop == nil {
 			continue
 		}
@@ -358,7 +358,7 @@ func (msg *Message) Bytes() []byte {
 
 	offset := 12
 	for n := range msg.opc {
-		prop := msg.PropertyAt(int(n))
+		prop := msg.Property(int(n))
 		if prop == nil {
 			continue
 		}

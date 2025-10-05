@@ -20,8 +20,12 @@ type Message interface {
 	DEOJ() ObjectCode
 	// ESV returns the ESV of the message.
 	ESV() ESV
+	// OPC returns the OPC of the message.
+	OPC() int
 	// Properties returns the all properties of the message.
 	Properties() []*protocol.Property
+	// Property returns the n-th property of the message.
+	Property(n int) (*protocol.Property, bool)
 	// MessageMutator is an interface to mutate a message.
 	MessageMutator
 	// messageInternal is an interface to represent a message internal.
@@ -90,6 +94,15 @@ func (msg *message) AddProperties(props []Property) Message {
 		msg.Message.AddProperty(prop.ToProtocol())
 	}
 	return msg
+}
+
+// Properties returns the all properties of the message.
+func (msg *message) Property(n int) (*protocol.Property, bool) {
+	props := msg.Properties()
+	if n < 0 || n >= len(props) {
+		return nil, false
+	}
+	return props[n], true
 }
 
 // ToProtocol returns the protocol message.

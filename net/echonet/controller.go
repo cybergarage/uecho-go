@@ -35,9 +35,9 @@ type Controller interface {
 	// LookupNode returns a node which has the specified address.
 	LookupNode(addr string) (Node, bool)
 	// SendMessage sends a message to the node.
-	SendMessage(ctx context.Context, dstNode Node, msg *Message) error
+	SendMessage(ctx context.Context, dstNode Node, msg Message) error
 	// PostMessage posts a message to the node, and wait the response message.
-	PostMessage(ctx context.Context, dstNode Node, msg *Message) (*Message, error)
+	PostMessage(ctx context.Context, dstNode Node, msg Message) (Message, error)
 	// Start starts the controller.
 	Start() error
 	// Stop stops the controller.

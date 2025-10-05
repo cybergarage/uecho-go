@@ -33,7 +33,7 @@ func (node *localNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol
 		return nil, err
 	}
 
-	if !msg.IsResponseRequired() {
+	if !msg.ESV().IsResponseRequired() {
 		return nil, nil
 	}
 
@@ -63,15 +63,15 @@ func (node *localNode) validateReceivedMessage(msg *protocol.Message) bool {
 
 	// (B) Processing when the controlled object exists, except when ESV = 0x60 to 0x63, 0x6E and 0x74
 
-	if !msg.IsValidESV() { // Check only whether the ESV is valid
+	if !msg.ESV().IsValid() { // Check only whether the ESV is valid
 		return false
 	}
 
 	// (C), (D), (E)
 
-	if msg.IsReadRequest() || msg.IsWriteRequest() {
+	if msg.ESV().IsReadRequest() || msg.ESV().IsWriteRequest() {
 		for n := range msgOPC {
-			msgProp := msg.PropertyAt(n)
+			msgProp := msg.Property(n)
 			if msgProp == nil {
 				continue
 			}
@@ -124,7 +124,7 @@ func (node *localNode) executeMessageListeners(msg *protocol.Message) error {
 	// Object Listener
 
 	for n := range msgOPC {
-		msgProp := msg.PropertyAt(n)
+		msgProp := msg.Property(n)
 		if msgProp == nil {
 			continue
 		}
@@ -149,7 +149,7 @@ func (node *localNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 
 	resMsg := protocol.NewResponseMessageWithMessage(reqMsg)
 	for n := range msgOPC {
-		msgProp := reqMsg.PropertyAt(n)
+		msgProp := reqMsg.Property(n)
 		if msgProp == nil {
 			continue
 		}

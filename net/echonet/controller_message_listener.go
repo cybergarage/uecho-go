@@ -46,7 +46,7 @@ func (ctrl *controller) NodeMessageReceived(msg *protocol.Message) error {
 
 	// NodeProfile message ?
 	isNodeProfileMessage := func(msg *protocol.Message) bool {
-		if !msg.IsNotification() && !msg.IsReadResponse() {
+		if !msg.ESV().IsNotification() && !msg.ESV().IsReadResponse() {
 			return false
 		}
 		if !isNodeProfileObjectCode(msg.DEOJ()) {
