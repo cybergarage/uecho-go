@@ -34,11 +34,11 @@ type Object interface {
 	// IsProfile returns true if the object is a profile.
 	IsProfile() bool
 	// Properties returns the properties of the object.
-	Properties() []*Property
+	Properties() []Property
 	// HasProperty returns true if the object has the specified property.
 	HasProperty(code PropertyCode) bool
 	// LookupProperty returns the specified property of the object.
-	LookupProperty(code PropertyCode) (*Property, bool)
+	LookupProperty(code PropertyCode) (Property, bool)
 	// SetClassName sets the class name of the object.
 	SetClassName(name string)
 	// SetName sets the name of the object.
@@ -60,7 +60,7 @@ type Object interface {
 	// SetListener sets the listener of the object.
 	SetListener(l ObjectListener)
 	// AddProperty adds a property to the object.
-	AddProperty(prop *Property)
+	AddProperty(prop Property)
 	// ObjectHelper returns the object helper.
 	ObjectHelper
 }

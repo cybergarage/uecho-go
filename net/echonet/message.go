@@ -29,7 +29,7 @@ func NewMessage() *Message {
 }
 
 // NewMessageWithParameters returns a new message of the specified parameters.
-func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []*Property) *Message {
+func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []Property) *Message {
 	return NewMessage().SetESV(esv).SetDEOJ(objCode).AddProperties(props)
 }
 
@@ -46,13 +46,13 @@ func (msg *Message) SetDEOJ(code ObjectCode) *Message {
 }
 
 // AddProperty adds a property to the message.
-func (msg *Message) AddProperty(prop *Property) *Message {
+func (msg *Message) AddProperty(prop Property) *Message {
 	msg.Message.AddProperty(prop.toProtocolProperty())
 	return msg
 }
 
 // AddProperties adds all properties to the message.
-func (msg *Message) AddProperties(props []*Property) *Message {
+func (msg *Message) AddProperties(props []Property) *Message {
 	for _, prop := range props {
 		msg.Message.AddProperty(prop.toProtocolProperty())
 	}

@@ -33,7 +33,7 @@ func (node *localNode) AnnounceMessage(msg *protocol.Message) error {
 }
 
 // AnnounceProperty announces a specified property.
-func (node *localNode) AnnounceProperty(prop *Property) error {
+func (node *localNode) AnnounceProperty(prop Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
 	msg.SetSEOJ(prop.ParentObject().Code())
@@ -201,11 +201,11 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg *Messa
 }
 
 // SendRequest sends a specified request to the object.
-func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) error {
+func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) error {
 	return node.SendMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []*Property) (*Message, error) {
+func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) (*Message, error) {
 	return node.PostMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
 }

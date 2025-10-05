@@ -133,7 +133,7 @@ func main() {
 	}
 	esv := echonet.ESV(esvVal)
 
-	props := make([]*echonet.Property, 0)
+	props := make([]echonet.Property, 0)
 	for n := 4; n < len(os.Args); n++ {
 		propHexBytes := []byte(os.Args[n])
 		propBytes := make([]byte, hex.DecodedLen(len(propHexBytes)))

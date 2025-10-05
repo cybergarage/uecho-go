@@ -40,8 +40,83 @@ const (
 	Optional   = PropertyAttr(0x02)
 )
 
-// Property is an instance for Echonet property.
-type Property struct {
+type Property interface {
+	// SetParentObject sets a parent object into the property.
+	SetParentObject(obj Object)
+	// ParentObject returns the parent object.
+	ParentObject() Object
+	// Node returns a parent node of the parent object.
+	Node() Node
+	// SetName sets a name to the property.
+	SetName(name string) *property
+	// Name returns the property name.
+	Name() string
+	// Code returns the property code.
+	Code() PropertyCode
+	// ClearData clears the property data.
+	ClearData()
+	// Size return the property data size.
+	Size() int
+	// SetCode sets a specified code to the property.
+	SetCode(code PropertyCode) Property
+	// SetReadAttribute sets an attribute to the read property.
+	SetReadAttribute(attr PropertyAttr) Property
+	// SetWriteAttribute sets an attribute to the write property.
+	SetWriteAttribute(attr PropertyAttr) Property
+	// SetAnnoAttribute sets an attribute to the announce property.
+	SetAnnoAttribute(attr PropertyAttr) Property
+	// GetAttribute returns the get attribute.
+	ReadAttribute() PropertyAttr
+	// SetAttribute returns the set attribute.
+	WriteAttribute() PropertyAttr
+	// AnnoAttribute returns the announce attribute.
+	AnnoAttribute() PropertyAttr
+	// IsReadable returns true when the get attribute is readable, otherwise false.
+	IsReadable() bool
+	// IsWritable returns true when the set attribute is writable, otherwise false.
+	IsWritable() bool
+	// IsAnnounceable returns true when the anno attribute is announcement, otherwise false.
+	IsAnnounceable() bool
+	// IsReadRequired returns true when the get attribute is required, otherwise false.
+	IsReadRequired() bool
+	// IsWriteRequired returns true when the set attribute is required, otherwise false.
+	IsWriteRequired() bool
+	// IsAnnounceRequired returns true when the announce attribute is required, otherwise false.
+	IsAnnounceRequired() bool
+	// IsReadOnly returns true when the property attribute is read only, otherwise false.
+	IsReadOnly() bool
+	// IsWriteOnly returns true when the property attribute is write only, otherwise false.
+	IsWriteOnly() bool
+	// IsAvailableService returns true whether the specified service can execute, otherwise false.
+	IsAvailableService(esv protocol.ESV) bool
+	// SetData sets a specified data to the property.
+	SetData(data []byte) Property
+	// SetByteData is an alias of SetData.
+	SetByteData(data []byte) Property
+	// SetIntegerData sets a specified integer data to the property.
+	SetIntegerData(data uint, size uint) Property
+	// Data returns the property data.
+	Data() []byte
+	// ByteData returns a byte value of the property data.
+	ByteData() (byte, error)
+	// StringData returns a byte value of the property string data.
+	StringData() (string, error)
+	// IntegerData returns a integer value of the property integer data.
+	IntegerData() (uint, error)
+	// PropertyMapData returns a property map.
+	PropertyMapData() ([]PropertyCode, error)
+	// announce announces the property.
+	announce() error
+	// toProtocolProperty returns the new property of the property.
+	toProtocolProperty() *protocol.Property
+	// Equals returns true if the specified property is same, otherwise false.
+	Equals(otherProp *property) bool
+	// Copy copies the property instance without the data.
+	Copy() Property
+}
+
+// property is an instance for Echonet property.
+type property struct {
 	name         string
 	code         PropertyCode
 	data         []byte
@@ -52,8 +127,8 @@ type Property struct {
 }
 
 // NewProperty returns a new property.
-func NewProperty() *Property {
-	return &Property{
+func NewProperty() Property {
+	return &property{
 		name:         "",
 		code:         0,
 		data:         make([]byte, 0),
@@ -65,15 +140,15 @@ func NewProperty() *Property {
 }
 
 // NewPropertyWithCode returns a new property with the specified property code.
-func NewPropertyWithCode(code PropertyCode) *Property {
+func NewPropertyWithCode(code PropertyCode) Property {
 	prop := NewProperty()
 	prop.SetCode(code)
 	return prop
 }
 
 // NewPropertiesWithCodes returns a new properties with the specified property codes.
-func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
-	props := make([]*Property, len(codes))
+func NewPropertiesWithCodes(codes []PropertyCode) []Property {
+	props := make([]Property, len(codes))
 	for n, code := range codes {
 		props[n] = NewPropertyWithCode(code)
 	}
@@ -81,17 +156,17 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 }
 
 // SetParentObject sets a parent object into the property.
-func (prop *Property) SetParentObject(obj Object) {
+func (prop *property) SetParentObject(obj Object) {
 	prop.parentObject = obj
 }
 
 // ParentObject returns the parent object.
-func (prop *Property) ParentObject() Object {
+func (prop *property) ParentObject() Object {
 	return prop.parentObject
 }
 
 // Node returns a parent node of the parent object.
-func (prop *Property) Node() Node {
+func (prop *property) Node() Node {
 	parentObj := prop.ParentObject()
 	if parentObj == nil {
 		return nil
@@ -100,102 +175,102 @@ func (prop *Property) Node() Node {
 }
 
 // SetName sets a name to the property.
-func (prop *Property) SetName(name string) *Property {
+func (prop *property) SetName(name string) *property {
 	prop.name = name
 	return prop
 }
 
 // Name returns the property name.
-func (prop *Property) Name() string {
+func (prop *property) Name() string {
 	return prop.name
 }
 
 // SetCode sets a specified code to the property.
-func (prop *Property) SetCode(code PropertyCode) *Property {
+func (prop *property) SetCode(code PropertyCode) Property {
 	prop.code = code
 	return prop
 }
 
 // Code returns the property code.
-func (prop *Property) Code() PropertyCode {
+func (prop *property) Code() PropertyCode {
 	return prop.code
 }
 
 // ClearData clears the property data.
-func (prop *Property) ClearData() {
+func (prop *property) ClearData() {
 	prop.data = make([]byte, 0)
 }
 
 // Size return the property data size.
-func (prop *Property) Size() int {
+func (prop *property) Size() int {
 	return len(prop.data)
 }
 
 // SetReadAttribute sets an attribute to the read property.
-func (prop *Property) SetReadAttribute(attr PropertyAttr) *Property {
+func (prop *property) SetReadAttribute(attr PropertyAttr) Property {
 	prop.getAttr = attr
 	return prop
 }
 
 // SetWriteAttribute sets an attribute to the write property.
-func (prop *Property) SetWriteAttribute(attr PropertyAttr) *Property {
+func (prop *property) SetWriteAttribute(attr PropertyAttr) Property {
 	prop.setAttr = attr
 	return prop
 }
 
 // SetAnnoAttribute sets an attribute to the announce property.
-func (prop *Property) SetAnnoAttribute(attr PropertyAttr) *Property {
+func (prop *property) SetAnnoAttribute(attr PropertyAttr) Property {
 	prop.annoAttr = attr
 	return prop
 }
 
 // GetAttribute returns the get attribute.
-func (prop *Property) ReadAttribute() PropertyAttr {
+func (prop *property) ReadAttribute() PropertyAttr {
 	return prop.getAttr
 }
 
 // SetAttribute returns the set attribute.
-func (prop *Property) WriteAttribute() PropertyAttr {
+func (prop *property) WriteAttribute() PropertyAttr {
 	return prop.setAttr
 }
 
 // AnnoAttribute returns the announce attribute.
-func (prop *Property) AnnoAttribute() PropertyAttr {
+func (prop *property) AnnoAttribute() PropertyAttr {
 	return prop.annoAttr
 }
 
 // IsReadable returns true when the get attribute is readable, otherwise false.
-func (prop *Property) IsReadable() bool {
+func (prop *property) IsReadable() bool {
 	return (prop.getAttr != Prohibited)
 }
 
 // IsWritable returns true when the set attribute is writable, otherwise false.
-func (prop *Property) IsWritable() bool {
+func (prop *property) IsWritable() bool {
 	return (prop.setAttr != Prohibited)
 }
 
 // IsAnnounceable returns true when the anno attribute is announcement, otherwise false.
-func (prop *Property) IsAnnounceable() bool {
+func (prop *property) IsAnnounceable() bool {
 	return (prop.annoAttr != Prohibited)
 }
 
 // IsReadRequired returns true when the get attribute is required, otherwise false.
-func (prop *Property) IsReadRequired() bool {
+func (prop *property) IsReadRequired() bool {
 	return (prop.getAttr == Required)
 }
 
 // IsWriteRequired returns true when the set attribute is required, otherwise false.
-func (prop *Property) IsWriteRequired() bool {
+func (prop *property) IsWriteRequired() bool {
 	return (prop.setAttr == Required)
 }
 
 // IsAnnounceRequired returns true when the announce attribute is required, otherwise false.
-func (prop *Property) IsAnnounceRequired() bool {
+func (prop *property) IsAnnounceRequired() bool {
 	return (prop.annoAttr == Required)
 }
 
 // IsReadOnly returns true when the property attribute is read only, otherwise false.
-func (prop *Property) IsReadOnly() bool {
+func (prop *property) IsReadOnly() bool {
 	if prop.IsWritable() {
 		return false
 	}
@@ -206,7 +281,7 @@ func (prop *Property) IsReadOnly() bool {
 }
 
 // IsWriteOnly returns true when the property attribute is write only, otherwise false.
-func (prop *Property) IsWriteOnly() bool {
+func (prop *property) IsWriteOnly() bool {
 	if prop.IsReadable() {
 		return false
 	}
@@ -217,7 +292,7 @@ func (prop *Property) IsWriteOnly() bool {
 }
 
 // IsAvailableService returns true whether the specified service can execute, otherwise false.
-func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
+func (prop *property) IsAvailableService(esv protocol.ESV) bool {
 	switch esv {
 	case protocol.ESVWriteRequest:
 		if prop.IsWritable() {
@@ -254,7 +329,7 @@ func (prop *Property) IsAvailableService(esv protocol.ESV) bool {
 }
 
 // SetData sets a specified data to the property.
-func (prop *Property) SetData(data []byte) *Property {
+func (prop *property) SetData(data []byte) Property {
 	prop.data = make([]byte, len(data))
 	copy(prop.data, data)
 
@@ -268,24 +343,24 @@ func (prop *Property) SetData(data []byte) *Property {
 }
 
 // SetByteData is an alias of SetData.
-func (prop *Property) SetByteData(data []byte) *Property {
+func (prop *property) SetByteData(data []byte) Property {
 	return prop.SetData(data)
 }
 
 // SetIntegerData sets a specified integer data to the property.
-func (prop *Property) SetIntegerData(data uint, size uint) *Property {
+func (prop *property) SetIntegerData(data uint, size uint) Property {
 	binData := make([]byte, size)
 	encoding.IntegerToByte(data, binData)
 	return prop.SetData(binData)
 }
 
 // Data returns the property data.
-func (prop *Property) Data() []byte {
+func (prop *property) Data() []byte {
 	return prop.data
 }
 
 // ByteData returns a byte value of the property data.
-func (prop *Property) ByteData() (byte, error) {
+func (prop *property) ByteData() (byte, error) {
 	if len(prop.data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
@@ -293,12 +368,12 @@ func (prop *Property) ByteData() (byte, error) {
 }
 
 // StringData returns a byte value of the property string data.
-func (prop *Property) StringData() (string, error) {
+func (prop *property) StringData() (string, error) {
 	return string(prop.data), nil
 }
 
 // IntegerData returns a integer value of the property integer data.
-func (prop *Property) IntegerData() (uint, error) {
+func (prop *property) IntegerData() (uint, error) {
 	if len(prop.data) == 0 {
 		return 0, fmt.Errorf(errorPropertyNoData)
 	}
@@ -306,7 +381,7 @@ func (prop *Property) IntegerData() (uint, error) {
 }
 
 // PropertyMapData returns a property map.
-func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
+func (prop *property) PropertyMapData() ([]PropertyCode, error) {
 	switch prop.code {
 	case ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap:
 		if len(prop.data) == 0 {
@@ -338,7 +413,7 @@ func (prop *Property) PropertyMapData() ([]PropertyCode, error) {
 }
 
 // announce announces the property.
-func (prop *Property) announce() error {
+func (prop *property) announce() error {
 	parentNode, ok := prop.Node().(localNodeHelper)
 	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
@@ -352,7 +427,7 @@ func (prop *Property) announce() error {
 }
 
 // toProtocolProperty returns the new property of the property.
-func (prop *Property) toProtocolProperty() *protocol.Property {
+func (prop *property) toProtocolProperty() *protocol.Property {
 	newProp := protocol.NewProperty()
 	newProp.SetCode(prop.Code())
 	newProp.SetData(prop.Data())
@@ -360,7 +435,7 @@ func (prop *Property) toProtocolProperty() *protocol.Property {
 }
 
 // Equals returns true if the specified property is same, otherwise false.
-func (prop *Property) Equals(otherProp *Property) bool {
+func (prop *property) Equals(otherProp *property) bool {
 	if prop.Code() != otherProp.Code() {
 		return false
 	}
@@ -371,8 +446,8 @@ func (prop *Property) Equals(otherProp *Property) bool {
 }
 
 // Copy copies the property instance without the data.
-func (prop *Property) Copy() *Property {
-	return &Property{
+func (prop *property) Copy() Property {
+	return &property{
 		name:         prop.name,
 		code:         prop.code,
 		getAttr:      prop.getAttr,

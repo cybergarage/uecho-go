@@ -60,7 +60,7 @@ type localNodeHelper interface {
 	// IsRunning returns true if the node is running.
 	IsRunning() bool
 	// AnnounceProperty announces a property change.
-	AnnounceProperty(prop *Property) error
+	AnnounceProperty(prop Property) error
 }
 
 // localNode is an instance for Echonet node.

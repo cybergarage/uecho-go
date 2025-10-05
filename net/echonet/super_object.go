@@ -97,7 +97,7 @@ func (obj *superObject) addStandardPropertiesWithCode(objCode ObjectCode) {
 }
 
 // AddProperty adds a new property into the property map.
-func (obj *superObject) AddProperty(prop *Property) {
+func (obj *superObject) AddProperty(prop Property) {
 	obj.Object.AddProperty(prop)
 	obj.updatePropertyMap()
 }

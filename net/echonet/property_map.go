@@ -20,14 +20,14 @@ const (
 
 // PropertyMap represents a property map.
 type PropertyMap struct {
-	properties   map[PropertyCode]*Property
+	properties   map[PropertyCode]Property
 	parentObject Object
 }
 
 // NewPropertyMap returns a new property map.
 func NewPropertyMap() *PropertyMap {
 	propMap := &PropertyMap{
-		properties:   map[PropertyCode]*Property{},
+		properties:   map[PropertyCode]Property{},
 		parentObject: nil,
 	}
 
@@ -48,20 +48,20 @@ func (propMap *PropertyMap) ParentObject() Object {
 }
 
 // AddProperty adds a new property into the property map.
-func (propMap *PropertyMap) AddProperty(prop *Property) {
+func (propMap *PropertyMap) AddProperty(prop Property) {
 	propMap.properties[prop.Code()] = prop
 	prop.SetParentObject(propMap.parentObject)
 }
 
 // ClearAllProperties removes all properties in the property map.
-func (propMap *PropertyMap) ClearAllProperties(prop *Property) {
+func (propMap *PropertyMap) ClearAllProperties(prop Property) {
 	for code := range propMap.properties {
 		delete(propMap.properties, code)
 	}
 }
 
 // Properties returns the all properties in the property map.
-func (propMap *PropertyMap) Properties() []*Property {
+func (propMap *PropertyMap) Properties() []Property {
 	codes := make([]PropertyCode, len(propMap.properties))
 	n := 0
 	for code := range propMap.properties {
@@ -71,7 +71,7 @@ func (propMap *PropertyMap) Properties() []*Property {
 
 	sort.Slice(codes, func(i, j int) bool { return codes[i] < codes[j] })
 
-	props := []*Property{}
+	props := []Property{}
 	for _, code := range codes {
 		prop, ok := propMap.properties[code]
 		if !ok {
@@ -83,13 +83,13 @@ func (propMap *PropertyMap) Properties() []*Property {
 }
 
 // LookupProperty returns the specified property in the property map.
-func (propMap *PropertyMap) LookupProperty(code PropertyCode) (*Property, bool) {
+func (propMap *PropertyMap) LookupProperty(code PropertyCode) (Property, bool) {
 	prop, ok := propMap.properties[code]
 	return prop, ok
 }
 
 // FindPropertyWait returns the specified property in the property map with the specified waiting time.
-func (propMap *PropertyMap) FindPropertyWait(code PropertyCode, waitTime time.Duration) (*Property, bool) {
+func (propMap *PropertyMap) FindPropertyWait(code PropertyCode, waitTime time.Duration) (Property, bool) {
 	for range propertyWaitRetryCount {
 		time.Sleep(waitTime / propertyWaitRetryCount)
 		prop, ok := propMap.LookupProperty(code)

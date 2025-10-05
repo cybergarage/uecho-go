@@ -173,7 +173,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 
 			prop := NewPropertyWithCode(testLightPropertyPowerCode)
 			prop.SetData([]byte{lastLightPowerStatus})
-			reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVWriteReadRequest, []*Property{prop})
+			reqMsg := NewMessageWithParameters(testLightDeviceCode, protocol.ESVWriteReadRequest, []Property{prop})
 			resMsg, err := ctrl.PostMessage(context.Background(), foundNode, reqMsg)
 			if err != nil {
 				t.Errorf("[%d] %s:%d is not responding", foundNodeIdx, foundNode.Address(), foundNode.Port())
