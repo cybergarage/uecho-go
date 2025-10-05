@@ -131,7 +131,7 @@ func (propMap *propertyMap) SetPropertyInteger(propCode PropertyCode, propData u
 	if !ok {
 		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
 	}
-	prop.SetIntegerData(propData, propSize)
+	prop.SetInteger(propData, propSize)
 	return nil
 }
 

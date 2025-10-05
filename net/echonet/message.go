@@ -47,14 +47,14 @@ func (msg *Message) SetDEOJ(code ObjectCode) *Message {
 
 // AddProperty adds a property to the message.
 func (msg *Message) AddProperty(prop Property) *Message {
-	msg.Message.AddProperty(prop.toProtocolProperty())
+	msg.Message.AddProperty(prop.ToProtocol())
 	return msg
 }
 
 // AddProperties adds all properties to the message.
 func (msg *Message) AddProperties(props []Property) *Message {
 	for _, prop := range props {
-		msg.Message.AddProperty(prop.toProtocolProperty())
+		msg.Message.AddProperty(prop.ToProtocol())
 	}
 	return msg
 }

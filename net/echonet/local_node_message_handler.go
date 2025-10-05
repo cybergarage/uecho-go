@@ -161,7 +161,7 @@ func (node *localNode) createResponseMessageForRequestMessage(reqMsg *protocol.M
 		if !ok {
 			continue
 		}
-		resMsg.AddProperty(prop.toProtocolProperty())
+		resMsg.AddProperty(prop.ToProtocol())
 	}
 
 	return resMsg, nil

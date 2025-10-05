@@ -32,30 +32,16 @@ const (
 type PropertyCode = protocol.PropertyCode
 
 type Property interface {
-	// SetParentObject sets a parent object into the property.
-	SetParentObject(obj Object)
 	// ParentObject returns the parent object.
 	ParentObject() Object
 	// Node returns a parent node of the parent object.
 	Node() Node
-	// SetName sets a name to the property.
-	SetName(name string) *property
 	// Name returns the property name.
 	Name() string
 	// Code returns the property code.
 	Code() PropertyCode
-	// ClearData clears the property data.
-	ClearData()
 	// Size return the property data size.
 	Size() int
-	// SetCode sets a specified code to the property.
-	SetCode(code PropertyCode) Property
-	// SetReadAttribute sets an attribute to the read property.
-	SetReadAttribute(attr PropertyAttribute) Property
-	// SetWriteAttribute sets an attribute to the write property.
-	SetWriteAttribute(attr PropertyAttribute) Property
-	// SetAnnoAttribute sets an attribute to the announce property.
-	SetAnnoAttribute(attr PropertyAttribute) Property
 	// GetAttribute returns the get attribute.
 	ReadAttribute() PropertyAttribute
 	// SetAttribute returns the set attribute.
@@ -80,12 +66,6 @@ type Property interface {
 	IsWriteOnly() bool
 	// IsAvailableService returns true whether the specified service can execute, otherwise false.
 	IsAvailableService(esv protocol.ESV) bool
-	// SetData sets a specified data to the property.
-	SetData(data []byte) Property
-	// SetByteData is an alias of SetData.
-	SetByteData(data []byte) Property
-	// SetIntegerData sets a specified integer data to the property.
-	SetIntegerData(data uint, size uint) Property
 	// Data returns the property data.
 	Data() []byte
 	// ByteData returns a byte value of the property data.
@@ -96,14 +76,52 @@ type Property interface {
 	IntegerData() (uint, error)
 	// PropertyMapData returns a property map.
 	PropertyMapData() ([]PropertyCode, error)
-	// announce announces the property.
-	announce() error
-	// toProtocolProperty returns the new property of the property.
-	toProtocolProperty() *protocol.Property
-	// Equals returns true if the specified property is same, otherwise false.
-	Equals(otherProp *property) bool
+	// PropertyMutator returns the property mutator.
+	PropertyMutator
+	// PropertyHelper is an interface to help a property.
+	PropertyHelper
+	// PropertyHelper returns the property helper.
+	propertyInternal
+}
+
+// PropertyMutator is an interface to mutate a property.
+type PropertyMutator interface {
+	// SetParentObject sets a parent object into the property.
+	SetParentObject(obj Object)
+	// SetName sets the name of the property.
+	SetName(name string) Property
+	// SetCode sets the code of the property.
+	SetCode(code PropertyCode) Property
+	// Clear clears the property data.
+	Clear()
+	// SetReadAttribute sets an attribute to the read property.
+	SetReadAttribute(attr PropertyAttribute) Property
+	// SetWriteAttribute sets an attribute to the write property.
+	SetWriteAttribute(attr PropertyAttribute) Property
+	// SetAnnoAttribute sets an attribute to the announce property.
+	SetAnnoAttribute(attr PropertyAttribute) Property
+	// SetData sets a specified data to the property.
+	SetData(data []byte) Property
+}
+
+// PropertyHelper is an interface to help a property.
+type PropertyHelper interface {
+	// SetByte sets a specified byte to the property.
+	SetByte(data []byte) Property
+	// SetInteger sets a specified integer data to the property.
+	SetInteger(data uint, size uint) Property
+}
+
+// propertyInternal is an interface to help a property.
+type propertyInternal interface {
+	// Announce announces the property to the network.
+	Announce() error
+	// ToProtocol returns the new property of the property.
+	ToProtocol() *protocol.Property
 	// Copy copies the property instance without the data.
 	Copy() Property
+	// Equals returns true if the specified property is same, otherwise false.
+	Equals(otherProp *property) bool
 }
 
 // property is an instance for Echonet property.
@@ -166,7 +184,7 @@ func (prop *property) Node() Node {
 }
 
 // SetName sets a name to the property.
-func (prop *property) SetName(name string) *property {
+func (prop *property) SetName(name string) Property {
 	prop.name = name
 	return prop
 }
@@ -187,8 +205,8 @@ func (prop *property) Code() PropertyCode {
 	return prop.code
 }
 
-// ClearData clears the property data.
-func (prop *property) ClearData() {
+// Clear clears the property data.
+func (prop *property) Clear() {
 	prop.data = make([]byte, 0)
 }
 
@@ -327,19 +345,19 @@ func (prop *property) SetData(data []byte) Property {
 	// (D) Basic sequence for autonomous notification.
 
 	if prop.IsAnnounceable() {
-		prop.announce()
+		prop.Announce()
 	}
 
 	return prop
 }
 
-// SetByteData is an alias of SetData.
-func (prop *property) SetByteData(data []byte) Property {
+// SetByte is an alias of SetData.
+func (prop *property) SetByte(data []byte) Property {
 	return prop.SetData(data)
 }
 
-// SetIntegerData sets a specified integer data to the property.
-func (prop *property) SetIntegerData(data uint, size uint) Property {
+// SetInteger sets a specified integer data to the property.
+func (prop *property) SetInteger(data uint, size uint) Property {
 	binData := make([]byte, size)
 	encoding.IntegerToByte(data, binData)
 	return prop.SetData(binData)
@@ -403,8 +421,8 @@ func (prop *property) PropertyMapData() ([]PropertyCode, error) {
 	return nil, fmt.Errorf(errorInvalidPropertyCode, prop.code)
 }
 
-// announce announces the property.
-func (prop *property) announce() error {
+// Announce announces the property.
+func (prop *property) Announce() error {
 	parentNode, ok := prop.Node().(localNodeHelper)
 	if !ok || parentNode == nil {
 		return fmt.Errorf(errorPropertyNoParentNode)
@@ -417,8 +435,8 @@ func (prop *property) announce() error {
 	return parentNode.AnnounceProperty(prop)
 }
 
-// toProtocolProperty returns the new property of the property.
-func (prop *property) toProtocolProperty() *protocol.Property {
+// ToProtocol returns the new property of the property.
+func (prop *property) ToProtocol() *protocol.Property {
 	newProp := protocol.NewProperty()
 	newProp.SetCode(prop.Code())
 	newProp.SetData(prop.Data())
