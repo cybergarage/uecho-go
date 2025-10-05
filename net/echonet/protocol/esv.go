@@ -25,8 +25,8 @@ const (
 	ESVWriteReadRequestError             = 0x5E
 )
 
-// IsValidESV returns true whether the specified code is valid, otherwise false.
-func IsValidESV(esv ESV) bool {
+// IsValid returns true when the ESV is valid, otherwise false.
+func (esv ESV) IsValid() bool {
 	validCodes := []ESV{
 		ESVWriteRequest,
 		ESVWriteRequestResponseRequired,
@@ -56,7 +56,7 @@ func IsValidESV(esv ESV) bool {
 }
 
 // IsWriteRequest returns true whether the specified code is a write request type, otherwise false.
-func IsWriteRequest(esv ESV) bool {
+func (esv ESV) IsWriteRequest() bool {
 	switch esv {
 	case ESVWriteRequest:
 		return true
@@ -69,7 +69,7 @@ func IsWriteRequest(esv ESV) bool {
 }
 
 // IsReadRequest returns true whether the specified code is a read request type, otherwise false.
-func IsReadRequest(esv ESV) bool {
+func (esv ESV) IsReadRequest() bool {
 	switch esv {
 	case ESVReadRequest:
 		return true
@@ -80,7 +80,7 @@ func IsReadRequest(esv ESV) bool {
 }
 
 // IsNotificationRequest returns true whether the specified code is a notification request type, otherwise false.
-func IsNotificationRequest(esv ESV) bool {
+func (esv ESV) IsNotificationRequest() bool {
 	switch esv {
 	case ESVNotificationRequest:
 		return true
@@ -89,7 +89,7 @@ func IsNotificationRequest(esv ESV) bool {
 }
 
 // IsWriteResponse returns true whether the specified code is a write response type, otherwise false.
-func IsWriteResponse(esv ESV) bool {
+func (esv ESV) IsWriteResponse() bool {
 	switch esv {
 	case ESVWriteResponse:
 		return true
@@ -100,7 +100,7 @@ func IsWriteResponse(esv ESV) bool {
 }
 
 // IsReadResponse returns true whether the specified code is a read response type, otherwise false.
-func IsReadResponse(esv ESV) bool {
+func (esv ESV) IsReadResponse() bool {
 	switch esv {
 	case ESVReadResponse:
 		return true
@@ -111,7 +111,7 @@ func IsReadResponse(esv ESV) bool {
 }
 
 // IsNotification returns true whether the specified code is a notification type, otherwise false.
-func IsNotification(esv ESV) bool {
+func (esv ESV) IsNotification() bool {
 	switch esv {
 	case ESVNotification:
 		return true
@@ -122,7 +122,7 @@ func IsNotification(esv ESV) bool {
 }
 
 // IsNotificationResponse returns true whether the specified code is a notification response type, otherwise false.
-func IsNotificationResponse(esv ESV) bool {
+func (esv ESV) IsNotificationResponse() bool {
 	switch esv {
 	case ESVNotificationResponse:
 		return true
@@ -131,7 +131,7 @@ func IsNotificationResponse(esv ESV) bool {
 }
 
 // IsResponseRequired returns true whether the ESV requires the response, otherwise false.
-func IsResponseRequired(esv ESV) bool {
+func (esv ESV) IsResponseRequired() bool {
 	switch esv {
 	case ESVReadRequest:
 		return true

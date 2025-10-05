@@ -29,7 +29,7 @@ func NewLightNode() *LightNode {
 func (node *LightNode) PropertyRequestReceived(obj echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
 	// Check whether the property request is a write request. Basically, the developer should handle only write requests.
 
-	if !protocol.IsWriteRequest(esv) {
+	if !esv.IsWriteRequest() {
 		return nil
 	}
 

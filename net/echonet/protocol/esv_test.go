@@ -9,5 +9,5 @@ import (
 )
 
 func TestESV(t *testing.T) {
-	IsValidESV(0x00)
+	ESV(0x00).IsValid()
 }

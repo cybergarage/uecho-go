@@ -128,10 +128,10 @@ func main() {
 
 	esvStr := os.Args[3]
 	esvVal, err := strconv.ParseUint(esvStr, 16, 8)
-	if (err != nil) || !echonet.IsValidESV(echonet.ESV(esvVal)) {
+	esv := echonet.ESV(esvVal)
+	if (err != nil) || !esv.IsValid() {
 		exitWithErrorMessage(fmt.Sprintf("The ESV (%s) is invalid", esvStr))
 	}
-	esv := echonet.ESV(esvVal)
 
 	props := make([]echonet.Property, 0)
 	for n := 4; n < len(os.Args); n++ {

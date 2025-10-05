@@ -8,58 +8,91 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	errorNodeRequestInvalidDestinationNode = "Invalid Destination Node : %v"
-)
+// Message represents an Echonet message.
+type Message interface {
+	// SourceAddress returns the source address of the message.
+	SourceAddress() string
+	// SourcePort returns the source port of the message.
+	SourcePort() int
+	// SEOJ returns the source object code of the message.
+	SEOJ() ObjectCode
+	// DEOJ returns the destination object code of the message.
+	DEOJ() ObjectCode
+	// ESV returns the ESV of the message.
+	ESV() ESV
+	// Properties returns the all properties of the message.
+	Properties() []*protocol.Property
+	// MessageMutator is an interface to mutate a message.
+	MessageMutator
+	// messageInternal is an interface to represent a message internal.
+	messageInternal
+}
 
-type Message struct {
+type MessageMutator interface {
+	// SetESV sets the specified ESV.
+	SetESV(esv ESV) Message
+	// SetDEOJ sets a destination object code.
+	SetDEOJ(code ObjectCode) Message
+	// AddProperty adds a property to the message.
+	AddProperty(prop Property) Message
+	// AddProperties adds all properties to the message.
+	AddProperties(props []Property) Message
+}
+
+// messageInternal is an interface to represent a message internal.
+type messageInternal interface {
+	// ToProtocol returns the protocol message.
+	ToProtocol() *protocol.Message
+}
+
+type message struct {
 	*protocol.Message
 }
 
 // newMessageWithProtocolMessage returns a new message.
-func newMessageWithProtocolMessage(protoMsg *protocol.Message) *Message {
-	return &Message{
+func newMessageWithProtocolMessage(protoMsg *protocol.Message) *message {
+	return &message{
 		Message: protoMsg,
 	}
 }
 
 // NewMessage returns a new message.
-func NewMessage() *Message {
+func NewMessage() Message {
 	return newMessageWithProtocolMessage(protocol.NewMessage())
 }
 
 // NewMessageWithParameters returns a new message of the specified parameters.
-func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []Property) *Message {
+func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []Property) Message {
 	return NewMessage().SetESV(esv).SetDEOJ(objCode).AddProperties(props)
 }
 
 // SetESV sets the specified ESV.
-func (msg *Message) SetESV(esv ESV) *Message {
+func (msg *message) SetESV(esv ESV) Message {
 	msg.Message.SetESV(esv)
 	return msg
 }
 
 // SetDEOJ sets a destination object code.
-func (msg *Message) SetDEOJ(code ObjectCode) *Message {
+func (msg *message) SetDEOJ(code ObjectCode) Message {
 	msg.Message.SetDEOJ(code)
 	return msg
 }
 
 // AddProperty adds a property to the message.
-func (msg *Message) AddProperty(prop Property) *Message {
+func (msg *message) AddProperty(prop Property) Message {
 	msg.Message.AddProperty(prop.ToProtocol())
 	return msg
 }
 
 // AddProperties adds all properties to the message.
-func (msg *Message) AddProperties(props []Property) *Message {
+func (msg *message) AddProperties(props []Property) Message {
 	for _, prop := range props {
 		msg.Message.AddProperty(prop.ToProtocol())
 	}
 	return msg
 }
 
-// protocolMessage returns the protocol message.
-func (msg *Message) protocolMessage() *protocol.Message {
+// ToProtocol returns the protocol message.
+func (msg *message) ToProtocol() *protocol.Message {
 	return msg.Message
 }

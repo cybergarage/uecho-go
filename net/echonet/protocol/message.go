@@ -223,51 +223,6 @@ func (msg *Message) IsESV(esv ESV) bool {
 	return msg.esv == esv
 }
 
-// IsValidESV returns true whether the specified code is valid, otherwise false.
-func (msg *Message) IsValidESV() bool {
-	return IsValidESV(msg.esv)
-}
-
-// IsWriteRequest returns true whether the message is a write request type, otherwise false.
-func (msg *Message) IsWriteRequest() bool {
-	return IsWriteRequest(msg.esv)
-}
-
-// IsReadRequest returns true whether the message is a read request type, otherwise false.
-func (msg *Message) IsReadRequest() bool {
-	return IsReadRequest(msg.esv)
-}
-
-// IsNotificationRequest returns true whether the message is a notification request type, otherwise false.
-func (msg *Message) IsNotificationRequest() bool {
-	return IsNotificationRequest(msg.esv)
-}
-
-// IsWriteResponse returns true whether the message is a write response type, otherwise false.
-func (msg *Message) IsWriteResponse() bool {
-	return IsWriteResponse(msg.esv)
-}
-
-// IsReadResponse returns true whether the message is a read response type, otherwise false.
-func (msg *Message) IsReadResponse() bool {
-	return IsReadResponse(msg.esv)
-}
-
-// IsNotification returns true whether the message is a notification type, otherwise false.
-func (msg *Message) IsNotification() bool {
-	return IsNotification(msg.esv)
-}
-
-// IsNotificationResponse returns true whether the message is a notification response type, otherwise false.
-func (msg *Message) IsNotificationResponse() bool {
-	return IsNotificationResponse(msg.esv)
-}
-
-// IsResponseRequired returns true whether the ESV requires the response, otherwise false.
-func (msg *Message) IsResponseRequired() bool {
-	return IsResponseRequired(msg.esv)
-}
-
 // SetOPC sets the specified OPC.
 func (msg *Message) SetOPC(value int) error {
 	msg.opc = byte(value & 0xFF)

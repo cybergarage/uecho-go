@@ -85,7 +85,7 @@ func (node *localNode) validateReceivedMessage(msg *protocol.Message) bool {
 				return false
 			}
 			// (E) Processing when the controlled property exists and the stipulated service processing functions are available but the EDT size does not match
-			if protocol.IsWriteRequest(msgESV) {
+			if msgESV.IsWriteRequest() {
 				if !prop.IsWritable() {
 					return false
 				}
