@@ -133,7 +133,7 @@ func main() {
 		exitWithErrorMessage(fmt.Sprintf("The ESV (%s) is invalid", esvStr))
 	}
 
-	props := make([]echonet.Property, 0)
+	props := make([]echonet.PropertyData, 0)
 	for n := 4; n < len(os.Args); n++ {
 		propHexBytes := []byte(os.Args[n])
 		propBytes := make([]byte, hex.DecodedLen(len(propHexBytes)))
@@ -153,7 +153,7 @@ func main() {
 		props = append(props, prop)
 	}
 
-	reqMsg := echonet.NewMessageWithParameters(dstObjCode, esv, props)
+	reqMsg := echonet.NewMessageWith(dstObjCode, esv, props...)
 
 	// Send the specified request message to the destination node
 

@@ -437,10 +437,7 @@ func (prop *property) Announce() error {
 
 // ToProtocol returns the new property of the property.
 func (prop *property) ToProtocol() *protocol.Property {
-	newProp := protocol.NewProperty()
-	newProp.SetCode(prop.Code())
-	newProp.SetData(prop.Data())
-	return newProp
+	return newProtocolPropertyFrom(prop)
 }
 
 // Equals returns true if the specified property is same, otherwise false.

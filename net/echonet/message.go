@@ -23,9 +23,9 @@ type Message interface {
 	// OPC returns the OPC of the message.
 	OPC() int
 	// Properties returns the all properties of the message.
-	Properties() []*protocol.Property
+	Properties() []PropertyData
 	// Property returns the n-th property of the message.
-	Property(n int) (*protocol.Property, bool)
+	Property(n int) (PropertyData, bool)
 	// MessageMutator is an interface to mutate a message.
 	MessageMutator
 	// messageInternal is an interface to represent a message internal.
@@ -38,9 +38,9 @@ type MessageMutator interface {
 	// SetDEOJ sets a destination object code.
 	SetDEOJ(code ObjectCode) Message
 	// AddProperty adds a property to the message.
-	AddProperty(prop Property) Message
+	AddProperty(prop PropertyData) Message
 	// AddProperties adds all properties to the message.
-	AddProperties(props []Property) Message
+	AddProperties(props ...PropertyData) Message
 }
 
 // messageInternal is an interface to represent a message internal.
@@ -65,9 +65,9 @@ func NewMessage() Message {
 	return newMessageWithProtocolMessage(protocol.NewMessage())
 }
 
-// NewMessageWithParameters returns a new message of the specified parameters.
-func NewMessageWithParameters(objCode ObjectCode, esv ESV, props []Property) Message {
-	return NewMessage().SetESV(esv).SetDEOJ(objCode).AddProperties(props)
+// NewMessageWith returns a new message of the specified parameters.
+func NewMessageWith(objCode ObjectCode, esv ESV, props ...PropertyData) Message {
+	return NewMessage().SetESV(esv).SetDEOJ(objCode).AddProperties(props...)
 }
 
 // SetESV sets the specified ESV.
@@ -83,21 +83,31 @@ func (msg *message) SetDEOJ(code ObjectCode) Message {
 }
 
 // AddProperty adds a property to the message.
-func (msg *message) AddProperty(prop Property) Message {
-	msg.Message.AddProperty(prop.ToProtocol())
+func (msg *message) AddProperty(prop PropertyData) Message {
+	msg.Message.AddProperty(newProtocolPropertyFrom(prop))
 	return msg
 }
 
 // AddProperties adds all properties to the message.
-func (msg *message) AddProperties(props []Property) Message {
+func (msg *message) AddProperties(props ...PropertyData) Message {
 	for _, prop := range props {
-		msg.Message.AddProperty(prop.ToProtocol())
+		msg.Message.AddProperty(newProtocolPropertyFrom(prop))
 	}
 	return msg
 }
 
 // Properties returns the all properties of the message.
-func (msg *message) Property(n int) (*protocol.Property, bool) {
+func (msg *message) Properties() []PropertyData {
+	protoProps := msg.Message.Properties()
+	props := make([]PropertyData, len(protoProps))
+	for n, protoProp := range protoProps {
+		props[n] = protoProp
+	}
+	return props
+}
+
+// Property returns the n-th property of the message.
+func (msg *message) Property(n int) (PropertyData, bool) {
 	props := msg.Properties()
 	if n < 0 || n >= len(props) {
 		return nil, false

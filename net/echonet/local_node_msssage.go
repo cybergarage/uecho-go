@@ -201,11 +201,11 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg Messag
 }
 
 // SendRequest sends a specified request to the object.
-func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) error {
-	return node.SendMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
+func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...PropertyData) error {
+	return node.SendMessage(ctx, dstNode, NewMessageWith(objCode, esv, props...))
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props []Property) (Message, error) {
-	return node.PostMessage(ctx, dstNode, NewMessageWithParameters(objCode, esv, props))
+func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...PropertyData) (Message, error) {
+	return node.PostMessage(ctx, dstNode, NewMessageWith(objCode, esv, props...))
 }
