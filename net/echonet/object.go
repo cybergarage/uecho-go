@@ -19,6 +19,8 @@ type Object interface {
 	Name() string
 	// Code returns the object code.
 	Code() ObjectCode
+	// IsCode returns true if the object code is the specified code.
+	IsCode(code ObjectCode) bool
 	// Codes returns the object codes.
 	Codes() []byte
 	// Class returns the class of the object.
@@ -39,6 +41,16 @@ type Object interface {
 	HasProperty(code PropertyCode) bool
 	// LookupProperty returns the specified property of the object.
 	LookupProperty(code PropertyCode) (Property, bool)
+	// SetListener sets the listener of the object.
+	SetListener(l ObjectListener)
+	// ObjectMutator returns the object mutator.
+	ObjectMutator
+	// ObjectHelper returns the object helper.
+	ObjectHelper
+}
+
+// ObjectMutator is an interface to mutate the object.
+type ObjectMutator interface {
 	// SetClassName sets the class name of the object.
 	SetClassName(name string)
 	// SetName sets the name of the object.
@@ -47,8 +59,6 @@ type Object interface {
 	SetCode(code ObjectCode)
 	// SetCodes sets the codes of the object.
 	SetCodes(codes []byte)
-	// IsCode returns true if the object code is the specified code.
-	IsCode(code ObjectCode) bool
 	// SetClassGroupCode sets the class group code of the object.
 	SetClassGroupCode(code byte)
 	// SetClassCode sets the class code of the object.
@@ -57,12 +67,8 @@ type Object interface {
 	SetInstanceCode(code byte)
 	// SetParentNode sets the parent node of the object.
 	SetParentNode(node Node)
-	// SetListener sets the listener of the object.
-	SetListener(l ObjectListener)
 	// AddProperty adds a property to the object.
 	AddProperty(prop Property)
-	// ObjectHelper returns the object helper.
-	ObjectHelper
 }
 
 // ObjectHelper is an interface to help the object.
