@@ -47,6 +47,8 @@ type Object interface {
 	ObjectMutator
 	// ObjectHelper returns the object helper.
 	ObjectHelper
+	// objectInternal returns the object internal interface.
+	objectInternal
 }
 
 // ObjectMutator is an interface to mutate the object.
