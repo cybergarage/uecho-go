@@ -10,7 +10,7 @@ import (
 )
 
 func TestNewPropertyMap(t *testing.T) {
-	NewPropertyMap()
+	newPropertyMap()
 }
 
 func TestPropertyMapCodeToFormat2(t *testing.T) {

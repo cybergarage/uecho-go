@@ -94,7 +94,7 @@ type objectInternal interface {
 }
 
 type object struct {
-	*PropertyMap
+	*propertyMap
 
 	clsName    string
 	name       string
@@ -105,7 +105,7 @@ type object struct {
 
 func newObject() *object {
 	obj := &object{
-		PropertyMap: NewPropertyMap(),
+		propertyMap: newPropertyMap(),
 		clsName:     "",
 		name:        "",
 		codes:       make([]byte, ObjectCodeSize),
@@ -257,7 +257,7 @@ func (obj *object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Proper
 // Copy copies the object instance without the data.
 func (obj *object) Copy() *object {
 	newObj := &object{
-		PropertyMap: NewPropertyMap(),
+		propertyMap: newPropertyMap(),
 		clsName:     obj.ClassName(),
 		name:        obj.Name(),
 		codes:       make([]byte, ObjectCodeSize),
