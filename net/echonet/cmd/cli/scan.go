@@ -57,7 +57,8 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 		}
 
 		printDevicesTable := func(tbl Table) {
-			tbl = tbl.HideDuplicateColumns(0, 1, 2, 3, 4)
+			formatter := NewTableFormatter()
+			tbl = formatter.HideDuplicateColumns(tbl, 0, 1, 2, 3, 4)
 			columns, rows := tbl.Columns(), tbl.Rows()
 			w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 			printRow := func(cols ...string) {
