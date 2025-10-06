@@ -24,9 +24,10 @@ func init() {
 }
 
 var scanCmd = &cobra.Command{ // nolint:exhaustruct
-	Use:   "scan",
+	Use:   "scan [address]",
 	Short: "Scan for Echonet Lite devices.",
 	Long:  "Scan for Echonet Lite devices.",
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		verbose := viper.GetBool(VerboseParamStr)
 		if verbose {
@@ -36,6 +37,22 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 		format, err := NewFormatFromString(viper.GetString(FormatParamStr))
 		if err != nil {
 			return err
+		}
+
+		address := ""
+		if 0 < len(args) {
+			address = args[0]
+		}
+
+		// Creates a query
+
+		query := &Query{
+			Details: false,
+			Address: address,
+		}
+
+		if verbose || 0 < len(address) {
+			query.Details = true
 		}
 
 		// Starts a controller for Echonet Lite node
@@ -49,11 +66,6 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 		err = ctrl.Start()
 		if err != nil {
 			return err
-		}
-
-		query := &Query{
-			Details: false,
-			Address: "",
 		}
 
 		table, err := ctrl.Search(context.Background(), query)

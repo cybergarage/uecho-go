@@ -60,6 +60,12 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 
 	for _, node := range ctrl.Nodes() {
 
+		// Filters by address
+
+		if 0 < len(query.Address) && node.Address() != query.Address {
+			continue
+		}
+
 		// Gets manufacture code.
 
 		manufactureName := unknown
