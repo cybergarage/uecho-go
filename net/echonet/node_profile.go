@@ -63,7 +63,7 @@ type NodeProfile interface {
 	// SetClassCount sets a class count.
 	SetClassCount(count uint) error
 	// SetClassCount sets a class count.
-	SetClassList(classes []*Class) error
+	SetClassList(classes []Class) error
 }
 
 // NewNodeProfile returns a new node profile object.
@@ -156,7 +156,7 @@ func (prof *nodeProfile) SetClassCount(count uint) error {
 }
 
 // SetClassList sets a class list in a node.
-func (prof *nodeProfile) SetClassList(classes []*Class) error {
+func (prof *nodeProfile) SetClassList(classes []Class) error {
 	classList := make([]byte, 1)
 	if classCount := len(classes); classCount <= (NodeProfileClassSelfNodeClassListSMax - 1) {
 		classList[0] = byte(classCount)
@@ -165,7 +165,7 @@ func (prof *nodeProfile) SetClassList(classes []*Class) error {
 	}
 
 	for _, class := range classes {
-		classList = append(classList, class.Codes()...)
+		classList = append(classList, class.Bytes()...)
 	}
 	return prof.SetPropertyData(NodeProfileClassSelfNodeClassListS, classList)
 }

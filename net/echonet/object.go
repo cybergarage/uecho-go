@@ -24,7 +24,7 @@ type Object interface {
 	// Codes returns the object codes.
 	Codes() []byte
 	// Class returns the class of the object.
-	Class() *Class
+	Class() Class
 	// ClassGroupCode returns the class group code.
 	ClassGroupCode() byte
 	// ClassCode returns the class code.
@@ -189,8 +189,8 @@ func (obj *object) IsCode(code ObjectCode) bool {
 }
 
 // Class returns the class of the object.
-func (obj *object) Class() *Class {
-	return NewClassWithCodes(obj.codes)
+func (obj *object) Class() Class {
+	return NewClassWithBytes(obj.codes)
 }
 
 // SetClassGroupCode sets a class group code to the object.

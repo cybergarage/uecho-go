@@ -230,7 +230,7 @@ func (node *localNode) updateNodeProfile() {
 
 	// Check the current all objects
 
-	classes := make([]*Class, 0)
+	classes := make([]Class, 0)
 
 	for _, dev := range node.devices {
 		devClass := dev.Class()
