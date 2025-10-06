@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package cli
+package cmd
 
 // TableFormatter provides an interface for formatting and transforming tables.
 type TableFormatter interface {

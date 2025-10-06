@@ -18,11 +18,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cybergarage/uecho-go/net/echonet/cmd/cli"
+	"github.com/cybergarage/uecho-go/net/echonet/cmd"
 )
 
 func main() {
-	if err := cli.Execute(); err != nil {
+	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
