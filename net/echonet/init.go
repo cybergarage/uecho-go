@@ -10,6 +10,7 @@ func init() {
 	sharedStandardDatabase = NewStandardDatabase()
 }
 
+// SharedStandardDatabase returns the shared standard database.
 func SharedStandardDatabase() *StandardDatabase {
 	return sharedStandardDatabase
 }
