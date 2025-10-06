@@ -51,7 +51,12 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		err = ctrl.Search(context.Background())
+		query := &Query{
+			Details: false,
+			Address: "",
+		}
+
+		table, err := ctrl.Search(context.Background(), query)
 		if err != nil {
 			return err
 		}
@@ -110,11 +115,6 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			}
 			outputf("%s\n", string(b))
 			return nil
-		}
-
-		table, err := ctrl.DiscoveredNodeTable()
-		if err != nil {
-			return err
 		}
 
 		switch format {

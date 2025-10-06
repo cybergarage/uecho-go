@@ -8,6 +8,8 @@ package cli
 type TableFormatter interface {
 	// HideDuplicateColumns removes duplicate columns from the table.
 	HideDuplicateColumns(table Table, columnIdxes ...int) Table
+	// FilterEmptyRows removes empty rows from the table.
+	FilterEmptyRows(table Table) Table
 }
 
 // defaultTableFormatter provides a default implementation of TableFormatter.
@@ -51,6 +53,24 @@ func (f *defaultTableFormatter) HideDuplicateColumns(table Table, columnIdxes ..
 	uniqRows := table.Rows()
 	for _, columnIdx := range columnIdxes {
 		uniqRows = stripDuplicateRowColumns(uniqRows, columnIdx)
+	}
+	return f.FilterEmptyRows(NewTable(table.Columns(), uniqRows))
+}
+
+// FilterEmptyRows removes empty rows from the table.
+func (f *defaultTableFormatter) FilterEmptyRows(table Table) Table {
+	uniqRows := [][]string{}
+	for _, row := range table.Rows() {
+		isBlankRow := true
+		for _, cell := range row {
+			if cell != "" {
+				isBlankRow = false
+				break
+			}
+		}
+		if !isBlankRow {
+			uniqRows = append(uniqRows, row)
+		}
 	}
 	return NewTable(table.Columns(), uniqRows)
 }

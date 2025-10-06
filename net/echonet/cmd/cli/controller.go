@@ -28,8 +28,16 @@ func NewController() *Controller {
 	return c
 }
 
+// Search searches for Echonet Lite nodes and returns the discovered node table.
+func (ctrl *Controller) Search(ctx context.Context, query *Query) (Table, error) {
+	if err := ctrl.Controller.Search(ctx); err != nil {
+		return nil, err
+	}
+	return ctrl.DiscoveredNodeTable(query)
+}
+
 // DiscoveredNodeTable returns the discovered node table.
-func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
+func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 	db := echonet.SharedStandardDatabase()
 
 	cols := []string{
@@ -38,11 +46,16 @@ func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
 		"manufacture",
 		"object_code",
 		"object_name",
-		"property_code",
-		"property_name",
-		"property_attribute",
-		"property_data",
 	}
+	if query.Details {
+		cols = append(cols,
+			"property_code",
+			"property_name",
+			"property_attr",
+			"property_data",
+		)
+	}
+
 	rows := [][]string{}
 
 	for _, node := range ctrl.Nodes() {
@@ -68,6 +81,18 @@ func (ctrl *Controller) DiscoveredNodeTable() (Table, error) {
 			objName := obj.ClassName()
 			if len(objName) == 0 {
 				objName = unknown
+			}
+
+			if !query.Details {
+				row := []string{
+					node.Address(),
+					fmt.Sprintf("%d", node.Port()),
+					manufactureName,
+					fmt.Sprintf("%06X", obj.Code()),
+					objName,
+				}
+				rows = append(rows, row)
+				continue
 			}
 
 			for _, prop := range obj.Properties() {
