@@ -68,7 +68,7 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		table, err := ctrl.Search(context.Background(), query)
+		table, err := ctrl.DiscoverNodes(context.Background(), query)
 		if err != nil {
 			return err
 		}

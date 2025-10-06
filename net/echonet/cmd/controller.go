@@ -28,8 +28,8 @@ func NewController() *Controller {
 	return c
 }
 
-// Search searches for Echonet Lite nodes and returns the discovered node table.
-func (ctrl *Controller) Search(ctx context.Context, query *Query) (Table, error) {
+// DiscoverNodes searches for Echonet Lite nodes and returns the discovered node table.
+func (ctrl *Controller) DiscoverNodes(ctx context.Context, query *Query) (Table, error) {
 	if err := ctrl.Controller.Search(ctx); err != nil {
 		return nil, err
 	}

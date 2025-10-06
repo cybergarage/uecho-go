@@ -9,6 +9,14 @@ type Query struct {
 	Address string
 }
 
+// NewQuery creates and returns a new Query.
+func NewQuery() *Query {
+	return &Query{
+		Details: false,
+		Address: "",
+	}
+}
+
 func NewQueryWith(details bool, address string) *Query {
 	return &Query{
 		Details: details,
