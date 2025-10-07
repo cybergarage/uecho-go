@@ -8,6 +8,9 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
+// PropertyDataCode is a type for Echonet property data code.
+type PropertyDataOption func(*propData) error
+
 // PropertyData is an interface for Echonet property data.
 type PropertyData interface {
 	// Code returns the property code.
@@ -23,12 +26,44 @@ type propData struct {
 	data []byte
 }
 
-// NewPropertyData returns a new property data.
-func NewPropertyDataWith(code PropertyCode, data []byte) PropertyData {
-	return &propData{
-		code: code,
-		data: data,
+// WithPropertyDataCode sets a property code to the property data.
+func WithPropertyDataCode(code PropertyCode) PropertyDataOption {
+	return func(pd *propData) error {
+		pd.code = code
+		return nil
 	}
+}
+
+// WithPropertyDataBytes sets data bytes to the property data.
+func WithPropertyDataBytes(data []byte) PropertyDataOption {
+	return func(pd *propData) error {
+		pd.data = make([]byte, len(data))
+		copy(pd.data, data)
+		return nil
+	}
+}
+
+// NewPropertyData returns a new property data.
+func NewPropertyData() PropertyData {
+	return newPropertyData()
+}
+
+func newPropertyData() *propData {
+	return &propData{
+		code: 0,
+		data: make([]byte, 0),
+	}
+}
+
+// NewPropertyDataWith returns a new property data with the specified options.
+func NewPropertyDataWith(opts ...PropertyDataOption) (PropertyData, error) {
+	pd := newPropertyData()
+	for _, opt := range opts {
+		if err := opt(pd); err != nil {
+			return nil, err
+		}
+	}
+	return pd, nil
 }
 
 // Code returns the property code.
