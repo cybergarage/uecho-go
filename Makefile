@@ -49,6 +49,8 @@ BINARIES=\
 	${EXAMPLE_ROOT}/uecholight \
 	${EXAMPLE_ROOT}/uechobench
 
+CMD_DOC_ROOT=doc/cmd
+
 .PHONY: version clean
 .IGNORE: lint
 
@@ -82,7 +84,12 @@ godoc:
 	open http://localhost:6060/pkg/${PKG_ID}/ || xdg-open http://localhost:6060/pkg/${PKG_ID}/ || gnome-open http://localhost:6060/pkg/${PKG_ID}/
 	godoc -http=:6060 -play
 
-install:
+gendoc:
+	@mkdir -p ${CMD_DOC_ROOT}
+	@rm -f ${CMD_DOC_ROOT}/*.md
+	go run ./scripts/gendoc.go && git add ${CMD_DOC_ROOT} && git commit ${CMD_DOC_ROOT} -m "docs: update CLI documentation"
+
+install: gendoc
 	go install ${BINARIES}
 
 clean:
