@@ -32,7 +32,7 @@ const (
 type PropertyCode = protocol.PropertyCode
 
 // PropertyOption is a type for property option.
-type PropertyOption func(*property) Property
+type PropertyOption func(*property) error
 
 type Property interface {
 	// ParentObject returns the parent object.
@@ -140,26 +140,26 @@ type property struct {
 
 // WithPropertyName sets a name to the property.
 func WithPropertyName(name string) PropertyOption {
-	return func(prop *property) Property {
+	return func(prop *property) error {
 		prop.name = name
-		return prop
+		return nil
 	}
 }
 
 // WithPropertyCode sets a specified code to the property.
 func WithPropertyCode(code PropertyCode) PropertyOption {
-	return func(prop *property) Property {
+	return func(prop *property) error {
 		prop.code = code
-		return prop
+		return nil
 	}
 }
 
 // WithPropertyData sets an attribute to the read property.
 func WithPropertyData(data []byte) PropertyOption {
-	return func(prop *property) Property {
+	return func(prop *property) error {
 		prop.data = make([]byte, len(data))
 		copy(prop.data, data)
-		return prop
+		return nil
 	}
 }
 
@@ -181,15 +181,15 @@ func newProperty() *property {
 }
 
 // NewPropertyWith returns a new property with the specified options.
-func NewPropertyWith(opts ...PropertyOption) Property {
+func NewPropertyWith(opts ...PropertyOption) (Property, error) {
 	prop := newProperty()
 	for _, opt := range opts {
-		if opt == nil {
-			continue
+		err := opt(prop)
+		if err != nil {
+			return nil, err
 		}
-		opt(prop)
 	}
-	return prop
+	return prop, nil
 }
 
 // NewPropertyWithCode returns a new property with the specified property code.
