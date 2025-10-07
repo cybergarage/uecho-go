@@ -15,6 +15,9 @@ const (
 	ClassGroupProfile   = 0x0E
 )
 
+// ClassOption is a function type to set options for class.
+type ClassOption func(*class) error
+
 // Class is an interface for Echonet class.
 type Class interface {
 	// GroupCode returns the group code of the class.
@@ -25,16 +28,6 @@ type Class interface {
 	Equals(other Class) bool
 	// Bytes returns the all codes of the class.
 	Bytes() []byte
-	// ClasstMutator is an interface to mutate the class.
-	ClasstMutator
-}
-
-// ClasstMutator is an interface to mutate the class.
-type ClasstMutator interface {
-	// SetGroupCode sets a group code to the class.
-	SetGroupCode(code byte)
-	// SetCode sets a code to the class.
-	SetCode(code byte)
 }
 
 // class is an instance for Echonet class.
@@ -42,20 +35,46 @@ type class struct {
 	codes []byte
 }
 
-// NewClass returns a new class.
-func NewClass() Class {
-	cls := &class{
-		codes: make([]byte, 2),
+// WithClassBytes returns a ClassOption to set class codes with the specified byte slice.
+func WithClassBytes(codes []byte) ClassOption {
+	return func(cls *class) error {
+		cls.codes[0] = codes[0]
+		cls.codes[1] = codes[1]
+		return nil
 	}
-	return cls
 }
 
-// NewClassWithBytes returns a new class with the specified byte codes.
-func NewClassWithBytes(codes []byte) Class {
-	cls := &class{
-		codes: codes,
+// WithClassCode returns a ClassOption to set class code.
+func WithClassCode(code byte) ClassOption {
+	return func(cls *class) error {
+		cls.codes[1] = byte(code & 0xFF)
+		return nil
 	}
-	return cls
+}
+
+// WithClassGroupCode returns a ClassOption to set class group code.
+func WithClassGroupCode(code byte) ClassOption {
+	return func(cls *class) error {
+		cls.codes[0] = byte(code & 0xFF)
+		return nil
+	}
+}
+
+// NewClass returns a new class.
+func NewClass(opts ...ClassOption) (Class, error) {
+	cls := newClass()
+	for _, opt := range opts {
+		if err := opt(cls); err != nil {
+			return nil, err
+		}
+	}
+	return cls, nil
+}
+
+func newClass() *class {
+	return &class{
+		codes: make([]byte, 2),
+	}
 }
 
 // SetGroupCode sets a group code to the class.

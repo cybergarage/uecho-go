@@ -190,7 +190,8 @@ func (obj *object) IsCode(code ObjectCode) bool {
 
 // Class returns the class of the object.
 func (obj *object) Class() Class {
-	return NewClassWithBytes(obj.codes)
+	class, _ := NewClass(WithClassBytes(obj.codes[:2]))
+	return class
 }
 
 // SetClassGroupCode sets a class group code to the object.
