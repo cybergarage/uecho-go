@@ -18,11 +18,12 @@ var (
 	VerboseParamStr = "verbose"
 )
 
+// rootCmd represents the base command for the uechoctl CLI tool.
 var rootCmd = &cobra.Command{ // nolint:exhaustruct
 	Use:               "uechoctl",
 	Version:           echonet.Version,
-	Short:             "",
-	Long:              "",
+	Short:             "Control Echonet Lite devices from command line.",
+	Long:              "Control Echonet Lite devices from command line. See 'uechoctl <command> --help' for more information about a command.",
 	DisableAutoGenTag: true,
 }
 
