@@ -32,19 +32,17 @@ const (
 type PropertyCode = protocol.PropertyCode
 
 // PropertyOption is a type for property option.
-type PropertyOption func(*property) error
+type PropertyOption func(*property)
 
 type Property interface {
-	// ParentObject returns the parent object.
-	ParentObject() Object
+	// Object returns the parent object.
+	Object() Object
 	// Node returns a parent node of the parent object.
 	Node() Node
 	// Name returns the property name.
 	Name() string
 	// Code returns the property code.
 	Code() PropertyCode
-	// Size return the property data size.
-	Size() int
 	// GetAttribute returns the get attribute.
 	ReadAttribute() PropertyAttribute
 	// SetAttribute returns the set attribute.
@@ -69,42 +67,20 @@ type Property interface {
 	IsWriteOnly() bool
 	// IsAvailableService returns true whether the specified service can execute, otherwise false.
 	IsAvailableService(esv protocol.ESV) bool
+	// Size return the property data size.
+	Size() int
+	// SetData sets a specified data to the property.
+	SetData(data []byte) Property
 	// Data returns the property data.
 	Data() []byte
-	// ByteData returns a byte value of the property data.
-	ByteData() (byte, error)
-	// StringData returns a byte value of the property string data.
-	StringData() (string, error)
-	// IntegerData returns a integer value of the property integer data.
-	IntegerData() (uint, error)
+	// Clear clears the property data.
+	Clear()
 	// PropertyMapData returns a property map.
 	PropertyMapData() ([]PropertyCode, error)
-	// PropertyMutator returns the property mutator.
-	PropertyMutator
 	// PropertyHelper is an interface to help a property.
 	PropertyHelper
 	// PropertyHelper returns the property helper.
 	propertyInternal
-}
-
-// PropertyMutator is an interface to mutate a property.
-type PropertyMutator interface {
-	// SetParentObject sets a parent object into the property.
-	SetParentObject(obj Object)
-	// SetName sets the name of the property.
-	SetName(name string) Property
-	// SetCode sets the code of the property.
-	SetCode(code PropertyCode) Property
-	// Clear clears the property data.
-	Clear()
-	// SetReadAttribute sets an attribute to the read property.
-	SetReadAttribute(attr PropertyAttribute) Property
-	// SetWriteAttribute sets an attribute to the write property.
-	SetWriteAttribute(attr PropertyAttribute) Property
-	// SetAnnoAttribute sets an attribute to the announce property.
-	SetAnnoAttribute(attr PropertyAttribute) Property
-	// SetData sets a specified data to the property.
-	SetData(data []byte) Property
 }
 
 // PropertyHelper is an interface to help a property.
@@ -113,10 +89,18 @@ type PropertyHelper interface {
 	SetByte(data []byte) Property
 	// SetInteger sets a specified integer data to the property.
 	SetInteger(data uint, size uint) Property
+	// ByteData returns a byte value of the property data.
+	ByteData() (byte, error)
+	// StringData returns a byte value of the property string data.
+	StringData() (string, error)
+	// IntegerData returns a integer value of the property integer data.
+	IntegerData() (uint, error)
 }
 
 // propertyInternal is an interface to help a property.
 type propertyInternal interface {
+	// SetObject sets a parent object into the property.
+	SetObject(obj Object)
 	// Announce announces the property to the network.
 	Announce() error
 	// ToProtocol returns the new property of the property.
@@ -138,34 +122,63 @@ type property struct {
 	annoAttr     PropertyAttribute
 }
 
+// WithPropertyObject sets a parent object into the property.
+func WithPropertyObject(obj Object) PropertyOption {
+	return func(prop *property) {
+		prop.parentObject = obj
+	}
+}
+
+// WithPropertyReadAttribute sets an attribute to the read property.
+func WithPropertyReadAttribute(attr PropertyAttribute) PropertyOption {
+	return func(prop *property) {
+		prop.getAttr = attr
+	}
+}
+
+// WithPropertyWriteAttribute sets an attribute to the write property.
+func WithPropertyWriteAttribute(attr PropertyAttribute) PropertyOption {
+	return func(prop *property) {
+		prop.setAttr = attr
+	}
+}
+
+// WithPropertyAnnoAttribute sets an attribute to the announce property.
+func WithPropertyAnnoAttribute(attr PropertyAttribute) PropertyOption {
+	return func(prop *property) {
+		prop.annoAttr = attr
+	}
+}
+
 // WithPropertyName sets a name to the property.
 func WithPropertyName(name string) PropertyOption {
-	return func(prop *property) error {
+	return func(prop *property) {
 		prop.name = name
-		return nil
 	}
 }
 
 // WithPropertyCode sets a specified code to the property.
 func WithPropertyCode(code PropertyCode) PropertyOption {
-	return func(prop *property) error {
+	return func(prop *property) {
 		prop.code = code
-		return nil
 	}
 }
 
 // WithPropertyData sets an attribute to the read property.
 func WithPropertyData(data []byte) PropertyOption {
-	return func(prop *property) error {
+	return func(prop *property) {
 		prop.data = make([]byte, len(data))
 		copy(prop.data, data)
-		return nil
 	}
 }
 
 // NewProperty returns a new property.
-func NewProperty() Property {
-	return newProperty()
+func NewProperty(opts ...PropertyOption) Property {
+	prop := newProperty()
+	for _, opt := range opts {
+		opt(prop)
+	}
+	return prop
 }
 
 func newProperty() *property {
@@ -180,47 +193,19 @@ func newProperty() *property {
 	}
 }
 
-// NewPropertyWith returns a new property with the specified options.
-func NewPropertyWith(opts ...PropertyOption) (Property, error) {
-	prop := newProperty()
-	for _, opt := range opts {
-		err := opt(prop)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return prop, nil
-}
-
-// NewPropertyWithCode returns a new property with the specified property code.
-func NewPropertyWithCode(code PropertyCode) Property {
-	prop := NewProperty()
-	prop.SetCode(code)
-	return prop
-}
-
-// NewPropertiesWithCodes returns a new properties with the specified property codes.
-func NewPropertiesWithCodes(codes []PropertyCode) []Property {
-	props := make([]Property, len(codes))
-	for n, code := range codes {
-		props[n] = NewPropertyWithCode(code)
-	}
-	return props
-}
-
-// SetParentObject sets a parent object into the property.
-func (prop *property) SetParentObject(obj Object) {
+// SetObject sets a parent object into the property.
+func (prop *property) SetObject(obj Object) {
 	prop.parentObject = obj
 }
 
-// ParentObject returns the parent object.
-func (prop *property) ParentObject() Object {
+// Object returns the parent object.
+func (prop *property) Object() Object {
 	return prop.parentObject
 }
 
 // Node returns a parent node of the parent object.
 func (prop *property) Node() Node {
-	parentObj := prop.ParentObject()
+	parentObj := prop.Object()
 	if parentObj == nil {
 		return nil
 	}

@@ -171,7 +171,9 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 
 			time.Sleep(testNodeRequestSleep)
 
-			prop := NewPropertyWithCode(testLightPropertyPowerCode)
+			prop := NewProperty(
+				WithPropertyCode(testLightPropertyPowerCode),
+			)
 			prop.SetData([]byte{lastLightPowerStatus})
 			reqMsg := NewMessage(
 				WithMessageDEOJ(testLightDeviceCode),

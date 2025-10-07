@@ -145,8 +145,9 @@ func main() {
 			exitWithErrorMessage(fmt.Sprintf("The property code (%s) is short", string(propHexBytes)))
 		}
 
-		prop := echonet.NewProperty()
-		prop.SetCode(echonet.PropertyCode(propBytes[0]))
+		prop := echonet.NewProperty(
+			echonet.WithPropertyCode(echonet.PropertyCode(propBytes[0])),
+		)
 		if 2 <= len(propBytes) {
 			prop.SetData(propBytes[1:])
 		}

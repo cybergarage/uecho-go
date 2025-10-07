@@ -133,7 +133,9 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	// Send read request
 
-	prop := NewPropertyWithCode(testLightPropertyPowerCode)
+	prop := NewProperty(
+		WithPropertyCode(testLightPropertyPowerCode),
+	)
 	for n := 0; n < testNodeRequestCount; n++ {
 		err = ctrl.SendRequest(
 			context.Background(),
@@ -149,7 +151,9 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 	// Send read request (post)
 
-	prop = NewPropertyWithCode(testLightPropertyPowerCode)
+	prop = NewProperty(
+		WithPropertyCode(testLightPropertyPowerCode),
+	)
 	for n := 0; n < testNodeRequestCount; n++ {
 		time.Sleep(testNodeRequestSleep)
 		reqMsg := NewMessage(
@@ -187,8 +191,10 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		time.Sleep(testNodeRequestSleep)
 
-		prop := NewPropertyWithCode(testLightPropertyPowerCode)
-		prop.SetData([]byte{lastLightPowerStatus})
+		prop := NewProperty(
+			WithPropertyCode(testLightPropertyPowerCode),
+			WithPropertyData([]byte{lastLightPowerStatus}),
+		)
 		err = ctrl.SendRequest(
 			context.Background(),
 			dev.ParentNode(),
@@ -204,7 +210,9 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		time.Sleep(testNodeRequestSleep)
 
-		prop = NewPropertyWithCode(testLightPropertyPowerCode)
+		prop = NewProperty(
+			WithPropertyCode(testLightPropertyPowerCode),
+		)
 		reqMsg := NewMessage(
 			WithMessageDEOJ(testLightDeviceCode),
 			WithMessageESV(protocol.ESVReadRequest),
@@ -237,7 +245,9 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 
 		time.Sleep(testNodeRequestSleep)
 
-		prop := NewPropertyWithCode(testLightPropertyPowerCode)
+		prop := NewProperty(
+			WithPropertyCode(testLightPropertyPowerCode),
+		)
 		prop.SetData([]byte{lastLightPowerStatus})
 		reqMsg := NewMessage(
 			WithMessageDEOJ(testLightDeviceCode),

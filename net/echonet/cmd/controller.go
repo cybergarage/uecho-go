@@ -72,7 +72,10 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 		req := echonet.NewMessage(
 			echonet.WithMessageESV(echonet.ESVReadRequest),
 			echonet.WithMessageDEOJ(0x0EF001),
-			echonet.WithMessageProperties(echonet.NewProperty().SetCode(0x8A)),
+			echonet.WithMessageProperties(
+				echonet.NewProperty(
+					echonet.WithPropertyCode(0x8A)),
+			),
 		)
 		res, err := ctrl.PostMessage(context.Background(), node, req)
 		if err == nil {
@@ -129,7 +132,11 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 					req := echonet.NewMessage(
 						echonet.WithMessageESV(echonet.ESVReadRequest),
 						echonet.WithMessageDEOJ(obj.Code()),
-						echonet.WithMessageProperties(echonet.NewProperty().SetCode(prop.Code())),
+						echonet.WithMessageProperties(
+							echonet.NewProperty(
+								echonet.WithPropertyCode(prop.Code()),
+							),
+						),
 					)
 					res, err := ctrl.PostMessage(context.Background(), node, req)
 					if err == nil {

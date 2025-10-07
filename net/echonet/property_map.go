@@ -38,7 +38,7 @@ func newPropertyMap() *propertyMap {
 func (propMap *propertyMap) SetParentObject(obj Object) {
 	propMap.parentObject = obj
 	for _, prop := range propMap.properties {
-		prop.SetParentObject(obj)
+		prop.SetObject(obj)
 	}
 }
 
@@ -50,7 +50,7 @@ func (propMap *propertyMap) ParentObject() Object {
 // AddProperty adds a new property into the property map.
 func (propMap *propertyMap) AddProperty(prop Property) {
 	propMap.properties[prop.Code()] = prop
-	prop.SetParentObject(propMap.parentObject)
+	prop.SetObject(propMap.parentObject)
 }
 
 // ClearAllProperties removes all properties in the property map.

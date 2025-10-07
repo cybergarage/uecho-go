@@ -48,13 +48,10 @@ var setCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		prop, err := echonet.NewPropertyWith(
+		prop := echonet.NewProperty(
 			echonet.WithPropertyCode(echonet.PropertyCode(propCode)),
 			echonet.WithPropertyData(propData),
 		)
-		if err != nil {
-			return err
-		}
 
 		reqMsg := echonet.NewMessage(
 			echonet.WithMessageDEOJ(echonet.ObjectCode(objCode)),

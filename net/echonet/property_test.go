@@ -9,6 +9,7 @@ import (
 )
 
 func TestNewProperty(t *testing.T) {
-	NewProperty()
-	NewPropertyWithCode(0)
+	NewProperty(
+		WithPropertyCode(0x80),
+	)
 }

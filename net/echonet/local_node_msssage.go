@@ -36,7 +36,7 @@ func (node *localNode) AnnounceMessage(msg *protocol.Message) error {
 func (node *localNode) AnnounceProperty(prop Property) error {
 	msg := protocol.NewMessage()
 	msg.SetESV(protocol.ESVNotification)
-	msg.SetSEOJ(prop.ParentObject().Code())
+	msg.SetSEOJ(prop.Object().Code())
 	msg.AddProperty(prop.ToProtocol())
 	return node.AnnounceMessage(msg)
 }
