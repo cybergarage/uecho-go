@@ -31,5 +31,5 @@ set 192.168.1.100 013001 80 30
 
 ### SEE ALSO
 
-* [uechoctl](uechoctl.md)	 - 
+* [uechoctl](uechoctl.md)	 - Control Echonet Lite devices from command line.
 

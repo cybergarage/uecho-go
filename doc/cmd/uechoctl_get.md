@@ -32,5 +32,5 @@ uechoctl get <node-address> <object-code> <property-code> [flags]
 
 ### SEE ALSO
 
-* [uechoctl](uechoctl.md)	 - 
+* [uechoctl](uechoctl.md)	 - Control Echonet Lite devices from command line.
 
