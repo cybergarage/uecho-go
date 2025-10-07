@@ -87,7 +87,8 @@ godoc:
 gendoc:
 	@mkdir -p ${CMD_DOC_ROOT}
 	@rm -f ${CMD_DOC_ROOT}/*.md
-	go run ./scripts/gendoc.go && git add ${CMD_DOC_ROOT} && git commit ${CMD_DOC_ROOT} -m "docs: update CLI documentation"
+	go run ./scripts/gendoc.go
+	-git add ${CMD_DOC_ROOT} && git commit ${CMD_DOC_ROOT} -m "docs: update CLI documentation"
 
 install: gendoc
 	go install ${BINARIES}
