@@ -49,10 +49,11 @@ func Example() {
 		// Gets manufacture code.
 
 		manufactureName := unknown
-		req := echonet.NewMessage()
-		req.SetESV(echonet.ESVReadRequest)
-		req.SetDEOJ(0x0EF001)
-		req.AddProperty(echonet.NewProperty().SetCode(0x8A))
+		req := echonet.NewMessage(
+			echonet.WithMessageESV(echonet.ESVReadRequest),
+			echonet.WithMessageDEOJ(0x0EF001),
+			echonet.WithMessageProperties(echonet.NewProperty().SetCode(0x8A)),
+		)
 		res, err := ctrl.PostMessage(context.Background(), node, req)
 		if err == nil {
 			if props := res.Properties(); len(props) == 1 {
@@ -87,10 +88,11 @@ func Example() {
 					propName = "(" + unknown + ")"
 				}
 				propData := "--"
-				req := echonet.NewMessage()
-				req.SetESV(echonet.ESVReadRequest)
-				req.SetDEOJ(obj.Code())
-				req.AddProperty(echonet.NewProperty().SetCode(prop.Code()))
+				req := echonet.NewMessage(
+					echonet.WithMessageESV(echonet.ESVReadRequest),
+					echonet.WithMessageDEOJ(obj.Code()),
+					echonet.WithMessageProperties(echonet.NewProperty().SetCode(prop.Code())),
+				)
 				res, err := ctrl.PostMessage(context.Background(), node, req)
 				if err == nil {
 					if props := res.Properties(); len(props) == 1 {

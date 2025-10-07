@@ -153,7 +153,11 @@ func main() {
 		props = append(props, prop)
 	}
 
-	reqMsg := echonet.NewMessageWith(dstObjCode, esv, props...)
+	reqMsg := echonet.NewMessage(
+		echonet.WithMessageDEOJ(dstObjCode),
+		echonet.WithMessageESV(esv),
+		echonet.WithMessageProperties(props...),
+	)
 
 	// Send the specified request message to the destination node
 

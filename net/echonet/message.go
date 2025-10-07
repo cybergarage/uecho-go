@@ -8,6 +8,9 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
+// MessageOptions is a function type to set options in Message.
+type MessageOptions func(*message)
+
 // Message represents an Echonet message.
 type Message interface {
 	// SourceAddress returns the source address of the message.
@@ -26,21 +29,8 @@ type Message interface {
 	Properties() []PropertyData
 	// Property returns the n-th property of the message.
 	Property(n int) (PropertyData, bool)
-	// MessageMutator is an interface to mutate a message.
-	MessageMutator
 	// messageInternal is an interface to represent a message internal.
 	messageInternal
-}
-
-type MessageMutator interface {
-	// SetESV sets the specified ESV.
-	SetESV(esv ESV) Message
-	// SetDEOJ sets a destination object code.
-	SetDEOJ(code ObjectCode) Message
-	// AddProperty adds a property to the message.
-	AddProperty(prop PropertyData) Message
-	// AddProperties adds all properties to the message.
-	AddProperties(props ...PropertyData) Message
 }
 
 // messageInternal is an interface to represent a message internal.
@@ -53,6 +43,36 @@ type message struct {
 	*protocol.Message
 }
 
+// WithMessageDEOJ sets a destination object code.
+func WithMessageDEOJ(code ObjectCode) MessageOptions {
+	return func(msg *message) {
+		msg.SetDEOJ(code)
+	}
+}
+
+// WithMessageSEOJ sets a source object code.
+func WithMessageESV(esv ESV) MessageOptions {
+	return func(msg *message) {
+		msg.SetESV(esv)
+	}
+}
+
+// WithMessageProperties sets properties to the message.
+func WithMessageProperties(props ...PropertyData) MessageOptions {
+	return func(msg *message) {
+		msg.AddProperties(props...)
+	}
+}
+
+// NewMessage returns a new message.
+func NewMessage(opts ...MessageOptions) Message {
+	msg := newMessage()
+	for _, opt := range opts {
+		opt(msg)
+	}
+	return msg
+}
+
 // newMessageWithProtocolMessage returns a new message.
 func newMessageWithProtocolMessage(protoMsg *protocol.Message) *message {
 	return &message{
@@ -60,14 +80,8 @@ func newMessageWithProtocolMessage(protoMsg *protocol.Message) *message {
 	}
 }
 
-// NewMessage returns a new message.
-func NewMessage() Message {
+func newMessage() *message {
 	return newMessageWithProtocolMessage(protocol.NewMessage())
-}
-
-// NewMessageWith returns a new message of the specified parameters.
-func NewMessageWith(objCode ObjectCode, esv ESV, props ...PropertyData) Message {
-	return NewMessage().SetESV(esv).SetDEOJ(objCode).AddProperties(props...)
 }
 
 // SetESV sets the specified ESV.

@@ -50,7 +50,11 @@ var getCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		reqMsg := echonet.NewMessageWith(echonet.ObjectCode(objCode), echonet.ESVReadRequest, prop)
+		reqMsg := echonet.NewMessage(
+			echonet.WithMessageDEOJ(echonet.ObjectCode(objCode)),
+			echonet.WithMessageESV(echonet.ESVReadRequest),
+			echonet.WithMessageProperties(prop),
+		)
 
 		// Create a controller
 
