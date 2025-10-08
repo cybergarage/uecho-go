@@ -23,9 +23,9 @@ type testController struct {
 	foundTestNodeCount int
 }
 
-func newTestController() *testController {
+func newTestController(opts ...ControllerOption) *testController {
 	ctrl := &testController{
-		Controller:         NewController(),
+		Controller:         NewController(opts...),
 		foundTestNodeCount: 0,
 	}
 	ctrl.SetListener(ctrl)
@@ -46,8 +46,9 @@ func (ctrl *testController) ControllerNewNodeFound(node Node) {
 }
 
 func TestNewController(t *testing.T) {
-	ctrl := NewController()
-	ctrl.SetConfig(newTestDefaultConfig())
+	ctrl := NewController(
+		WithControllerConfig(newTestDefaultConfig()),
+	)
 
 	err := ctrl.Start()
 	if err != nil {
@@ -95,8 +96,9 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 
 	// Start a controller
 
-	ctrl := newTestController()
-	ctrl.SetConfig(config)
+	ctrl := newTestController(
+		WithControllerConfig(config),
+	)
 	err := ctrl.Start()
 	if err != nil {
 		t.Error(err)

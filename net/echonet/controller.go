@@ -20,10 +20,11 @@ const (
 	DefaultResponseTimeout = time.Duration(3) * time.Second
 )
 
+// ControllerOptions represents a function type to set options for controller.
+type ControllerOption func(*controller)
+
 // Controller represents the Echonet controller.
 type Controller interface {
-	// SetConfig sets a configuration.
-	SetConfig(*Config)
 	// SetListener sets a listener to receive the Echonet messages.
 	SetListener(ControllerListener)
 	// Addresses returns the local addresses that this controller is bound to.
@@ -50,18 +51,28 @@ type controller struct {
 	controllerListener ControllerListener
 }
 
-// NewController returns a new controller.
-func NewController() *controller {
-	return newController()
+// WithControllerConfig sets a configuration to the controller.
+func WithControllerConfig(cfg *Config) ControllerOption {
+	return func(ctrl *controller) {
+		ctrl.SetConfig(cfg)
+	}
 }
 
-func newController() *controller {
+// NewController returns a new controller.
+func NewController(opts ...ControllerOption) Controller {
+	return newController(opts...)
+}
+
+func newController(opts ...ControllerOption) *controller {
 	ctrl := &controller{
 		localNode:          newLocalNode(),
 		foundNodes:         make([]Node, 0),
 		controllerListener: nil,
 	}
 	ctrl.localNode.SetListener(ctrl)
+	for _, opt := range opts {
+		opt(ctrl)
+	}
 	return ctrl
 }
 
