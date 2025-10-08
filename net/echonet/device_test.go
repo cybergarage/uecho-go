@@ -10,7 +10,7 @@ import (
 )
 
 func TestNewDevice(t *testing.T) {
-	dev := NewDevice()
+	dev := newDevice()
 
 	mandatoryPropertyCodes := []PropertyCode{
 		DeviceOperatingStatus,

@@ -133,9 +133,7 @@ func NewObjectWithCodeBytes(codes []byte) (any, error) {
 		return obj, nil
 	}
 
-	obj := NewDevice()
-	obj.SetCode(objCode)
-	return obj, nil
+	return NewDeviceWithCode(objCode), nil
 }
 
 // NewObjectWithCode returns a new object of the specified object code.

@@ -92,27 +92,11 @@ type device struct {
 	SuperObject
 }
 
-// NewDevice returns a new device object.
-func NewDevice() Device {
-	return newDevice()
-}
-
 func newDevice() *device {
 	dev := &device{
 		SuperObject: NewSuperObject(),
 	}
 	return dev
-}
-
-// NewDeviceWithCodes returns a new device of the specified object codes.
-func NewDeviceWithCodes(codes []byte) (Device, error) {
-	objCode, err := NewObjectCodeFromBytes(codes)
-	if err != nil {
-		return nil, err
-	}
-	obj := newDevice()
-	obj.SetCode(objCode)
-	return obj, nil
 }
 
 // NewDeviceWithCode returns a new device of the specified object code.
