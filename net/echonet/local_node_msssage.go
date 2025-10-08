@@ -163,7 +163,7 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg Messag
 
 	// Use TCP connection when the function is enabled
 
-	if node.IsTCPEnabled() {
+	if node.TCPEnabled() {
 		resMsg, err := node.postMessageSynchronously(dstNode, msg.ToProtocol())
 		if err == nil {
 			return newMessageWithProtocolMessage(resMsg), nil

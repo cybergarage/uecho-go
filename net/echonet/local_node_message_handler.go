@@ -11,7 +11,7 @@ import (
 
 // ProtocolMessageReceived is a listener for the server.
 func (node *localNode) ProtocolMessageReceived(msg *protocol.Message) (*protocol.Message, error) {
-	if !node.IsSelfMessageEnabled() {
+	if !node.SelfMessageEnabled() {
 		msgNode := newRemoteNodeWithRequestMessage(msg)
 		if msgNode.Equals(node) {
 			return nil, nil

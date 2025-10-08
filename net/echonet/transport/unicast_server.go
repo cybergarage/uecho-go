@@ -44,7 +44,7 @@ func (server *UnicastServer) SetHandler(l UnicastHandler) {
 
 // SendMessage send a message to the destination address.
 func (server *UnicastServer) SendMessage(addr string, port int, msg *protocol.Message) (int, error) {
-	if server.IsTCPEnabled() {
+	if server.TCPEnabled() {
 		n, err := server.TCPSocket.SendMessage(addr, port, msg, server.ConnectionTimeout())
 		if err == nil {
 			return n, nil
@@ -68,7 +68,7 @@ func (server *UnicastServer) Start(ifi *net.Interface, ifaddr string, port int) 
 	server.UDPChannel = make(chan any)
 	go handleUnicastUDPConnection(server, server.UDPChannel)
 
-	if server.IsTCPEnabled() {
+	if server.TCPEnabled() {
 		err := server.TCPSocket.Bind(ifi, ifaddr, port)
 		if err != nil {
 			return err
@@ -93,7 +93,7 @@ func (server *UnicastServer) Stop() error {
 		lastErr = err
 	}
 
-	if server.IsTCPEnabled() {
+	if server.TCPEnabled() {
 		close(server.TCPChannel)
 		err := server.TCPSocket.Close()
 		if err != nil {

@@ -4,34 +4,36 @@
 
 package transport
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // ExtensionConfig represents a cofiguration for extended specifications.
 type ExtensionConfig struct {
-	AutoPortBindingEnabled bool
+	autoPortBindingEnabled bool
 }
 
 // NewDefaultExtensionConfig returns a default configuration.
 func NewDefaultExtensionConfig() *ExtensionConfig {
 	conf := &ExtensionConfig{
-		AutoPortBindingEnabled: false,
+		autoPortBindingEnabled: false,
 	}
 	return conf
 }
 
 // SetConfig sets all flags.
 func (conf *ExtensionConfig) SetConfig(newConfig *ExtensionConfig) {
-	conf.AutoPortBindingEnabled = newConfig.AutoPortBindingEnabled
+	conf.autoPortBindingEnabled = newConfig.autoPortBindingEnabled
 }
 
 // SetAutoPortBindingEnabled sets a flag for TCP functions.
 func (conf *ExtensionConfig) SetAutoPortBindingEnabled(flag bool) {
-	conf.AutoPortBindingEnabled = flag
+	conf.autoPortBindingEnabled = flag
 }
 
-// IsAutoPortBindingEnabled returns true whether the TCP function is enabled, otherwise false.
-func (conf *ExtensionConfig) IsAutoPortBindingEnabled() bool {
-	return conf.AutoPortBindingEnabled
+// AutoPortBindingEnabled returns true whether the TCP function is enabled, otherwise false.
+func (conf *ExtensionConfig) AutoPortBindingEnabled() bool {
+	return conf.autoPortBindingEnabled
 }
 
 // Equals returns true whether the specified other class is same, otherwise false.

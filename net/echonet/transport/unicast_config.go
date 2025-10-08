@@ -11,7 +11,7 @@ import (
 
 // UnicastConfig represents a cofiguration for unicast server.
 type UnicastConfig struct {
-	TCPEnabled        bool
+	tcpEnabled        bool
 	connectionTimeout time.Duration
 	requestTimeout    time.Duration
 	bindRetryCount    uint
@@ -21,7 +21,7 @@ type UnicastConfig struct {
 // NewDefaultUnicastConfig returns a default configuration.
 func NewDefaultUnicastConfig() *UnicastConfig {
 	conf := &UnicastConfig{
-		TCPEnabled:        false,
+		tcpEnabled:        false,
 		connectionTimeout: DefaultConnectimeTimeOut,
 		requestTimeout:    DefaultRequestTimeout,
 		bindRetryCount:    DefaultBindRetryCount,
@@ -32,18 +32,18 @@ func NewDefaultUnicastConfig() *UnicastConfig {
 
 // SetConfig sets all flags.
 func (conf *UnicastConfig) SetConfig(newConfig *UnicastConfig) {
-	conf.TCPEnabled = newConfig.TCPEnabled
+	conf.tcpEnabled = newConfig.tcpEnabled
 	conf.connectionTimeout = newConfig.connectionTimeout
 }
 
 // SetTCPEnabled sets a flag for TCP functions.
 func (conf *UnicastConfig) SetTCPEnabled(flag bool) {
-	conf.TCPEnabled = flag
+	conf.tcpEnabled = flag
 }
 
-// IsTCPEnabled returns true whether the TCP function is enabled, otherwise false.
-func (conf *UnicastConfig) IsTCPEnabled() bool {
-	return conf.TCPEnabled
+// TCPEnabled returns true whether the TCP function is enabled, otherwise false.
+func (conf *UnicastConfig) TCPEnabled() bool {
+	return conf.tcpEnabled
 }
 
 // SetConnectionTimeout sets a connection timeout setting.
@@ -75,8 +75,8 @@ func (conf *UnicastConfig) SetBindRetryEnabled(flag bool) {
 	conf.bindRetryCount = DefaultBindRetryCount
 }
 
-// IsBindRetryEnabled returns true whether the bind retry function is enabled, otherwise false.
-func (conf *UnicastConfig) IsBindRetryEnabled() bool {
+// BindRetryEnabled returns true whether the bind retry function is enabled, otherwise false.
+func (conf *UnicastConfig) BindRetryEnabled() bool {
 	return conf.bindRetryCount != 0
 }
 

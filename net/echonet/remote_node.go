@@ -105,7 +105,7 @@ func newRemoteNodeWithInstanceListMessageAndConfig(msg *protocol.Message, conf *
 	}
 
 	// Set a default static UDP port number when the auto port binding option is disabled
-	if !conf.IsAutoPortBindingEnabled() {
+	if !conf.AutoPortBindingEnabled() {
 		remoteNode.SetPort(transport.UDPPort)
 	}
 

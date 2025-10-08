@@ -74,13 +74,13 @@ func (mgr *UnicastManager) Start() error {
 
 	startPort := mgr.Port()
 	endPort := startPort
-	if mgr.IsAutoPortBindingEnabled() {
+	if mgr.AutoPortBindingEnabled() {
 		endPort = startPort + UDPPortRange
 	}
 
 	for port := startPort; port <= endPort; port++ {
 		bindRetryCount := uint(0)
-		if !mgr.IsAutoPortBindingEnabled() {
+		if !mgr.AutoPortBindingEnabled() {
 			bindRetryCount = mgr.BindRetryCount()
 		}
 
@@ -186,7 +186,7 @@ func (mgr *UnicastManager) AnnounceMessage(msg *protocol.Message) error {
 
 // PostMessage posts a message to the destination address and gets the response message.
 func (mgr *UnicastManager) PostMessage(addr string, port int, reqMsg *protocol.Message) (*protocol.Message, error) {
-	if !mgr.IsTCPEnabled() {
+	if !mgr.TCPEnabled() {
 		return nil, fmt.Errorf(errorTCPSocketDisabled)
 	}
 

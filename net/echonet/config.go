@@ -11,17 +11,17 @@ import (
 // TransportConfig represents a cofiguration for transport.
 type TransportConfig = transport.Config
 
-// Config represents a cofiguration for transport.
+// config represents a cofiguration for transport.
 type Config struct {
 	*TransportConfig
 
-	SelfMessageEnabled bool
+	selfMessageEnabled bool
 }
 
 // NewDefaultConfig returns a default configuration.
 func NewDefaultConfig() *Config {
 	conf := &Config{
-		SelfMessageEnabled: true,
+		selfMessageEnabled: true,
 		TransportConfig:    transport.NewDefaultConfig(),
 	}
 	return conf
@@ -29,12 +29,12 @@ func NewDefaultConfig() *Config {
 
 // SetSelfMessageEnabled sets a flag for self messages.
 func (conf *Config) SetSelfMessageEnabled(flag bool) {
-	conf.SelfMessageEnabled = flag
+	conf.selfMessageEnabled = flag
 }
 
-// IsSelfMessageEnabled returns true whether the self messages are enabled, otherwise false.
-func (conf *Config) IsSelfMessageEnabled() bool {
-	return conf.SelfMessageEnabled
+// SelfMessageEnabled returns true whether the self messages are enabled, otherwise false.
+func (conf *Config) SelfMessageEnabled() bool {
+	return conf.selfMessageEnabled
 }
 
 // SetConfig sets all configuration flags.
