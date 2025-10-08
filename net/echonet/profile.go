@@ -53,10 +53,15 @@ func isProfileObjectCode(code byte) bool {
 
 // NewProfile returns a new profile object.
 func NewProfile() Profile {
+	return NewProfileWithCode(NodeProfileObjectCode)
+}
+
+// NewProfile returns a new profile object.
+func NewProfileWithCode(code ObjectCode) Profile {
 	prof := &profile{
 		SuperObject: NewSuperObject(),
 	}
-	prof.SetClassGroupCode(ProfileClassGroupCode)
+	prof.SetCode(code)
 	return prof
 }
 

@@ -128,8 +128,7 @@ func NewObjectWithCodeBytes(codes []byte) (any, error) {
 	}
 
 	if isProfileObjectCode(codes[0]) {
-		obj := NewProfile()
-		obj.SetCode(objCode)
+		obj := NewProfileWithCode(objCode)
 		return obj, nil
 	}
 
