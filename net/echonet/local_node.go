@@ -124,7 +124,7 @@ func (node *localNode) Port() int {
 // SetConfig sets all configuration flags.
 func (node *localNode) SetConfig(newConfig *Config) {
 	node.Config = newConfig
-	node.server.MessageManager.SetConfig(newConfig.TransportConfig)
+	node.server.MessageManager.SetConfig(newConfig.transportConfig)
 }
 
 // SetManufacturerCode sets a manufacture codes to the node and all its devices.

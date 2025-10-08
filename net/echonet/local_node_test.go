@@ -60,8 +60,9 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg Message, resMsg Message, po
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	// Setup
 
-	ctrl := NewController()
-	ctrl.SetConfig(config)
+	ctrl, _ := NewController(
+		WithControllerConfig(config),
+	).(*controller)
 
 	node, err := newTestSampleNode(config)
 	if err != nil {

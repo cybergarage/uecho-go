@@ -8,41 +8,36 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/transport"
 )
 
-// TransportConfig represents a cofiguration for transport.
-type TransportConfig = transport.Config
+type transportConfig = transport.Config
 
 // config represents a cofiguration for transport.
 type Config struct {
-	*TransportConfig
-
-	selfMessageEnabled bool
+	*transportConfig
+	selfMsgEnabled bool
 }
 
 // NewDefaultConfig returns a default configuration.
 func NewDefaultConfig() *Config {
 	conf := &Config{
-		selfMessageEnabled: true,
-		TransportConfig:    transport.NewDefaultConfig(),
+		selfMsgEnabled:  true,
+		transportConfig: transport.NewDefaultConfig(),
 	}
 	return conf
 }
 
-// SetSelfMessageEnabled sets a flag for self messages.
-func (conf *Config) SetSelfMessageEnabled(flag bool) {
-	conf.selfMessageEnabled = flag
+// SetTCPEnabled sets a flag for TCP functions.
+func (conf *Config) SetTCPEnabled(flag bool) *Config {
+	conf.transportConfig.SetTCPEnabled(flag)
+	return conf
 }
 
-// SelfMessageEnabled returns true whether the self messages are enabled, otherwise false.
-func (conf *Config) SelfMessageEnabled() bool {
-	return conf.selfMessageEnabled
+// setSelfMessageEnabled sets a flag for self messages.
+func (conf *Config) setSelfMessageEnabled(flag bool) *Config {
+	conf.selfMsgEnabled = flag
+	return conf
 }
 
-// SetConfig sets all configuration flags.
-func (conf *Config) SetConfig(newConfig *Config) {
-	conf.TransportConfig.SetConfig(newConfig.TransportConfig)
-}
-
-// Equals returns true whether the specified other class is same, otherwise false.
-func (conf *Config) Equals(other *Config) bool {
-	return conf.TransportConfig.Equals(other.TransportConfig)
+// selfMessageEnabled returns true whether the self messages are enabled, otherwise false.
+func (conf *Config) selfMessageEnabled() bool {
+	return conf.selfMsgEnabled
 }
