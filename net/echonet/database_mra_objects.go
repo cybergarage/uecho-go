@@ -34,7 +34,7 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 
 // nolint:misspell, whitespace, maintidx
 func (db *StandardDatabase) initObjects() {
-  var obj *Object
+  var obj Object
 
 // Super class (0x0000)
 obj = newStandardObject("Super class", 0x00, 0x00)
