@@ -120,6 +120,11 @@ func newObject() *object {
 	return obj
 }
 
+// NewObject returns a new object.
+func NewObject() Object {
+	return newObject()
+}
+
 // NewObjectWithCodeBytes returns a new object of the specified object codes.
 func NewObjectWithCodeBytes(codes []byte) (any, error) {
 	objCode, err := NewObjectCodeFromBytes(codes)

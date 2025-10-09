@@ -201,7 +201,7 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg Messag
 }
 
 // SendRequest sends a specified request to the object.
-func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...PropertyData) error {
+func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...Property) error {
 	msg := NewMessage(
 		WithMessageDEOJ(objCode),
 		WithMessageESV(esv),
@@ -211,7 +211,7 @@ func (node *localNode) SendRequest(ctx context.Context, dstNode Node, objCode Ob
 }
 
 // PostRequest posts a message to the node, and wait the response message.
-func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...PropertyData) (Message, error) {
+func (node *localNode) PostRequest(ctx context.Context, dstNode Node, objCode ObjectCode, esv protocol.ESV, props ...Property) (Message, error) {
 	msg := NewMessage(
 		WithMessageDEOJ(objCode),
 		WithMessageESV(esv),

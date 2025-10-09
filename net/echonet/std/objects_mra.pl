@@ -20,7 +20,7 @@ print<<HEADER;
 
 package echonet
 
-func newStandardObject(clsName string, grpCode byte, clsCode byte) *Object {
+func newStandardObject(clsName string, grpCode byte, clsCode byte) Object {
 	obj := NewObject()
 	obj.SetClassName(clsName)
 	obj.SetClassGroupCode(grpCode)
@@ -28,8 +28,8 @@ func newStandardObject(clsName string, grpCode byte, clsCode byte) *Object {
 	return obj
 }
 
-func newStandardProperty(code PropertyCode, name string, dataType string, dataSize int, getRule string, setRule string, annoRule string) *Property {
-	strAttrToPropertyAttr := func(strAttr string) PropertyAttr {
+func newStandardProperty(code PropertyCode, name string, dataType string, dataSize int, getRule string, setRule string, annoRule string) Property {
+	strAttrToPropertyAttr := func(strAttr string) PropertyAttribute {
 		switch strAttr {
 		case "required":
 			return Required
@@ -38,12 +38,13 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 		}
 		return Prohibited
 	}
-	prop := NewProperty()
-	prop.SetCode(code)
-	prop.SetName(name)
-	prop.SetReadAttribute(strAttrToPropertyAttr(getRule))
-	prop.SetWriteAttribute(strAttrToPropertyAttr(setRule))
-	prop.SetAnnoAttribute(strAttrToPropertyAttr(annoRule))
+	prop := NewProperty(
+		WithPropertyCode(code),
+		WithPropertyName(name),
+		WithPropertyReadAttribute(strAttrToPropertyAttr(getRule)),
+		WithPropertyWriteAttribute(strAttrToPropertyAttr(setRule)),
+		WithPropertyAnnoAttribute(strAttrToPropertyAttr(annoRule)),
+	)
 	return prop
 }
 

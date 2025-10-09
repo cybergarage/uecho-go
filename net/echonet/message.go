@@ -26,9 +26,9 @@ type Message interface {
 	// OPC returns the OPC of the message.
 	OPC() int
 	// Properties returns the all properties of the message.
-	Properties() []PropertyData
+	Properties() []Property
 	// Property returns the n-th property of the message.
-	Property(n int) (PropertyData, bool)
+	Property(n int) (Property, bool)
 	// messageInternal is an interface to represent a message internal.
 	messageInternal
 }
@@ -58,7 +58,7 @@ func WithMessageESV(esv ESV) MessageOptions {
 }
 
 // WithMessageProperties sets properties to the message.
-func WithMessageProperties(props ...PropertyData) MessageOptions {
+func WithMessageProperties(props ...Property) MessageOptions {
 	return func(msg *message) {
 		msg.AddProperties(props...)
 	}
@@ -97,13 +97,13 @@ func (msg *message) SetDEOJ(code ObjectCode) Message {
 }
 
 // AddProperty adds a property to the message.
-func (msg *message) AddProperty(prop PropertyData) Message {
+func (msg *message) AddProperty(prop Property) Message {
 	msg.Message.AddProperty(newProtocolPropertyFrom(prop))
 	return msg
 }
 
 // AddProperties adds all properties to the message.
-func (msg *message) AddProperties(props ...PropertyData) Message {
+func (msg *message) AddProperties(props ...Property) Message {
 	for _, prop := range props {
 		msg.Message.AddProperty(newProtocolPropertyFrom(prop))
 	}
@@ -111,17 +111,20 @@ func (msg *message) AddProperties(props ...PropertyData) Message {
 }
 
 // Properties returns the all properties of the message.
-func (msg *message) Properties() []PropertyData {
+func (msg *message) Properties() []Property {
 	protoProps := msg.Message.Properties()
-	props := make([]PropertyData, len(protoProps))
+	props := make([]Property, len(protoProps))
 	for n, protoProp := range protoProps {
-		props[n] = protoProp
+		props[n] = NewProperty(
+			WithPropertyCode(PropertyCode(protoProp.Code())),
+			WithPropertyData(protoProp.Data()),
+		)
 	}
 	return props
 }
 
 // Property returns the n-th property of the message.
-func (msg *message) Property(n int) (PropertyData, bool) {
+func (msg *message) Property(n int) (Property, bool) {
 	props := msg.Properties()
 	if n < 0 || n >= len(props) {
 		return nil, false
