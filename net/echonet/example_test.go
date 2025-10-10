@@ -18,6 +18,23 @@ const (
 	unknown = "unknown"
 )
 
+func ExampleNewProperty() {
+	prop := echonet.NewProperty(
+		echonet.WithPropertyCode(0x80),
+		echonet.WithPropertyData([]byte{0x30}),
+	)
+	_ = prop
+}
+
+func ExampleNewController() {
+	ctrl := echonet.NewController()
+	err := ctrl.Start()
+	if err != nil {
+		return
+	}
+	defer ctrl.Stop()
+}
+
 func Example() {
 	ctrl := echonet.NewController()
 
