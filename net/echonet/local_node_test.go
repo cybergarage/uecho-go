@@ -140,7 +140,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	for n := 0; n < testNodeRequestCount; n++ {
 		err = ctrl.SendRequest(
 			context.Background(),
-			dev.ParentNode(),
+			dev.Node(),
 			testLightDeviceCode,
 			protocol.ESVReadRequest,
 			prop)
@@ -164,7 +164,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		)
 		resMsg, err := ctrl.PostMessage(
 			context.Background(),
-			dev.ParentNode(),
+			dev.Node(),
 			reqMsg)
 		if err != nil {
 			t.Error(err)
@@ -198,7 +198,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		)
 		err = ctrl.SendRequest(
 			context.Background(),
-			dev.ParentNode(),
+			dev.Node(),
 			testLightDeviceCode,
 			protocol.ESVWriteRequest,
 			prop)
@@ -221,7 +221,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 		)
 		resMsg, err := ctrl.PostMessage(
 			context.Background(),
-			dev.ParentNode(),
+			dev.Node(),
 			reqMsg)
 		if err != nil {
 			t.Error(err)
@@ -255,7 +255,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 			WithMessageESV(protocol.ESVWriteReadRequest),
 			WithMessageProperties(prop),
 		)
-		resMsg, err := ctrl.PostMessage(context.Background(), dev.ParentNode(), reqMsg)
+		resMsg, err := ctrl.PostMessage(context.Background(), dev.Node(), reqMsg)
 		if err != nil {
 			t.Error(err)
 			return

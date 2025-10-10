@@ -12,7 +12,7 @@ import (
 // Object is an interface to represent an object.
 type Object interface {
 	// ParentNode returns the parent node of the object.
-	ParentNode() Node
+	Node() Node
 	// ClassName returns the class name.
 	ClassName() string
 	// Name returns the object name.
@@ -242,7 +242,7 @@ func (obj *object) SetParentNode(node Node) {
 }
 
 // ParentNode returns a parent node.
-func (obj *object) ParentNode() Node {
+func (obj *object) Node() Node {
 	return obj.parentNode
 }
 
