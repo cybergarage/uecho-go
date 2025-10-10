@@ -34,16 +34,16 @@ func newPropertyMap() *propertyMap {
 	return propMap
 }
 
-// SetParentObject sets a parent object.
-func (propMap *propertyMap) SetParentObject(obj Object) {
+// SetObject sets a parent object.
+func (propMap *propertyMap) SetObject(obj Object) {
 	propMap.parentObject = obj
 	for _, prop := range propMap.properties {
 		prop.SetObject(obj)
 	}
 }
 
-// ParentObject returns a parent object.
-func (propMap *propertyMap) ParentObject() Object {
+// Object returns a parent object.
+func (propMap *propertyMap) Object() Object {
 	return propMap.parentObject
 }
 

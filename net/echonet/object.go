@@ -115,7 +115,7 @@ func newObject() *object {
 		parentNode:  nil,
 	}
 
-	obj.SetParentObject(obj)
+	obj.SetObject(obj)
 
 	return obj
 }
@@ -271,7 +271,7 @@ func (obj *object) Copy() *object {
 	}
 
 	newObj.SetCode(newObj.Code())
-	newObj.SetParentObject(newObj)
+	newObj.SetObject(newObj)
 	for _, prop := range obj.Properties() {
 		newObj.AddProperty(prop.Copy())
 	}
