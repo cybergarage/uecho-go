@@ -83,6 +83,9 @@ const (
 	errorDeviceInvalidDeviceStandardVersion = "invalid device standard version (%s)"
 )
 
+// DeviceOption is a function that applies a configuration to a device.
+type DeviceOption func(*device) error
+
 // Device represents an instance for a device object of Echonet.
 type Device interface {
 	SuperObject
@@ -90,6 +93,38 @@ type Device interface {
 
 type device struct {
 	SuperObject
+}
+
+// WithDeviceCode returns a DeviceOption that sets the object code for a device.
+// It also adds standard properties using the StandardDatabase.
+// Returns an error if the object code is not found in the database.
+func WithDeviceCode(code ObjectCode) DeviceOption {
+	return func(dev *device) error {
+		_, ok := SharedStandardDatabase().LookupObjectByCode(code)
+		if !ok {
+			return fmt.Errorf("object code (%X) not found in standard database", code)
+		}
+		dev.SetCode(code)
+		return nil
+	}
+}
+
+// WithDeviceManufacturerCode sets a manufacture codes to the device.
+func WithDeviceManufacturerCode(code uint) DeviceOption {
+	return func(dev *device) error {
+		return dev.SetManufacturerCode(code)
+	}
+}
+
+// NewDevice returns a new device with the specified options.
+func NewDevice(opts ...DeviceOption) (Device, error) {
+	dev := newDevice()
+	for _, opt := range opts {
+		if err := opt(dev); err != nil {
+			return nil, err
+		}
+	}
+	return dev, nil
 }
 
 func newDevice() *device {
@@ -100,10 +135,14 @@ func newDevice() *device {
 }
 
 // NewDeviceWithCode returns a new device of the specified object code.
-func NewDeviceWithCode(code ObjectCode) Device {
+// It also adds standard properties using the StandardDatabase.
+// Returns an error if the object code is not found in the database.
+func NewDeviceWithCode(code ObjectCode) (Device, error) {
 	obj := newDevice()
-	obj.SetCode(code)
-	return obj
+	if err := WithDeviceCode(code)(obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
 }
 
 // SetInstallationLocation sets a installation location to the device.

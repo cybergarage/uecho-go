@@ -137,7 +137,7 @@ func NewObjectWithCodeBytes(codes []byte) (any, error) {
 		return obj, nil
 	}
 
-	return NewDeviceWithCode(objCode), nil
+	return NewDeviceWithCode(objCode)
 }
 
 // NewObjectWithCode returns a new object of the specified object code.

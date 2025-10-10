@@ -24,9 +24,14 @@ type testLocalNode struct {
 }
 
 func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
-	dev := NewDeviceWithCode(testLightDeviceCode)
+	dev, err := NewDevice(
+		WithDeviceCode(testLightDeviceCode),
+	)
+	if err != nil {
+		return nil, err
+	}
 	powerData := []byte{testLightPropertyInitialPowerStatus}
-	err := dev.SetPropertyData(testLightPropertyPowerCode, powerData)
+	err = dev.SetPropertyData(testLightPropertyPowerCode, powerData)
 	if err != nil {
 		return nil, err
 	}

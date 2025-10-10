@@ -26,6 +26,19 @@ func ExampleNewProperty() {
 	_ = prop
 }
 
+func ExampleNewDevice() {
+	// Creates a standard mono functional device.
+	dev, err := echonet.NewDevice(
+		echonet.WithDeviceCode(0x0130),
+		echonet.WithDeviceManufacturerCode(0xFFFFFF),
+	)
+	if err != nil {
+		return
+	}
+	// Sets the operation status to "on".
+	dev.SetPropertyInteger(0x80, 0x30, 1)
+}
+
 func ExampleNewController() {
 	ctrl := echonet.NewController()
 	err := ctrl.Start()

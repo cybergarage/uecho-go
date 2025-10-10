@@ -127,9 +127,13 @@ func TestPropertyMapFormat2ToCode(t *testing.T) {
 }
 
 func TestObjectPropertyMap(t *testing.T) {
+	testDev, err := NewDeviceWithCode(0x03CE)
+	if err != nil {
+		t.Fatal(err)
+	}
 	objs := []Object{
 		NewSuperObject(),
-		NewDeviceWithCode(0x03CE),
+		testDev,
 	}
 	// objCodes := []ObjectCode{SuperObjectCode}
 	for _, obj := range objs {
