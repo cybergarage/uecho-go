@@ -175,12 +175,12 @@ func (obj *object) Code() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(obj.codes))
 }
 
-// SetCodes sets codes to the object.
+// SetCodes sets code bytes to the object.
 func (obj *object) SetCodes(codes []byte) {
 	copy(obj.codes, codes)
 }
 
-// Codes returns the code byte array.
+// Codes returns the code bytes.
 func (obj *object) Codes() []byte {
 	return obj.codes
 }

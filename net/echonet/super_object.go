@@ -67,13 +67,13 @@ func NewSuperObject() SuperObject {
 	return obj
 }
 
-// SetCode sets a code to the object.
+// SetCode sets a code to the object and adds standard properties using StandardDatabase.
 func (obj *superObject) SetCode(code ObjectCode) {
 	obj.Object.SetCode(code)
 	obj.addStandardProperties()
 }
 
-// SetCodes sets codes to the object.
+// SetCodes sets code bytes to the object and adds standard properties using StandardDatabase.
 func (obj *superObject) SetCodes(codes []byte) {
 	obj.Object.SetCodes(codes)
 	obj.addStandardProperties()
