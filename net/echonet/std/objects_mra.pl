@@ -50,7 +50,7 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 
 // nolint:misspell, whitespace, maintidx
 func (db *StandardDatabase) initObjects() {
-  var obj *Object
+  var obj maObject
 
 HEADER
 
