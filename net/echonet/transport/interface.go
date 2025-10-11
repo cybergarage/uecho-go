@@ -9,10 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	libvirtInterfaceName = "virbr0"
-)
-
 // IsIPv6Interface returns true whether the specified interface has a IPv6 address.
 func IsIPv6Address(addr string) bool {
 	if len(addr) == 0 {
@@ -87,22 +83,30 @@ func IsCommunicableAddress(addr string) bool {
 
 // IsBridgeInterface returns true when the specified interface is a bridege interface, otherwise false.
 func IsBridgeInterface(ifi *net.Interface) bool {
-	return ifi.Name == libvirtInterfaceName
+	prefixes := []string{
+		"virbr0",
+	}
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(ifi.Name, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 // IsVirtualInterface returns true when the specified interface is a virtual interface, otherwise false.
 func IsVirtualInterface(ifi *net.Interface) bool {
-	if strings.HasPrefix(ifi.Name, "utun") { // macOS
-		return true
+	prefixes := []string{
+		"utun",    // macOS
+		"llw",     // VirtualBox
+		"awdl",    // AirDrop (macOS)
+		"en6",     // iPhone-USB (macOS)
+		"docker0", // Docker
 	}
-	if strings.HasPrefix(ifi.Name, "llw") { // VirtualBox
-		return true
-	}
-	if strings.HasPrefix(ifi.Name, "awdl") { // AirDrop (macOS)
-		return true
-	}
-	if strings.HasPrefix(ifi.Name, "en6") { // iPhone-USB (macOS)
-		return true
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(ifi.Name, prefix) {
+			return true
+		}
 	}
 	return false
 }
