@@ -4,9 +4,19 @@
 
 package protocol
 
+import (
+	"errors"
+)
+
+// ErrNoData is returned when there is no data.
+var ErrNoData = errors.New("no data")
+
+// ErrInvalid is returned when the value is invalid.
+var ErrInvalid = errors.New("invalid")
+
 const (
-	errorShortMessageSize     = "short message length : %d < %d"
-	errorInvalidMessageHeader = "invalid message header [%d] : %02X != %02X"
-	errorInvalidAddress       = "invalid address string : %s"
-	errorInvalidObjectCodes   = "invalid object code : %s"
+	errorInvalidMessageSize   = "%w: message length : %d < %d"
+	errorInvalidMessageHeader = "%w: message header [%d] : %02X != %02X"
+	errorInvalidAddress       = "%w: address string : %s"
+	errorInvalidObjectCodes   = "%w: object code : %s"
 )

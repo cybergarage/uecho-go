@@ -5,20 +5,41 @@
 package protocol
 
 import (
+	"fmt"
+
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 )
 
 // PropertyCode is a type for property code.
 type PropertyCode byte
 
+// Property is an interface for Echonet property.
 type Property interface {
-	SetCode(code PropertyCode)
 	Code() PropertyCode
-	SetData(data []byte)
 	Data() []byte
-	StringData() string
-	IntegerData() uint
 	Size() int
+	// PropertyHelper is an interface for Echonet property helper functions.
+	PropertyHelper
+	// PropertyMutator is an interface for Echonet property mutator functions.
+	PropertyMutator
+}
+
+// PropertyHelper is an interface for Echonet property helper functions.
+type PropertyHelper interface {
+	// AsByte returns a byte value of the property byte data.
+	AsByte() (byte, error)
+	// AsString returns the property string data.
+	AsString() (string, error)
+	// AsInteger returns the property integer data.
+	AsInteger() (uint, error)
+}
+
+// PropertyMutator is an interface for Echonet property mutator functions.
+type PropertyMutator interface {
+	// SetCode sets a code to the property.
+	SetCode(code PropertyCode)
+	// SetData sets a code to the property.
+	SetData(data []byte)
 }
 
 // property is an instance for Echonet property.
@@ -77,14 +98,33 @@ func (prop *property) Data() []byte {
 	return prop.data
 }
 
-// StringData returns the property string data.
-func (prop *property) StringData() string {
-	return string(prop.data)
+// AsByte returns a byte value of the property byte data.
+func (prop *property) AsByte() (byte, error) {
+	switch len(prop.data) {
+	case 0:
+		return 0, ErrNoData
+	case 1:
+		return prop.data[0], nil
+		// ok
+	default:
+		return 0, fmt.Errorf("%w data size (%d)", ErrInvalid, len(prop.data))
+	}
 }
 
-// IntegerData returns the property integer data.
-func (prop *property) IntegerData() uint {
-	return encoding.ByteToInteger(prop.data)
+// AsString returns the property string data.
+func (prop *property) AsString() (string, error) {
+	if len(prop.data) == 0 {
+		return "", ErrNoData
+	}
+	return string(prop.data), nil
+}
+
+// AsInteger returns the property integer data.
+func (prop *property) AsInteger() (uint, error) {
+	if len(prop.data) == 0 {
+		return 0, ErrNoData
+	}
+	return encoding.ByteToInteger(prop.data), nil
 }
 
 // Size return the property data size.

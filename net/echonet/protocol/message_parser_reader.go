@@ -24,7 +24,7 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 			return err
 		}
 		if nRead < Format1PropertyHeaderSize {
-			return fmt.Errorf(errorShortMessageSize, n, Format1PropertyHeaderSize)
+			return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, n, Format1PropertyHeaderSize)
 		}
 		prop.SetCode(PropertyCode(propertyHeader[0]))
 
@@ -35,7 +35,7 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 			return err
 		}
 		if nRead < propDataSize {
-			return fmt.Errorf(errorShortMessageSize, n, propDataSize)
+			return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, n, propDataSize)
 		}
 		prop.SetData(propData)
 	}
@@ -53,7 +53,7 @@ func (msg *Message) ParseReader(reader io.Reader) error {
 		return err
 	}
 	if n < FrameHeaderSize {
-		return fmt.Errorf(errorShortMessageSize, n, FrameHeaderSize)
+		return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, n, FrameHeaderSize)
 	}
 	err = msg.parseFrameHeaderBytes(frameHeader)
 	if err != nil {
@@ -68,7 +68,7 @@ func (msg *Message) ParseReader(reader io.Reader) error {
 		return err
 	}
 	if n < Format1HeaderSize {
-		return fmt.Errorf(errorShortMessageSize, n, Format1HeaderSize)
+		return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, n, Format1HeaderSize)
 	}
 	err = msg.parseFormat1HeaderBytes(format1Header)
 	if err != nil {

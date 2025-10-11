@@ -89,12 +89,12 @@ type PropertyHelper interface {
 	SetByte(data []byte) Property
 	// SetInteger sets a specified integer data to the property.
 	SetInteger(data uint, size uint) Property
-	// ByteData returns a byte value of the property data.
-	ByteData() (byte, error)
-	// StringData returns a byte value of the property string data.
-	StringData() (string, error)
-	// IntegerData returns a integer value of the property integer data.
-	IntegerData() (uint, error)
+	// AsByte returns a byte value of the property byte data.
+	AsByte() (byte, error)
+	// AsString returns a byte value of the property string data.
+	AsString() (string, error)
+	// AsInteger returns a integer value of the property integer data.
+	AsInteger() (uint, error)
 }
 
 // propertyInternal is an interface to help a property.
@@ -397,23 +397,31 @@ func (prop *property) Data() []byte {
 	return prop.data
 }
 
-// ByteData returns a byte value of the property data.
-func (prop *property) ByteData() (byte, error) {
-	if len(prop.data) == 0 {
-		return 0, fmt.Errorf(errorPropertyNoData)
+// AsByte returns a byte value of the property byte data.
+func (prop *property) AsByte() (byte, error) {
+	switch len(prop.data) {
+	case 0:
+		return 0, ErrNoData
+	case 1:
+		return prop.data[0], nil
+		// ok
+	default:
+		return 0, fmt.Errorf("%w data size (%d)", ErrInvalid, len(prop.data))
 	}
-	return prop.data[0], nil
 }
 
-// StringData returns a byte value of the property string data.
-func (prop *property) StringData() (string, error) {
+// AsString returns a byte value of the property string data.
+func (prop *property) AsString() (string, error) {
+	if len(prop.data) == 0 {
+		return "", ErrNoData
+	}
 	return string(prop.data), nil
 }
 
-// IntegerData returns a integer value of the property integer data.
-func (prop *property) IntegerData() (uint, error) {
+// AsInteger returns a integer value of the property integer data.
+func (prop *property) AsInteger() (uint, error) {
 	if len(prop.data) == 0 {
-		return 0, fmt.Errorf(errorPropertyNoData)
+		return 0, ErrNoData
 	}
 	return encoding.ByteToInteger(prop.Data()), nil
 }

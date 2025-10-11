@@ -8,4 +8,11 @@ import (
 	"errors"
 )
 
+// ErrInvalid is returned when the value is invalid.
 var ErrInvalid = errors.New("invalid")
+
+// ErrNoData is returned when there is no data.
+var ErrNoData = errors.New("no data")
+
+// ErrNotFound is returned when the value is not found.
+var ErrNotFound = errors.New("not found")

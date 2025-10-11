@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	errorPropertyNotFound = "Property (%02X) Not Found"
+	errorPropertyNotFound = "%w: property (%02X)"
 )
 
 // propertyMap represents a property map.
@@ -109,7 +109,7 @@ func (propMap *propertyMap) PropertyCount() int {
 func (propMap *propertyMap) SetPropertyData(propCode PropertyCode, propData []byte) error {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
 	prop.SetData(propData)
 	return nil
@@ -119,7 +119,7 @@ func (propMap *propertyMap) SetPropertyData(propCode PropertyCode, propData []by
 func (propMap *propertyMap) SetPropertyByte(propCode PropertyCode, propData byte) error {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
 	prop.SetData([]byte{propData})
 	return nil
@@ -129,7 +129,7 @@ func (propMap *propertyMap) SetPropertyByte(propCode PropertyCode, propData byte
 func (propMap *propertyMap) SetPropertyInteger(propCode PropertyCode, propData uint, propSize uint) error {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
 	prop.SetInteger(propData, propSize)
 	return nil
@@ -145,7 +145,7 @@ func (propMap *propertyMap) HasProperty(propCode PropertyCode) bool {
 func (propMap *propertyMap) LookupPropertyDataSize(propCode PropertyCode) (int, error) {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return -1, fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return -1, fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
 	return len(prop.Data()), nil
 }
@@ -154,7 +154,7 @@ func (propMap *propertyMap) LookupPropertyDataSize(propCode PropertyCode) (int, 
 func (propMap *propertyMap) LookupPropertyData(propCode PropertyCode) ([]byte, error) {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return nil, fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return nil, fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
 	return prop.Data(), nil
 }
@@ -163,16 +163,16 @@ func (propMap *propertyMap) LookupPropertyData(propCode PropertyCode) ([]byte, e
 func (propMap *propertyMap) LookupPropertyByte(propCode PropertyCode) (byte, error) {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return 0, fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
-	return prop.ByteData()
+	return prop.AsByte()
 }
 
 // LookupPropertyInteger return the specified property integer data in the property map.
 func (propMap *propertyMap) LookupPropertyInteger(propCode PropertyCode) (uint, error) {
 	prop, ok := propMap.LookupProperty(propCode)
 	if !ok {
-		return 0, fmt.Errorf(errorPropertyNotFound, uint(propCode))
+		return 0, fmt.Errorf(errorPropertyNotFound, ErrNotFound, uint(propCode))
 	}
-	return prop.IntegerData()
+	return prop.AsInteger()
 }

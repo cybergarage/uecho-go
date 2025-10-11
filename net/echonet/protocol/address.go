@@ -48,7 +48,7 @@ func (addr *Address) ParseString(addrStr string) error {
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return fmt.Errorf(errorInvalidAddress, addrStr)
+		return fmt.Errorf(errorInvalidAddress, ErrInvalid, addrStr)
 	}
 	addr.Port = port
 
