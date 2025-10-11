@@ -12,3 +12,11 @@ import (
 // The node returns the standard responses of Echonet when the listener function returns no error.
 // Otherwise, the node does not return any responses when the listener function returns an error.
 type ObjectRequestHandler func(obj Object, esv protocol.ESV, prop protocol.Property) error
+
+// ObjectHandler is an interface for Echonet requests.
+type ObjectHandler interface {
+	// OnRequest is called when a property request is received.
+	// The node returns the standard responses of Echonet when the listener function returns no error.
+	// Otherwise, the node does not return any responses when the listener function returns an error.
+	OnRequest(obj Object, esv protocol.ESV, prop protocol.Property) error
+}

@@ -44,7 +44,7 @@ type Object interface {
 	// LookupProperty returns the specified property of the object.
 	LookupProperty(code PropertyCode) (Property, bool)
 	// SetListener sets the listener of the object.
-	SetListener(l ObjectListener)
+	SetListener(l ObjectHandler)
 	// SetRequestHandler sets the request handler of the object.
 	SetRequestHandler(h ObjectRequestHandler)
 	// ObjectMutator returns the object mutator.
@@ -105,7 +105,7 @@ type object struct {
 	clsName    string
 	name       string
 	codes      []byte
-	listener   ObjectListener
+	listener   ObjectHandler
 	reqHandler ObjectRequestHandler
 	parentNode Node
 }
@@ -253,7 +253,7 @@ func (obj *object) Node() Node {
 }
 
 // SetListener sets a listener to the object.
-func (obj *object) SetListener(l ObjectListener) {
+func (obj *object) SetListener(l ObjectHandler) {
 	obj.listener = l
 }
 
@@ -266,7 +266,7 @@ func (obj *object) SetRequestHandler(h ObjectRequestHandler) {
 func (obj *object) notifyPropertyRequest(esv protocol.ESV, prop protocol.Property) error {
 	var err error
 	if obj.listener != nil {
-		err = errors.Join(obj.listener.OnPropertyRequest(obj, esv, prop))
+		err = errors.Join(obj.listener.OnRequest(obj, esv, prop))
 	}
 	if obj.reqHandler != nil {
 		err = errors.Join(err, obj.reqHandler(obj, esv, prop))
