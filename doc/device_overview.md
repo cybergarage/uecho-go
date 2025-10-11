@@ -39,7 +39,7 @@ To implement the device, you have only to handle write requests from other nodes
 
 ```
 type ObjectListener interface {
-    PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
+    OnPropertyRequest(obj *Object, esv protocol.ESV, prop *protocol.Property) error
 }
 
 type MyNode struct {
@@ -60,7 +60,7 @@ func NewMyNode() *MyNode {
 	return node
 }
 
-func (node *MyNode) PropertyRequestReceived(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
+func (node *MyNode) OnPropertyRequest(obj *echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
   // Check whether the property request is a write request
   if !protocol.IsWriteRequest(esv) {
     return nil

@@ -56,7 +56,7 @@ The `LocalNode::SetListener()` can set the following listener to get all message
 
 ```
 type NodeListener interface {
-	NodeMessageReceived(*protocol.Message) error
+	OnMessage(*protocol.Message) error
 }
 ```
 
@@ -66,7 +66,7 @@ The `uecho-go` verifies the messages form other nodes using the objects and prop
 
 ```
 type ObjectListener interface {
-	PropertyRequestReceived(obj *Object, esv protocol.ESV, prop *protocol.Property) error
+	OnPropertyRequest(obj *Object, esv protocol.ESV, prop *protocol.Property) error
 }
 ```
 
