@@ -35,7 +35,7 @@ node.AddDevice(dev)
 
 ### 3. Setting Observers
 
-To implement the device, you have only to handle write requests from other nodes because `uecho-go` handles other standard read and notification requests automatically. To handle the write requests, use `Object::SetListener()` as the following:
+To implement the device, you have only to handle write requests from other nodes because `uecho-go` handles other standard read and notification requests automatically. To handle the write requests, use `Object::SetListener()` or `Object::SetRequestHandler()` as the following:
 
 ```
 type ObjectListener interface {
