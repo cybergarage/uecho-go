@@ -11,17 +11,17 @@ import (
 // parseFrameHeaderBytes parses the specified frame header bytes.
 func (msg *Message) parseFrameHeaderBytes(data []byte) error {
 	if headerSize := len(data); headerSize < FrameHeaderSize {
-		return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, headerSize, FrameHeaderSize)
+		return fmt.Errorf(errInvalidMessageSize, ErrInvalid, headerSize, FrameHeaderSize)
 	}
 
 	// Check Headers
 
 	if data[0] != EHD1Echonet {
-		return fmt.Errorf(errorInvalidMessageHeader, ErrInvalid, 0, data[0], EHD1Echonet)
+		return fmt.Errorf(errInvalidMessageHeader, ErrInvalid, 0, data[0], EHD1Echonet)
 	}
 
 	if data[1] != EHD2Format1 {
-		return fmt.Errorf(errorInvalidMessageHeader, ErrInvalid, 1, data[1], EHD2Format1)
+		return fmt.Errorf(errInvalidMessageHeader, ErrInvalid, 1, data[1], EHD2Format1)
 	}
 
 	// TID
@@ -35,7 +35,7 @@ func (msg *Message) parseFrameHeaderBytes(data []byte) error {
 // parseFormat1HeaderBytes parses the specified header bytes.
 func (msg *Message) parseFormat1HeaderBytes(data []byte) error {
 	if headerSize := len(data); headerSize < Format1HeaderSize {
-		return fmt.Errorf(errorInvalidMessageSize, ErrInvalid, (headerSize + FrameHeaderSize), (Format1HeaderSize + FrameHeaderSize))
+		return fmt.Errorf(errInvalidMessageSize, ErrInvalid, (headerSize + FrameHeaderSize), (Format1HeaderSize + FrameHeaderSize))
 	}
 
 	// SEOJ

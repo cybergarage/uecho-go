@@ -4,7 +4,9 @@
 
 package echonet
 
-import "github.com/cybergarage/uecho-go/net/echonet/protocol"
+import (
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
+)
 
 const (
 	testNodeManufacturerCode            = NodeManufacturerExperimental + 1
@@ -16,7 +18,7 @@ const (
 )
 
 const (
-	errorTestNodeNotFound = "Not found: %s:%d"
+	errTestNodeNotFound = "%v: node (%s:%d)"
 )
 
 type testLocalNode struct {

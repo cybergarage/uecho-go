@@ -11,7 +11,7 @@ const (
 )
 
 const (
-	errorPropertyMapNotFound = "property map (%2X) not found"
+	errPropertyMapNotFound = "%w: property map (%2X)"
 )
 
 const (
@@ -105,7 +105,7 @@ func (obj *superObject) AddProperty(prop Property) {
 // setPropertyMapProperty sets a specified property map to the object.
 func (obj *superObject) setPropertyMapProperty(propMapCode PropertyCode, propCodes []PropertyCode) error {
 	if !obj.HasProperty(propMapCode) {
-		return fmt.Errorf(errorPropertyMapNotFound, propMapCode)
+		return fmt.Errorf(errPropertyMapNotFound, ErrNotFound, propMapCode)
 	}
 
 	// Description Format 1

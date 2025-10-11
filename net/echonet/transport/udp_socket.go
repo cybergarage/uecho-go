@@ -6,7 +6,6 @@ package transport
 
 import (
 	"encoding/hex"
-	"errors"
 	"net"
 	"strconv"
 	"time"
@@ -132,7 +131,7 @@ func (sock *UDPSocket) AnnounceMessage(msg *protocol.Message) error {
 // ReadMessage reads a message from the current opened socket.
 func (sock *UDPSocket) ReadMessage() (*protocol.Message, error) {
 	if sock.Conn == nil {
-		return nil, errors.New(errorSocketClosed)
+		return nil, errSocketClosed
 	}
 
 	n, from, err := sock.Conn.ReadFromUDP(sock.readBuffer)

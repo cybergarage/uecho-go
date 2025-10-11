@@ -21,8 +21,8 @@ const (
 )
 
 const (
-	errorLocalNodeTestInvalidResponse     = "Invalid Respose : %s"
-	errorLocalNodeTestInvalidPropertyData = "Invalid Respose Status : %X != %X (%s != %s)"
+	errLocalNodeTestInvalidResponse     = "%w respose : %s"
+	errLocalNodeTestInvalidPropertyData = "%w respose status : %X != %X (%s != %s)"
 )
 
 func TestNewLocalNode(t *testing.T) {
@@ -34,23 +34,23 @@ func TestNewLocalNode(t *testing.T) {
 
 func localNodeCheckResponseMessagePowerStatus(reqMsg Message, resMsg Message, powerStatus byte) error {
 	if resOpc := resMsg.OPC(); resOpc != 1 {
-		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return fmt.Errorf(errLocalNodeTestInvalidResponse, ErrInvalid, resMsg)
 	}
 
 	resProp, ok := resMsg.Property(0)
 	if !ok {
-		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return fmt.Errorf(errLocalNodeTestInvalidResponse, ErrInvalid, resMsg)
 	}
 	if resProp.Code() != testLightPropertyPowerCode {
-		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return fmt.Errorf(errLocalNodeTestInvalidResponse, ErrInvalid, resMsg)
 	}
 
 	resData := resProp.Data()
 	if len(resData) != 1 {
-		return fmt.Errorf(errorLocalNodeTestInvalidResponse, resMsg)
+		return fmt.Errorf(errLocalNodeTestInvalidResponse, ErrInvalid, resMsg)
 	}
 	if resData[0] != powerStatus {
-		return fmt.Errorf(errorLocalNodeTestInvalidPropertyData, resData[0], powerStatus, reqMsg, resMsg)
+		return fmt.Errorf(errLocalNodeTestInvalidPropertyData, ErrInvalid, resData[0], powerStatus, reqMsg, resMsg)
 	}
 
 	return nil
@@ -121,7 +121,7 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 
 	if foundNode == nil {
-		t.Errorf(errorTestNodeNotFound, node.Address(), node.Port())
+		t.Errorf(errTestNodeNotFound, ErrNotFound, node.Address(), node.Port())
 		return
 	}
 	// Check a found device

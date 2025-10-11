@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	errorInvalidGroupClassCode = "Invalid Group Class Code (%0X)"
+	errInvalidGroupClassCode = "%v: group class code (%0X)"
 )
 
 func TestNewObject(t *testing.T) {

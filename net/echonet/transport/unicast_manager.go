@@ -5,7 +5,6 @@
 package transport
 
 import (
-	"fmt"
 	"net"
 	"time"
 
@@ -132,7 +131,7 @@ func (mgr *UnicastManager) Stop() error {
 // Stop stops this server.
 func (mgr *UnicastManager) getAppropriateServerForInterface(ifi *net.Interface) (*UnicastServer, error) {
 	if len(mgr.Servers) == 0 {
-		return nil, fmt.Errorf(errorUnicastServerNotRunning)
+		return nil, errUnicastServerNotRunning
 	}
 
 	for _, server := range mgr.Servers {
@@ -165,7 +164,7 @@ func (mgr *UnicastManager) SendMessage(addr string, port int, msg *protocol.Mess
 	if lastErr != nil {
 		return 0, lastErr
 	}
-	return 0, fmt.Errorf(errorUnicastServerNotRunning)
+	return 0, errUnicastServerNotRunning
 }
 
 // AnnounceMessage sends a message to the multicast address.
@@ -181,13 +180,13 @@ func (mgr *UnicastManager) AnnounceMessage(msg *protocol.Message) error {
 	if lastErr != nil {
 		return lastErr
 	}
-	return fmt.Errorf(errorUnicastServerNotRunning)
+	return errUnicastServerNotRunning
 }
 
 // PostMessage posts a message to the destination address and gets the response message.
 func (mgr *UnicastManager) PostMessage(addr string, port int, reqMsg *protocol.Message) (*protocol.Message, error) {
 	if !mgr.TCPEnabled() {
-		return nil, fmt.Errorf(errorTCPSocketDisabled)
+		return nil, errTCPSocketDisabled
 	}
 
 	var lastErr error
@@ -203,5 +202,5 @@ func (mgr *UnicastManager) PostMessage(addr string, port int, reqMsg *protocol.M
 		return nil, lastErr
 	}
 
-	return nil, fmt.Errorf(errorUnicastServerNotRunning)
+	return nil, errUnicastServerNotRunning
 }

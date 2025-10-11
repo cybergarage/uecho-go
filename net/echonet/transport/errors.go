@@ -4,11 +4,18 @@
 
 package transport
 
-const (
-	errorSocketClosed             = "Socket is closed"
-	errorTCPSocketDisabled        = "TCP function is disabled"
-	errorAvailableAddressNotFound = "no available address"
-	errorAvailableInterfaceFound  = "no available interface"
-	errorMessageManagerNotRunning = "message manager is not running"
-	errorUnicastServerNotRunning  = "unicast server is not running"
+import (
+	"errors"
+	"fmt"
+)
+
+// ErrInvalid is returned when the value is invalid.
+var ErrInvalid = errors.New("invalid")
+
+var (
+	errSocketClosed             = fmt.Errorf("%w: socket is closed", ErrInvalid)
+	errTCPSocketDisabled        = fmt.Errorf("%w: TCP function is disabled", ErrInvalid)
+	errAvailableAddressNotFound = fmt.Errorf("%w: no available address", ErrInvalid)
+	errAvailableInterfaceFound  = fmt.Errorf("%w: no available interface", ErrInvalid)
+	errUnicastServerNotRunning  = fmt.Errorf("%w: unicast server is not running", ErrInvalid)
 )

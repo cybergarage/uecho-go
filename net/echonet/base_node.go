@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	errorObjectNotFound              = "object (%X) not found"
-	errorObjectProfileObjectNotFound = "object profile object not found"
-	errorUnknownObjectType           = "unknown object type (%v)"
+	errObjectNotFound              = "%w: object (%X)"
+	errObjectProfileObjectNotFound = "%w: object profile"
+	errUnknownObjectType           = "%w: unknown object type (%v)"
 )
 
 // baseNode is an instance for Echonet node.
@@ -47,7 +47,7 @@ func (node *baseNode) LookupDevice(code ObjectCode) (Device, error) {
 			return dev, nil
 		}
 	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
+	return nil, fmt.Errorf(errObjectNotFound, ErrNotFound, code)
 }
 
 // AddProfile adds a new profile object into the node.
@@ -68,7 +68,7 @@ func (node *baseNode) LookupProfile(code ObjectCode) (Profile, error) {
 			return prof, nil
 		}
 	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
+	return nil, fmt.Errorf(errObjectNotFound, ErrNotFound, code)
 }
 
 // NodeProfile returns a node profile in the node.
@@ -81,7 +81,7 @@ func (node *baseNode) NodeProfile() (NodeProfile, error) {
 	if err == nil {
 		return NewNodeProfileWith(prof), nil
 	}
-	return nil, fmt.Errorf(errorObjectProfileObjectNotFound)
+	return nil, fmt.Errorf(errObjectProfileObjectNotFound, ErrNotFound)
 }
 
 // AddObject adds a new object into the node.
@@ -94,7 +94,7 @@ func (node *baseNode) AddObject(obj any) error {
 		node.AddDevice(v)
 		return nil
 	}
-	return fmt.Errorf(errorUnknownObjectType, obj)
+	return fmt.Errorf(errUnknownObjectType, ErrUnknown, obj)
 }
 
 // Objects returns all objects.
@@ -124,5 +124,5 @@ func (node *baseNode) LookupObject(code ObjectCode) (Object, error) {
 	if err == nil {
 		return prof, nil
 	}
-	return nil, fmt.Errorf(errorObjectNotFound, code)
+	return nil, fmt.Errorf(errObjectNotFound, ErrNotFound, code)
 }

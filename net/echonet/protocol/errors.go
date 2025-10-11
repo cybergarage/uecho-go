@@ -15,8 +15,8 @@ var ErrNoData = errors.New("no data")
 var ErrInvalid = errors.New("invalid")
 
 const (
-	errorInvalidMessageSize   = "%w: message length : %d < %d"
-	errorInvalidMessageHeader = "%w: message header [%d] : %02X != %02X"
-	errorInvalidAddress       = "%w: address string : %s"
-	errorInvalidObjectCodes   = "%w: object code : %s"
+	errInvalidMessageSize   = "%w: message length : %d < %d"
+	errInvalidMessageHeader = "%w: message header [%d] : %02X != %02X"
+	errInvalidAddress       = "%w: address string : %s"
+	errInvalidObjectCodes   = "%w: object code : %s"
 )

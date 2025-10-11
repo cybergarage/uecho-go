@@ -22,10 +22,9 @@ const (
 )
 
 const (
-	errorPropertyNoParentNode   = "property has no parent node"
-	errorPropertyNoData         = "property has no data"
-	errorInvalidPropertyCode    = "invalid property code: %02X"
-	errorInvalidPropertyMapData = "invalid property map data: %0s"
+	errPropertyNoParentNode   = "%w: property has no parent node"
+	errInvalidPropertyCode    = "%w: property code (%02X)"
+	errInvalidPropertyMapData = "%w: property map data (%s)"
 )
 
 // PropertyCode is a type for property code.
@@ -431,13 +430,13 @@ func (prop *property) PropertyMapData() ([]PropertyCode, error) {
 	switch prop.code {
 	case ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap:
 		if len(prop.data) == 0 {
-			return nil, fmt.Errorf(errorInvalidPropertyMapData, "")
+			return nil, fmt.Errorf(errInvalidPropertyMapData, ErrInvalid, "")
 		}
 		propMapCount := int(prop.data[0])
 		switch {
 		case isPropertyMapDescriptionFormat1(propMapCount):
 			if len(prop.data) != (propMapCount + 1) {
-				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
+				return nil, fmt.Errorf(errInvalidPropertyMapData, ErrInvalid, hex.EncodeToString(prop.data))
 			}
 			codes := make([]PropertyCode, 0)
 			for n := range propMapCount {
@@ -446,7 +445,7 @@ func (prop *property) PropertyMapData() ([]PropertyCode, error) {
 			return codes, nil
 		case isPropertyMapDescriptionFormat2(propMapCount):
 			if len(prop.data) != (PropertyMapFormat2MapSize + 1) {
-				return nil, fmt.Errorf(errorInvalidPropertyMapData, hex.EncodeToString(prop.data))
+				return nil, fmt.Errorf(errInvalidPropertyMapData, ErrInvalid, hex.EncodeToString(prop.data))
 			}
 			codes := make([]PropertyCode, 0)
 			for n := range PropertyMapFormat2MapSize {
@@ -455,14 +454,14 @@ func (prop *property) PropertyMapData() ([]PropertyCode, error) {
 			return codes, nil
 		}
 	}
-	return nil, fmt.Errorf(errorInvalidPropertyCode, prop.code)
+	return nil, fmt.Errorf(errInvalidPropertyCode, ErrInvalid, prop.code)
 }
 
 // Announce announces the property.
 func (prop *property) Announce() error {
 	parentNode, ok := prop.Node().(localNodeHelper)
 	if !ok || parentNode == nil {
-		return fmt.Errorf(errorPropertyNoParentNode)
+		return fmt.Errorf(errPropertyNoParentNode, ErrInvalid)
 	}
 
 	if !parentNode.IsRunning() {

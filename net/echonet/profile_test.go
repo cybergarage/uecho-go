@@ -12,7 +12,7 @@ func TestNewProfile(t *testing.T) {
 	prof := NewProfile()
 
 	if !prof.IsProfile() {
-		t.Errorf(errorInvalidGroupClassCode, prof.ClassGroupCode())
+		t.Errorf(errInvalidGroupClassCode, ErrInvalid, prof.ClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{
@@ -24,7 +24,7 @@ func TestNewProfile(t *testing.T) {
 
 	for _, propCode := range mandatoryPropertyCodes {
 		if !prof.HasProperty(propCode) {
-			t.Errorf(errorMandatoryPropertyNotFound, propCode)
+			t.Errorf(errMandatoryPropertyNotFound, ErrNotFound, propCode)
 		}
 	}
 }

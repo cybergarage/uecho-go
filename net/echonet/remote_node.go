@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	errorInvalidNotificationMessage = "invalid notification message : %s"
+	errInvalidNotificationMessage = "%w: notification message (%s)"
 )
 
 // remoteNode is an instance for Echonet node.
@@ -47,27 +47,27 @@ func newRemoteNodeWithRequestMessage(msg *protocol.Message) *remoteNode {
 // newRemoteNodeWithInstanceListMessage returns a new node with the specified notification message.
 func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*remoteNode, error) {
 	if msgOPC := msg.OPC(); msgOPC < 1 {
-		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+		return nil, fmt.Errorf(errInvalidNotificationMessage, ErrInvalid, msg)
 	}
 
 	prop := msg.Property(0)
 	if prop == nil {
-		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+		return nil, fmt.Errorf(errInvalidNotificationMessage, ErrInvalid, msg)
 	}
 
 	if prop.Code() != NodeProfileClassInstanceListNotification && prop.Code() != NodeProfileClassSelfNodeInstanceListS {
-		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+		return nil, fmt.Errorf(errInvalidNotificationMessage, ErrInvalid, msg)
 	}
 
 	propData := prop.Data()
 	propSize := len(propData)
 	if propSize == 0 {
-		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+		return nil, fmt.Errorf(errInvalidNotificationMessage, ErrInvalid, msg)
 	}
 
 	instanceCount := int(propData[0])
 	if propSize < ((instanceCount * ObjectCodeSize) + 1) {
-		return nil, fmt.Errorf(errorInvalidNotificationMessage, msg)
+		return nil, fmt.Errorf(errInvalidNotificationMessage, ErrInvalid, msg)
 	}
 
 	// Create a new remote Node

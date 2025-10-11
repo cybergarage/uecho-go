@@ -80,7 +80,7 @@ const (
 )
 
 const (
-	errorDeviceInvalidDeviceStandardVersion = "invalid device standard version (%s)"
+	errDeviceInvalidDeviceStandardVersion = "%w: device standard version (%s)"
 )
 
 // DeviceOption is a function that applies a configuration to a device.
@@ -176,7 +176,7 @@ func (dev *device) StandardVersion() (byte, error) {
 		return 0, err
 	}
 	if len(verBytes) <= DeviceStandardVersionSize {
-		return 0, fmt.Errorf(errorDeviceInvalidDeviceStandardVersion, string(verBytes))
+		return 0, fmt.Errorf(errDeviceInvalidDeviceStandardVersion, ErrInvalid, string(verBytes))
 	}
 	return verBytes[2], nil
 }

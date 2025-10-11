@@ -10,10 +10,6 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-const (
-	errorMulticastServerNoAvailableInterface = "No available interface"
-)
-
 // A MulticastManager represents a multicast server manager.
 type MulticastManager struct {
 	Servers []*MulticastServer

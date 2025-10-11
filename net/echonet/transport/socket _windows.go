@@ -8,7 +8,6 @@
 package transport
 
 import (
-	"fmt"
 	"net"
 	"strconv"
 	"syscall"
@@ -54,7 +53,7 @@ func (sock *Socket) IsBound() bool {
 // Port returns the bound port.
 func (sock *Socket) Port() (int, error) {
 	if !sock.IsBound() {
-		return 0, fmt.Errorf(errorSocketClosed)
+		return 0, errorSocketClosed
 	}
 	return sock.port, nil
 }
@@ -62,7 +61,7 @@ func (sock *Socket) Port() (int, error) {
 // Interface returns the bound interface.
 func (sock *Socket) Interface() (*net.Interface, error) {
 	if !sock.IsBound() {
-		return nil, fmt.Errorf(errorSocketClosed)
+		return nil, errorSocketClosed
 	}
 	return sock.interfac, nil
 }
@@ -70,7 +69,7 @@ func (sock *Socket) Interface() (*net.Interface, error) {
 // Address returns the bound address.
 func (sock *Socket) Address() (string, error) {
 	if !sock.IsBound() {
-		return "", fmt.Errorf(errorSocketClosed)
+		return "", errorSocketClosed
 	}
 	return sock.address, nil
 }

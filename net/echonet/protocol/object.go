@@ -23,7 +23,7 @@ type ObjectCode uint
 // NewObjectCodeFromBytes returns a new ObjectCode instance from the specified byte array.
 func NewObjectCodeFromBytes(codes []byte) (ObjectCode, error) {
 	if len(codes) != ObjectCodeSize {
-		return 0, fmt.Errorf(errorInvalidObjectCodes, ErrInvalid, string(codes))
+		return 0, fmt.Errorf(errInvalidObjectCodes, ErrInvalid, string(codes))
 	}
 	return ObjectCode(encoding.ByteToInteger(codes)), nil
 }

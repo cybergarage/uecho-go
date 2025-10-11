@@ -5,7 +5,6 @@
 package transport
 
 import (
-	"errors"
 	"net"
 	"strings"
 )
@@ -127,7 +126,7 @@ func GetInterfaceAddresses(ifi *net.Interface) ([]string, error) {
 		ipaddrs = append(ipaddrs, saddr[0])
 	}
 	if len(ipaddrs) == 0 {
-		return nil, errors.New(errorAvailableAddressNotFound)
+		return nil, errAvailableAddressNotFound
 	}
 	return ipaddrs, nil
 }
@@ -167,7 +166,7 @@ func GetAvailableInterfaces() ([]*net.Interface, error) {
 	}
 
 	if len(useIfs) == 0 {
-		return useIfs, errors.New(errorAvailableInterfaceFound)
+		return useIfs, errAvailableInterfaceFound
 	}
 
 	return useIfs, err

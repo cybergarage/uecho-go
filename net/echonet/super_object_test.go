@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	errorMandatoryPropertyNotFound     = "mandatory property (%0X) not found"
-	errorMandatoryPropertyDataNotFound = "mandatory property data (%0X) not found"
+	errMandatoryPropertyNotFound     = "%s: mandatory property (%0X)"
+	errMandatoryPropertyDataNotFound = "%s, mandatory property data (%0X)"
 )
 
 func TestSuperObject(t *testing.T) {
@@ -24,7 +24,7 @@ func TestSuperObject(t *testing.T) {
 	for _, propCode := range mandatoryPropertyCodes {
 		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
 			if !obj.HasProperty(propCode) {
-				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+				t.Errorf(errMandatoryPropertyNotFound, ErrNotFound, propCode)
 			}
 		})
 	}
@@ -45,11 +45,11 @@ func testObjectPropertyMaps(t *testing.T, obj Object) {
 		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
 			prop, ok := obj.LookupProperty(propCode)
 			if !ok {
-				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+				t.Errorf(errMandatoryPropertyNotFound, ErrNotFound, propCode)
 			}
 			propData := prop.Data()
 			if len(propData) < 1 {
-				t.Errorf(errorMandatoryPropertyDataNotFound, propCode)
+				t.Errorf(errMandatoryPropertyDataNotFound, ErrNotFound, propCode)
 			}
 			propCnt := int(propData[0])
 			if propCnt <= PropertyMapFormat1MaxSize {

@@ -23,7 +23,7 @@ func TestNewDevice(t *testing.T) {
 	for _, propCode := range mandatoryPropertyCodes {
 		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
 			if !dev.HasProperty(propCode) {
-				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+				t.Errorf(errMandatoryPropertyNotFound, ErrNotFound, propCode)
 			}
 		})
 	}

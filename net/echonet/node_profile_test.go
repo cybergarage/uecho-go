@@ -13,7 +13,7 @@ func TestNewNodeProfile(t *testing.T) {
 	prof := NewNodeProfile()
 
 	if !prof.IsProfile() {
-		t.Errorf(errorInvalidGroupClassCode, prof.ClassGroupCode())
+		t.Errorf(errInvalidGroupClassCode, ErrInvalid, prof.ClassGroupCode())
 	}
 
 	mandatoryPropertyCodes := []PropertyCode{
@@ -33,7 +33,7 @@ func TestNewNodeProfile(t *testing.T) {
 	for _, propCode := range mandatoryPropertyCodes {
 		t.Run(fmt.Sprintf("%02X", propCode), func(t *testing.T) {
 			if !prof.HasProperty(propCode) {
-				t.Errorf(errorMandatoryPropertyNotFound, propCode)
+				t.Errorf(errMandatoryPropertyNotFound, ErrNotFound, propCode)
 			}
 		})
 	}

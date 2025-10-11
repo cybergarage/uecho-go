@@ -18,14 +18,14 @@ const (
 )
 
 const (
-	errorNodeRequestTimeout = "request timeout : %v"
-	errorNodeIsNotRunning   = "Node (%s) is not running "
+	errNodeRequestTimeout = "request %w (%v)"
+	errNodeIsNotRunning   = "%w: node (%s) is not running "
 )
 
 // AnnounceMessage announces a message.
 func (node *localNode) AnnounceMessage(msg *protocol.Message) error {
 	if !node.IsRunning() {
-		return fmt.Errorf(errorNodeIsNotRunning, node)
+		return fmt.Errorf(errNodeIsNotRunning, ErrInvalid, node)
 	}
 	msg.SetTID(node.NextTID())
 	msg.SetDEOJ(NodeProfileObjectCode)
@@ -52,7 +52,7 @@ func (node *localNode) Announce() error {
 
 	nodeProp, ok := nodePropObj.LookupProperty(NodeProfileClassInstanceListNotification)
 	if !ok {
-		return fmt.Errorf(errorObjectProfileObjectNotFound)
+		return fmt.Errorf(errObjectProfileObjectNotFound, ErrNotFound)
 	}
 
 	return node.AnnounceProperty(nodeProp)
@@ -75,7 +75,7 @@ func (node *localNode) updateMessageDestinationHeader(msg *protocol.Message) err
 // SendMessage sends a message to the destination node.
 func (node *localNode) SendMessage(ctx context.Context, dstNode Node, msg Message) error {
 	if !node.IsRunning() {
-		return fmt.Errorf(errorNodeIsNotRunning, node)
+		return fmt.Errorf(errNodeIsNotRunning, ErrInvalid, node)
 	}
 
 	err := node.updateMessageDestinationHeader(msg.ToProtocol())
@@ -93,7 +93,7 @@ func (node *localNode) SendMessage(ctx context.Context, dstNode Node, msg Messag
 // postMessageSynchronously posts a message to the destination node using a TCP connection and gets the response message.
 func (node *localNode) postMessageSynchronously(dstNode Node, reqMsg *protocol.Message) (*protocol.Message, error) {
 	if !node.IsRunning() {
-		return nil, fmt.Errorf(errorNodeIsNotRunning, node)
+		return nil, fmt.Errorf(errNodeIsNotRunning, ErrInvalid, node)
 	}
 
 	err := node.updateMessageDestinationHeader(reqMsg)
@@ -194,7 +194,7 @@ func (node *localNode) PostMessage(ctx context.Context, dstNode Node, msg Messag
 	select {
 	case resMsg = <-node.postResponseCh:
 	case <-time.After(node.RequestTimeout()):
-		err = fmt.Errorf(errorNodeRequestTimeout, msg)
+		err = fmt.Errorf(errNodeRequestTimeout, ErrTimeout, msg)
 	}
 
 	return newMessageWithProtocolMessage(resMsg), err
