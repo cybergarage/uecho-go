@@ -26,7 +26,7 @@ func NewLightNode() *LightNode {
 	return node
 }
 
-func (node *LightNode) PropertyRequestReceived(obj echonet.Object, esv protocol.ESV, reqProp *protocol.Property) error {
+func (node *LightNode) OnPropertyRequest(obj echonet.Object, esv protocol.ESV, reqProp protocol.Property) error {
 	// Check whether the property request is a write request. Basically, the developer should handle only write requests.
 
 	if !esv.IsWriteRequest() {
@@ -53,7 +53,7 @@ func (node *LightNode) PropertyRequestReceived(obj echonet.Object, esv protocol.
 	}
 
 	// Output the update message
-	// NOTE : Object::GetProperty() can get the specified property always because the PropertyRequestReceived is not called when the object has no the specified property
+	// NOTE : Object::GetProperty() can get the specified property always because the OnPropertyRequest is not called when the object has no the specified property
 
 	targetProp, _ := obj.LookupProperty(reqPropCode)
 	OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.Data()), hex.EncodeToString(reqPropData))

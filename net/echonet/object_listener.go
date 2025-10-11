@@ -10,8 +10,8 @@ import (
 
 // ObjectListener is an interface for Echonet requests.
 type ObjectListener interface {
-	// PropertyRequestReceived is first called when a new message is received.
+	// OnPropertyRequest is called when a property request is received.
 	// The node returns the standard responses of Echonet when the listener function returns no error.
 	// Otherwise, the node does not return any responses when the listener function returns an error.
-	PropertyRequestReceived(obj Object, esv protocol.ESV, prop *protocol.Property) error
+	OnPropertyRequest(obj Object, esv protocol.ESV, prop protocol.Property) error
 }

@@ -92,7 +92,7 @@ type ObjectHelper interface {
 // objectInternal is an interface for internal use of the object.
 type objectInternal interface {
 	// notifyPropertyRequest notifies a request to the object listener.
-	notifyPropertyRequest(esv protocol.ESV, prop *protocol.Property) error
+	notifyPropertyRequest(esv protocol.ESV, prop protocol.Property) error
 }
 
 type object struct {
@@ -252,11 +252,11 @@ func (obj *object) SetListener(l ObjectListener) {
 }
 
 // notifyPropertyRequest notifies a request to the object listener.
-func (obj *object) notifyPropertyRequest(esv protocol.ESV, prop *protocol.Property) error {
+func (obj *object) notifyPropertyRequest(esv protocol.ESV, prop protocol.Property) error {
 	if obj.listener == nil {
 		return nil
 	}
-	return obj.listener.PropertyRequestReceived(obj, esv, prop)
+	return obj.listener.OnPropertyRequest(obj, esv, prop)
 }
 
 // Copy copies the object instance without the data.

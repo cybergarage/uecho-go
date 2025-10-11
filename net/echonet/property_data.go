@@ -19,7 +19,7 @@ type propertyData interface {
 }
 
 // newProtocolPropertyFrom returns a new protocol property from the specified property data.
-func newProtocolPropertyFrom(prop propertyData) *protocol.Property {
+func newProtocolPropertyFrom(prop propertyData) protocol.Property {
 	newProp := protocol.NewProperty()
 	newProp.SetCode(prop.Code())
 	newProp.SetData(prop.Data())

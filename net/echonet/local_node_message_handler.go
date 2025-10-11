@@ -115,7 +115,7 @@ func (node *localNode) executeMessageListeners(msg *protocol.Message) error {
 	// Message Listener
 
 	if l := node.Listener(); l != nil {
-		err := l.NodeMessageReceived(msg)
+		err := l.OnMessage(msg)
 		if err != nil {
 			lastErr = err
 		}

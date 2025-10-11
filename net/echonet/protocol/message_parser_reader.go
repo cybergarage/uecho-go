@@ -26,18 +26,18 @@ func (msg *Message) parseFormat1PropertyReader(reader io.Reader) error {
 		if nRead < Format1PropertyHeaderSize {
 			return fmt.Errorf(errorShortMessageSize, n, Format1PropertyHeaderSize)
 		}
-
-		prop.code = PropertyCode(propertyHeader[0])
+		prop.SetCode(PropertyCode(propertyHeader[0]))
 
 		propDataSize := int(propertyHeader[1])
-		prop.data = make([]byte, propDataSize)
-		nRead, err = reader.Read(prop.data)
+		propData := make([]byte, propDataSize)
+		nRead, err = reader.Read(propData)
 		if err != nil {
 			return err
 		}
 		if nRead < propDataSize {
 			return fmt.Errorf(errorShortMessageSize, n, propDataSize)
 		}
+		prop.SetData(propData)
 	}
 
 	return nil

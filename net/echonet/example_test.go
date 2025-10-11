@@ -29,8 +29,8 @@ func ExampleNewProperty() {
 func ExampleNewDevice() {
 	// Creates a standard mono functional device.
 	dev, err := echonet.NewDevice(
-		echonet.WithDeviceCode(0x0130), // Air Conditioner
-		echonet.WithDeviceManufacturerCode(0xFFFFFF),
+		echonet.WithDeviceCode(0x029101),             // Mono functional lighting
+		echonet.WithDeviceManufacturerCode(0xFFFFFF), // Experimental
 	)
 	if err != nil {
 		return
@@ -50,6 +50,25 @@ func ExampleNewMessage() {
 		),
 	)
 	_ = msg
+}
+
+func ExampleNewLocalNode() {
+	dev, err := echonet.NewDevice(
+		echonet.WithDeviceCode(0x029101), // Mono functional lighting
+	)
+	if err != nil {
+		return
+	}
+
+	node := echonet.NewLocalNode(
+		echonet.WithLocalNodeDevices(dev),
+	)
+
+	err = node.Start()
+	if err != nil {
+		return
+	}
+	defer node.Stop()
 }
 
 func ExampleNewController() {

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	logControllerListenerFormat = "controller::NodeMessageReceived : %s"
+	logControllerListenerFormat = "controller::OnMessage : %s"
 )
 
 func (ctrl *controller) isSelfMessage(msg *protocol.Message) bool {
@@ -34,8 +34,8 @@ func (ctrl *controller) isSelfMessage(msg *protocol.Message) bool {
 	return false
 }
 
-// NodeMessageReceived is a listener of the local node.
-func (ctrl *controller) NodeMessageReceived(msg *protocol.Message) error {
+// OnMessage is a listener of the local node.
+func (ctrl *controller) OnMessage(msg *protocol.Message) error {
 	if !ctrl.selfMessageEnabled() {
 		if ctrl.isSelfMessage(msg) {
 			return nil

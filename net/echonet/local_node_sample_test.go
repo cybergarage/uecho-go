@@ -52,7 +52,7 @@ func newTestSampleNode(config *Config) (*testLocalNode, error) {
 	return newTestSampleNodeWithConfig(config)
 }
 
-func (node *testLocalNode) NodeMessageReceived(msg *protocol.Message) error {
+func (node *testLocalNode) OnMessage(msg *protocol.Message) error {
 	dev, err := node.LookupDevice(testLightDeviceCode)
 	if err != nil {
 		return err

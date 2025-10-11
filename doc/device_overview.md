@@ -39,7 +39,7 @@ To implement the device, you have only to handle write requests from other nodes
 
 ```
 type ObjectListener interface {
-    OnPropertyRequest(obj *Object, esv protocol.ESV, prop *protocol.Property) error
+    OnPropertyRequest(obj Object, esv protocol.ESV, prop protocol.Property) error
 }
 
 type MyNode struct {

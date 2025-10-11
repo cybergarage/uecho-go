@@ -104,7 +104,7 @@ type propertyInternal interface {
 	// Announce announces the property to the network.
 	Announce() error
 	// ToProtocol returns the new property of the property.
-	ToProtocol() *protocol.Property
+	ToProtocol() protocol.Property
 	// Copy copies the property instance without the data.
 	Copy() Property
 	// Equals returns true if the specified property is same, otherwise false.
@@ -465,7 +465,7 @@ func (prop *property) Announce() error {
 }
 
 // ToProtocol returns the new property of the property.
-func (prop *property) ToProtocol() *protocol.Property {
+func (prop *property) ToProtocol() protocol.Property {
 	return newProtocolPropertyFrom(prop)
 }
 

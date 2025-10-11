@@ -10,8 +10,8 @@ import (
 
 // NodeListener is an instance of the listner.
 type NodeListener interface {
-	// NodeMessageReceived is first called when a new message is received.
+	// OnMessage is called when a message is received.
 	// The node returns the standard responses of Echonet when the listener function returns no error.
 	// Otherwise, the node does not return any responses when the listener function returns an error.
-	NodeMessageReceived(*protocol.Message) error
+	OnMessage(*protocol.Message) error
 }

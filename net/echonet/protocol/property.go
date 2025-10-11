@@ -11,29 +11,45 @@ import (
 // PropertyCode is a type for property code.
 type PropertyCode byte
 
-// Property is an instance for Echonet property.
-type Property struct {
+type Property interface {
+	SetCode(code PropertyCode)
+	Code() PropertyCode
+	SetData(data []byte)
+	Data() []byte
+	StringData() string
+	IntegerData() uint
+	Size() int
+}
+
+// property is an instance for Echonet property.
+type property struct {
 	code PropertyCode
 	data []byte
 }
 
-// NewProperty returns a new property.
-func NewProperty() *Property {
-	return NewPropertyWithCode(0)
-}
-
-// NewPropertyWithCode returns a new property with the specified code.
-func NewPropertyWithCode(code PropertyCode) *Property {
-	prop := &Property{
-		code: code,
+func newProperty() *property {
+	prop := &property{
+		code: 0,
 		data: make([]byte, 0),
 	}
 	return prop
 }
 
+// NewProperty returns a new property.
+func NewProperty() Property {
+	return newProperty()
+}
+
+// NewPropertyWithCode returns a new property with the specified code.
+func NewPropertyWithCode(code PropertyCode) Property {
+	prop := newProperty()
+	prop.SetCode(code)
+	return prop
+}
+
 // NewPropertiesWithCodes returns a new properties with the specified codes.
-func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
-	props := make([]*Property, len(codes))
+func NewPropertiesWithCodes(codes []PropertyCode) []Property {
+	props := make([]Property, len(codes))
 	for n, code := range codes {
 		props[n] = NewPropertyWithCode(code)
 	}
@@ -41,47 +57,37 @@ func NewPropertiesWithCodes(codes []PropertyCode) []*Property {
 }
 
 // SetCode sets a code to the property.
-func (prop *Property) SetCode(code PropertyCode) {
+func (prop *property) SetCode(code PropertyCode) {
 	prop.code = code
 }
 
 // Code returns the property code.
-func (prop *Property) Code() PropertyCode {
+func (prop *property) Code() PropertyCode {
 	return prop.code
 }
 
 // SetData sets a code to the property.
-func (prop *Property) SetData(data []byte) {
+func (prop *property) SetData(data []byte) {
 	prop.data = make([]byte, len(data))
 	copy(prop.data, data)
 }
 
 // Data returns the property data.
-func (prop *Property) Data() []byte {
+func (prop *property) Data() []byte {
 	return prop.data
 }
 
 // StringData returns the property string data.
-func (prop *Property) StringData() string {
+func (prop *property) StringData() string {
 	return string(prop.data)
 }
 
 // IntegerData returns the property integer data.
-func (prop *Property) IntegerData() uint {
+func (prop *property) IntegerData() uint {
 	return encoding.ByteToInteger(prop.data)
 }
 
 // Size return the property data size.
-func (prop *Property) Size() int {
+func (prop *property) Size() int {
 	return len(prop.data)
-}
-
-// Copy returns a copy property of the property.
-func Copy(prop *Property) *Property {
-	copyProp := &Property{
-		code: prop.code,
-		data: make([]byte, len(prop.data)),
-	}
-	copy(copyProp.data, prop.data)
-	return copyProp
 }

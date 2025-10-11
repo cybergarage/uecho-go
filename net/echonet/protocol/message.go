@@ -42,7 +42,7 @@ type Message struct {
 	deoj        []byte
 	esv         ESV
 	opc         byte
-	ep          []*Property
+	ep          []Property
 	From        *Address
 	pktType     int
 	Interface   *net.Interface
@@ -58,7 +58,7 @@ func NewMessage() *Message {
 		deoj:        make([]byte, EOJSize),
 		esv:         0,
 		opc:         0,
-		ep:          make([]*Property, 0),
+		ep:          make([]Property, 0),
 		From:        NewAddress(),
 		pktType:     UnknownPacket,
 		Interface:   nil,
@@ -226,7 +226,7 @@ func (msg *Message) IsESV(esv ESV) bool {
 // SetOPC sets the specified OPC.
 func (msg *Message) SetOPC(value int) error {
 	msg.opc = byte(value & 0xFF)
-	msg.ep = make([]*Property, msg.opc)
+	msg.ep = make([]Property, msg.opc)
 	for n := range msg.opc {
 		msg.ep[n] = NewProperty()
 	}
@@ -239,20 +239,20 @@ func (msg *Message) OPC() int {
 }
 
 // AddProperty adds a property.
-func (msg *Message) AddProperty(prop *Property) {
+func (msg *Message) AddProperty(prop Property) {
 	msg.opc++
 	msg.ep = append(msg.ep, prop)
 }
 
 // AddProperties adds a properties.
-func (msg *Message) AddProperties(props []*Property) {
+func (msg *Message) AddProperties(props []Property) {
 	for _, prop := range props {
 		msg.AddProperty(prop)
 	}
 }
 
 // Property returns the specified property.
-func (msg *Message) Property(n int) *Property {
+func (msg *Message) Property(n int) Property {
 	if (len(msg.ep) - 1) < n {
 		return nil
 	}
@@ -260,7 +260,7 @@ func (msg *Message) Property(n int) *Property {
 }
 
 // Properties returns the all properties.
-func (msg *Message) Properties() []*Property {
+func (msg *Message) Properties() []Property {
 	return msg.ep
 }
 

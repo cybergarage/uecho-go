@@ -49,6 +49,13 @@ func WithLocalNodeDevices(devs ...Device) LocalNodeOption {
 	}
 }
 
+// WithLocalNodeListener sets a listener to the node.
+func WithLocalNodeListener(l NodeListener) LocalNodeOption {
+	return func(node *localNode) {
+		node.SetListener(l)
+	}
+}
+
 // WithLocalNodeProfiles adds profiles to the node.
 func WithLocalNodeConfig(cfg *Config) LocalNodeOption {
 	return func(node *localNode) {
