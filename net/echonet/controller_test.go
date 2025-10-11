@@ -71,6 +71,18 @@ func TestNewController(t *testing.T) {
 func testControllerSearchWithConfig(t *testing.T, config *Config) {
 	t.Helper()
 
+	// Start a controller
+
+	ctrl := newTestController(
+		WithControllerConfig(config),
+	)
+	err := ctrl.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer ctrl.Stop()
+
 	// Create test nodes
 
 	nodes := make([]*testLocalNode, testControllerNodeCount)
@@ -94,17 +106,7 @@ func testControllerSearchWithConfig(t *testing.T, config *Config) {
 		defer node.Stop()
 	}
 
-	// Start a controller
-
-	ctrl := newTestController(
-		WithControllerConfig(config),
-	)
-	err := ctrl.Start()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer ctrl.Stop()
+	// Search nodes
 
 	err = ctrl.Search(context.Background())
 	if err != nil {

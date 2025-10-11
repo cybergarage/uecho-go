@@ -58,28 +58,28 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg Message, resMsg Message, po
 
 // nolint ifshort
 func testLocalNodeWithConfig(t *testing.T, config *Config) {
-	// Setup
+	// Start controller
 
 	ctrl, _ := NewController(
 		WithControllerConfig(config),
 	).(*controller)
+
+	err := ctrl.Start()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer ctrl.Stop()
+
+	startTID := ctrl.LastTID()
+
+	// Start nodes
 
 	node, err := newTestSampleNode(config)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-
-	startTID := ctrl.LastTID()
-
-	// Start
-
-	err = ctrl.Start()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer ctrl.Stop()
 
 	err = node.Start()
 	if err != nil {

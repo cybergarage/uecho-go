@@ -11,6 +11,7 @@ import (
 func newTestDefaultConfig() *Config {
 	conf := NewDefaultConfig()
 	conf.SetAutoPortBindingEnabled(true)
+	conf.SetBindRetryEnabled(true)
 	return conf
 }
 
