@@ -4,13 +4,13 @@
 
 package echonet
 
-var sharedStandardDatabase *StandardDatabase
+var sharedStandardDatabase StandardDatabase
 
 func init() {
-	sharedStandardDatabase = NewStandardDatabase()
+	sharedStandardDatabase = newStandardDatabase()
 }
 
 // SharedStandardDatabase returns the shared standard database.
-func SharedStandardDatabase() *StandardDatabase {
+func SharedStandardDatabase() StandardDatabase {
 	return sharedStandardDatabase
 }

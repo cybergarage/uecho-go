@@ -29,7 +29,7 @@ func ExampleNewProperty() {
 func ExampleNewDevice() {
 	// Creates a standard mono functional device.
 	dev, err := echonet.NewDevice(
-		echonet.WithDeviceCode(0x0130),
+		echonet.WithDeviceCode(0x0130), // Air Conditioner
 		echonet.WithDeviceManufacturerCode(0xFFFFFF),
 	)
 	if err != nil {
@@ -37,6 +37,19 @@ func ExampleNewDevice() {
 	}
 	// Sets the operation status to "on".
 	dev.SetPropertyInteger(0x80, 0x30, 1)
+}
+
+func ExampleNewMessage() {
+	msg := echonet.NewMessage(
+		echonet.WithMessageESV(echonet.ESVReadRequest),
+		echonet.WithMessageDEOJ(0x0EF001),
+		echonet.WithMessageProperties(
+			echonet.NewProperty(
+				echonet.WithPropertyCode(0x8A),
+			),
+		),
+	)
+	_ = msg
 }
 
 func ExampleNewController() {
@@ -48,6 +61,22 @@ func ExampleNewController() {
 	defer ctrl.Stop()
 }
 
+func ExampleSharedStandardDatabase() {
+	db := echonet.SharedStandardDatabase()
+
+	man, ok := db.LookupManufacture(0x000005)
+	if ok {
+		fmt.Printf("Manufacture: %s\n", man.Name())
+	}
+
+	obj, ok := db.LookupObjectByCode(0x029101) // Mono functional lighting
+	if ok {
+		fmt.Printf("Object: %s\n", obj.Name())
+	}
+}
+
+// Example demonstrates how to use the echonet package to discover ECHONET Lite nodes on the local network, retrieve their manufacturer information, enumerate their objects, and read the required properties of each object.
+// The function initializes a controller, starts network discovery, and prints out details of each found node, including address, port, manufacturer, object codes, object names, and property values.
 func Example() {
 	ctrl := echonet.NewController()
 

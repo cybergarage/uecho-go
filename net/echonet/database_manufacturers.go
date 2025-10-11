@@ -5,7 +5,7 @@
 package echonet
 
 // nolint: maintidx
-func (db *StandardDatabase) initManufactures() {
+func (db *stdDatabase) initManufactures() {
 	db.addManufacture(NewManufacture(0x000133, "afterFIT Co., Ltd."))
 	db.addManufacture(NewManufacture(0x00002F, "AIPHONE CO., LTD."))
 	db.addManufacture(NewManufacture(0x00011A, "ACCESS CO.,LTD."))

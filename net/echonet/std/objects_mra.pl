@@ -49,7 +49,7 @@ func newStandardProperty(code PropertyCode, name string, dataType string, dataSi
 }
 
 // nolint:misspell, whitespace, maintidx
-func (db *StandardDatabase) initObjects() {
+func (db *stdDatabase) initObjects() {
   var obj maObject
 
 HEADER

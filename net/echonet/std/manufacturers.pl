@@ -16,7 +16,7 @@ print<<HEADER;
 package echonet
 
 // nolint: maintidx
-func (db *StandardDatabase) initManufactures() {
+func (db *stdDatabase) initManufactures() {
 HEADER
 
 open(MANLIST, $manlist_filename) or die "$!";
