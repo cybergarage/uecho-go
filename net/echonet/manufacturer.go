@@ -7,26 +7,35 @@ package echonet
 // ManufactureCode represent a manufacture code.
 type ManufactureCode int
 
-// Manufacture represents a manufacture object.
-type Manufacture struct {
+// Manufacture represents a manufacture interface.
+type Manufacture interface {
+	// Name returns the manufacture name.
+	Name() string
+
+	// Code returns the manufacture code.
+	Code() ManufactureCode
+}
+
+// manufacture represents a manufacture object.
+type manufacture struct {
 	code ManufactureCode
 	name string
 }
 
-// NewManufacture returns a manufacture instance.
-func NewManufacture(code ManufactureCode, name string) *Manufacture {
-	return &Manufacture{
+// newManufacture returns a manufacture instance.
+func newManufacture(code ManufactureCode, name string) Manufacture {
+	return &manufacture{
 		code: code,
 		name: name,
 	}
 }
 
 // Name returns the manufacture name.
-func (man *Manufacture) Name() string {
+func (man *manufacture) Name() string {
 	return man.name
 }
 
 // Code returns the manufacture code.
-func (man *Manufacture) Code() ManufactureCode {
+func (man *manufacture) Code() ManufactureCode {
 	return man.code
 }

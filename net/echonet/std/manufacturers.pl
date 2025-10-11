@@ -37,10 +37,10 @@ while(<MANLIST>){
   if ($name !~ /\"$/) {
     $name = $name . "\"" 
   }
-  printf("db.addManufacture(NewManufacture(0x%s, %s))\n", $code, $name);
+  printf("db.addManufacture(newManufacture(0x%s, %s))\n", $code, $name);
 }
-printf("db.addManufacture(NewManufacture(0xFFFFFF, \"Experimental\"))\n");
-printf("db.addManufacture(NewManufacture(0xFFFFFE, \"Undefined\"))\n");
+printf("db.addManufacture(newManufacture(0xFFFFFF, \"Experimental\"))\n");
+printf("db.addManufacture(newManufacture(0xFFFFFE, \"Undefined\"))\n");
 close(MANLIST);
 print<<FOTTER;
 }
