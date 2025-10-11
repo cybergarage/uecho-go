@@ -126,9 +126,20 @@ func testLocalNodeWithConfig(t *testing.T, config *Config) {
 	}
 	// Check a found device
 
-	dev, err := ctrl.LookupObject(testLightDeviceCode)
+	lookupObject := func(ctrl Controller, code ObjectCode) (Object, error) {
+		for _, node := range ctrl.Nodes() {
+			obj, err := node.LookupObject(code)
+			if err != nil {
+				continue
+			}
+			return obj, nil
+		}
+		return nil, ErrNotFound
+	}
+
+	dev, err := lookupObject(ctrl, testLightDeviceCode)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("failed to lookup device: %X", testLightDeviceCode)
 		return
 	}
 
