@@ -12,6 +12,7 @@ import (
 	"github.com/cybergarage/go-logger/log"
 	"github.com/cybergarage/uecho-go/net/echonet"
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
 const (
@@ -52,25 +53,6 @@ func ExampleNewMessage() {
 	_ = msg
 }
 
-func ExampleNewLocalNode() {
-	dev, err := echonet.NewDevice(
-		echonet.WithDeviceCode(0x029101), // Mono functional lighting
-	)
-	if err != nil {
-		return
-	}
-
-	node := echonet.NewLocalNode(
-		echonet.WithLocalNodeDevices(dev),
-	)
-
-	err = node.Start()
-	if err != nil {
-		return
-	}
-	defer node.Stop()
-}
-
 func ExampleNewController() {
 	ctrl := echonet.NewController()
 	err := ctrl.Start()
@@ -94,9 +76,68 @@ func ExampleSharedStandardDatabase() {
 	}
 }
 
-// Example demonstrates how to use the echonet package to discover ECHONET Lite nodes on the local network, retrieve their manufacturer information, enumerate their objects, and read the required properties of each object.
-// The function initializes a controller, starts network discovery, and prints out details of each found node, including address, port, manufacturer, object codes, object names, and property values.
+// The example demonstrates how to create and start a local Echonet node
+// with a single device (Mono functional lighting) and a custom property request handler.
+// The handler processes only write requests for the operation status property (0x80),
+// accepting values 0x30 (ON) and 0x31 (OFF). Invalid requests are rejected with an error.
+// The example shows device and node creation, handler registration, node startup, and cleanup.
+func ExampleNewLocalNode() {
+	// onRequest handles property requests for the local device.
+	// It processes only write requests, updating the property if valid.
+	onRequest := func(obj echonet.Object, esv protocol.ESV, reqProp protocol.Property) error {
+		// Only handle write requests.
+		if !esv.IsWriteRequest() {
+			return nil
+		}
+		reqPropCode := reqProp.Code()
+		reqPropData := reqProp.Data()
+		// NOTE: Object::LookupProperty() will always find the property here
+		// because onRequest is only called if the object has the specified property.
+		targetProp, _ := obj.LookupProperty(reqPropCode)
+		switch reqPropCode {
+		case 0x80: // Operation status
+			// Accept only 0x30 (ON) or 0x31 (OFF) as valid data.
+			reqData, err := reqProp.AsByte()
+			if err != nil {
+				return err
+			}
+			switch reqData {
+			case 0x30, 0x31:
+				targetProp.SetData(reqPropData)
+				return nil
+			default:
+			}
+		}
+		return fmt.Errorf("invalid request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
+	}
+
+	dev, err := echonet.NewDevice(
+		echonet.WithDeviceCode(0x029101), // Mono functional lighting
+		echonet.WithDeviceRequestHandler(onRequest),
+	)
+	if err != nil {
+		return
+	}
+
+	node := echonet.NewLocalNode(
+		echonet.WithLocalNodeDevices(dev),
+	)
+
+	err = node.Start()
+	if err != nil {
+		return
+	}
+	defer node.Stop()
+}
+
+// Example demonstrates how to use the echonet package to discover ECHONET Lite nodes
+// on the local network, retrieve their manufacturer information, enumerate their objects,
+// and read the required properties of each object.
+// The function initializes a controller, starts network discovery, and prints out details
+// of each found node, including address, port, manufacturer, object codes, object names,
+// and property values.
 func Example() {
+	// Discover and print ECHONET Lite nodes and their properties on the local network.
 	ctrl := echonet.NewController()
 
 	err := ctrl.Start()
@@ -112,19 +153,19 @@ func Example() {
 		}
 	}()
 
-	// Searches echonet nodes in the local network with context  until the context is done.
+	// Search for ECHONET Lite nodes on the local network.
 	err = ctrl.Search(context.Background())
 	if err != nil {
 		log.Errorf("%s", err)
 		return
 	}
 
-	// Outputs all found nodes
+	// Output details of all discovered nodes
 
 	db := echonet.SharedStandardDatabase()
 
 	for i, node := range ctrl.Nodes() {
-		// Gets manufacture code.
+		// Get manufacturer code.
 
 		manufactureName := unknown
 		req := echonet.NewMessage(
@@ -145,12 +186,12 @@ func Example() {
 			}
 		}
 
-		// Prints node data.
+		// Print manufacturer information for the node.
 
 		fmt.Printf("[%d] %-15s:%d (%s)\n", i, node.Address(), node.Port(), manufactureName)
 
 		for j, obj := range node.Objects() {
-			// Prints object data.
+			// Print object information.
 
 			objName := obj.ClassName()
 			if len(objName) == 0 {
@@ -158,7 +199,7 @@ func Example() {
 			}
 			fmt.Printf("    [%d] %06X (%s)\n", j, obj.Code(), objName)
 
-			// Prints only read required properties with the current property data.
+			// Iterate over all properties that are required to be readable and print their current data.
 
 			for _, prop := range obj.Properties() {
 				if !prop.IsReadRequired() {

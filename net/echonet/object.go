@@ -5,6 +5,8 @@
 package echonet
 
 import (
+	"errors"
+
 	"github.com/cybergarage/uecho-go/net/echonet/encoding"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
@@ -43,6 +45,8 @@ type Object interface {
 	LookupProperty(code PropertyCode) (Property, bool)
 	// SetListener sets the listener of the object.
 	SetListener(l ObjectListener)
+	// SetRequestHandler sets the request handler of the object.
+	SetRequestHandler(h ObjectRequestHandler)
 	// ObjectMutator returns the object mutator.
 	ObjectMutator
 	// ObjectHelper returns the object helper.
@@ -102,6 +106,7 @@ type object struct {
 	name       string
 	codes      []byte
 	listener   ObjectListener
+	reqHandler ObjectRequestHandler
 	parentNode Node
 }
 
@@ -112,6 +117,7 @@ func newObject() *object {
 		name:        "",
 		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
+		reqHandler:  nil,
 		parentNode:  nil,
 	}
 
@@ -251,12 +257,21 @@ func (obj *object) SetListener(l ObjectListener) {
 	obj.listener = l
 }
 
+// SetRequestHandler sets a request handler to the object.
+func (obj *object) SetRequestHandler(h ObjectRequestHandler) {
+	obj.reqHandler = h
+}
+
 // notifyPropertyRequest notifies a request to the object listener.
 func (obj *object) notifyPropertyRequest(esv protocol.ESV, prop protocol.Property) error {
-	if obj.listener == nil {
-		return nil
+	var err error
+	if obj.listener != nil {
+		err = errors.Join(obj.listener.OnPropertyRequest(obj, esv, prop))
 	}
-	return obj.listener.OnPropertyRequest(obj, esv, prop)
+	if obj.reqHandler != nil {
+		err = errors.Join(err, obj.reqHandler(obj, esv, prop))
+	}
+	return err
 }
 
 // Copy copies the object instance without the data.
@@ -267,6 +282,7 @@ func (obj *object) Copy() *object {
 		name:        obj.Name(),
 		codes:       make([]byte, ObjectCodeSize),
 		listener:    nil,
+		reqHandler:  nil,
 		parentNode:  nil,
 	}
 

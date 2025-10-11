@@ -116,6 +116,14 @@ func WithDeviceManufacturerCode(code uint) DeviceOption {
 	}
 }
 
+// WithDeviceRequestHandler returns a DeviceOption that sets the request handler for a device.
+func WithDeviceRequestHandler(handler ObjectRequestHandler) DeviceOption {
+	return func(dev *device) error {
+		dev.SetRequestHandler(handler)
+		return nil
+	}
+}
+
 // NewDevice returns a new device with the specified options.
 func NewDevice(opts ...DeviceOption) (Device, error) {
 	dev := newDevice()

@@ -11,56 +11,48 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-type LightNode struct {
-	echonet.LocalNode
-}
-
 // NewLightNode returns a new light device.
-func NewLightNode() *LightNode {
-	node := &LightNode{
-		LocalNode: echonet.NewLocalNode(),
-	}
-	dev := NewLightDevice()
-	node.AddDevice(dev)
-	dev.SetListener(node)
-	return node
-}
-
-func (node *LightNode) OnPropertyRequest(obj echonet.Object, esv protocol.ESV, reqProp protocol.Property) error {
-	// Check whether the property request is a write request. Basically, the developer should handle only write requests.
-
-	if !esv.IsWriteRequest() {
-		return nil
-	}
-
-	// Check whether the local object (device) has the requested property
-
-	reqPropCode := reqProp.Code()
-	reqPropData := reqProp.Data()
-
-	switch reqPropCode {
-	case 0x80: // Operation status
-		// Check whether the request data is 0x30(ON) or 0x31(OFF)
-		if (len(reqPropData) != 1) || (reqPropData[0] != 0x30) || (reqPropData[0] != 0x31) {
-			err := fmt.Errorf("Invalid Request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
-			OutputError(err)
-			return err
+func NewLightNode() echonet.LocalNode {
+	onRequest := func(obj echonet.Object, esv protocol.ESV, reqProp protocol.Property) error {
+		// Only handle write requests.
+		if !esv.IsWriteRequest() {
+			return nil
 		}
-	default:
-		err := fmt.Errorf("Invalid Request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
+		reqPropCode := reqProp.Code()
+		reqPropData := reqProp.Data()
+		// NOTE: Object::LookupProperty() will always find the property here because onRequest is only called if the object has the specified property.
+		targetProp, _ := obj.LookupProperty(reqPropCode)
+		switch reqPropCode {
+		case 0x80: // Operation status
+			// Accept only 0x30 (ON) or 0x31 (OFF) as valid data.
+			reqData, err := reqProp.AsByte()
+			if err != nil {
+				return err
+			}
+			switch reqData {
+			case 0x30, 0x31:
+				targetProp.SetData(reqPropData)
+				OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.Data()), hex.EncodeToString(reqPropData))
+				return nil
+			default:
+			}
+		}
+		err := fmt.Errorf("invalid request : %02X %s", reqPropCode, hex.EncodeToString(reqPropData))
 		OutputError(err)
 		return err
 	}
 
-	// Output the update message
-	// NOTE : Object::GetProperty() can get the specified property always because the OnPropertyRequest is not called when the object has no the specified property
+	dev, _ := echonet.NewDevice(
+		echonet.WithDeviceCode(LightObjectCode),
+		echonet.WithDeviceManufacturerCode(echonet.DeviceManufacturerExperimental),
+		echonet.WithDeviceRequestHandler(onRequest),
+	)
 
-	targetProp, _ := obj.LookupProperty(reqPropCode)
-	OutputMessage("0x%02X : 0x%s -> 0x%s", esv, hex.EncodeToString(targetProp.Data()), hex.EncodeToString(reqPropData))
+	// Set initial property values
+	dev.SetPropertyInteger(LightPropertyPowerCode, LightPropertyPowerOn, 1)
 
-	// Set the requested data to the local object (device)
-
-	targetProp.SetData(reqPropData)
-
-	return nil
+	node := echonet.NewLocalNode(
+		echonet.WithLocalNodeDevices(dev),
+	)
+	return node
 }
