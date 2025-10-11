@@ -66,7 +66,7 @@ The `uecho-go` verifies the messages form other nodes using the objects and prop
 
 ```
 type ObjectListener interface {
-	OnPropertyRequest(obj Object, esv protocol.ESV, prop protocol.Property) error
+	OnRequest(obj Object, esv protocol.ESV, prop protocol.Property) error
 }
 ```
 
