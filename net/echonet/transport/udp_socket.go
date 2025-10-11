@@ -53,15 +53,11 @@ func (sock *UDPSocket) Close() error {
 		return nil
 	}
 
-	// FIXME : sock.Conn.Close() hung up on darwin
-	/*
-		err := sock.Conn.Close()
-		if err != nil {
-			return err
-		}
-	*/
-	go sock.Conn.Close()
-	time.Sleep(time.Millisecond * 100)
+	sock.Conn.SetDeadline(time.Now().Add(-time.Second))
+	err := sock.Conn.Close()
+	if err != nil {
+		return err
+	}
 
 	sock.Conn = nil
 

@@ -92,14 +92,22 @@ func (sock *Socket) IPAddr() (string, error) {
 
 // SetMulticastLoop sets a flag to IP_MULTICAST_LOOP.
 // nolint: nosnakecase
-func (sock *Socket) SetMulticastLoop(fd uintptr, addr string, flag bool) error {
+func (sock *Socket) SetMulticastLoop(rawConn syscall.RawConn, addr string, flag bool) error {
 	opt := 0
 	if flag {
 		opt = 1
 	}
 
-	if IsIPv6Address(addr) {
-		return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IPV6, syscall.IPV6_MULTICAST_LOOP, opt)
+	err := rawConn.Control(func(fd uintptr) {
+		if IsIPv6Address(addr) {
+			syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IPV6, syscall.IPV6_MULTICAST_LOOP, opt)
+		} else {
+			syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
+		}
+	})
+	if err != nil {
+		return err
 	}
-	return syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_MULTICAST_LOOP, opt)
+
+	return nil
 }

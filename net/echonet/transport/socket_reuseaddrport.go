@@ -14,18 +14,23 @@ import (
 
 // SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT.
 // nolint: nosnakecase
-func (sock *Socket) SetReuseAddr(fd uintptr, flag bool) error {
+func (sock *Socket) SetReuseAddr(rawConn syscall.RawConn, flag bool) error {
 	opt := 0
 	if flag {
 		opt = 1
 	}
 
-	err := syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
+	err := rawConn.Control(func(fd uintptr) {
+		syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEADDR, opt)
+	})
 	if err != nil {
 		return err
 	}
 
-	err = syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, opt)
+	err = rawConn.Control(func(fd uintptr) {
+		syscall.SetsockoptInt(int(fd), syscall.SOL_SOCKET, syscall.SO_REUSEPORT, opt)
+	})
+
 	if err != nil {
 		return err
 	}

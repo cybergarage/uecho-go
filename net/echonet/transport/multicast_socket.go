@@ -49,20 +49,18 @@ func (sock *MulticastSocket) Bind(ifi *net.Interface, ifaddr string) error {
 	sock.SetBoundStatus(ifi, ifaddr, Port)
 	sock.Conn.SetReadBuffer(sock.ReadBufferSize())
 
-	f, err := sock.Conn.File()
+	rawConn, err := sock.Conn.SyscallConn()
+	if err != nil {
+		sock.Close()
+		return err
+	}
+
+	err = sock.SetReuseAddr(rawConn, true)
 	if err != nil {
 		return err
 	}
 
-	defer f.Close()
-	fd := f.Fd()
-
-	err = sock.SetReuseAddr(fd, true)
-	if err != nil {
-		return err
-	}
-
-	err = sock.SetMulticastLoop(fd, ifaddr, true)
+	err = sock.SetMulticastLoop(rawConn, ifaddr, true)
 	if err != nil {
 		return err
 	}

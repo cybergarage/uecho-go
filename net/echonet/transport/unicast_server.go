@@ -163,12 +163,11 @@ func handleUnicastTCPListener(server *UnicastServer, cancel chan any) {
 		case <-cancel:
 			return
 		default:
-			conn, err := server.TCPSocket.Listener.AcceptTCP()
+			tcpConn, err := server.TCPSocket.Listener.AcceptTCP()
 			if err != nil {
 				return
 			}
-
-			go handleUnicastTCPConnection(server, conn)
+			go handleUnicastTCPConnection(server, tcpConn)
 		}
 	}
 }

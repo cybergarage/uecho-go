@@ -44,16 +44,13 @@ func (sock *UnicastUDPSocket) Bind(ifi *net.Interface, ifaddr string, port int) 
 		return err
 	}
 
-	f, err := sock.Conn.File()
+	rawConn, err := sock.Conn.SyscallConn()
 	if err != nil {
 		sock.Close()
 		return err
 	}
 
-	defer f.Close()
-	fd := f.Fd()
-
-	err = sock.SetReuseAddr(fd, true)
+	err = sock.SetReuseAddr(rawConn, true)
 	if err != nil {
 		sock.Close()
 		return err

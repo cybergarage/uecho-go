@@ -1,5 +1,4 @@
 // Copyright 2018 The uecho-go Authors. All rights reserved.
-// Copyright 2018 The uecho-go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -54,15 +53,11 @@ func (sock *TCPSocket) Bind(ifi *net.Interface, ifaddr string, port int) error {
 		return err
 	}
 
-	f, err := sock.Listener.File()
+	rawConn, err := sock.Listener.SyscallConn()
 	if err != nil {
 		return err
 	}
-
-	defer f.Close()
-	fd := f.Fd()
-
-	err = sock.SetReuseAddr(fd, true)
+	err = sock.SetReuseAddr(rawConn, true)
 	if err != nil {
 		return err
 	}
@@ -78,15 +73,11 @@ func (sock *TCPSocket) Close() error {
 		return nil
 	}
 
-	// FIXME : sock.Listener.Close() hung up on darwin
-	/*
-		err := sock.Listener.Close()
-		if err != nil {
-			return err
-		}
-	*/
-	go sock.Listener.Close()
-	time.Sleep(time.Millisecond * 100)
+	sock.Listener.SetDeadline(time.Now().Add(-time.Second))
+	err := sock.Listener.Close()
+	if err != nil {
+		return err
+	}
 
 	sock.Listener = nil
 
