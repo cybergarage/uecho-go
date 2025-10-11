@@ -86,7 +86,7 @@ type localNode struct {
 
 // NewLocalNode returns a new local Echonet node.
 func NewLocalNode(opts ...LocalNodeOption) LocalNode {
-	return newLocalNode()
+	return newLocalNode(opts...)
 }
 
 func newLocalNode(opts ...LocalNodeOption) *localNode {
