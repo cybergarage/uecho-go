@@ -27,6 +27,13 @@ func ExampleNewProperty() {
 	_ = prop
 }
 
+func ExampleNewProperty_noData() {
+	prop := echonet.NewProperty(
+		echonet.WithPropertyCode(0x80),
+	)
+	_ = prop
+}
+
 func ExampleNewDevice() {
 	// Creates a standard mono functional device.
 	dev, err := echonet.NewDevice(
@@ -40,13 +47,40 @@ func ExampleNewDevice() {
 	dev.SetPropertyInteger(0x80, 0x30, 1)
 }
 
-func ExampleNewMessage() {
+func ExampleNewMessage_readRequest() {
 	msg := echonet.NewMessage(
 		echonet.WithMessageESV(echonet.ESVReadRequest),
-		echonet.WithMessageDEOJ(0x0EF001),
+		echonet.WithMessageDEOJ(0x029101), // Mono functional lighting
 		echonet.WithMessageProperties(
 			echonet.NewProperty(
-				echonet.WithPropertyCode(0x8A),
+				echonet.WithPropertyCode(0x8A), // Manufacturer code
+			),
+		),
+	)
+	_ = msg
+}
+
+func ExampleNewMessage_writeRequest() {
+	msg := echonet.NewMessage(
+		echonet.WithMessageESV(echonet.ESVWriteRequest),
+		echonet.WithMessageDEOJ(0x029101), // Mono functional lighting
+		echonet.WithMessageProperties(
+			echonet.NewProperty(
+				echonet.WithPropertyCode(0x80),         // Operation status
+				echonet.WithPropertyData([]byte{0x30}), // ON
+			),
+		),
+	)
+	_ = msg
+}
+
+func ExampleNewMessage_search() {
+	msg := echonet.NewMessage(
+		echonet.WithMessageESV(echonet.ESVReadRequest),
+		echonet.WithMessageDEOJ(0x0EF001), // Node profile
+		echonet.WithMessageProperties(
+			echonet.NewProperty(
+				echonet.WithPropertyCode(0xD6), // Self-node instance list S
 			),
 		),
 	)
@@ -69,17 +103,19 @@ func ExampleNewController() {
 	defer ctrl.Stop()
 }
 
-func ExampleSharedStandardDatabase() {
+func ExampleSharedStandardDatabase_object() {
 	db := echonet.SharedStandardDatabase()
+	obj, ok := db.LookupObject(0x029101) // Mono functional lighting
+	if ok {
+		fmt.Printf("Object: %s\n", obj.Name())
+	}
+}
 
+func ExampleStandardDatabase_manufacture() {
+	db := echonet.SharedStandardDatabase()
 	man, ok := db.LookupManufacture(0x000005)
 	if ok {
 		fmt.Printf("Manufacture: %s\n", man.Name())
-	}
-
-	obj, ok := db.LookupObjectByCode(0x029101) // Mono functional lighting
-	if ok {
-		fmt.Printf("Object: %s\n", obj.Name())
 	}
 }
 
@@ -149,7 +185,8 @@ func ExampleNewLocalNode() {
 // of each found node, including address, port, manufacturer, object codes, object names,
 // and property values.
 func Example() {
-	// Discover and print ECHONET Lite nodes and their properties on the local network.
+	// Search for ECHONET Lite nodes on the local network.
+
 	ctrl := echonet.NewController()
 
 	err := ctrl.Start()
@@ -165,7 +202,6 @@ func Example() {
 		}
 	}()
 
-	// Search for ECHONET Lite nodes on the local network.
 	err = ctrl.Search(context.Background())
 	if err != nil {
 		log.Errorf("%s", err)
