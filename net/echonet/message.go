@@ -11,12 +11,14 @@ import (
 // MessageOptions is a function type to set options in Message.
 type MessageOptions func(*message)
 
-// Message represents an Echonet message.
+// Message represents an Echonet message. The SEOJ, OPC, and TID are automatically filled by the controller when the message will be sent.
 type Message interface {
 	// SourceAddress returns the source address of the message.
 	SourceAddress() string
 	// SourcePort returns the source port of the message.
 	SourcePort() int
+	// TID returns the TID of the message.
+	TID() uint
 	// SEOJ returns the source object code of the message.
 	SEOJ() ObjectCode
 	// DEOJ returns the destination object code of the message.
@@ -64,7 +66,8 @@ func WithMessageProperties(props ...Property) MessageOptions {
 	}
 }
 
-// NewMessage returns a new message.
+// NewMessage returns a new message with the specified options. The ESV, DEOJ and properties for the message should be set at least.
+// Basically, the SEOJ, OPC, and TID do not need to be set because these fields are automatically filled by the controller when the message will be sent.
 func NewMessage(opts ...MessageOptions) Message {
 	msg := newMessage()
 	for _, opt := range opts {
