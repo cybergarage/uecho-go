@@ -46,7 +46,7 @@ func TestStandardDatabase(t *testing.T) {
 	}
 	for _, objCode := range objCodes {
 		t.Run(fmt.Sprintf("%06X", objCode), func(t *testing.T) {
-			_, ok := db.LookupObjectByCode(objCode)
+			_, ok := db.LookupObject(objCode)
 			if !ok {
 				t.Errorf("%06X object is not found", objCode)
 			}

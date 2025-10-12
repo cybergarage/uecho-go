@@ -100,7 +100,7 @@ type device struct {
 // Returns an error if the object code is not found in the database.
 func WithDeviceCode(code ObjectCode) DeviceOption {
 	return func(dev *device) error {
-		_, ok := SharedStandardDatabase().LookupObjectByCode(code)
+		_, ok := SharedStandardDatabase().LookupObject(code)
 		if !ok {
 			return fmt.Errorf("object code (%X) not found in standard database", code)
 		}

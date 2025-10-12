@@ -4,10 +4,6 @@
 
 package echonet
 
-import (
-	"github.com/cybergarage/uecho-go/net/echonet/encoding"
-)
-
 // StandardDatabase represents a standard database of Echonet. The database has standard manufacture and device and profile objects from Echonet Consortium. The object database is based on Machine Readable Appendix (MRA) which  is a data file that describes the contents of “APPENDIX Detailed Requirements for ECHONET Device objects”.
 type StandardDatabase interface {
 	// Manufactures returns the all registered manufactures.
@@ -19,11 +15,8 @@ type StandardDatabase interface {
 	// LookupManufacture returns the registered manuracture by the specified manuracture code.
 	LookupManufacture(code ManufactureCode) (Manufacture, bool)
 
-	// LookupObjectByCode returns the registered object by the specified object code.
-	LookupObjectByCode(code ObjectCode) (Object, bool)
-
-	// LookupObjectByCodes returns the registered object by the specified object code.
-	LookupObjectByCodes(codes []byte) (Object, bool)
+	// LookupObject returns the registered object by the specified object code.
+	LookupObject(code ObjectCode) (Object, bool)
 
 	// SuperObject returns the super object.
 	SuperObject() Object
@@ -81,28 +74,20 @@ func (db *stdDatabase) addObject(obj Object) {
 	db.objects[obj.Code()] = obj
 }
 
-// LookupObjectByCode returns the registered object by the specified object code.
-func (db *stdDatabase) LookupObjectByCode(code ObjectCode) (Object, bool) {
+// LookupObject returns the registered object by the specified object code.
+func (db *stdDatabase) LookupObject(code ObjectCode) (Object, bool) {
 	obj, ok := db.objects[(code & 0xFFFF00)]
 	return obj, ok
 }
 
-// LookupObjectByCodes returns the registered object by the specified object code.
-func (db *stdDatabase) LookupObjectByCodes(codes []byte) (Object, bool) {
-	if len(codes) != ObjectCodeSize {
-		return nil, false
-	}
-	return db.LookupObjectByCode(ObjectCode(encoding.ByteToInteger([]byte{codes[0], codes[1], 0x00})))
-}
-
 // SuperObject returns the super object.
 func (db *stdDatabase) SuperObject() Object {
-	obj, _ := db.LookupObjectByCode(0x000000)
+	obj, _ := db.LookupObject(0x000000)
 	return obj
 }
 
 // NodeProfile returns the node profile object.
 func (db *stdDatabase) NodeProfile() Object {
-	obj, _ := db.LookupObjectByCode(0x0EF000)
+	obj, _ := db.LookupObject(0x0EF000)
 	return obj
 }
