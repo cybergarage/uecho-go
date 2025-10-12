@@ -5,5 +5,5 @@
 package echonet
 
 const (
-	Version = "v1.2.3"
+	Version = "v1.3.0"
 )
