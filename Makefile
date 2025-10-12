@@ -76,7 +76,7 @@ test: lint
 	go clean -testcache
 	-rm -f ${PKG_COVER}.out ${PKG_COVER}.html
 	go test -v -p 1 -timeout 10m -cover -coverpkg=${PKG_ROOT}/... -coverprofile=${PKG_COVER}.out ${PKG_ROOT}/...
-	go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
+	-go tool cover -html=${PKG_COVER}.out -o ${PKG_COVER}.html
 
 cover: test
 	open ${PKG_COVER}.html || xdg-open ${PKG_COVER}.html || gnome-open ${PKG_COVER}.html
