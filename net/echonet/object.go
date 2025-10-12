@@ -131,26 +131,6 @@ func NewObject() Object {
 	return newObject()
 }
 
-// NewObjectWithCodeBytes returns a new object of the specified object codes.
-func NewObjectWithCodeBytes(codes []byte) (any, error) {
-	objCode, err := NewObjectCodeFromBytes(codes)
-	if err != nil {
-		return nil, err
-	}
-
-	if isProfileObjectCode(codes[0]) {
-		obj := NewProfileWithCode(objCode)
-		return obj, nil
-	}
-
-	return NewDeviceWithCode(objCode)
-}
-
-// NewObjectWithCode returns a new object of the specified object code.
-func NewObjectWithCode(code ObjectCode) (any, error) {
-	return NewObjectWithCodeBytes(code.Bytes())
-}
-
 // SetClassName sets a class name to the object.
 func (obj *object) SetClassName(name string) {
 	obj.clsName = name

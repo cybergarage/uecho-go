@@ -77,10 +77,22 @@ func newRemoteNodeWithInstanceListMessage(msg *protocol.Message) (*remoteNode, e
 	node.SetPort(msg.SourcePort())
 	node.AddProfile(NewNodeProfile())
 
+	newObjectWithCodeBytes := func(codes []byte) (any, error) {
+		objCode, err := NewObjectCodeFromBytes(codes)
+		if err != nil {
+			return nil, err
+		}
+		if isProfileObjectCode(codes[0]) {
+			obj := NewProfileWithCode(objCode)
+			return obj, nil
+		}
+		return NewDeviceWithCode(objCode)
+	}
+
 	for n := range instanceCount {
 		objCodes := make([]byte, ObjectCodeSize)
 		copy(objCodes, propData[((n*ObjectCodeSize)+1):])
-		obj, err := NewObjectWithCodeBytes(objCodes)
+		obj, err := newObjectWithCodeBytes(objCodes)
 		if err != nil {
 			return nil, err
 		}
