@@ -41,8 +41,8 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 	db := echonet.SharedStandardDatabase()
 
 	cols := []string{
-		"address",
-		"port",
+		"node_address",
+		"node_port",
 		"manufacture",
 		"object_code",
 		"object_name",
@@ -51,7 +51,7 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 		cols = append(cols,
 			"property_code",
 			"property_name",
-			"property_attr",
+			"property_rule",
 			"property_data",
 		)
 	}
