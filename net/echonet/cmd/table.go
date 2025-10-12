@@ -8,11 +8,6 @@ package cmd
 type Table interface {
 	Columns() []string
 	Rows() [][]string
-	TableHelper
-}
-
-type TableHelper interface {
-	HideDuplicateColumns(indexes ...int) Table
 }
 
 type table struct {
@@ -36,40 +31,4 @@ func (t *table) Columns() []string {
 // Rows returns the rows of the table.
 func (t *table) Rows() [][]string {
 	return t.rows
-}
-
-func (t *table) HideDuplicateColumns(columnIdxes ...int) Table {
-	stripDuplicateRowColumns := func(rows [][]string, columnIdx int) [][]string {
-		uniqRows := [][]string{}
-		lastRowContext := ""
-		for rowIdx, row := range rows {
-			uniqRow := make([]string, len(row))
-			copy(uniqRow, row)
-			switch {
-			case rowIdx == 0:
-				lastRowContext = row[columnIdx]
-			default:
-				if row[columnIdx] == lastRowContext {
-					switch columnIdx {
-					case 0:
-						uniqRow[columnIdx] = ""
-					default:
-						if uniqRow[columnIdx-1] == "" {
-							uniqRow[columnIdx] = ""
-						}
-					}
-				} else {
-					lastRowContext = row[columnIdx]
-				}
-			}
-			uniqRows = append(uniqRows, uniqRow)
-		}
-		return uniqRows
-	}
-
-	uniqRows := t.rows
-	for _, columnIdx := range columnIdxes {
-		uniqRows = stripDuplicateRowColumns(uniqRows, columnIdx)
-	}
-	return NewTable(t.columns, uniqRows)
 }
