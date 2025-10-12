@@ -20,7 +20,7 @@ const (
 	DefaultResponseTimeout = time.Duration(3) * time.Second
 )
 
-// ControllerOptions represents a function type to set options for controller.
+// ControllerOption is a function that configures a controller.
 type ControllerOption func(*controller)
 
 // Controller represents the Echonet controller.

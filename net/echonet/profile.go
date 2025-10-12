@@ -56,7 +56,7 @@ func NewProfile() Profile {
 	return NewProfileWithCode(NodeProfileObjectCode)
 }
 
-// NewProfile returns a new profile object.
+// NewProfileWithCode returns a new profile object for the specified object code.
 func NewProfileWithCode(code ObjectCode) Profile {
 	prof := &profile{
 		SuperObject: NewSuperObject(),

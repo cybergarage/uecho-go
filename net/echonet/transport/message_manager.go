@@ -32,8 +32,8 @@ func (mgr *MessageManager) MulticastManager() *MulticastManager {
 	return mgr.multicastMgr
 }
 
-// GetMulticastManager returns the unicast manager.
-func (mgr *MessageManager) GeUnicastManager() *UnicastManager {
+// UnicastManager returns the unicast manager.
+func (mgr *MessageManager) UnicastManager() *UnicastManager {
 	return mgr.unicastMgr
 }
 
@@ -65,7 +65,7 @@ func (mgr *MessageManager) SetPort(port int) {
 	mgr.unicastMgr.SetPort(port)
 }
 
-// GetPort returns the listen port.
+// Port returns the listen port.
 func (mgr *MessageManager) Port() int {
 	return mgr.unicastMgr.Port()
 }

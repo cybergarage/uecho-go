@@ -23,7 +23,7 @@ func (attr PropertyAttribute) IsOptional() bool {
 	return attr == Optional
 }
 
-// IsPermitted returns true when the attribute is not Prohibited.
+// IsProhibited returns true when the attribute is not Prohibited.
 func (attr PropertyAttribute) IsProhibited() bool {
 	return attr == Prohibited
 }

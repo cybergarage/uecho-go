@@ -36,7 +36,7 @@ func (mgr *UnicastManager) SetPort(port int) {
 	mgr.port = port
 }
 
-// GetPort returns the listen port.
+// Port returns the listen port.
 func (mgr *UnicastManager) Port() int {
 	return mgr.port
 }

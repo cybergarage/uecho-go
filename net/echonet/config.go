@@ -33,7 +33,7 @@ type config struct {
 	selfMsgEnabled bool
 }
 
-// WithSelfMessageEnabled sets a flag for self messages.
+// WithConfigTCPEnabled sets the specified TCP option to the config.
 func WithConfigTCPEnabled(flag bool) ConfigOption {
 	return func(conf *config) {
 		conf.SetTCPEnabled(flag)

@@ -261,12 +261,12 @@ func (prop *property) SetAnnoAttribute(attr PropertyAttribute) Property {
 	return prop
 }
 
-// GetAttribute returns the get attribute.
+// ReadAttribute returns the get attribute.
 func (prop *property) ReadAttribute() PropertyAttribute {
 	return prop.getAttr
 }
 
-// SetAttribute returns the set attribute.
+// WriteAttribute returns the set attribute.
 func (prop *property) WriteAttribute() PropertyAttribute {
 	return prop.setAttr
 }

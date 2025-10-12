@@ -33,14 +33,14 @@ type LocalNode interface {
 	Restart() error
 }
 
-// WithLocalNodeManufacturerCode sets a manufacture codes to the node.
+// WithLocalNodeManufacturerCode sets the specified manufacturer codes to the node.
 func WithLocalNodeManufacturerCode(code uint) LocalNodeOption {
 	return func(node *localNode) {
 		node.SetManufacturerCode(code)
 	}
 }
 
-// WithLocalNodeDevices adds devices to the node.
+// WithLocalNodeDevices adds the specified devices to the node.
 func WithLocalNodeDevices(devs ...Device) LocalNodeOption {
 	return func(node *localNode) {
 		for _, dev := range devs {
@@ -49,14 +49,14 @@ func WithLocalNodeDevices(devs ...Device) LocalNodeOption {
 	}
 }
 
-// WithLocalNodeListener sets a listener to the node.
+// WithLocalNodeListener sets the specified listener to the node.
 func WithLocalNodeListener(l NodeListener) LocalNodeOption {
 	return func(node *localNode) {
 		node.SetListener(l)
 	}
 }
 
-// WithLocalNodeProfiles adds profiles to the node.
+// WithLocalNodeConfig sets the specified configuration to the node.
 func WithLocalNodeConfig(cfg Config) LocalNodeOption {
 	return func(node *localNode) {
 		node.SetConfig(cfg)
@@ -114,7 +114,7 @@ func newLocalNode(opts ...LocalNodeOption) *localNode {
 
 // Address returns the bound address.
 func (node *localNode) Address() string {
-	for _, server := range node.GeUnicastManager().Servers {
+	for _, server := range node.UnicastManager().Servers {
 		addr, err := server.UDPSocket.Address()
 		if err == nil {
 			return addr
@@ -123,9 +123,9 @@ func (node *localNode) Address() string {
 	return ""
 }
 
-// GetPort returns the bound address.
+// Port returns the bound port.
 func (node *localNode) Port() int {
-	return node.GeUnicastManager().Port()
+	return node.UnicastManager().Port()
 }
 
 // SetConfig sets all configuration flags.

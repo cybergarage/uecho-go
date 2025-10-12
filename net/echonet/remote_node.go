@@ -139,7 +139,7 @@ func (node *remoteNode) SetPort(port int) {
 	node.port = port
 }
 
-// GetPort returns the port of the node.
+// Port returns the port of the node.
 func (node *remoteNode) Port() int {
 	return node.port
 }

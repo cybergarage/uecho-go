@@ -52,7 +52,7 @@ func WithMessageDEOJ(code ObjectCode) MessageOptions {
 	}
 }
 
-// WithMessageSEOJ sets a source object code.
+// WithMessageESV sets a ESV to the message.
 func WithMessageESV(esv ESV) MessageOptions {
 	return func(msg *message) {
 		msg.SetESV(esv)

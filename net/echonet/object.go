@@ -227,7 +227,7 @@ func (obj *object) SetParentNode(node Node) {
 	obj.parentNode = node
 }
 
-// ParentNode returns a parent node.
+// Node returns a parent node.
 func (obj *object) Node() Node {
 	return obj.parentNode
 }
