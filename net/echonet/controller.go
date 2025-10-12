@@ -98,7 +98,7 @@ func (ctrl *controller) LookupNode(addr string) (Node, bool) {
 
 // SearchAllObjectsWithESV searches all specified objects.
 func (ctrl *controller) SearchAllObjectsWithESV(esv protocol.ESV) error {
-	msg := NewSearchMessage()
+	msg := newSearchMessage()
 	msg.SetESV(esv)
 	return ctrl.AnnounceMessage(msg)
 }
@@ -110,7 +110,7 @@ func (ctrl *controller) SearchAllObjects() error {
 
 // SearchObjectWithESV searches a specified object.
 func (ctrl *controller) SearchObjectWithESV(code ObjectCode, esv protocol.ESV) error {
-	msg := NewSearchMessage()
+	msg := newSearchMessage()
 	msg.SetESV(esv)
 	msg.SetDEOJ(code)
 	return ctrl.AnnounceMessage(msg)

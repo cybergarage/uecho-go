@@ -8,8 +8,7 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// NewSearchMessage returns a new search message.
-func NewSearchMessage() *protocol.Message {
+func newSearchMessage() *protocol.Message {
 	msg := protocol.NewMessage()
 
 	msg.SetESV(protocol.ESVReadRequest)
