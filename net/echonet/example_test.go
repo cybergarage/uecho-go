@@ -53,6 +53,13 @@ func ExampleNewMessage() {
 	_ = msg
 }
 
+func ExampleNewDefaultConfig() {
+	conf := echonet.NewDefaultConfig(
+		echonet.WithConfigTCPEnabled(true),
+	)
+	_ = conf
+}
+
 func ExampleNewController() {
 	ctrl := echonet.NewController()
 	err := ctrl.Start()
@@ -120,6 +127,11 @@ func ExampleNewLocalNode() {
 	}
 
 	node := echonet.NewLocalNode(
+		echonet.WithLocalNodeConfig(
+			echonet.NewDefaultConfig(
+				echonet.WithConfigTCPEnabled(false),
+			),
+		),
 		echonet.WithLocalNodeDevices(dev),
 	)
 

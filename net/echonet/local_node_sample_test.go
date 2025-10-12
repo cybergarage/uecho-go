@@ -25,7 +25,7 @@ type testLocalNode struct {
 	LocalNode
 }
 
-func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
+func newTestSampleNodeWithConfig(config Config) (*testLocalNode, error) {
 	dev, err := NewDevice(
 		WithDeviceCode(testLightDeviceCode),
 	)
@@ -50,7 +50,7 @@ func newTestSampleNodeWithConfig(config *Config) (*testLocalNode, error) {
 	return node, nil
 }
 
-func newTestSampleNode(config *Config) (*testLocalNode, error) {
+func newTestSampleNode(config Config) (*testLocalNode, error) {
 	return newTestSampleNodeWithConfig(config)
 }
 

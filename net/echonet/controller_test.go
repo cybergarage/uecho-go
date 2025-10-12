@@ -68,7 +68,7 @@ func TestNewController(t *testing.T) {
 	}
 }
 
-func testControllerSearchWithConfig(t *testing.T, config *Config) {
+func testControllerSearchWithConfig(t *testing.T, config Config) {
 	t.Helper()
 
 	// Start a controller
@@ -204,14 +204,14 @@ func TestController(t *testing.T) {
 
 	t.Run("Default", func(t *testing.T) {
 		conf := newTestDefaultConfig()
-		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		conf.TransportConfig().SetConnectionTimeout(testNodeRequestTimeout)
 		testControllerSearchWithConfig(t, conf)
 	})
 
 	t.Run("TCPEnabled", func(t *testing.T) {
 		conf := newTestDefaultConfig()
-		conf.SetConnectionTimeout(testNodeRequestTimeout)
-		conf.SetTCPEnabled(true)
+		conf.TransportConfig().SetConnectionTimeout(testNodeRequestTimeout)
+		conf.TransportConfig().SetTCPEnabled(true)
 		testControllerSearchWithConfig(t, conf)
 	})
 }

@@ -36,7 +36,7 @@ func (ctrl *controller) isSelfMessage(msg *protocol.Message) bool {
 
 // OnMessage is a listener of the local node.
 func (ctrl *controller) OnMessage(msg *protocol.Message) error {
-	if !ctrl.selfMessageEnabled() {
+	if !ctrl.SelfMessageEnabled() {
 		if ctrl.isSelfMessage(msg) {
 			return nil
 		}
@@ -68,13 +68,13 @@ func (ctrl *controller) OnMessage(msg *protocol.Message) error {
 
 // parseNodeProfileMessage parses the specified message to check new objects.
 func (ctrl *controller) parseNodeProfileMessage(msg *protocol.Message) {
-	if !ctrl.selfMessageEnabled() {
+	if !ctrl.SelfMessageEnabled() {
 		if ctrl.isSelfMessage(msg) {
 			return
 		}
 	}
 
-	node, err := newRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.transportConfig)
+	node, err := newRemoteNodeWithInstanceListMessageAndConfig(msg, ctrl.TransportConfig())
 	if err != nil {
 		return
 	}

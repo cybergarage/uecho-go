@@ -52,7 +52,7 @@ type controller struct {
 }
 
 // WithControllerConfig sets a configuration to the controller.
-func WithControllerConfig(cfg *Config) ControllerOption {
+func WithControllerConfig(cfg Config) ControllerOption {
 	return func(ctrl *controller) {
 		ctrl.SetConfig(cfg)
 	}

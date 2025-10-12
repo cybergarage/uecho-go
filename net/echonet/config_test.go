@@ -8,10 +8,10 @@ import (
 	"testing"
 )
 
-func newTestDefaultConfig() *Config {
+func newTestDefaultConfig() Config {
 	conf := NewDefaultConfig()
-	conf.SetAutoPortBindingEnabled(true)
-	conf.SetBindRetryEnabled(true)
+	conf.TransportConfig().SetAutoPortBindingEnabled(true)
+	conf.TransportConfig().SetBindRetryEnabled(true)
 	return conf
 }
 

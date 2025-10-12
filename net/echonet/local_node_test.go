@@ -57,7 +57,7 @@ func localNodeCheckResponseMessagePowerStatus(reqMsg Message, resMsg Message, po
 }
 
 // nolint ifshort
-func testLocalNodeWithConfig(t *testing.T, config *Config) {
+func testLocalNodeWithConfig(t *testing.T, config Config) {
 	// Start controller
 
 	ctrl, _ := NewController(
@@ -289,13 +289,13 @@ func TestLocalNode(t *testing.T) {
 
 	t.Run("Default", func(t *testing.T) {
 		conf := newTestDefaultConfig()
-		conf.SetConnectionTimeout(testNodeRequestTimeout)
+		conf.TransportConfig().SetConnectionTimeout(testNodeRequestTimeout)
 		testLocalNodeWithConfig(t, conf)
 	})
 	t.Run("TCPEnabled", func(t *testing.T) {
 		conf := newTestDefaultConfig()
-		conf.SetConnectionTimeout(testNodeRequestTimeout)
-		conf.SetTCPEnabled(true)
+		conf.TransportConfig().SetConnectionTimeout(testNodeRequestTimeout)
+		conf.TransportConfig().SetTCPEnabled(true)
 		testLocalNodeWithConfig(t, conf)
 	})
 }

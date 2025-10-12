@@ -57,7 +57,7 @@ func WithLocalNodeListener(l NodeListener) LocalNodeOption {
 }
 
 // WithLocalNodeProfiles adds profiles to the node.
-func WithLocalNodeConfig(cfg *Config) LocalNodeOption {
+func WithLocalNodeConfig(cfg Config) LocalNodeOption {
 	return func(node *localNode) {
 		node.SetConfig(cfg)
 	}
@@ -75,7 +75,7 @@ type localNode struct {
 	*baseNode
 	*server
 	*sync.Mutex
-	*Config
+	Config
 
 	manufacturerCode uint
 	lastTID          uint
@@ -129,9 +129,9 @@ func (node *localNode) Port() int {
 }
 
 // SetConfig sets all configuration flags.
-func (node *localNode) SetConfig(newConfig *Config) {
+func (node *localNode) SetConfig(newConfig Config) {
 	node.Config = newConfig
-	node.server.MessageManager.SetConfig(newConfig.transportConfig)
+	node.server.MessageManager.SetConfig(newConfig.TransportConfig())
 }
 
 // SetManufacturerCode sets a manufacture codes to the node and all its devices.
