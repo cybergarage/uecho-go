@@ -7,21 +7,26 @@ package cmd
 // TableFormatter provides an interface for formatting and transforming tables.
 type TableFormatter interface {
 	// HideDuplicateColumns removes duplicate columns from the table.
-	HideDuplicateColumns(table Table, columnIdxes ...int) Table
+	HideDuplicateColumns(columnIdxes ...int) Table
 	// FilterEmptyRows removes empty rows from the table.
-	FilterEmptyRows(table Table) Table
+	FilterEmptyRows() Table
 }
 
 // defaultTableFormatter provides a default implementation of TableFormatter.
-type defaultTableFormatter struct{}
+type defaultTableFormatter struct {
+	table Table
+}
 
 // NewTableFormatter returns a new default table formatter.
-func NewTableFormatter() TableFormatter {
-	return &defaultTableFormatter{}
+func NewTableFormatter(table Table) TableFormatter {
+	return &defaultTableFormatter{
+		table: table,
+	}
 }
 
 // HideDuplicateColumns removes duplicate columns from the table.
-func (f *defaultTableFormatter) HideDuplicateColumns(table Table, columnIdxes ...int) Table {
+func (f *defaultTableFormatter) HideDuplicateColumns(columnIdxes ...int) Table {
+	table := f.table
 	stripDuplicateRowColumns := func(rows [][]string, columnIdx int) [][]string {
 		uniqRows := [][]string{}
 		lastRowContext := ""
@@ -54,11 +59,13 @@ func (f *defaultTableFormatter) HideDuplicateColumns(table Table, columnIdxes ..
 	for _, columnIdx := range columnIdxes {
 		uniqRows = stripDuplicateRowColumns(uniqRows, columnIdx)
 	}
-	return f.FilterEmptyRows(NewTable(table.Columns(), uniqRows))
+	f.table = NewTable(table.Columns(), uniqRows)
+	return f.FilterEmptyRows()
 }
 
 // FilterEmptyRows removes empty rows from the table.
-func (f *defaultTableFormatter) FilterEmptyRows(table Table) Table {
+func (f *defaultTableFormatter) FilterEmptyRows() Table {
+	table := f.table
 	uniqRows := [][]string{}
 	for _, row := range table.Rows() {
 		isBlankRow := true
@@ -72,5 +79,6 @@ func (f *defaultTableFormatter) FilterEmptyRows(table Table) Table {
 			uniqRows = append(uniqRows, row)
 		}
 	}
-	return NewTable(table.Columns(), uniqRows)
+	f.table = NewTable(table.Columns(), uniqRows)
+	return f.table
 }
