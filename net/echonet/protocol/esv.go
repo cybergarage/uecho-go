@@ -4,6 +4,11 @@
 
 package protocol
 
+import (
+	"fmt"
+)
+
+// ESV represents an Echonet Service code.
 type ESV byte
 
 const (
@@ -145,4 +150,9 @@ func (esv ESV) IsResponseRequired() bool {
 		return true
 	}
 	return false
+}
+
+// String returns the node string representation.
+func (esv ESV) String() string {
+	return fmt.Sprintf("%02X", uint(esv))
 }
