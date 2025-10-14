@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/cybergarage/go-logger/log"
-	"github.com/cybergarage/uecho-go/net/echonet"
 )
 
 func outputf(format string, args ...any) {
@@ -61,22 +60,4 @@ func hexStringToInt(hexStr string) (int, error) {
 	}
 
 	return result, nil
-}
-
-func outputTransportMessage(prefix string, addr string, obj echonet.ObjectCode, msg echonet.Message) {
-	fmt.Printf("%s %-15s : %06X %02X ",
-		prefix,
-		addr,
-		obj,
-		msg.ESV())
-	for _, prop := range msg.Properties() {
-		fmt.Printf("%2X%s ",
-			prop.Code(),
-			hex.EncodeToString(prop.Data()))
-	}
-	fmt.Printf("\n")
-}
-
-func outputResponseMessage(msg echonet.Message) {
-	outputTransportMessage("<-", msg.SourceAddress(), msg.SEOJ(), msg)
 }
