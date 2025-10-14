@@ -28,6 +28,11 @@ func NewObjectCodeFromBytes(codes []byte) (ObjectCode, error) {
 	return ObjectCode(encoding.ByteToInteger(codes)), nil
 }
 
+// String returns the node string representation.
+func (code ObjectCode) String() string {
+	return fmt.Sprintf("%06X", uint(code))
+}
+
 // Bytes returns a byte array of the object code.
 func (code ObjectCode) Bytes() []byte {
 	codes := make([]byte, 3)
