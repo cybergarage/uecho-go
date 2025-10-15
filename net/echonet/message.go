@@ -17,15 +17,17 @@ type Message interface {
 	SourceAddress() string
 	// SourcePort returns the source port of the message.
 	SourcePort() int
-	// TID returns the TID of the message.
+	// EHD returns the Echonet Header (EHD) of the message.
+	EHD() [2]byte
+	// TID returns the Transaction ID (TID) of the message.
 	TID() uint
-	// SEOJ returns the source object code of the message.
+	// SEOJ returns the source object (SEOJ) code of the message.
 	SEOJ() ObjectCode
-	// DEOJ returns the destination object code of the message.
+	// DEOJ returns the destination object (DEOJ) code of the message.
 	DEOJ() ObjectCode
-	// ESV returns the ESV of the message.
+	// ESV returns the Echonet Lite Service (ESV) of the message.
 	ESV() ESV
-	// OPC returns the OPC of the message.
+	// OPC returns the number of processing properties (OPC) of the message.
 	OPC() int
 	// Properties returns the all properties of the message.
 	Properties() []Property

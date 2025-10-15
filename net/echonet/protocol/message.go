@@ -168,7 +168,12 @@ func (msg *Message) SetTID(value uint) error {
 	return nil
 }
 
-// TID returns the stored TID.
+// EHD returns the stored Echonet Lite header.
+func (msg *Message) EHD() [2]byte {
+	return [2]byte{msg.EHD1Echonet, msg.EHD2Format1}
+}
+
+// TID returns the stored Transaction ID (TID).
 func (msg *Message) TID() uint {
 	return (((uint)(msg.tid[0]) << 8) + (uint)(msg.tid[1]))
 }
@@ -178,32 +183,32 @@ func (msg *Message) IsTID(tid uint) bool {
 	return msg.TID() == tid
 }
 
-// SetSEOJ sets a source object code.
+// SetSEOJ sets a source object (SEOJ) code.
 func (msg *Message) SetSEOJ(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), msg.seoj)
 }
 
-// SEOJ returns the source object code.
+// SEOJ returns the source object (SEOJ) code.
 func (msg *Message) SEOJ() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.seoj))
 }
 
-// IsSEOJ returns true whether the specified value equals the message source object code, otherwise false.
+// IsSEOJ returns true whether the specified value equals the message source object (SEOJ) code, otherwise false.
 func (msg *Message) IsSEOJ(code ObjectCode) bool {
 	return msg.SEOJ() == code
 }
 
-// SetDEOJ sets a destination object code.
+// SetDEOJ sets a destination object (DEOJ) code.
 func (msg *Message) SetDEOJ(code ObjectCode) {
 	encoding.IntegerToByte(uint(code), msg.deoj)
 }
 
-// DEOJ returns the destination object code.
+// DEOJ returns the destination object (DEOJ) code.
 func (msg *Message) DEOJ() ObjectCode {
 	return ObjectCode(encoding.ByteToInteger(msg.deoj))
 }
 
-// IsDEOJ returns true whether the specified value equals the message destination object code, otherwise false.
+// IsDEOJ returns true whether the specified value equals the message destination object (DEOJ) code, otherwise false.
 func (msg *Message) IsDEOJ(code ObjectCode) bool {
 	return msg.DEOJ() == code
 }
@@ -213,17 +218,17 @@ func (msg *Message) SetESV(value ESV) {
 	msg.esv = value
 }
 
-// ESV returns the stored ESV.
+// ESV returns the stored Echonet Lite Service (ESV).
 func (msg *Message) ESV() ESV {
 	return msg.esv
 }
 
-// IsESV returns true whether the specified code equals the message ESV, otherwise false.
+// IsESV returns true whether the specified code equals the message Echonet Lite Service (ESV), otherwise false.
 func (msg *Message) IsESV(esv ESV) bool {
 	return msg.esv == esv
 }
 
-// SetOPC sets the specified OPC.
+// SetOPC sets the specified number of processing properties (OPC).
 func (msg *Message) SetOPC(value int) error {
 	msg.opc = byte(value & 0xFF)
 	msg.ep = make([]Property, msg.opc)
@@ -233,7 +238,7 @@ func (msg *Message) SetOPC(value int) error {
 	return nil
 }
 
-// OPC returns the stored OPC.
+// OPC returns the number of processing properties (OPC) of the message.
 func (msg *Message) OPC() int {
 	return int(msg.opc)
 }
