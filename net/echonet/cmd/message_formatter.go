@@ -34,6 +34,7 @@ func NewMessageFormatter(msg echonet.Message) MessageFormatter {
 func (f *defaultMessageFormatter) Columns() []string {
 	columns := []string{
 		"EHD",
+		"TID",
 		"SEOJ",
 		"DEOJ",
 		"ESV",
@@ -55,7 +56,7 @@ func (f *defaultMessageFormatter) HexStrings() []string {
 	ehd := f.msg.EHD()
 	strs := []string{
 		fmt.Sprintf("%02X%02X", ehd[0], ehd[1]),
-		fmt.Sprintf("%02X", f.msg.TID()),
+		fmt.Sprintf("%04X", f.msg.TID()),
 		f.msg.SEOJ().String(),
 		f.msg.DEOJ().String(),
 		f.msg.ESV().String(),
