@@ -98,7 +98,7 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 					node.Address(),
 					fmt.Sprintf("%d", node.Port()),
 					manufactureName,
-					fmt.Sprintf("%06X", obj.Code()),
+					obj.Code().String(),
 					objName,
 				}
 				rows = append(rows, row)
@@ -152,7 +152,7 @@ func (ctrl *Controller) DiscoveredNodeTable(query *Query) (Table, error) {
 					node.Address(),
 					fmt.Sprintf("%d", node.Port()),
 					manufactureName,
-					fmt.Sprintf("%06X", obj.Code()),
+					obj.Code().String(),
 					objName,
 					fmt.Sprintf("%02X", prop.Code()),
 					propName,
