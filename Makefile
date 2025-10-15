@@ -96,4 +96,7 @@ install: gendoc
 	go install ${BINARIES}
 
 clean:
+	go clean -i -r
+	go clean -cache -testcache
+	go clean -modcache
 	go clean -i ${PKGES}
