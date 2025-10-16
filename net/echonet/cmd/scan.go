@@ -6,10 +6,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
-	"os"
-	"strings"
-	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -73,69 +69,15 @@ var scanCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		printDevicesTable := func(tbl Table) {
-			formatter := NewTableFormatter(tbl)
-			tbl = formatter.HideDuplicateColumns(0, 1, 2, 3, 4)
-			columns, rows := tbl.Columns(), tbl.Rows()
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-			printRow := func(cols ...string) {
-				if len(cols) == 0 {
-					return
-				}
-				for i, col := range cols {
-					if i == len(cols)-1 {
-						_, _ = w.Write([]byte(col + "\n"))
-					} else {
-						_, _ = w.Write([]byte(col + "\t"))
-					}
-				}
-			}
-			printRow(columns...)
-			for _, row := range rows {
-				printRow(row...)
-			}
-			w.Flush()
-		}
-
-		printDevicesCSV := func(tbl Table) {
-			columns, rows := tbl.Columns(), tbl.Rows()
-			printRow := func(cols ...string) {
-				if len(cols) == 0 {
-					return
-				}
-				outputf("%s\n", strings.Join(cols, ","))
-			}
-			printRow(columns...)
-			for _, row := range rows {
-				printRow(row...)
-			}
-		}
-
-		printDevicesJSON := func(tbl Table) error {
-			columns, rows := tbl.Columns(), tbl.Rows()
-			devObjs := make([]map[string]string, 0, len(rows))
-			for _, row := range rows {
-				obj := make(map[string]string)
-				for i, col := range columns {
-					obj[col] = row[i]
-				}
-				devObjs = append(devObjs, obj)
-			}
-			b, err := json.MarshalIndent(devObjs, "", "  ")
-			if err != nil {
-				return err
-			}
-			outputf("%s\n", string(b))
-			return nil
-		}
-
 		switch format {
 		case FormatJSON:
-			printDevicesJSON(table)
+			table.OutputJSON()
 		case FormatCSV:
-			printDevicesCSV(table)
+			table.OutputCSV()
 		default:
-			printDevicesTable(table)
+			formatter := NewTableFormatter(table)
+			table = formatter.HideDuplicateColumns(0, 1, 2, 3, 4)
+			table.Output()
 		}
 
 		// Stops the controller

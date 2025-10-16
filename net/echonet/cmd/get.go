@@ -7,8 +7,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
-	"text/tabwriter"
 
 	"github.com/cybergarage/uecho-go/net/echonet"
 	"github.com/spf13/cobra"
@@ -29,6 +27,11 @@ var getCmd = &cobra.Command{ // nolint:exhaustruct
 		verbose := viper.GetBool(VerboseParamStr)
 		if verbose {
 			enableStdoutVerbose(true)
+		}
+
+		format, err := NewFormatFromString(viper.GetString(FormatParamStr))
+		if err != nil {
+			return err
 		}
 
 		// Parses arguments
@@ -88,32 +91,16 @@ var getCmd = &cobra.Command{ // nolint:exhaustruct
 			return err
 		}
 
-		printMessageTable := func(msg echonet.Message) {
-			formatter := NewMessageFormatter(msg)
-			tbl := NewTable(formatter.Columns(), [][]string{formatter.HexStrings()})
-			columns := tbl.Columns()
-			rows := tbl.Rows()
-			w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-			printRow := func(cols ...string) {
-				if len(cols) == 0 {
-					return
-				}
-				for i, col := range cols {
-					if i == len(cols)-1 {
-						_, _ = w.Write([]byte(col + "\n"))
-					} else {
-						_, _ = w.Write([]byte(col + "\t"))
-					}
-				}
-			}
-			printRow(columns...)
-			for _, row := range rows {
-				printRow(row...)
-			}
-			w.Flush()
+		formatter := NewMessageFormatter(resMsg)
+		table := NewTable(formatter.Columns(), [][]string{formatter.HexStrings()})
+		switch format {
+		case FormatJSON:
+			table.OutputJSON()
+		case FormatCSV:
+			table.OutputCSV()
+		default:
+			table.Output()
 		}
-
-		printMessageTable(resMsg)
 
 		// Stops the controller
 
