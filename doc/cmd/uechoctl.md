@@ -1,10 +1,10 @@
 ## uechoctl
 
-Control Echonet Lite devices from command line.
+Control ECHONET Lite devices from the command line.
 
 ### Synopsis
 
-Control Echonet Lite devices from command line. See 'uechoctl <command> --help' for more information about a command.
+Control ECHONET Lite devices from the command line. See 'uechoctl <command> --help' for more information about a command.
 
 ### Options
 

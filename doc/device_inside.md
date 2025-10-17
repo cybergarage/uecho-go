@@ -2,13 +2,13 @@
 
 # Inside of uEcho Device
 
-A [ECHONET Lite][enet] node includes the objects, and the objects can be classified into two types: profile objects and device objects. The profile object is standard profile information such as the operation status, manufacturer information, and device object list. The device object is a logical model of the information or of control items that can be remotely controlled. 
+An [ECHONET Lite][enet] node includes objects, which can be classified into two types: profile objects and device objects. Profile objects contain standard profile information such as operation status, manufacturer information, and device object lists. Device objects are logical models of information or control items that can be remotely controlled. 
 
 ![Device Objects](img/device_objects.png)
 
 ## Node Profile Object
 
-The node profile object is a standard profile object, [ECHONET Lite][enet] node must have the following mandatory profile class object which has all children objects of the node [\[1\]][enet-spec].
+The node profile object is a standard profile object. An [ECHONET Lite][enet] node must have the following mandatory profile class object that contains all child objects of the node [\[1\]][enet-spec].
 
 - Class group code: 0x0E
 - Class code: 0xF0
@@ -18,7 +18,7 @@ The `uecho-go` updates the node profile class objects automatically when the chi
 
 ## Device Object Super Class
 
-[ECHONETLite][enet] device node must have some mandatory properties [\[2\]][enet-spec]. The `NewDevice()` addes the following mandatory properties into the device object as default, and the developer should update the properties according to the device status.
+[ECHONET Lite][enet] device nodes must have some mandatory properties [\[2\]][enet-spec]. The `NewDevice()` function adds the following mandatory properties to the device object by default, and developers should update the properties according to the device status.
 
 | EPC | Property name | Default value |
 |---|---|---|

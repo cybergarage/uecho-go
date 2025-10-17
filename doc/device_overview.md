@@ -4,13 +4,13 @@
 
 ## Making Devices
 
-uEcho supports your original standard devices of [ECHONET Lite][enet] specification easily. This document explains to create your original  [ECHONET Lite][enet] device step by step.
+uEcho easily supports creating your own standard devices based on the [ECHONET Lite][enet] specification. This document explains how to create your own [ECHONET Lite][enet] device step by step.
 
 ## Creating Devices
 
 ### 1. Creating Node
 
-To create your original device, use `NewLocalNode()` as the following at first.
+To create your own device, first use `NewLocalNode()` as follows:
 
 ```
 import (
@@ -20,11 +20,11 @@ import (
 node := echonet.NewLocalNode()
 ```
 
-The new node has only a node profile class object, and it has no device object. The node profile object is updated automatically when new devices are added into the node or the any properties in the node are changed.
+The new node has only a node profile class object and no device objects. The node profile object is updated automatically when new devices are added to the node or when any properties in the node are changed.
 
 ### 2. Creating Device Object
 
-The new node has no device object. To add your device objects, create a new device object using `NewDeviceWithCode()`.  `NewDeviceWithCode()` create a new device object which is added some mandatory and default properties of ECHONET standard device specification [\[1\]][enet-spec]. Next, set your property data using `Device::SetPropertyrData()`. Then, add the device object into the node using `LocalNode::AddDevice()` as the following:
+The new node has no device objects. To add your device objects, create a new device object using `NewDeviceWithCode()`. `NewDeviceWithCode()` creates a new device object with some mandatory and default properties from the ECHONET standard device specification [\[1\]][enet-spec]. Next, set your property data using `Device::SetPropertyData()`. Then, add the device object to the node using `LocalNode::AddDevice()` as follows:
 
 ```
 dev := echonet.NewDeviceWithCode(echonet.ObjectCode(0xXXXXXX))
@@ -35,7 +35,7 @@ node.AddDevice(dev)
 
 ### 3. Setting Observers
 
-To implement the device, you have only to handle write requests from other nodes because `uecho-go` handles other standard read and notification requests automatically. To handle the write requests, use `Object::SetListener()` or `Object::SetRequestHandler()` as the following:
+To implement the device, you only need to handle write requests from other nodes because `uecho-go` automatically handles other standard read and notification requests. To handle write requests, use `Object::SetListener()` or `Object::SetRequestHandler()` as follows:
 
 ```
 type ObjectListener interface {

@@ -1,10 +1,10 @@
 ## uechoctl scan
 
-Scan for Echonet Lite devices.
+Scan for ECHONET Lite devices.
 
 ### Synopsis
 
-Scan for Echonet Lite devices.
+Scan for ECHONET Lite devices.
 
 ```
 uechoctl scan [address] [flags]

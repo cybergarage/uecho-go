@@ -1,10 +1,10 @@
 ## uechoctl get
 
-Get property value from Echonet Lite device.
+Get property value from ECHONET Lite device.
 
 ### Synopsis
 
-Get property value from Echonet Lite device. Object and property codes must be specified in hexadecimal format.
+Get property value from ECHONET Lite device. Object and property codes must be specified in hexadecimal format.
 
 ```
 uechoctl get <node-address> <object-code> <property-code> [flags]

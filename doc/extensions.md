@@ -1,13 +1,13 @@
 ![logo](img/logo.png)
 
-# Expanded Configurations for Go Platform
+# Extended Configurations for Go Platform
 
-`uecho-go` supports some extension specifications for [ECHONET Lite][enet] to use the IoT protocol in a variety of situations such as Cloud computing or testing.
+`uecho-go` supports some extension specifications for [ECHONET Lite][enet] to use the IoT protocol in various situations such as cloud computing or testing.
 
 
 # TCP Unicast
 
-[ECHONET Lite][enet] does not strictly specify the TCP specification, and the TCP unicast is not mandatory. However `uecho-go` supports it the unicast protocol to send the messages more reliably. The TCP extention is disabled as default, and so use `Node::SetTCPEnabled() to enable it as the following.
+[ECHONET Lite][enet] does not strictly specify the TCP specification, and TCP unicast is not mandatory. However, `uecho-go` supports the unicast protocol to send messages more reliably. The TCP extension is disabled by default, so use `Node::SetTCPEnabled()` to enable it as follows:
 
 
 ```

@@ -2,7 +2,7 @@
 
 # Overview of uEcho Controller
 
-The controller is a special node of [ECHONETLite][enet] to control other nodes, it can find the nodes in the local area network and send any messages into the found devices.
+The controller is a special node of [ECHONET Lite][enet] that controls other nodes. It can discover nodes in the local area network and send messages to the found devices.
 
 ## Creating Controller
 
@@ -24,7 +24,7 @@ err := ctrl.Start()
 
 ### 2. Searching Nodes
 
-Next, use `Controller::Search()` to search other nodes in the local area network as the following:
+Next, use `Controller::Search()` to search for other nodes in the local area network as follows:
 
 ```
 ctrl := echonet.NewController()
@@ -37,7 +37,7 @@ if err != nil {
 
 ### 3. Getting Nodes and Objects
 
-After the searching, use `Controller::GetNodes()` to get all found nodes. [ECHONETLite](http://www.echonet.gr.jp/english/index.htm) node can have multiple objects, use `Node::Objects()` to get the all objects in the node.
+After searching, use `Controller::GetNodes()` to get all found nodes. An [ECHONET Lite](http://www.echonet.gr.jp/english/index.htm) node can have multiple objects; use `Node::Objects()` to get all objects in the node.
 
 ```
 ctrl := echonet.NewController()
@@ -53,7 +53,7 @@ for _, node := range ctrl.GetNodes() {
 
 ### 4. Creating Control Message
 
-To control the found objects, create the control message using `NewMessage()` as the following.
+To control the found objects, create a control message using `NewMessage()` as follows:
 
 ```
 ctrl := echonet.NewController()
@@ -68,7 +68,7 @@ prop.SetData(....)
 msg.AddProperty((prop.toProtocolProperty())
 ```
 
-To create the message, developer should only set the following message objects using the `Message::SetDEOJ()`, `SetESV()` and `AddProperty()` functions.
+To create the message, developers should only set the following message objects using the `Message::SetDEOJ()`, `SetESV()`, and `AddProperty()` functions.
 
 - DEOJ : Destination ECHONET Lite object specification
 - ESV : ECHONET Lite service
@@ -80,13 +80,13 @@ The `uecho-go` controller sets the following message objects automatically when 
 
 - EHD1 : ECHONET Lite message header 1
 - EHD2 : ECHONET Lite message header 2
-- TID￼  : Transaction ID
+- TID : Transaction ID
 - SEOJ : Source ECHONET Lite object specification
 - OPC  : Number of processing properties
 
 ### 5. Sending Messages
 
-To send the created message, use `Controller::SendMessage()` as the following:
+To send the created message, use `Controller::SendMessage()` as follows:
 
 ```
 ctrl := echonet.NewController()
@@ -99,7 +99,7 @@ if err != nil {
 }
 ```
 
-Basically, all messages of [ECHONETLite](http://www.echonet.gr.jp/english/index.htm) is async. To handle the async response of the message request, use `Controller::PostMessage()` as the following:
+Basically, all messages in [ECHONET Lite](http://www.echonet.gr.jp/english/index.htm) are asynchronous. To handle the asynchronous response of the message request, use `Controller::PostMessage()` as follows:
 
 ```
 ctrl := echonet.NewController()

@@ -6,7 +6,7 @@ The `uecho-go` includes some sample implementations for controller and device of
 
 ## uechosearch
 
-The `uechosearch` is a sample controller to search all [ECHONET Lite][enet] nodes in the same local area network, and the usage is below.
+The `uechosearch` is a sample controller that searches for all [ECHONET Lite][enet] nodes in the same local area network. The usage is as follows:
 
 ```
 Usage : uechosearch [options]

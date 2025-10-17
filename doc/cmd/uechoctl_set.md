@@ -1,10 +1,10 @@
 ## uechoctl set
 
-Set property value to Echonet Lite device.
+Set property value to ECHONET Lite device.
 
 ### Synopsis
 
-Set property value to Echonet Lite device. Object code, property code and property value must be specified in hexadecimal format.
+Set property value to ECHONET Lite device. Object code, property code, and property value must be specified in hexadecimal format.
 
 ```
 uechoctl set <node-address> <object-code> <property-code> <property-value> [flags]
