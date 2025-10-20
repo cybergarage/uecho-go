@@ -92,7 +92,7 @@ var getCmd = &cobra.Command{ // nolint:exhaustruct
 		}
 
 		formatter := NewMessageFormatter(resMsg)
-		table := NewTable(formatter.Columns(), [][]string{formatter.HexStrings()})
+		table := NewTable(formatter.Columns(), formatter.Rows())
 		switch format {
 		case FormatJSON:
 			table.OutputJSON()

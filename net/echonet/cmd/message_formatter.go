@@ -14,19 +14,19 @@ import (
 type MessageFormatter interface {
 	// Columns returns the column names for the message.
 	Columns() []string
-	// HexStrings returns the hex string representation of the message.
-	HexStrings() []string
+	// Rows returns the data rows for the m
+	Rows() [][]string
 }
 
 // defaultMessageFormatter provides a default implementation of MessageFormatter.
 type defaultMessageFormatter struct {
-	msg echonet.Message
+	msgs []echonet.Message
 }
 
 // NewMessageFormatter returns a new default message formatter.
-func NewMessageFormatter(msg echonet.Message) MessageFormatter {
+func NewMessageFormatter(msgs ...echonet.Message) MessageFormatter {
 	return &defaultMessageFormatter{
-		msg: msg,
+		msgs: msgs,
 	}
 }
 
@@ -40,7 +40,13 @@ func (f *defaultMessageFormatter) Columns() []string {
 		"ESV",
 		"OPC",
 	}
-	for n := range f.msg.OPC() {
+	opc := 0
+	for _, msg := range f.msgs {
+		if opc < msg.OPC() {
+			opc = msg.OPC()
+		}
+	}
+	for n := range opc {
 		columns = append(
 			columns,
 			fmt.Sprintf("EPC%d", n),
@@ -51,24 +57,27 @@ func (f *defaultMessageFormatter) Columns() []string {
 	return columns
 }
 
-// HexStrings returns the hex string representation of the message.
-func (f *defaultMessageFormatter) HexStrings() []string {
-	ehd := f.msg.EHD()
-	strs := []string{
-		fmt.Sprintf("%02X%02X", ehd[0], ehd[1]),
-		fmt.Sprintf("%04X", f.msg.TID()),
-		f.msg.SEOJ().String(),
-		f.msg.DEOJ().String(),
-		f.msg.ESV().String(),
-		fmt.Sprintf("%02X", f.msg.OPC()),
+func (f *defaultMessageFormatter) Rows() [][]string {
+	rows := [][]string{}
+	for _, msg := range f.msgs {
+		ehd := msg.EHD()
+		strs := []string{
+			fmt.Sprintf("%02X%02X", ehd[0], ehd[1]),
+			fmt.Sprintf("%04X", msg.TID()),
+			msg.SEOJ().String(),
+			msg.DEOJ().String(),
+			msg.ESV().String(),
+			fmt.Sprintf("%02X", msg.OPC()),
+		}
+		for _, prop := range msg.Properties() {
+			strs = append(
+				strs,
+				fmt.Sprintf("%02X", prop.Code()),
+				fmt.Sprintf("%02X", prop.Size()),
+				fmt.Sprintf("%X", prop.Data()),
+			)
+		}
+		rows = append(rows, strs)
 	}
-	for _, prop := range f.msg.Properties() {
-		strs = append(
-			strs,
-			fmt.Sprintf("%02X", prop.Code()),
-			fmt.Sprintf("%02X", prop.Size()),
-			fmt.Sprintf("%X", prop.Data()),
-		)
-	}
-	return strs
+	return rows
 }
