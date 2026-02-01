@@ -48,19 +48,14 @@ func (sock *UDPSocket) ReadBufferSize() int {
 
 // Close closes the current opened socket.
 func (sock *UDPSocket) Close() error {
-	if sock.Conn == nil {
+	conn := sock.Conn
+	if conn == nil {
 		return nil
 	}
-
-	sock.Conn.SetDeadline(time.Now().Add(-time.Second))
-	err := sock.Conn.Close()
-	if err != nil {
-		return err
-	}
-
 	sock.Conn = nil
 
-	return nil
+	conn.SetDeadline(time.Now().Add(-time.Second))
+	return conn.Close()
 }
 
 func (sock *UDPSocket) outputReadLog(logLevel log.Level, logType string, msgFrom string, msg string, msgSize int) {
