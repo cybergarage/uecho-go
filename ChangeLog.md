@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.3.1 (2026-02-02)
+
+### Fixed
+- Prevent panic when closing UDP sockets concurrently ([c652da7](https://github.com/cybergarage/uecho-go/commit/c652da7))
+
+### Improved
+- Add `Message.EHD()` to return the Echonet Header (EHD) ([06d94bd](https://github.com/cybergarage/uecho-go/commit/06d94bd))
+- Add `ESV::String()` and `ObjectCode::String()` ([0ce2337](https://github.com/cybergarage/uecho-go/commit/0ce2337), [6ea9112](https://github.com/cybergarage/uecho-go/commit/6ea9112))
+- Reduced allocations by preallocating slices/buffers in core ECHONET paths ([01c41b7](https://github.com/cybergarage/uecho-go/commit/01c41b7))
+
 ## v1.3.0 (2025-10-12)
 
 ### Improved
