@@ -48,7 +48,7 @@ func (db *stdDatabase) addManufacture(man Manufacture) {
 
 // Manufactures returns the all registered manufactures.
 func (db *stdDatabase) Manufactures() []Manufacture {
-	mans := []Manufacture{}
+	mans := make([]Manufacture, 0, len(db.manufactures))
 	for _, man := range db.manufactures {
 		mans = append(mans, man)
 	}
@@ -57,7 +57,7 @@ func (db *stdDatabase) Manufactures() []Manufacture {
 
 // Objects returns the all registered objects.
 func (db *stdDatabase) Objects() []Object {
-	objs := []Object{}
+	objs := make([]Object, 0, len(db.objects))
 	for _, obj := range db.objects {
 		objs = append(objs, obj)
 	}

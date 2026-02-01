@@ -99,14 +99,13 @@ func (node *baseNode) AddObject(obj any) error {
 
 // Objects returns all objects.
 func (node *baseNode) Objects() []Object {
-	objs := make([]Object, 0)
-
 	devs := node.Devices()
+	profs := node.Profiles()
+	objs := make([]Object, 0, len(devs)+len(profs))
+
 	for _, dev := range devs {
 		objs = append(objs, dev)
 	}
-
-	profs := node.Profiles()
 	for _, prof := range profs {
 		objs = append(objs, prof)
 	}
