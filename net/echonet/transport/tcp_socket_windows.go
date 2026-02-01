@@ -90,24 +90,24 @@ func (sock *TCPSocket) outputReadLog(logLevel log.Level, msgFrom string, msg str
 
 // ReadMessage reads a message from the current opened socket.
 func (sock *TCPSocket) ReadMessage(conn net.Conn) (*protocol.Message, error) {
-	retemoAddr := conn.RemoteAddr()
+	remoteAddr := conn.RemoteAddr()
 
 	reader := bufio.NewReader(conn)
 	msg, err := protocol.NewMessageWithReader(reader)
 	if err != nil {
-		sock.outputReadLog(log.LevelError, retemoAddr.String(), "", 0)
+		sock.outputReadLog(log.LevelError, remoteAddr.String(), "", 0)
 		log.Error(err)
 		return nil, err
 	}
 
-	err = msg.From.ParseString(retemoAddr.String())
+	err = msg.From.ParseString(remoteAddr.String())
 	if err != nil {
-		sock.outputReadLog(log.LevelError, retemoAddr.String(), msg.String(), msg.Size())
+		sock.outputReadLog(log.LevelError, remoteAddr.String(), msg.String(), msg.Size())
 		log.Error(err)
 		return nil, err
 	}
 
-	sock.outputReadLog(log.LevelTrace, retemoAddr.String(), msg.String(), msg.Size())
+	sock.outputReadLog(log.LevelTrace, remoteAddr.String(), msg.String(), msg.Size())
 
 	return msg, nil
 }
@@ -118,11 +118,11 @@ func (sock *TCPSocket) outputWriteLog(logLevel log.Level, msgFrom string, msgTo 
 
 // SendMessage sends a message to the destination address.
 func (sock *TCPSocket) SendMessage(addr string, port int, msg *protocol.Message, timeout time.Duration) (int, error) {
-	conn, nWorte, err := sock.dialAndWriteBytes(addr, port, msg.Bytes(), timeout)
+	conn, nWrote, err := sock.dialAndWriteBytes(addr, port, msg.Bytes(), timeout)
 	if conn != nil {
 		conn.Close()
 	}
-	return nWorte, err
+	return nWrote, err
 }
 
 // PostMessage sends a message to the destination address.
