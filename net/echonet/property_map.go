@@ -6,7 +6,7 @@ package echonet
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 	"time"
 )
 
@@ -69,7 +69,7 @@ func (propMap *propertyMap) Properties() []Property {
 		n++
 	}
 
-	sort.Slice(codes, func(i, j int) bool { return codes[i] < codes[j] })
+	slices.Sort(codes)
 
 	props := []Property{}
 	for _, code := range codes {

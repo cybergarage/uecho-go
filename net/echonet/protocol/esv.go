@@ -6,6 +6,7 @@ package protocol
 
 import (
 	"fmt"
+	"slices"
 )
 
 // ESV represents an Echonet Service code.
@@ -51,13 +52,7 @@ func (esv ESV) IsValid() bool {
 		ESVWriteReadRequestError,
 	}
 
-	for _, code := range validCodes {
-		if esv == code {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(validCodes, esv)
 }
 
 // IsWriteRequest returns true whether the specified code is a write request type, otherwise false.

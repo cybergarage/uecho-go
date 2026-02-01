@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 //go:build windows && !(bsd || freebsd || darwin)
-// +build windows,!bsd,!freebsd,!darwin
 
 package transport
 

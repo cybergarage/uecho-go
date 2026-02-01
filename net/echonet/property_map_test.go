@@ -6,6 +6,7 @@ package echonet
 
 import (
 	"fmt"
+	"slices"
 	"testing"
 )
 
@@ -173,13 +174,7 @@ func TestObjectPropertyMap(t *testing.T) {
 							return false
 						}
 						for _, mcode := range m {
-							hasCode := false
-							for _, ocode := range o {
-								if ocode == mcode {
-									hasCode = true
-									break
-								}
-							}
+							hasCode := slices.Contains(o, mcode)
 							if !hasCode {
 								return false
 							}

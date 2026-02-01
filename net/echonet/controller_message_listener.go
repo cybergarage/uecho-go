@@ -5,6 +5,8 @@
 package echonet
 
 import (
+	"slices"
+
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
@@ -84,10 +86,8 @@ func (ctrl *controller) parseNodeProfileMessage(msg *protocol.Message) {
 
 // addNode adds a specified node if the node is not added.
 func (ctrl *controller) addNode(notifyNode Node) bool {
-	for _, node := range ctrl.foundNodes {
-		if notifyNode.Equals(node) {
-			return false
-		}
+	if slices.ContainsFunc(ctrl.foundNodes, notifyNode.Equals) {
+		return false
 	}
 
 	ctrl.foundNodes = append(ctrl.foundNodes, notifyNode)
