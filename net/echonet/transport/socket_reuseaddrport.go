@@ -13,7 +13,6 @@ import (
 )
 
 // SetReuseAddr sets a flag to SO_REUSEADDR and SO_REUSEPORT.
-// nolint: nosnakecase
 func (sock *Socket) SetReuseAddr(rawConn syscall.RawConn, flag bool) error {
 	opt := 0
 	if flag {

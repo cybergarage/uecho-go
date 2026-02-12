@@ -89,7 +89,6 @@ func (sock *Socket) IPAddr() (string, error) {
 }
 
 // SetMulticastLoop sets a flag to IP_MULTICAST_LOOP.
-// nolint: nosnakecase
 func (sock *Socket) SetMulticastLoop(rawConn syscall.RawConn, addr string, flag bool) error {
 	opt := 0
 	if flag {
