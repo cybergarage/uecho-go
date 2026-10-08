@@ -129,7 +129,7 @@ func (obj *superObject) setPropertyMapProperty(propMapCode PropertyCode, propCod
 		if !ok {
 			continue
 		}
-		propMapData[propCodeIdx] |= byte((0x01 << propCodeBit) & 0x0F)
+		propMapData[propCodeIdx] |= byte(0x01 << propCodeBit)
 	}
 
 	return obj.SetPropertyData(propMapCode, propMapData)

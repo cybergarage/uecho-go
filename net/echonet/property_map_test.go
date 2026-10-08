@@ -5,6 +5,7 @@
 package echonet
 
 import (
+	"bytes"
 	"fmt"
 	"slices"
 	"testing"
@@ -187,5 +188,102 @@ func TestObjectPropertyMap(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+// Annex 1: Format 1 is used below 16 properties; Format 2 uses all eight bits.
+func propertyMapFixtures() []struct {
+	name  string
+	codes []PropertyCode
+	data  []byte
+} {
+	codeRange := func(first, last int) []PropertyCode {
+		codes := make([]PropertyCode, 0, last-first+1)
+		for code := first; code <= last; code++ {
+			codes = append(codes, PropertyCode(code))
+		}
+		return codes
+	}
+	return []struct {
+		name  string
+		codes []PropertyCode
+		data  []byte
+	}{
+		{name: "empty", codes: []PropertyCode{}, data: []byte{0}},
+		{name: "one_upper", codes: []PropertyCode{0xFF}, data: []byte{1, 0xFF}},
+		{name: "format1_15", codes: codeRange(0xC0, 0xCE), data: []byte{15, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE}},
+		{name: "format2_16", codes: codeRange(0xC0, 0xCF), data: append([]byte{16}, bytes.Repeat([]byte{0x10}, 16)...)},
+		{name: "format2_17_mixed", codes: append(codeRange(0x80, 0x8F), 0xFF), data: []byte{17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0x81}},
+		{name: "all_upper", codes: codeRange(0xC0, 0xFF), data: append([]byte{64}, bytes.Repeat([]byte{0xF0}, 16)...)},
+		{name: "all_epcs", codes: codeRange(0x80, 0xFF), data: append([]byte{128}, bytes.Repeat([]byte{0xFF}, 16)...)},
+	}
+}
+
+func TestPropertyMapEncodingFixtures(t *testing.T) {
+	for _, fixture := range propertyMapFixtures() {
+		t.Run(fixture.name, func(t *testing.T) {
+			for _, mapCode := range []PropertyCode{ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap} {
+				obj := &superObject{Object: newObject()}
+				obj.Object.AddProperty(NewProperty(WithPropertyCode(mapCode)))
+				if err := obj.setPropertyMapProperty(mapCode, fixture.codes); err != nil {
+					t.Fatal(err)
+				}
+				prop, ok := obj.LookupProperty(mapCode)
+				if !ok {
+					t.Fatal("property map not found")
+				}
+				if !bytes.Equal(prop.Data(), fixture.data) {
+					t.Errorf("map %02X: got %X, want %X", mapCode, prop.Data(), fixture.data)
+				}
+				decoded, err := prop.PropertyMapData()
+				if err != nil {
+					t.Fatal(err)
+				}
+				slices.Sort(decoded)
+				if !slices.Equal(decoded, fixture.codes) {
+					t.Errorf("map %02X round trip: got %X, want %X", mapCode, decoded, fixture.codes)
+				}
+			}
+		})
+	}
+}
+
+func TestPropertyMapDecodingFixtures(t *testing.T) {
+	for _, fixture := range propertyMapFixtures() {
+		t.Run(fixture.name, func(t *testing.T) {
+			for _, mapCode := range []PropertyCode{ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap} {
+				prop := NewProperty(WithPropertyCode(mapCode), WithPropertyData(fixture.data))
+				codes, err := prop.PropertyMapData()
+				if err != nil {
+					t.Fatal(err)
+				}
+				slices.Sort(codes)
+				if !slices.Equal(codes, fixture.codes) {
+					t.Errorf("map %02X: got %X, want %X", mapCode, codes, fixture.codes)
+				}
+			}
+		})
+	}
+}
+
+func TestPropertyMapUpdateUpperEPCs(t *testing.T) {
+	obj := &superObject{Object: newObject()}
+	mapCodes := []PropertyCode{ObjectGetPropertyMap, ObjectSetPropertyMap, ObjectAnnoPropertyMap}
+	for _, mapCode := range mapCodes {
+		obj.AddProperty(NewProperty(WithPropertyCode(mapCode)))
+	}
+	for code := 0xC0; code <= 0xFF; code++ {
+		obj.AddProperty(NewProperty(WithPropertyCode(PropertyCode(code)),
+			WithPropertyReadAttribute(Optional), WithPropertyWriteAttribute(Optional), WithPropertyAnnoAttribute(Optional)))
+	}
+	expected := append([]byte{64}, bytes.Repeat([]byte{0xF0}, 16)...)
+	for _, mapCode := range mapCodes {
+		prop, ok := obj.LookupProperty(mapCode)
+		if !ok {
+			t.Fatal("property map not found")
+		}
+		if !bytes.Equal(prop.Data(), expected) {
+			t.Errorf("map %02X: got %X, want %X", mapCode, prop.Data(), expected)
+		}
 	}
 }
