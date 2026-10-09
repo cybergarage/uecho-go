@@ -1,12 +1,12 @@
 module github.com/cybergarage/uecho-go/examples/uechotui
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/cybergarage/uecho-go v0.0.0-20261008064339-d4691327d6fa
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/rivo/tview v0.42.0
-	golang.org/x/image v0.25.0
+	golang.org/x/image v0.41.0
 	golang.org/x/sys v0.29.0
 	golang.org/x/term v0.28.0
 )
@@ -17,7 +17,7 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 )
 
 replace github.com/cybergarage/uecho-go => ../..
