@@ -72,7 +72,7 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	})
 	d.props.SetSelectedFunc(func(int, int) { d.get() })
 	d.body = tview.NewFlex()
-	footer := tview.NewTextView().SetText("Tab/Shift-Tab focus | arrows select/scroll | Enter Get | w SetC | d discover\n/ search | ? help | Esc cancel request/dialog | q / Ctrl-C quit")
+	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d discover\n/ search | ? help | Esc cancel | q / Ctrl-C exit")
 	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 2, 0, false).AddItem(d.status, 2, 0, false)
 	d.pages = tview.NewPages().AddPage("main", d.root, true, true)
 	d.App.SetRoot(d.pages, true).EnableMouse(false).EnablePaste(true).SetFocus(d.devices).SetInputCapture(d.capture)
@@ -88,8 +88,10 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 		w, h := screen.Size()
 		d.body.Clear()
 		if w < 100 || h < 28 {
+			d.root.ResizeItem(d.logs, 6, 0)
 			d.body.SetDirection(tview.FlexRow).AddItem(d.devices, 6, 0, false).AddItem(d.props, 0, 1, false)
 		} else {
+			d.root.ResizeItem(d.logs, 9, 0)
 			d.body.SetDirection(tview.FlexColumn).AddItem(d.devices, 38, 0, false).AddItem(d.props, 0, 1, false)
 		}
 		d.refresh(false)

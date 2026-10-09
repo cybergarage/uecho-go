@@ -371,3 +371,25 @@ func TestContextShutdownCancelsWorker(t *testing.T) {
 		t.Fatal("screen not finalized")
 	}
 }
+
+func TestCompactKeysRemainVisible(t *testing.T) {
+	d, s := setup(t)
+	s.SetSize(68, 26)
+	drawScreen(d, s)
+	cells, w, h := s.GetContents()
+	var text strings.Builder
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			r := cells[y*w+x].Runes
+			if len(r) > 0 {
+				text.WriteRune(r[0])
+			}
+		}
+		text.WriteByte('\n')
+	}
+	for _, hint := range []string{"/ search | ? help", "Esc cancel | q / Ctrl-C exit", "EDT (raw hex)"} {
+		if !strings.Contains(text.String(), hint) {
+			t.Fatalf("compact hint %q hidden:\n%s", hint, text.String())
+		}
+	}
+}
