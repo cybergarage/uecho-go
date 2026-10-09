@@ -23,7 +23,7 @@ func chooseInterface(ctx context.Context, options []controller.InterfaceOption, 
 		return controller.InterfaceOption{}, err
 	}
 	if len(options) == 0 {
-		return controller.InterfaceOption{}, fmt.Errorf("no up multicast IPv4 interface; use explicit isolated --interface/--bind/--peer")
+		return controller.InterfaceOption{}, fmt.Errorf("no eligible LAN IPv4 interface (up, multicast, non-loopback); use --demo, or explicit --interface/--bind/--peer for isolated tests")
 	}
 	if len(options) == 1 {
 		return options[0], nil

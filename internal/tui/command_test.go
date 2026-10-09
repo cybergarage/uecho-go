@@ -88,3 +88,28 @@ func TestInvalidOptionsAndCanceledSelectionDoNotOpen(t *testing.T) {
 		t.Fatalf("selection cancellation: %v", err)
 	}
 }
+
+func TestExplicitLoopbackBypassesNormalCandidateSelection(t *testing.T) {
+	opened, displayed := false, false
+	err := runSession(context.Background(), options{network: true, iface: "lo", bind: "127.0.0.1", peer: "127.0.0.2"}, dependencies{
+		selectInterface: func(context.Context) (controller.InterfaceOption, error) {
+			t.Fatal("explicit loopback entered LAN picker")
+			return controller.InterfaceOption{}, nil
+		},
+		openMulticast: func(string, string) (*controller.Client, error) {
+			t.Fatal("unicast loopback joined multicast")
+			return nil, nil
+		},
+		open: func(iface, bind string) (*controller.Client, error) {
+			if iface != "lo" || bind != "127.0.0.1" {
+				t.Fatal("explicit binding changed")
+			}
+			opened = true
+			return controller.Demo(), nil
+		},
+		runDashboard: func(context.Context, *dashboard.Dashboard) error { displayed = true; return nil },
+	})
+	if err != nil || !opened || !displayed {
+		t.Fatalf("explicit loopback: open=%v displayed=%v err=%v", opened, displayed, err)
+	}
+}

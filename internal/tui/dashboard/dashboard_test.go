@@ -534,8 +534,8 @@ func TestSoleInterfaceAndNoInterface(t *testing.T) {
 	if err != nil || got != want {
 		t.Fatalf("sole address: %v %v", got, err)
 	}
-	if _, err := chooseInterface(context.Background(), nil, nil); err == nil {
-		t.Fatal("missing interface accepted")
+	if _, err := chooseInterface(context.Background(), nil, nil); err == nil || !strings.Contains(err.Error(), "no eligible LAN IPv4 interface") || !strings.Contains(err.Error(), "--demo") {
+		t.Fatal("missing interface must explain alternatives", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
