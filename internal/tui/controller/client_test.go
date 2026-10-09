@@ -335,3 +335,73 @@ func TestEphemeralSourcePortRoundTripAndNotification(t *testing.T) {
 		t.Fatal("ephemeral D5 INF was ignored")
 	}
 }
+
+func TestWriteOnlySetNeverInventsReadback(t *testing.T) {
+	c := newClient()
+	defer c.Close()
+	s := NewSession(c)
+	target := Target{"192.0.2.10", 0x029001}
+	s.Add(target)
+	s.devices[target].Maps = true
+	s.devices[target].Set = []byte{0x80}
+	sent := 0
+	c.send = func(_ Target, req *protocol.Message) error {
+		sent++
+		if req.ESV() != 0x61 {
+			t.Error("write-only property must not receive Get")
+		}
+		go c.receive(response(req, target.IP, nil), time.Now())
+		return nil
+	}
+	if err := s.Set(context.Background(), target, 0x80, []byte{0x30}); err != nil {
+		t.Fatal(err)
+	}
+	v := s.Snapshot().Devices[0].Values[0x80]
+	if sent != 1 || !strings.Contains(v.State, "readback unavailable") || strings.Contains(s.Snapshot().Status, "success") || len(v.Data) != 0 || !v.Received.IsZero() {
+		t.Fatalf("unverified write-only outcome: %+v %s", v, s.Snapshot().Status)
+	}
+}
+
+func TestCanceledDeviceLoadIgnoresDelayedReply(t *testing.T) {
+	c := newClient()
+	defer c.Close()
+	s := NewSession(c)
+	a, b := Target{"192.0.2.10", 0x029001}, Target{"192.0.2.20", 0x029001}
+	old := make(chan *protocol.Message, 1)
+	c.send = func(target Target, req *protocol.Message) error {
+		if target == a {
+			old <- req
+			return nil
+		}
+		data := []byte{0}
+		switch req.Property(0).Code() {
+		case 0x9f:
+			data = []byte{1, 0x80}
+		case 0x80:
+			data = []byte{0x31}
+		}
+		go c.receive(response(req, target.IP, data), time.Now())
+		return nil
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan error, 1)
+	go func() { done <- s.Load(ctx, a) }()
+	req := <-old
+	cancel()
+	if err := <-done; !errors.Is(err, context.Canceled) {
+		t.Fatal(err)
+	}
+	// The canceled TID is retired even if its packet arrives during a later load.
+	c.receive(response(req, a.IP, []byte{1, 0x80}), time.Now())
+	if err := s.Load(context.Background(), b); err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range s.Snapshot().Devices {
+		if v.Target == a && (v.Maps || len(v.Values) != 0) {
+			t.Fatal("stale canceled load published data")
+		}
+		if v.Target == b && (!v.Maps || !bytes.Equal(v.Values[0x80].Data, []byte{0x31})) {
+			t.Fatal("latest device did not get fresh values")
+		}
+	}
+}

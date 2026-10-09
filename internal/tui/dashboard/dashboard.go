@@ -38,15 +38,19 @@ type Dashboard struct {
 	selected             controller.Target
 	ep                   byte
 	last                 string
+	deviceNameWidth      int
+	autoLoad             bool
+	pendingLoad          controller.Target
+	readJob              bool
 }
 
 func New(s *controller.Session, peer, mode string) *Dashboard {
 	d := &Dashboard{App: tview.NewApplication(), session: s, peer: peer, ep: 0x80, finished: make(chan struct{}, 1), screenReady: make(chan tcell.Screen, 1)}
 	d.ctx, d.cancel = context.WithCancel(context.Background())
 	d.devices = tview.NewTable().SetSelectable(true, false).SetFixed(1, 0)
-	d.devices.SetBorder(true).SetTitle(" Devices / Enter: load maps + Get ")
+	d.devices.SetBorder(true).SetTitle(" Devices / select: Get / Enter: refresh ")
 	d.props = tview.NewTable().SetSelectable(true, false).SetFixed(1, 0)
-	d.props.SetBorder(true).SetTitle(" MRA settings / Enter: Get / w: SetC ")
+	d.props.SetBorder(true).SetTitle(" MRA settings / Enter: edit / g: Get ")
 	d.logs = tview.NewTextView().SetWrap(false).SetScrollable(true)
 	d.logs.SetBorder(true).SetTitle(" Protocol events (256 max) / INF arrival only ")
 	d.header = tview.NewTextView().SetText(" UECHO CONTROLLER | " + mode + " | MRA 1.3.0 | fresh Get + raw EDT")
@@ -56,26 +60,21 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	d.search.SetDoneFunc(func(tcell.Key) { d.App.SetFocus(d.devices) })
 	d.devices.SetSelectionChangedFunc(func(row, _ int) {
 		if row > 0 && row <= len(d.visible) {
-			d.selected = d.visible[row-1].Target
+			d.selectDevice(d.visible[row-1].Target)
 			d.refreshProperties()
 		}
 	})
-	d.devices.SetSelectedFunc(func(int, int) {
-		if d.selected.EOJ != 0 {
-			target := d.selected
-			d.confirm("Send property map Gets (9D/9E/9F), then fresh Get for each readable EPC?\n"+target.String(), func() { d.start(func(ctx context.Context) error { return s.Load(ctx, target) }) })
-		}
-	})
+	d.devices.SetSelectedFunc(func(int, int) { d.queueLoad(d.selected) })
 	d.props.SetSelectionChangedFunc(func(row, _ int) {
 		cell := d.props.GetCell(row, 0)
 		if ep, ok := cell.GetReference().(byte); ok {
 			d.ep = ep
 		}
 	})
-	d.props.SetSelectedFunc(func(int, int) { d.get() })
+	d.props.SetSelectedFunc(func(int, int) { d.write() })
 	d.body = tview.NewFlex()
-	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d / F5 rediscover all\n/ filter | ? help | Esc cancel | q / Ctrl-C exit")
-	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 2, 0, false).AddItem(d.status, 2, 0, false)
+	footer := tview.NewTextView().SetText("Device select: Get | Enter/w: edit | g: Get | r: refresh\nTab/Shift-Tab | d/F5: rediscover | /: filter | ?: help\nEsc: cancel | q/Ctrl-C: exit")
+	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 3, 0, false).AddItem(d.status, 2, 0, false)
 	d.pages = tview.NewPages().AddPage("main", d.root, true, true)
 	d.App.SetRoot(d.pages, true).EnableMouse(false).EnablePaste(true).SetFocus(d.devices).SetInputCapture(d.capture)
 	for _, b := range []*tview.Box{d.devices.Box, d.props.Box, d.logs.Box} {
@@ -93,12 +92,15 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 		}
 		w, h := screen.Size()
 		d.body.Clear()
-		if w < 100 || h < 28 {
+		if w < 120 || h < 28 {
 			d.root.ResizeItem(d.logs, 6, 0)
+			d.setDeviceNameWidth(w)
 			d.body.SetDirection(tview.FlexRow).AddItem(d.devices, 6, 0, false).AddItem(d.props, 0, 1, false)
 		} else {
 			d.root.ResizeItem(d.logs, 9, 0)
-			d.body.SetDirection(tview.FlexColumn).AddItem(d.devices, 38, 0, false).AddItem(d.props, 0, 1, false)
+			deviceWidth := min(max(48, 2*w/5), w-64)
+			d.setDeviceNameWidth(deviceWidth)
+			d.body.SetDirection(tview.FlexColumn).AddItem(d.devices, deviceWidth, 0, false).AddItem(d.props, 0, 1, false)
 		}
 		d.refresh(false)
 		return false
@@ -107,12 +109,56 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	d.refresh(true)
 	return d
 }
+
+// Keep the identity columns visible; the name expands only inside its pane.
+func (d *Dashboard) setDeviceNameWidth(paneWidth int) {
+	width := max(1, paneWidth-25) // borders, 15-column IPv4, 6-column EOJ, two gaps
+	if width == d.deviceNameWidth {
+		return
+	}
+	d.deviceNameWidth = width
+	for row := 1; row < d.devices.GetRowCount(); row++ {
+		d.devices.GetCell(row, 2).SetMaxWidth(width)
+	}
+}
+
+// LoadOnSelection enables automatic fresh maps/Get in the interactive CLI.
+func (d *Dashboard) LoadOnSelection() { d.autoLoad = true; d.queueLoad(d.selected) }
+func (d *Dashboard) selectDevice(target controller.Target) {
+	if target == d.selected {
+		return
+	}
+	d.selected = target
+	if d.autoLoad {
+		d.queueLoad(target)
+	}
+}
+func (d *Dashboard) queueLoad(target controller.Target) {
+	d.pendingLoad = target
+	if d.busy && d.readJob && d.jobCancel != nil {
+		d.jobCancel()
+	}
+	// Pending reads run on the event loop after the previous worker releases.
+}
+func (d *Dashboard) startRead(f func(context.Context) error) {
+	if d.busy {
+		return
+	}
+	d.start(f)
+	d.readJob = true
+}
+
 func (d *Dashboard) refresh(force bool) {
 	select {
 	case <-d.finished:
 		d.busy = false
 		d.jobCancel = nil
 	default:
+	}
+	if !d.busy && d.pendingLoad.EOJ != 0 {
+		target := d.pendingLoad
+		d.pendingLoad = controller.Target{}
+		d.startRead(func(ctx context.Context) error { return d.session.Load(ctx, target) })
 	}
 	snap := d.session.Snapshot()
 	events := d.session.Client.Events()
@@ -131,20 +177,24 @@ func (d *Dashboard) refresh(force bool) {
 	}
 	row, _ := d.devices.GetSelection()
 	d.devices.Clear()
-	d.devices.SetCell(0, 0, tview.NewTableCell("IP / EOJ").SetSelectable(false))
+	for col, label := range []string{"IP", "EOJ", "Device"} {
+		d.devices.SetCell(0, col, tview.NewTableCell(label).SetSelectable(false).SetTextColor(tcell.ColorAqua))
+	}
 	selection := 0
 	for i, v := range d.visible {
-		d.devices.SetCell(i+1, 0, tview.NewTableCell(fmt.Sprintf("%s / %06X %s", v.Target.IP, uint(v.Target.EOJ), v.Name())))
+		d.devices.SetCell(i+1, 0, tview.NewTableCell(fmt.Sprintf("%-15s", v.Target.IP)).SetMaxWidth(15))
+		d.devices.SetCell(i+1, 1, tview.NewTableCell(fmt.Sprintf("%06X", uint(v.Target.EOJ))).SetMaxWidth(6))
+		d.devices.SetCell(i+1, 2, tview.NewTableCell(v.Name()).SetExpansion(1).SetMaxWidth(max(1, d.deviceNameWidth)))
 		if v.Target == d.selected {
 			selection = i + 1
 		}
 	}
 	if selection == 0 && len(d.visible) > 0 {
 		selection = min(max(row, 1), len(d.visible))
-		d.selected = d.visible[selection-1].Target
+		d.selectDevice(d.visible[selection-1].Target)
 	}
 	if len(d.visible) == 0 {
-		d.selected = controller.Target{}
+		d.selectDevice(controller.Target{})
 	}
 	d.devices.Select(selection, 0)
 	d.refreshProperties()
@@ -175,7 +225,7 @@ func (d *Dashboard) refreshProperties() {
 	}
 	v, ok := d.device()
 	if !ok {
-		d.props.SetTitle(" MRA settings / Enter: Get / w: SetC ")
+		d.props.SetTitle(" MRA settings / Enter: edit / g: Get ")
 		return
 	}
 	d.props.SetTitle(fmt.Sprintf(" MRA settings: %s / %06X | seen %s %s ", v.Name(), uint(v.Target.EOJ), v.LastSeen.UTC().Format("15:04:05Z"), v.Origin))
@@ -234,6 +284,9 @@ func (d *Dashboard) refreshProperties() {
 		if definition.Reason != "" {
 			state += " / " + definition.Reason
 		}
+		if value.State != "" {
+			state = value.State
+		}
 		if !value.Received.IsZero() {
 			state = fmt.Sprintf("%s / %04X / %s", value.Received.UTC().Format("15:04:05.000Z"), value.TID, value.State)
 		}
@@ -262,6 +315,7 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		return e
 	}
 	if e.Key() == tcell.KeyEscape {
+		d.pendingLoad = controller.Target{}
 		if d.jobCancel != nil {
 			d.jobCancel()
 			d.session.Status("Canceled: in-flight SetC may have applied; use fresh Get")
@@ -301,7 +355,13 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.search)
 		return nil
 	case '?':
-		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d/F5 rediscover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
+		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; select device loads maps/Get; Enter or w typed SetC; g fresh property Get; r refresh device maps/Get; d/F5 rediscover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. Readable SetC has fresh Get readback; write-only acknowledgment remains unverified. Cancel never rolls back an applied write.", func() {})
+		return nil
+	case 'g':
+		d.get()
+		return nil
+	case 'r':
+		d.queueLoad(d.selected)
 		return nil
 	case 'w':
 		d.write()
@@ -364,7 +424,11 @@ func (d *Dashboard) get() {
 		d.session.Status("Get unavailable: not in fresh device Get map")
 		return
 	}
-	d.confirm(fmt.Sprintf("Send fresh Get EPC %02X?\n%s", ep, v.Target), func() { d.start(func(ctx context.Context) error { return d.session.Get(ctx, v.Target, ep) }) })
+	if d.busy {
+		d.session.Status("Busy: wait or Esc cancels current request")
+		return
+	}
+	d.startRead(func(ctx context.Context) error { return d.session.Get(ctx, v.Target, ep) })
 }
 func (d *Dashboard) write() {
 	v, ok := d.device()
@@ -372,13 +436,17 @@ func (d *Dashboard) write() {
 		return
 	}
 	ep := d.ep
+	if d.busy {
+		d.session.Status("Busy: wait or Esc cancels current request")
+		return
+	}
 	if !v.Maps || !slices.Contains(v.Set, ep) {
-		d.session.Status("Read only / unknown permission: load property maps first")
+		d.session.Status(fmt.Sprintf("Not editable EPC %02X: read only or maps not loaded; select device / r refresh; g reads Get-permitted values", ep))
 		return
 	}
 	definition, known := v.Definitions()[ep]
-	if !known || !definition.Editable() || !slices.Contains(v.Get, ep) {
-		d.session.Status("Read only: unsupported/ambiguous MRA schema or no Get readback map")
+	if !known || !definition.Editable() {
+		d.session.Status("Not editable: unsupported/ambiguous MRA schema")
 		return
 	}
 	form := tview.NewForm()
@@ -436,7 +504,11 @@ func (d *Dashboard) write() {
 			return
 		}
 		d.closeModal()
-		d.confirm(fmt.Sprintf("Send SetC EPC %02X %s = %s\nEDT %X (%d bytes)?\n%s\nThen fresh Get readback. Effects may persist after cancel/timeout.", ep, definition.Name, definition.Decode(data), data, len(data), v.Target), func() { d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) }) })
+		readback := "Then fresh Get readback."
+		if !slices.Contains(v.Get, ep) {
+			readback = "Write-only: no Get permission; readback cannot be verified."
+		}
+		d.confirm(fmt.Sprintf("Send SetC EPC %02X %s = %s\nEDT %X (%d bytes)?\n%s\n%s Effects may persist after cancel/timeout.", ep, definition.Name, definition.Decode(data), data, len(data), v.Target, readback), func() { d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) }) })
 	})
 	form.SetBorder(true).SetTitle(fmt.Sprintf("SetC %02X / %s / MRA 1.3.0", ep, definition.Name))
 	form.SetFocus(form.GetFormItemCount())
@@ -448,6 +520,7 @@ func (d *Dashboard) start(f func(context.Context) error) {
 		return
 	}
 	d.busy = true
+	d.readJob = false
 	ctx, cancel := context.WithCancel(d.ctx)
 	d.jobCancel = cancel
 	d.jobs.Add(1)

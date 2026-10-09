@@ -63,3 +63,37 @@ filtering rediscovered the fixture with TID 0002; d confirmation cancellation an
 repeat discovery were checked before q exit. No live LAN test or interference
 with an existing simulator was performed. The existing isolated CI repeats
 released-simulator loopback/multicast interoperability.
+
+## Device layout and property editing follow-up
+
+The supplied Library screenshot was resolved but its byte transfer returned 403;
+its pixels were not inspected. Layout changes were grounded in the fixed 38-column
+pane and verified with newly generated actual tcell screenshots. Device rows now
+have separate IPv4/EOJ/name columns; wide terminals allocate 40% to devices while
+preserving at least 64 columns for properties. Below 120 columns or 28 rows, panes
+stack at full width. Resize tests cover 45/68/119/132/160 columns and ensure pane
+bounds, full identities/names at supported widths, and compact key visibility.
+
+Property Enter now opens the existing MRA editor (w remains an alias). Device
+selection automatically loads fresh maps/Get, r refreshes the device, and g reads
+a Get-permitted property. Switching cancels prior reads and queues only the latest
+selection; delayed canceled TIDs cannot populate the new device. A confirmed
+SetC/readback is not canceled by selection changes. Known write-only schemas use
+Set permission but send no forbidden Get; acknowledgment remains unverified with
+readback unavailable. Readback mismatch/failure still never becomes success.
+
+Fake/simulation/race tests cover enum/numeric Enter, invalid number, cancel,
+read-only/unknown schemas, write-only acknowledgment, delayed replies, rapid
+selection changes and protected SET jobs. Native PTY explicitly used --demo:
+startup automatically loaded maps/values; property Enter opened enum Off (31),
+Review/Confirm sent fake SetC TID 000B and fresh Get TID 000C with readback success;
+numeric 50% produced review EDT 32 and was canceled before q exit. Screenshots
+were regenerated for normal/wide/compact layouts and enum/number forms.
+
+Read-only simulator investigation found the existing process launched with only
+--display 127.0.0.1:8080; make preview defaults to that command and no UDP listener.
+Its local interface/IP inventory was en8/192.168.100.25 and en1/192.168.100.26;
+192.168.100.24 was absent. The preview supports PREVIEW_ARGS with --udp,
+--allow-lan and --multicast-interface, exposing all three modeled devices through
+one chosen interface. No simulator process, LAN traffic, or appliance was used or
+modified by this task. Hosted CI retains isolated released-simulator checks.

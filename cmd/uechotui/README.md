@@ -8,25 +8,42 @@ make tui                       # network discovery
 make tui TUI_ARGS=--demo        # socket-free demo
 ```
 
-Startup discovers the fixture or all network devices without a filter. Select an EOJ and press Enter. Confirm loads 9D/9E/9F property maps, then sends a fresh Get for every readable EPC. Tab to Properties; Enter confirms a fresh Get. `w` opens an MRA enum, bounded number or size-constrained raw form only for a supported writable definition in validated Get and Set maps. Review shows the exact target, EPC and EDT; Cancel is selected first. Confirm sends one SetC, then a **separate Get with a new TID**. The result distinguishes sending, Get success, rejected, timeout/canceled, readback success, mismatch, and unknown. An acknowledged SetC alone is not success. Cancellation never rolls back a write and writes are never retried automatically.
+Startup discovers the fixture or all network devices without a filter. Selecting a
+left-side device loads its fresh 9D/9E/9F maps and Get-permitted values. Switching
+devices cancels a prior read and queues only the latest selection; late canceled
+replies cannot update the new device. Enter on the device or `r` refreshes all
+maps/Get values. Selecting another device does not cancel a confirmed SET/readback.
+
+Tab to Properties. Enter (or `w`) opens an MRA enum, bounded number or
+size-constrained raw form for a supported property in the validated Set map.
+Read-only, unknown or unsupported schemas explain why editing is unavailable.
+Review shows the exact target, EPC and EDT; Cancel is initially selected. Confirm
+sends one SetC. If the live Get map allows readback, a **separate Get with a new
+TID** reports verified success, mismatch, rejection, timeout or unknown. A
+write-only property is explicitly marked before confirmation; after acknowledgment
+its outcome remains **unverified / readback unavailable**, and no forbidden Get is
+sent. An acknowledged SetC alone is not success. `g` manually refreshes a
+Get-permitted property. Cancellation never rolls back a write or retries it.
 
 ![Actual tcell widget drawing](docs/images/tui.png)
 
-[Enum form](docs/images/tui-set.png) · [Number form](docs/images/tui-number.png) · [Compact screen](docs/images/tui-compact.png). These are rasterized from actual tcell simulation-screen cells, not visual mockups. Demo TX/RX frames are in memory and are explicitly identified by the OFFLINE DEMO header; they are not socket captures.
+[Enum form](docs/images/tui-set.png) · [Number form](docs/images/tui-number.png) · [Wide screen](docs/images/tui-wide.png) · [Compact screen](docs/images/tui-compact.png). These are rasterized from actual tcell simulation-screen cells, not visual mockups. Demo TX/RX frames are in memory and are explicitly identified by the OFFLINE DEMO header; they are not socket captures.
 
 | Key | Action |
 | --- | --- |
 | Tab / Shift-Tab | Devices → Properties → Protocol events; cyan focus border |
-| Up / Down | Select a device/property or scroll log |
-| Enter | Devices: confirm maps + Get; Properties: confirm fresh Get |
+| Up / Down | Select a device and load maps/Get; select property or scroll log |
+| Enter | Devices: refresh maps/Get; Properties: open MRA editor |
 | `d` / F5 | Confirm all-device rediscovery on selected interface (or optional unicast peer); F5 works while filtering |
-| `w` | MRA typed form → Review → SetC confirmation → fresh Get |
+| `w` | Same MRA editor as property Enter → Review → SetC confirmation |
+| `g` | Fresh Get for selected Get-permitted property |
+| `r` | Refresh selected device maps and all Get-permitted values |
 | `/` | Filter listed devices by IP, EOJ or MRA class; empty shows all; Enter focuses devices |
 | Esc | Cancel dialog; otherwise cancel in-flight request, clear search, focus devices |
 | `?` | Key help |
 | `q` / Ctrl-C | Exit, cancel workers and restore terminal; Ctrl-C also exits dialogs |
 
-At less than 100 columns or 28 rows, devices and properties stack. Use at least 68×26; smaller screens can clip content but Esc/Ctrl-C remain usable. Selection/forms survive resize. Mouse input is disabled. Logs retain the latest 256 events and follow the tail when not focused; focus them to scroll.
+The device pane expands with terminal width and has separate IP, EOJ and name columns. At less than 120 columns or 28 rows, devices and properties stack at full width. Use at least 68×26; smaller screens can clip content but Esc/Ctrl-C remain usable. Selection/forms survive resize. Mouse input is disabled. Logs retain the latest 256 events and follow the tail when not focused; focus them to scroll.
 
 ## Network discovery
 
@@ -53,11 +70,11 @@ The local IPv4 must belong to the named interface. IPv6, TCP, SetI/SetGet/INFC a
 
 The right pane reconciles the pinned official **MRA 1.3.0** device/superclass names and schemas with actual 9D/9E/9F maps. Supported device properties are shown first with decoded current Get values **and raw EDT**; definition-only properties are marked unsupported and cannot be queried or edited. Unknown EPCs and unsupported schemas remain raw. MRA enum choices and bounded integer numbers provide typed inputs; fixed scale and unit come from the schema. Simple unions support special enum values alongside number input. Historical definitions use fresh EPC 82 release information; ambiguous or future versions disable editing. Every editor validates before Review and again before sending. See [MRA adapter provenance and supported types](../../internal/tui/mra/README.md). This is developer tooling, not comprehensive MRA validation or certified appliance safety.
 
-Maps are validated using the core public property-map decoder (list and bitmap formats), checked for count/duplicates and published together. Refresh disables old write permissions immediately. Readable properties are fetched sequentially, so settings are individual timestamped observations rather than an atomic device snapshot. Read-only, unknown, unsupported and unread values are distinguished. Typed editing also requires a Get-map entry for readback.
+Maps are validated using the core public property-map decoder (list and bitmap formats), checked for count/duplicates and published together. Refresh disables old write permissions immediately. Readable properties are fetched sequentially, so settings are individual timestamped observations rather than an atomic device snapshot. Read-only, unknown, unsupported and unread values are distinguished. Typed editing requires a live Set-map entry; readback is only sent for a live Get-map entry. Write-only acknowledgment is never presented as verified success.
 
 The log includes raw frame hex, TID, source/destination IP:port or EOJ, and local UTC send/receive time. Property rows show the **Get** RX timestamp/TID and state; the TX timestamp is in the log. Response matching requires TID, source IP, both EOJs, expected success/error ESV and exact EPC/count. UDP source ports may vary: [ECHONET Lite Part II §1.2](https://echonet.jp/wp/wp-content/uploads/pdf/General/Standard/ECHONET_lite_V1_14_en/ECHONET-Lite_Ver.1.14%2802%29_E.pdf) specifies destination port 3610 and leaves source ports unspecified. Replies and INF are accepted from ephemeral source ports, while every subsequent request still targets port 3610. Strict datagram framing is validated before using the permissive library decoder. The example reads raw datagrams from the public transport socket's connection for this validation; encoding, socket binding and sending use uecho-go APIs. TIDs are not reused during a process lifetime; restart after 65535 requests. Duplicate responses do not block readers. Socket closure and canceled waits release workers.
 
-INF includes no reliable remote timestamp. Its displayed time is **local arrival only**, and freshness is unknown. It never overwrites a fresh Get value or satisfies a request/readback. UDP can reorder or duplicate notifications; they remain diagnostic log entries. Unknown readback after a timeout/cancel means a Set may have applied; use a confirmed fresh Get to inspect it.
+INF includes no reliable remote timestamp. Its displayed time is **local arrival only**, and freshness is unknown. It never overwrites a fresh Get value or satisfies a request/readback. UDP can reorder or duplicate notifications; they remain diagnostic log entries. Unknown readback after a timeout/cancel means a Set may have applied; use `g` for a fresh Get to inspect it.
 
 ## Isolated simulator v1.0.0 verification
 
@@ -73,6 +90,23 @@ UECHOTUI_SIMULATOR_V1=/tmp/uecho-simulator-v1 GOWORK=off \
 ```
 
 The test starts/stops the released binary, discovers all three devices, loads all property maps and Get values, writes lighting EPC 80=30, verifies it with a distinct TID/fresh Get and receives status-change INF. The CI also creates `simtest0` with documentation-only addresses `192.0.2.10` (simulator) / `192.0.2.20` (controller), multicast enabled and a group route, all inside an isolated namespace. `UECHOTUI_ISOLATED_MULTICAST=1` opts into `TestSimulatorMulticast`, which refuses any other active/addressed interface. The released simulator runs with a private PTY, `--display 127.0.0.1:18990 --udp 192.0.2.10:3610 --allow-lan --multicast-interface simtest0`. It discovers three devices via multicast, loads maps/Get, writes lighting level B0=4B (75%), verifies fresh correlated Get and receives INF, then shuts down normally. See the exact namespace setup in [.github/workflows/uechotui.yml](../../.github/workflows/uechotui.yml); never execute that setup on a household interface. For interactive testing inside that same isolated environment, launch the simulator with `--plain --udp 127.0.0.2:3610`, then launch this controller with `--interface lo --bind 127.0.0.1 --peer 127.0.0.2` and perform confirmations yourself.
+
+### Simulator preview and discovery
+
+`uecho-simulator`'s `make preview` starts only the local browser display by
+default. It opens no UDP listener unless `PREVIEW_ARGS` includes `--udp`.
+Multicast discovery additionally requires `--allow-lan` and
+`--multicast-interface`, using the simulator's own local IPv4/interface pair:
+
+```sh
+# In the simulator repository, on the intended test network:
+make preview PREVIEW_ARGS='--udp SIMULATOR_IPV4:3610 --allow-lan --multicast-interface SIMULATOR_INTERFACE'
+```
+
+One simulator process publishes all three modeled devices through that selected
+interface. Separate instances on each host address are unnecessary for discovering
+one model. The controller must select an interface on the same reachable network.
+See the [simulator's network options](https://github.com/cybergarage/uecho-simulator#explicit-controller-input).
 
 ## Checks
 
@@ -90,6 +124,6 @@ UECHOTUI_SCREENSHOT_DIR="$PWD/cmd/uechotui/docs/images" GOWORK=off \
   go test ./internal/tui/dashboard -run TestScreenshot -count=1
 ```
 
-An optional `UECHOTUI_SCREENSHOT_FONT` path selects a local TTF/TTC for rasterization; committed images used macOS Menlo. The default embedded Go Mono font permits portable regeneration. No font file is distributed.
+An optional `UECHOTUI_SCREENSHOT_FONT` path selects a local TTF/TTC for rasterization; the current screenshots use the embedded Go Mono font. The default embedded Go Mono font permits portable regeneration. No font file is distributed.
 
 Navigation is informed by the official [uecho-simulator TUI](https://github.com/cybergarage/uecho-simulator/blob/v1.0.0/internal/tui/fullscreen.go) and its [README](https://github.com/cybergarage/uecho-simulator/blob/main/README.md). This example implements a reviewable developer workflow with a conservative subset of MRA types, not complete MRA validation or physical-device support. Physical appliances and household networks remain untested.
