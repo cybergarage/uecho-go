@@ -9,13 +9,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
-	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/mra"
+	"github.com/cybergarage/uecho-go/internal/tui/controller"
+	"github.com/cybergarage/uecho-go/internal/tui/mra"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 type Dashboard struct {
+	discoverOnStart      bool
 	screenReady          chan tcell.Screen
 	App                  *tview.Application
 	session              *controller.Session
@@ -50,7 +51,7 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	d.logs.SetBorder(true).SetTitle(" Protocol events (256 max) / INF arrival only ")
 	d.header = tview.NewTextView().SetText(" UECHO CONTROLLER | " + mode + " | MRA 1.3.0 | fresh Get + raw EDT")
 	d.status = tview.NewTextView()
-	d.search = tview.NewInputField().SetLabel(" / Search IP / EOJ / class: ")
+	d.search = tview.NewInputField().SetLabel(" / Filter IP / EOJ / class (empty = all): ")
 	d.search.SetChangedFunc(func(string) { d.refresh(true) })
 	d.search.SetDoneFunc(func(tcell.Key) { d.App.SetFocus(d.devices) })
 	d.devices.SetSelectionChangedFunc(func(row, _ int) {
@@ -73,7 +74,7 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	})
 	d.props.SetSelectedFunc(func(int, int) { d.get() })
 	d.body = tview.NewFlex()
-	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d discover\n/ search | ? help | Esc cancel | q / Ctrl-C exit")
+	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d discover all\n/ filter | ? help | Esc cancel | q / Ctrl-C exit")
 	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 2, 0, false).AddItem(d.status, 2, 0, false)
 	d.pages = tview.NewPages().AddPage("main", d.root, true, true)
 	d.App.SetRoot(d.pages, true).EnableMouse(false).EnablePaste(true).SetFocus(d.devices).SetInputCapture(d.capture)
@@ -85,6 +86,10 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 		select {
 		case d.screenReady <- screen:
 		default:
+		}
+		if d.discoverOnStart {
+			d.discoverOnStart = false
+			d.start(func(ctx context.Context) error { return d.session.Discover(ctx, d.peer) })
 		}
 		w, h := screen.Size()
 		d.body.Clear()
@@ -292,7 +297,7 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.search)
 		return nil
 	case '?':
-		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d discovery; / search; Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
+		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d discover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
 		return nil
 	case 'w':
 		d.write()
@@ -432,6 +437,10 @@ func (d *Dashboard) start(f func(context.Context) error) {
 
 // Run polls detached snapshots; workers never mutate widgets or block waiting on
 // QueueUpdateDraw after Stop. Fini remains owned by tview.
+// DiscoverOnStart schedules one discovery after the first screen draw.
+// Call before Run; the empty filter shows every discovered device.
+func (d *Dashboard) DiscoverOnStart() { d.discoverOnStart = true }
+
 func (d *Dashboard) Run(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err

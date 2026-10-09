@@ -3,22 +3,32 @@ package dashboard
 import (
 	"context"
 	"fmt"
-	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/internal/tui/controller"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 // SelectInterface lists actual local addresses without binding or sending. The
-// user must explicitly confirm a selection; Cancel is the initial focus.
+// sole address is selected automatically; multiple addresses require a choice.
 func SelectInterface(ctx context.Context) (controller.InterfaceOption, error) {
 	options, err := controller.InterfaceOptions()
 	if err != nil {
 		return controller.InterfaceOption{}, err
 	}
+	return chooseInterface(ctx, options, nil)
+}
+
+func chooseInterface(ctx context.Context, options []controller.InterfaceOption, screen tcell.Screen) (controller.InterfaceOption, error) {
+	if err := ctx.Err(); err != nil {
+		return controller.InterfaceOption{}, err
+	}
 	if len(options) == 0 {
 		return controller.InterfaceOption{}, fmt.Errorf("no up multicast IPv4 interface; use explicit isolated --interface/--bind/--peer")
 	}
-	return selectInterface(ctx, options, nil)
+	if len(options) == 1 {
+		return options[0], nil
+	}
+	return selectInterface(ctx, options, screen)
 }
 func selectInterface(ctx context.Context, options []controller.InterfaceOption, screen tcell.Screen) (controller.InterfaceOption, error) {
 	app := tview.NewApplication()
@@ -32,8 +42,8 @@ func selectInterface(ctx context.Context, options []controller.InterfaceOption, 
 	}
 	selected := 0
 	confirmed := false
-	form.AddDropDown("Interface / IPv4", labels, 0, func(_ string, i int) { selected = i }).AddButton("Cancel", app.Stop).AddButton("Confirm receive only", func() { confirmed = true; app.Stop() })
-	form.SetBorder(true).SetTitle("UDP opt-in: choose interface; d confirms discovery later")
+	form.AddDropDown("Interface / IPv4", labels, 0, func(_ string, i int) { selected = i }).AddButton("Cancel", app.Stop).AddButton("Select and discover all", func() { confirmed = true; app.Stop() })
+	form.SetBorder(true).SetTitle("Choose interface: startup discovers all devices")
 	form.SetFocus(1)
 	app.SetRoot(form, true).SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
 		if e.Key() == tcell.KeyEscape || e.Key() == tcell.KeyCtrlC {

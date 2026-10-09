@@ -2,8 +2,10 @@ package dashboard
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 	"image"
 	"image/color"
 	"image/draw"
@@ -14,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/internal/tui/controller"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"golang.org/x/image/font"
@@ -391,7 +393,7 @@ func TestCompactKeysRemainVisible(t *testing.T) {
 		}
 		text.WriteByte('\n')
 	}
-	for _, hint := range []string{"/ search | ? help", "Esc cancel | q / Ctrl-C exit", "Value | raw EDT"} {
+	for _, hint := range []string{"/ filter | ? help", "Esc cancel | q / Ctrl-C exit", "Value | raw EDT"} {
 		if !strings.Contains(text.String(), hint) {
 			t.Fatalf("compact hint %q hidden:\n%s", hint, text.String())
 		}
@@ -441,7 +443,7 @@ func TestInterfacePickerRequiresConfirmation(t *testing.T) {
 		screen.SetSize(100, 30)
 		done := make(chan error, 1)
 		go func() {
-			choice, err := selectInterface(context.Background(), []controller.InterfaceOption{{Name: "fixture0", IP: "192.0.2.20"}}, screen)
+			choice, err := selectInterface(context.Background(), []controller.InterfaceOption{{Name: "fixture0", IP: "192.0.2.20"}, {Name: "fixture1", IP: "198.51.100.20"}}, screen)
 			if confirm && err == nil && choice.IP != "192.0.2.20" {
 				err = fmt.Errorf("wrong selection")
 			}
@@ -463,5 +465,81 @@ func TestInterfacePickerRequiresConfirmation(t *testing.T) {
 		case <-time.After(time.Second):
 			t.Fatal("picker blocked")
 		}
+	}
+}
+
+// Startup uses a fake client and a simulation screen, never a host socket.
+func TestStartupDiscoversAllWithoutFilterOrWrites(t *testing.T) {
+	c := controller.Demo()
+	defer c.Close()
+	s := controller.NewSession(c)
+	d := New(s, "127.0.0.1", "OFFLINE DEMO - no sockets")
+	screen := tcell.NewSimulationScreen("UTF-8")
+	if err := screen.Init(); err != nil {
+		t.Fatal(err)
+	}
+	defer screen.Fini()
+	screen.SetSize(132, 36)
+	defer func() { d.cancel(); d.jobs.Wait() }()
+	d.DiscoverOnStart()
+	drawScreen(d, screen)
+	deadline := time.Now().Add(time.Second)
+	for len(s.Snapshot().Devices) == 0 && time.Now().Before(deadline) {
+		time.Sleep(time.Millisecond)
+	}
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	if len(d.visible) != 1 || d.search.GetText() != "" || d.modal != nil {
+		t.Fatal("startup must discover/show all without filter or confirmation")
+	}
+	events := c.Events()
+	if len(events) == 0 {
+		t.Fatal("no discovery request")
+	}
+	for _, e := range events {
+		if e.Kind == "TX" {
+			raw, err := hex.DecodeString(e.Hex)
+			if err != nil {
+				t.Fatal(err)
+			}
+			msg, err := protocol.NewMessageWithBytes(raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if msg.ESV() != 0x62 || msg.Property(0).Code() != 0xd6 {
+				t.Fatal("startup must only send discovery Get D6")
+			}
+		}
+	}
+	before := len(events)
+	drawScreen(d, screen)
+	if len(c.Events()) != before {
+		t.Fatal("startup discovery repeated")
+	}
+	d.search.SetText("no-match")
+	drawScreen(d, screen)
+	if len(d.visible) != 0 {
+		t.Fatal("filter did not narrow list")
+	}
+	key(d, tcell.KeyEscape, 0)
+	drawScreen(d, screen)
+	if len(d.visible) != 1 || len(c.Events()) != before {
+		t.Fatal("clearing filter must show all without network discovery")
+	}
+}
+
+func TestSoleInterfaceAndNoInterface(t *testing.T) {
+	want := controller.InterfaceOption{Name: "fixture0", IP: "192.0.2.20"}
+	got, err := chooseInterface(context.Background(), []controller.InterfaceOption{want}, nil)
+	if err != nil || got != want {
+		t.Fatalf("sole address: %v %v", got, err)
+	}
+	if _, err := chooseInterface(context.Background(), nil, nil); err == nil {
+		t.Fatal("missing interface accepted")
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := chooseInterface(ctx, []controller.InterfaceOption{want}, nil); err != context.Canceled {
+		t.Fatal(err)
 	}
 }

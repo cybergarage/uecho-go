@@ -18,10 +18,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cybergarage/uecho-go/internal/tui"
 	"github.com/cybergarage/uecho-go/net/echonet/cmd"
 )
 
 func main() {
+	cmd.GetRootCommand().AddCommand(tui.NewCommand())
 	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

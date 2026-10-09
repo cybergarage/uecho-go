@@ -15,16 +15,17 @@ jobs:
         with:
           go-version: '1.25.x'
       - name: Download pinned dependencies
-        run: GOWORK=off go -C cmd/uechotui mod download
+        run: GOWORK=off go mod download
       - name: Install commands into temporary GOBIN
         run: |
           export GOBIN="$RUNNER_TEMP/uecho-bin"
           make install
-          for command in uechopost uechosearch uechotui; do
+          for command in uechoctl uechopost uechosearch uechotui uecholight uechobench; do
             test -x "$GOBIN/$command"
           done
           "$GOBIN/uechosearch" -h
-          "$GOBIN/uechotui" -h
+          "$GOBIN/uechotui" --help
+          "$GOBIN/uechoctl" tui --help
           status=0
           "$GOBIN/uechopost" > "$RUNNER_TEMP/uechopost-help.txt" || status=$?
           test "$status" -eq 1
@@ -48,7 +49,6 @@ jobs:
       - name: Prepare modules and released simulator
         run: |
           GOWORK=off go -C uecho-go mod download
-          GOWORK=off go -C uecho-go/cmd/uechotui mod download
           GOWORK=off go -C simulator build -o "$RUNNER_TEMP/uecho-simulator-v1" ./cmd/uecho-simulator
       - name: Isolated loopback + multicast controller and v1.0.0 device
         run: |
@@ -62,5 +62,5 @@ jobs:
             ip route add 224.0.0.0/4 dev simtest0
             cd "$1"
             export GOWORK=off GOPROXY=off GOTOOLCHAIN=local GOMODCACHE="$2" GOCACHE="$3" UECHOTUI_SIMULATOR_V1="$4" UECHOTUI_ISOLATED_MULTICAST=1
-            "$5" test -race -count=1 -v ./internal/controller -run "TestSimulator(Loopback|Multicast)"
-          ' -- "$GITHUB_WORKSPACE/uecho-go/cmd/uechotui" "$(go env GOMODCACHE)" "$RUNNER_TEMP/tui-go-cache" "$RUNNER_TEMP/uecho-simulator-v1" "$(command -v go)"
+            "$5" test -race -count=1 -v ./internal/tui/controller -run "TestSimulator(Loopback|Multicast)"
+          ' -- "$GITHUB_WORKSPACE/uecho-go" "$(go env GOMODCACHE)" "$RUNNER_TEMP/tui-go-cache" "$RUNNER_TEMP/uecho-simulator-v1" "$(command -v go)"

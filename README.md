@@ -39,17 +39,22 @@ Implementing ECHONET Lite controllers and devices from scratch requires handling
 
 ## Fullscreen developer controller
 
-Run `make tui` for a socket-free controller demo. The separate
-[uechotui command](cmd/uechotui/README.md) provides device selection,
-interface-selected multicast discovery, MRA settings with raw Get values,
-confirmed SetC/fresh Get verification, and
-protocol/INF logs. Enable networking with `--network` to choose the local
-interface/address in the UI, or specify both `--interface` and `--bind`.
-`--peer` is optional and selects unicast discovery instead of multicast.
-See its README for isolated simulator v1.0.0 verification and limitations.
+Run `uechoctl tui` (or `make tui`) to discover all ECHONET Lite devices on
+one local IPv4 interface and open the fullscreen controller. A sole eligible
+interface/address is selected automatically; multiple addresses open a picker.
+Use `uechoctl tui --demo` for the socket-free fixture.
+
+The [TUI guide](cmd/uechotui/README.md) covers device selection, MRA settings
+with raw Get values, confirmed SetC/fresh Get verification, and protocol/INF
+logs. `/` filters the listed devices by IP, EOJ or class; an empty filter shows
+all devices. `d` repeats discovery. No filter or peer IP is needed to discover
+all devices. Specify both `--interface` and `--bind` to choose local values
+explicitly; optional `--peer` selects unicast discovery instead of multicast.
+See the guide for isolated simulator v1.0.0 verification and limitations.
 
 Install the command-line tools with `make install`. This runs `go install` for
-`uechoctl`, `uechopost`, `uechosearch`, `uechotui`, and the existing
-`uecholight`/`uechobench` examples. Set `GOBIN` to choose the destination
-(for example, `GOBIN=/tmp/uecho-bin make install`). The TUI uses a separate
-module under `cmd/uechotui` to keep terminal dependencies out of the library.
+`uechoctl`, `uechopost`, `uechosearch`, the compatibility alias `uechotui`, and
+the existing `uecholight`/`uechobench` examples (six binaries). Set `GOBIN` to
+choose the destination (for example, `GOBIN=/tmp/uecho-bin make install`).
+`uechoctl tui` and `uechotui` share one implementation in the root module;
+existing `uechoctl` subcommands remain available.

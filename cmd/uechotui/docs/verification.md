@@ -21,3 +21,23 @@ No household LAN, physical appliances, physical Raspberry Pi or macOS multicast 
 - Docker Linux arm64 `--network none` + dummy `simtest0` only: released simulator v1.0.0 multicast Get D6 discovered three instances; maps/Get loaded; lighting B0=4B decoded as 75%; SetC followed by fresh Get TID 002F (TX 2026-10-09T06:11:38.499088178Z, RX 2026-10-09T06:11:38.499186803Z); INF received. Both multicast and loopback tests passed `-race`, including normal released-process/private-PTY shutdown. The workflow repeats both tests in `unshare --net`. No physical/household/macOS multicast test was run.
 
 - Follow-up native macOS PTY: confirmed demo discovery/maps, typed enum form, Esc cancellation and q/Ctrl-C exits. A session-local wrapper verified terminal restoration (with transient PENDIN masked) after each exit; no sockets were opened.
+
+## uechoctl tui integration and network default
+
+The earlier records above describe the prior offline-default implementation. The
+shared code now lives under `internal/tui` in the root module; the existing
+terminal dependency versions are preserved. `uechoctl tui` and compatibility
+`uechotui` default to interface-scoped all-device discovery. A sole eligible
+address is selected automatically; multiple addresses require picker selection.
+`--demo`/`--offline` explicitly selects the socket-free fixture. `/` filters the
+listed IP/EOJ/class and never sends discovery; empty means all. `d` repeats
+discovery. SetC still requires Review and Confirm.
+
+Local checks: format/vet, fake-client mode selection and cancellation, simulated
+screen startup discovery without filter or writes, all existing TUI fixtures
+and race checks, root vet/build, encoding/protocol race checks, and Darwin/Linux
+arm64 controller builds passed. Temporary GOBIN installed all six existing tools;
+help kept get/scan/set and added tui. Native PTY `uechoctl tui --demo` and
+`uechotui --offline` discovered the fixture automatically and exited with q.
+The network-default CLI was never started on the household LAN. Hosted CI runs
+released-simulator loopback/multicast tests only in its isolated namespace.

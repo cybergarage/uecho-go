@@ -48,6 +48,7 @@ CMD_ROOT=${MODULE_ROOT}/${CMD_PKG_SOURCE_ROOT}
 
 BINARIES=\
 	${CMD_ROOT}/uechoctl \
+	${CMD_ROOT}/uechotui \
 	${CMD_ROOT}/uechopost \
 	${CMD_ROOT}/uechosearch \
 	${EXAMPLE_ROOT}/uecholight \
@@ -98,7 +99,6 @@ gendoc:
 
 install:
 	GOWORK=off go install ${BINARIES}
-	cd cmd/uechotui && GOWORK=off go install .
 
 clean:
 	go clean -i -r
@@ -106,14 +106,14 @@ clean:
 	go clean -modcache
 	go clean -i ${PKGES}
 
-# The terminal command owns a separate module so core and existing examples do
-# not acquire terminal dependencies. Override TUI_ARGS only for explicit opt-in.
+# The terminal controller is shared by uechoctl tui and its compatibility alias.
+# Use TUI_ARGS=--demo for socket-free operation.
 .PHONY: tui tui-check tui-build
 tui:
-	cd cmd/uechotui && GOWORK=off go run . $(TUI_ARGS)
+	GOWORK=off go run ./cmd/uechoctl tui $(TUI_ARGS)
 
 tui-check:
 	cd cmd/uechotui && ./scripts/check.sh
 
 tui-build:
-	cd cmd/uechotui && GOWORK=off go build -o bin/uechotui .
+	GOWORK=off go build -o cmd/uechotui/bin/uechoctl ./cmd/uechoctl

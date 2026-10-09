@@ -8,12 +8,14 @@ package main
 import (
 	"log"
 
+	"github.com/cybergarage/uecho-go/internal/tui"
 	"github.com/cybergarage/uecho-go/net/echonet/cmd"
 	"github.com/spf13/cobra/doc"
 )
 
 func main() {
 	rootCmd := cmd.GetRootCommand()
+	rootCmd.AddCommand(tui.NewCommand())
 
 	log.Println("Generating CLI documentation...")
 
