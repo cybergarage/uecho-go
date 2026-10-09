@@ -444,23 +444,27 @@ func TestInterfacePickerRequiresConfirmation(t *testing.T) {
 		done := make(chan error, 1)
 		go func() {
 			choice, err := selectInterface(context.Background(), []controller.InterfaceOption{{Name: "fixture0", IP: "192.0.2.20"}, {Name: "fixture1", IP: "198.51.100.20"}}, screen)
-			if confirm && err == nil && choice.IP != "192.0.2.20" {
+			if confirm && err == nil && choice.IP != "198.51.100.20" {
 				err = fmt.Errorf("wrong selection")
 			}
 			done <- err
 		}()
 		time.Sleep(20 * time.Millisecond)
 		if confirm {
-			screen.PostEventWait(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+			// Initial focus is the dropdown: Enter opens it, Down selects address 2.
+			for _, k := range []tcell.Key{tcell.KeyEnter, tcell.KeyDown, tcell.KeyEnter, tcell.KeyTab, tcell.KeyTab, tcell.KeyEnter} {
+				screen.PostEventWait(tcell.NewEventKey(k, 0, tcell.ModNone))
+			}
+		} else {
+			screen.PostEventWait(tcell.NewEventKey(tcell.KeyEscape, 0, tcell.ModNone))
 		}
-		screen.PostEventWait(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		select {
 		case err := <-done:
 			if confirm && err != nil {
 				t.Fatal(err)
 			}
 			if !confirm && err != context.Canceled {
-				t.Fatal("default must cancel", err)
+				t.Fatal("Esc must cancel", err)
 			}
 		case <-time.After(time.Second):
 			t.Fatal("picker blocked")
@@ -541,5 +545,73 @@ func TestSoleInterfaceAndNoInterface(t *testing.T) {
 	cancel()
 	if _, err := chooseInterface(ctx, []controller.InterfaceOption{want}, nil); err != context.Canceled {
 		t.Fatal(err)
+	}
+}
+
+func TestRediscoveryKeysBusyCancelAndRepeat(t *testing.T) {
+	d, screen := setup(t)
+	drawScreen(d, screen)
+	before := len(d.session.Client.Events())
+	// d is reachable from each normal pane; canceling the dialog sends nothing.
+	for _, pane := range []tview.Primitive{d.devices, d.props, d.logs} {
+		d.App.SetFocus(pane)
+		key(d, tcell.KeyRune, 'd')
+		if d.modal == nil {
+			t.Fatal("d did not open rediscovery")
+		}
+		key(d, tcell.KeyEscape, 0)
+	}
+	if len(d.session.Client.Events()) != before {
+		t.Fatal("canceled rediscovery sent traffic")
+	}
+	// A filter keeps d as text; F5 is the global rediscovery binding.
+	d.App.SetFocus(d.search)
+	key(d, tcell.KeyRune, 'd')
+	if d.search.GetText() != "d" || d.modal != nil {
+		t.Fatal("d should type into filter")
+	}
+	key(d, tcell.KeyF5, 0)
+	if d.modal == nil {
+		t.Fatal("F5 unreachable from filter")
+	}
+	key(d, tcell.KeyEscape, 0)
+	started := make(chan struct{})
+	d.start(func(ctx context.Context) error { close(started); <-ctx.Done(); return ctx.Err() })
+	<-started
+	d.App.SetFocus(d.devices)
+	key(d, tcell.KeyRune, 'd')
+	key(d, tcell.KeyF5, 0)
+	if d.modal != nil || !strings.Contains(d.session.Snapshot().Status, "Busy") {
+		t.Fatal("busy discovery must not overlap")
+	}
+	key(d, tcell.KeyEscape, 0)
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	if d.busy {
+		t.Fatal("Esc did not release worker")
+	}
+	var lastTID uint
+	for range 2 {
+		d.search.SetText("no-match")
+		d.App.SetFocus(d.search)
+		key(d, tcell.KeyF5, 0)
+		key(d, tcell.KeyRight, 0)
+		key(d, tcell.KeyEnter, 0)
+		d.jobs.Wait()
+		drawScreen(d, screen)
+		if d.busy || d.search.GetText() != "" || len(d.visible) != 1 {
+			t.Fatal("confirmed rediscovery should show all and finish")
+		}
+		events := d.session.Client.Events()
+		var tid uint
+		for _, e := range events {
+			if e.Kind == "TX" {
+				tid = e.TID
+			}
+		}
+		if tid <= lastTID {
+			t.Fatal("repeated discovery reused a TID")
+		}
+		lastTID = tid
 	}
 }

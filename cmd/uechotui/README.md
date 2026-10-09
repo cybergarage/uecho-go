@@ -19,7 +19,7 @@ Startup discovers the fixture or all network devices without a filter. Select an
 | Tab / Shift-Tab | Devices → Properties → Protocol events; cyan focus border |
 | Up / Down | Select a device/property or scroll log |
 | Enter | Devices: confirm maps + Get; Properties: confirm fresh Get |
-| `d` | Confirm multicast D6 discovery on selected interface (or optional unicast peer) |
+| `d` / F5 | Confirm all-device rediscovery on selected interface (or optional unicast peer); F5 works while filtering |
 | `w` | MRA typed form → Review → SetC confirmation → fresh Get |
 | `/` | Filter listed devices by IP, EOJ or MRA class; empty shows all; Enter focuses devices |
 | Esc | Cancel dialog; otherwise cancel in-flight request, clear search, focus devices |
@@ -30,7 +30,7 @@ At less than 100 columns or 28 rows, devices and properties stack. Use at least 
 
 ## Network discovery
 
-Network mode is the default. A sole eligible local multicast-capable IPv4 interface/address is selected automatically. Multiple eligible addresses open a picker with Cancel initially focused; Select and discover all continues on that interface. Startup binds UDP 3610, joins the group **on that selected interface**, and sends one multicast Get D6 to `224.0.23.0:3610`, destination EOJ `0EF000`. Press `d` and confirm to repeat discovery. A three-second window collects correlated node-profile responses from multiple IPs and adds their instances to the left list. No peer IP is required. D5 instance-list INF and concrete device INF also update the list, with local last-seen time/source in the selected device header. At most 256 devices are retained; entries are observations, not an authoritative online/offline inventory.
+Network mode is the default. A sole eligible local multicast-capable IPv4 interface/address is selected automatically. Multiple eligible addresses open a picker with the interface/address dropdown initially focused; Select and discover all continues on that interface. Startup binds UDP 3610, joins the group **on that selected interface**, and sends one multicast Get D6 to `224.0.23.0:3610`, destination EOJ `0EF000`. Press `d` or F5 and confirm to repeat discovery. A three-second window collects correlated node-profile responses from multiple IPs and adds their instances to the left list. No peer IP is required. D5 instance-list INF and concrete device INF also update the list, with local last-seen time/source in the selected device header. At most 256 devices are retained; entries are observations, not an authoritative online/offline inventory.
 
 ```sh
 uechoctl tui                    # automatic discovery; picker if multiple addresses
@@ -41,9 +41,13 @@ uechoctl tui --interface lo --bind 127.0.0.1 --peer 127.0.0.2
 ```
 
 `/` only narrows the current list; it sends no discovery request. Leave it empty
-to show all devices, or press Esc to clear it. Startup and `d` discovery require
+to show all devices, or press Esc to clear it. Startup and `d`/F5 discovery require
 no search term. `--network` is accepted for compatibility; `--network=false`
-selects the demo. All SetC writes still require Review and Confirm.
+selects the demo. `d` types normally when the filter has focus; F5 opens rediscovery from any
+normal pane. Rediscovery confirmation clears the filter to show all devices.
+During an active operation, Esc cancels it; retry d/F5 after it finishes.
+
+All SetC writes still require Review and Confirm.
 
 The local IPv4 must belong to the named interface. IPv6, TCP, SetI/SetGet/INFC and periodic discovery are outside this controller. Outbound multicast uses the selected IPv4 interface and TTL 1. Core public protocol/transport APIs encode and send messages and join multicast; the controller configures the reusable unicast connection before binding, because the core Bind sets SO_REUSEADDR after bind. Core source is unchanged.
 
@@ -51,7 +55,7 @@ The right pane reconciles the pinned official **MRA 1.3.0** device/superclass na
 
 Maps are validated using the core public property-map decoder (list and bitmap formats), checked for count/duplicates and published together. Refresh disables old write permissions immediately. Readable properties are fetched sequentially, so settings are individual timestamped observations rather than an atomic device snapshot. Read-only, unknown, unsupported and unread values are distinguished. Typed editing also requires a Get-map entry for readback.
 
-The log includes raw frame hex, TID, source/destination IP:port or EOJ, and local UTC send/receive time. Property rows show the **Get** RX timestamp/TID and state; the TX timestamp is in the log. Response matching requires TID, source IP and port 3610, both EOJs, expected success/error ESV and exact EPC/count. Strict datagram framing is validated before using the permissive library decoder. The example reads raw datagrams from the public transport socket's connection for this validation; encoding, socket binding and sending use uecho-go APIs. TIDs are not reused during a process lifetime; restart after 65535 requests. Duplicate responses do not block readers. Socket closure and canceled waits release workers.
+The log includes raw frame hex, TID, source/destination IP:port or EOJ, and local UTC send/receive time. Property rows show the **Get** RX timestamp/TID and state; the TX timestamp is in the log. Response matching requires TID, source IP, both EOJs, expected success/error ESV and exact EPC/count. UDP source ports may vary: [ECHONET Lite Part II §1.2](https://echonet.jp/wp/wp-content/uploads/pdf/General/Standard/ECHONET_lite_V1_14_en/ECHONET-Lite_Ver.1.14%2802%29_E.pdf) specifies destination port 3610 and leaves source ports unspecified. Replies and INF are accepted from ephemeral source ports, while every subsequent request still targets port 3610. Strict datagram framing is validated before using the permissive library decoder. The example reads raw datagrams from the public transport socket's connection for this validation; encoding, socket binding and sending use uecho-go APIs. TIDs are not reused during a process lifetime; restart after 65535 requests. Duplicate responses do not block readers. Socket closure and canceled waits release workers.
 
 INF includes no reliable remote timestamp. Its displayed time is **local arrival only**, and freshness is unknown. It never overwrites a fresh Get value or satisfies a request/readback. UDP can reorder or duplicate notifications; they remain diagnostic log entries. Unknown readback after a timeout/cancel means a Set may have applied; use a confirmed fresh Get to inspect it.
 
