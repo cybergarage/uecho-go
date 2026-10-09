@@ -1,6 +1,6 @@
 package controller
 
-import "github.com/cybergarage/uecho-go/examples/uechotui/internal/mra"
+import "github.com/cybergarage/uecho-go/cmd/uechotui/internal/mra"
 
 func (d Device) Definitions() map[byte]mra.Property {
 	var release byte

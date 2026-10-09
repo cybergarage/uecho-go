@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cybergarage/uecho-go/examples/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"golang.org/x/image/font"

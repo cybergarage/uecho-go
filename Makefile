@@ -10,7 +10,11 @@
 
 SHELL := bash
 
+GOBIN ?= $(shell go env GOBIN)
+ifeq ($(strip $(GOBIN)),)
 GOBIN := $(shell go env GOPATH)/bin
+endif
+export GOBIN
 PATH := $(GOBIN):$(PATH)
 
 export CGO_ENABLED=0
@@ -44,14 +48,14 @@ CMD_ROOT=${MODULE_ROOT}/${CMD_PKG_SOURCE_ROOT}
 
 BINARIES=\
 	${CMD_ROOT}/uechoctl \
-	${EXAMPLE_ROOT}/uechopost \
-	${EXAMPLE_ROOT}/uechosearch \
+	${CMD_ROOT}/uechopost \
+	${CMD_ROOT}/uechosearch \
 	${EXAMPLE_ROOT}/uecholight \
 	${EXAMPLE_ROOT}/uechobench
 
 CMD_DOC_ROOT=doc/cmd
 
-.PHONY: version clean
+.PHONY: version clean install
 .IGNORE: lint
 
 all: test
@@ -92,8 +96,9 @@ gendoc:
 	go run ./scripts/gendoc.go
 	-git add ${CMD_DOC_ROOT} && git commit ${CMD_DOC_ROOT} -m "docs: update CLI documentation"
 
-install: gendoc
-	go install ${BINARIES}
+install:
+	GOWORK=off go install ${BINARIES}
+	cd cmd/uechotui && GOWORK=off go install .
 
 clean:
 	go clean -i -r
@@ -101,14 +106,14 @@ clean:
 	go clean -modcache
 	go clean -i ${PKGES}
 
-# The terminal example owns a separate module so core and existing examples do
+# The terminal command owns a separate module so core and existing examples do
 # not acquire terminal dependencies. Override TUI_ARGS only for explicit opt-in.
 .PHONY: tui tui-check tui-build
 tui:
-	cd examples/uechotui && GOWORK=off go run . $(TUI_ARGS)
+	cd cmd/uechotui && GOWORK=off go run . $(TUI_ARGS)
 
 tui-check:
-	cd examples/uechotui && ./scripts/check.sh
+	cd cmd/uechotui && ./scripts/check.sh
 
 tui-build:
-	cd examples/uechotui && GOWORK=off go build -o bin/uechotui .
+	cd cmd/uechotui && GOWORK=off go build -o bin/uechotui .

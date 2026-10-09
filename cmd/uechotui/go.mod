@@ -1,4 +1,4 @@
-module github.com/cybergarage/uecho-go/examples/uechotui
+module github.com/cybergarage/uecho-go/cmd/uechotui
 
 go 1.25
 

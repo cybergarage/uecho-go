@@ -12,8 +12,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/cybergarage/uecho-go/examples/uechotui/internal/controller"
-	"github.com/cybergarage/uecho-go/examples/uechotui/internal/dashboard"
+	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/dashboard"
 )
 
 func main() {

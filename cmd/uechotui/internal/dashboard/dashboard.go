@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cybergarage/uecho-go/examples/uechotui/internal/controller"
-	"github.com/cybergarage/uecho-go/examples/uechotui/internal/mra"
+	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/cmd/uechotui/internal/mra"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
