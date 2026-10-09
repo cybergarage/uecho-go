@@ -74,7 +74,7 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	})
 	d.props.SetSelectedFunc(func(int, int) { d.get() })
 	d.body = tview.NewFlex()
-	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d discover all\n/ filter | ? help | Esc cancel | q / Ctrl-C exit")
+	footer := tview.NewTextView().SetText("Tab/Shift-Tab | arrows | Enter Get | w SetC | d / F5 rediscover all\n/ filter | ? help | Esc cancel | q / Ctrl-C exit")
 	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 2, 0, false).AddItem(d.status, 2, 0, false)
 	d.pages = tview.NewPages().AddPage("main", d.root, true, true)
 	d.App.SetRoot(d.pages, true).EnableMouse(false).EnablePaste(true).SetFocus(d.devices).SetInputCapture(d.capture)
@@ -270,6 +270,10 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.devices)
 		return nil
 	}
+	if e.Key() == tcell.KeyF5 {
+		d.rediscover()
+		return nil
+	}
 	if d.App.GetFocus() == d.search {
 		return e
 	}
@@ -297,23 +301,38 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.search)
 		return nil
 	case '?':
-		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d discover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
+		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d/F5 rediscover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
 		return nil
 	case 'w':
 		d.write()
 		return nil
 	case 'd':
-		destination := d.peer
-		if destination == "" {
-			destination = "224.0.23.0:3610 on the explicitly selected interface (3 second collection window)"
-		} else {
-			destination += ":3610"
-		}
-		d.confirm("Send node-profile Get D6 discovery to "+destination+"?", func() { d.start(func(ctx context.Context) error { return d.session.Discover(ctx, d.peer) }) })
+		d.rediscover()
 		return nil
 	}
 	return e
 }
+
+// F5 is available even while the list filter has focus. d stays a text character
+// in the filter. A running request must finish or be canceled before rediscovery.
+func (d *Dashboard) rediscover() {
+	if d.busy {
+		d.session.Status("Busy: Esc cancels current request; then d / F5 rediscover all")
+		return
+	}
+	destination := d.peer
+	if destination == "" {
+		destination = "224.0.23.0:3610 on the selected interface (3 second collection window)"
+	} else {
+		destination += ":3610"
+	}
+	d.confirm("Rediscover all devices with node-profile Get D6 to "+destination+"?", func() {
+		d.search.SetText("")
+		d.App.SetFocus(d.devices)
+		d.start(func(ctx context.Context) error { return d.session.Discover(ctx, d.peer) })
+	})
+}
+
 func (d *Dashboard) closeModal() {
 	d.pages.RemovePage("dialog")
 	d.modal = nil

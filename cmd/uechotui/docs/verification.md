@@ -41,3 +41,25 @@ help kept get/scan/set and added tui. Native PTY `uechoctl tui --demo` and
 `uechotui --offline` discovered the fixture automatically and exited with q.
 The network-default CLI was never started on the household LAN. Hosted CI runs
 released-simulator loopback/multicast tests only in its isolated namespace.
+
+## Ephemeral reply source port and rediscovery follow-up
+
+Provided RX packets were replayed in memory: TID 0001, source
+192.168.100.44:65468 with D6 instances 0F2001/029101, and
+192.168.100.216:35449 with 05FF01. The regression failed before the fix with zero
+listed instances and passes afterward with all three. These logs do not establish
+which responder is the user's simulator. Official Part II section 1.2 leaves UDP
+source ports unspecified and requires destination 3610; matching retains source
+IP (for unicast requests), TID, EOJs, ESV/EPC/count and response windows. Get/SetC
+responses and INF now permit ephemeral source ports too; outgoing requests always
+use 3610 and never adopt a response port.
+
+Fake/simulation tests cover invalid and late discovery replies, repeat fresh TIDs,
+d from each normal pane, F5 from the filter, canceled confirmation, busy-operation
+rejection, Esc worker cancellation, and clearing the filter on confirmed rediscovery.
+The interface picker starts on its dropdown, supports selecting another address,
+and Esc cancels before binding. Native macOS PTY explicitly used --demo: F5 while
+filtering rediscovered the fixture with TID 0002; d confirmation cancellation and
+repeat discovery were checked before q exit. No live LAN test or interference
+with an existing simulator was performed. The existing isolated CI repeats
+released-simulator loopback/multicast interoperability.

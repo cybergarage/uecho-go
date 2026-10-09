@@ -23,7 +23,7 @@ func TestHelpAndNetworkDefault(t *testing.T) {
 	if err := c.Execute(); err != nil {
 		t.Fatal(err)
 	}
-	for _, text := range []string{"--demo", "--interface", "--bind", "/ filters", "d repeats"} {
+	for _, text := range []string{"--demo", "--interface", "--bind", "/ filters", "d/F5 repeats"} {
 		if !strings.Contains(out.String(), text) {
 			t.Fatalf("missing help %q", text)
 		}

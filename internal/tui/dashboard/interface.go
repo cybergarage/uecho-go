@@ -44,7 +44,7 @@ func selectInterface(ctx context.Context, options []controller.InterfaceOption, 
 	confirmed := false
 	form.AddDropDown("Interface / IPv4", labels, 0, func(_ string, i int) { selected = i }).AddButton("Cancel", app.Stop).AddButton("Select and discover all", func() { confirmed = true; app.Stop() })
 	form.SetBorder(true).SetTitle("Choose interface: startup discovers all devices")
-	form.SetFocus(1)
+	form.SetFocus(0)
 	app.SetRoot(form, true).SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
 		if e.Key() == tcell.KeyEscape || e.Key() == tcell.KeyCtrlC {
 			app.Stop()

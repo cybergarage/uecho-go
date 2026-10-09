@@ -179,9 +179,13 @@ func (c *Client) OnNotification(f func(*protocol.Message, time.Time)) {
 	defer c.mu.Unlock()
 	c.notification = f
 }
+
+// ECHONET Lite Part II 1.2 specifies destination port 3610, not source port.
+// Correlate replies by source IP/TID/EOJs/service/properties; never learn a
+// destination port from the reply. All requests continue to target port 3610.
 func match(p *pending, m *protocol.Message) bool {
 	r := p.request
-	if m.TID() != r.TID() || m.SourceAddress() != p.target.IP || m.SourcePort() != 3610 || m.DEOJ() != r.SEOJ() || m.SEOJ() != r.DEOJ() {
+	if m.TID() != r.TID() || m.SourceAddress() != p.target.IP || m.DEOJ() != r.SEOJ() || m.SEOJ() != r.DEOJ() {
 		return false
 	}
 	success := protocol.ESV(byte(r.ESV()) + 0x10)
@@ -235,7 +239,7 @@ func (c *Client) receive(m *protocol.Message, now time.Time) {
 	c.mu.Unlock()
 	// INF arrival never verifies a write or replaces a fresh Get value.
 	ip := net.ParseIP(m.SourceAddress())
-	if ip != nil && ip.To4() != nil && !ip.IsUnspecified() && !ip.IsMulticast() && m.ESV() == 0x73 && m.SourcePort() == 3610 && (m.DEOJ() == SourceEOJ || m.DEOJ() == 0x0ef001 || m.DEOJ() == 0x0ef000) && notification != nil {
+	if ip != nil && ip.To4() != nil && !ip.IsUnspecified() && !ip.IsMulticast() && m.ESV() == 0x73 && (m.DEOJ() == SourceEOJ || m.DEOJ() == 0x0ef001 || m.DEOJ() == 0x0ef000) && notification != nil {
 		notification(m, now)
 	}
 }

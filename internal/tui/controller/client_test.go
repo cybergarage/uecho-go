@@ -43,7 +43,7 @@ func TestCorrelationDuplicatesAndParallel(t *testing.T) {
 	for range 16 {
 		req := <-sent
 		valid := response(req, "127.0.0.1", []byte{byte(req.Property(0).Code()) - 0x80})
-		invalid := []func(*protocol.Message){func(m *protocol.Message) { m.From.IP = net.ParseIP("127.0.0.2") }, func(m *protocol.Message) { m.From.Port = 4000 }, func(m *protocol.Message) { m.SetSEOJ(0x013001) }, func(m *protocol.Message) { m.SetDEOJ(0x0ef001) }, func(m *protocol.Message) { m.SetESV(0x73) }, func(m *protocol.Message) { m.SetTID(req.TID() + 100) }, func(m *protocol.Message) { m.Property(0).SetCode(0xff) }}
+		invalid := []func(*protocol.Message){func(m *protocol.Message) { m.From.IP = net.ParseIP("127.0.0.2") }, func(m *protocol.Message) { m.SetSEOJ(0x013001) }, func(m *protocol.Message) { m.SetDEOJ(0x0ef001) }, func(m *protocol.Message) { m.SetESV(0x73) }, func(m *protocol.Message) { m.SetTID(req.TID() + 100) }, func(m *protocol.Message) { m.Property(0).SetCode(0xff) }}
 		for _, mutate := range invalid {
 			m := response(req, "127.0.0.1", []byte{0xff})
 			mutate(m)
@@ -296,5 +296,42 @@ func TestDemoConcurrentOverloadRemainsCancellable(t *testing.T) {
 	case <-done:
 	case <-time.After(2 * time.Second):
 		t.Fatal("demo queue blocked receive/cancel")
+	}
+}
+
+func TestEphemeralSourcePortRoundTripAndNotification(t *testing.T) {
+	c := newClient()
+	defer c.Close()
+	s := NewSession(c)
+	target := Target{"192.0.2.10", 0x029101}
+	c.send = func(got Target, req *protocol.Message) error {
+		if got != target || !strings.Contains(got.String(), ":3610") {
+			t.Errorf("request target must remain standard-port object, got %v", got)
+		}
+		go func() {
+			m := response(req, target.IP, []byte{0x30})
+			if req.ESV() == 0x61 {
+				m.Property(0).SetData(nil)
+			}
+			m.From.Port = 65468
+			c.receive(m, time.Now())
+		}()
+		return nil
+	}
+	for _, esv := range []protocol.ESV{0x62, 0x61} {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		r, err := c.RoundTrip(ctx, target, esv, 0x80, []byte{0x30})
+		cancel()
+		if err != nil || r.Message.SourcePort() != 65468 {
+			t.Fatalf("ephemeral reply ESV %02X: %v", esv, err)
+		}
+	}
+	inf := Request(SourceEOJ, 0x73, 0xd5, []byte{1, 2, 0x91, 1})
+	inf.SetSEOJ(0x0ef001)
+	inf.From.IP = net.ParseIP(target.IP)
+	inf.From.Port = 35449
+	c.receive(inf, time.Now())
+	if len(s.Snapshot().Devices) != 1 {
+		t.Fatal("ephemeral D5 INF was ignored")
 	}
 }

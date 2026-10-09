@@ -97,6 +97,6 @@ $ uecholight
 A fullscreen controller with default all-device network discovery and an explicit offline demo,
 MRA settings and raw property maps/Get values, confirmed SetC with fresh Get readback, and protocol
 logs/INF display. Run `uechoctl tui` or `make tui`; use `--demo` for a socket-free
-fixture. `/` filters the listed IP/EOJ/class (empty shows all); `d` repeats discovery.
+fixture. `/` filters the listed IP/EOJ/class (empty shows all); `d` or F5 repeats discovery.
 The `uechotui` compatibility alias shares the same implementation.
 See [the uechotui README](../cmd/uechotui/README.md) for keys, network selection, screenshots, isolated simulator tests and current limitations.

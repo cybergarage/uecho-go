@@ -32,7 +32,7 @@ func validInstances(b []byte) bool {
 }
 func discoveryMatch(p *discovery, m *protocol.Message, now time.Time) bool {
 	ip := net.ParseIP(m.SourceAddress())
-	return !now.Before(p.sent) && !now.After(p.until) && m.TID() == p.tid && ip != nil && ip.To4() != nil && !ip.IsUnspecified() && !ip.IsMulticast() && m.SourcePort() == 3610 && m.SEOJ() == 0x0ef001 && m.DEOJ() == SourceEOJ && m.ESV() == 0x72 && m.OPC() == 1 && m.Property(0).Code() == 0xd6 && validInstances(m.Property(0).Data())
+	return !now.Before(p.sent) && !now.After(p.until) && m.TID() == p.tid && ip != nil && ip.To4() != nil && !ip.IsUnspecified() && !ip.IsMulticast() && m.SEOJ() == 0x0ef001 && m.DEOJ() == SourceEOJ && m.ESV() == 0x72 && m.OPC() == 1 && m.Property(0).Code() == 0xd6 && validInstances(m.Property(0).Data())
 }
 func (c *Client) OnInstances(f func(string, []byte, time.Time)) {
 	c.mu.Lock()
@@ -101,7 +101,7 @@ func (c *Client) Discover(ctx context.Context) (int, error) {
 
 // OpenMulticast validates the explicit address/interface without sending, binds a
 // reusable standard-port public transport socket, and joins only that interface.
-// Opening receives notifications; sending discovery still requires UI confirmation.
+// Opening receives notifications; the caller decides when to start discovery.
 func OpenMulticast(ifaceName, bind string) (*Client, error) {
 	iface, err := validateBinding(ifaceName, bind)
 	if err != nil {

@@ -47,7 +47,7 @@ Use `uechoctl tui --demo` for the socket-free fixture.
 The [TUI guide](cmd/uechotui/README.md) covers device selection, MRA settings
 with raw Get values, confirmed SetC/fresh Get verification, and protocol/INF
 logs. `/` filters the listed devices by IP, EOJ or class; an empty filter shows
-all devices. `d` repeats discovery. No filter or peer IP is needed to discover
+all devices. `d` or F5 repeats discovery (F5 also works while filtering). No filter or peer IP is needed to discover
 all devices. Specify both `--interface` and `--bind` to choose local values
 explicitly; optional `--peer` selects unicast discovery instead of multicast.
 See the guide for isolated simulator v1.0.0 verification and limitations.

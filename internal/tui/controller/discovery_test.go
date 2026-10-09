@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"encoding/hex"
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 	"net"
 	"testing"
@@ -20,7 +21,8 @@ func TestDiscoveryCollectsAndValidates(t *testing.T) {
 		go func() {
 			base := response(req, "192.0.2.10", []byte{2, 2, 0x90, 1, 1, 0x30, 1})
 			base.SetSEOJ(0x0ef001)
-			for _, mutate := range []func(*protocol.Message){func(m *protocol.Message) { m.SetTID(req.TID() + 1) }, func(m *protocol.Message) { m.From.Port = 1234 }, func(m *protocol.Message) { m.SetSEOJ(0x029001) }, func(m *protocol.Message) { m.SetDEOJ(0x029001) }, func(m *protocol.Message) { m.SetESV(0x73) }, func(m *protocol.Message) { m.Property(0).SetCode(0xd5) }, func(m *protocol.Message) { m.Property(0).SetData([]byte{2, 2, 0x90, 1}) }} {
+			base.From.Port = 65468
+			for _, mutate := range []func(*protocol.Message){func(m *protocol.Message) { m.SetTID(req.TID() + 1) }, func(m *protocol.Message) { m.SetSEOJ(0x029001) }, func(m *protocol.Message) { m.SetDEOJ(0x029001) }, func(m *protocol.Message) { m.SetESV(0x73) }, func(m *protocol.Message) { m.Property(0).SetCode(0xd5) }, func(m *protocol.Message) { m.Property(0).SetData([]byte{2, 2, 0x90, 1}) }} {
 				m, _ := protocol.NewMessageWithBytes(base.Bytes())
 				m.From.IP = net.ParseIP("192.0.2.10")
 				m.From.Port = 3610
@@ -32,7 +34,7 @@ func TestDiscoveryCollectsAndValidates(t *testing.T) {
 			c.receive(base, time.Now())
 			other, _ := protocol.NewMessageWithBytes(base.Bytes())
 			other.From.IP = net.ParseIP("192.0.2.20")
-			other.From.Port = 3610
+			other.From.Port = 35449
 			c.receive(other, time.Now())
 		}()
 		return nil
@@ -135,5 +137,59 @@ func TestResponseAfterDeadlineIsUnknown(t *testing.T) {
 	defer cancel()
 	if _, err := c.RoundTrip(ctx, target, 0x62, 0x80, nil); err != context.DeadlineExceeded {
 		t.Fatal("expired response accepted", err)
+	}
+}
+
+// Packets reported by the user. They are replayed in memory, never on the LAN.
+func TestReportedEphemeralPortDiscoveryPackets(t *testing.T) {
+	c := newClient()
+	defer c.Close()
+	s := NewSession(c)
+	s.timeout = 50 * time.Millisecond
+	c.send = func(_ Target, req *protocol.Message) error {
+		if req.TID() != 1 {
+			t.Errorf("fixture expects TID 1, got %d", req.TID())
+		}
+		go func() {
+			for _, f := range []struct {
+				ip    string
+				port  int
+				frame string
+			}{
+				{"192.168.100.44", 65468, "108100010EF00105FF017201D607020F2001029101"},
+				{"192.168.100.216", 35449, "108100010EF00105FF017201D6040105FF01"},
+			} {
+				raw, err := hex.DecodeString(f.frame)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				m, err := Decode(raw)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				m.From.IP = net.ParseIP(f.ip)
+				m.From.Port = f.port
+				c.receive(m, time.Now())
+			}
+		}()
+		return nil
+	}
+	if err := s.Discover(context.Background(), ""); err != nil {
+		t.Fatal(err)
+	}
+	devices := s.Snapshot().Devices
+	if len(devices) != 3 {
+		t.Fatalf("provided replies should list three instances, got %d", len(devices))
+	}
+	got := map[Target]bool{}
+	for _, d := range devices {
+		got[d.Target] = true
+	}
+	for _, target := range []Target{{"192.168.100.44", 0x0f2001}, {"192.168.100.44", 0x029101}, {"192.168.100.216", 0x05ff01}} {
+		if !got[target] {
+			t.Errorf("missing %v", target)
+		}
 	}
 }
