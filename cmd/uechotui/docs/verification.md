@@ -140,3 +140,18 @@ The integration display requires its own PTY (plain/display are mutually
 exclusive). Integration packages run serially because they share loopback 3610.
 The released simulator starts OFF: its initial no-op OFF write has no STATE
 change event; ON and subsequent OFF must both publish STATE in the GUI SSE.
+
+## Normal network interface candidates (after PR #14)
+
+Synthetic interface/address fixtures reproduced the old behavior: up multicast
+loopback adapters and 127/8 addresses entered the normal picker. The same tests
+now pass after filtering loopback flags and non-LAN IPv4 addresses. Down and
+non-multicast adapters, address-enumeration failures, malformed CIDRs, IPv6,
+unspecified/multicast/broadcast/link-local addresses are excluded. Multiple IPv4
+addresses on one adapter and addresses on multiple eligible adapters are retained.
+Existing sole-address auto-selection, multiple-choice Return/Esc and zero-choice
+regressions pass. Zero choices explains --demo and explicit isolated bindings;
+there is no localhost fallback. A fake-client command regression confirms that
+explicit --interface lo --bind 127.0.0.1 --peer 127.0.0.2 bypasses normal selection
+and retains the unicast path. No real LAN startup or existing simulator changes.
+Local make tui-check passed format, vet, regressions/race and both portable builds.

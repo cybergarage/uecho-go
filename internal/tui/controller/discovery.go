@@ -162,29 +162,35 @@ func OpenMulticast(ifaceName, bind string) (*Client, error) {
 	return c, nil
 }
 
-// InterfaceOptions is read-only. It never chooses an interface for the user.
+// InterfaceOptions lists up, multicast-capable LAN IPv4 addresses for normal
+// discovery. Explicit Open/OpenMulticast bindings are validated separately.
 func InterfaceOptions() ([]InterfaceOption, error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return nil, err
 	}
+	return interfaceOptions(ifaces, func(iface net.Interface) ([]net.Addr, error) { return iface.Addrs() }), nil
+}
+
+// Separate enumeration from filtering so tests never depend on host adapters.
+func interfaceOptions(ifaces []net.Interface, addresses func(net.Interface) ([]net.Addr, error)) []InterfaceOption {
 	out := []InterfaceOption{}
 	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagMulticast == 0 {
+		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagMulticast == 0 || iface.Flags&net.FlagLoopback != 0 {
 			continue
 		}
-		addrs, e := iface.Addrs()
+		addrs, e := addresses(iface)
 		if e != nil {
 			continue
 		}
 		for _, a := range addrs {
 			ip, _, e := net.ParseCIDR(a.String())
-			if e == nil && ip.To4() != nil && !ip.IsUnspecified() {
+			if e == nil && ip.To4() != nil && ip.IsGlobalUnicast() {
 				out = append(out, InterfaceOption{iface.Name, ip.String()})
 			}
 		}
 	}
-	return out, nil
+	return out
 }
 
 type InterfaceOption struct{ Name, IP string }
