@@ -17,12 +17,15 @@ maps/Get values. Selecting another device does not cancel a confirmed SET/readba
 Tab to Properties. Enter (or `w`) opens an MRA enum, bounded number or
 size-constrained raw form for a supported property in the validated Set map.
 Read-only, unknown or unsupported schemas explain why editing is unavailable.
-Review shows the exact target, EPC and EDT; Cancel is initially selected. Confirm
-sends one SetC. If the live Get map allows readback, a **separate Get with a new
-TID** reports verified success, mismatch, rejection, timeout or unknown. A
-write-only property is explicitly marked before confirmation; after acknowledgment
-its outcome remains **unverified / readback unavailable**, and no forbidden Get is
-sent. An acknowledged SetC alone is not success. `g` manually refreshes a
+The value field is initially focused. Arrows commit an enum value immediately;
+Space opens the list, whose Enter selects a candidate without sending. The next
+Enter sends. Numbers and raw values send on Enter. The editor shows the exact
+target, EPC, decoded value and EDT. Esc cancels without writing. There are no
+Cancel/Review buttons or second confirmation. A **separate Get with a new TID**
+reports verified success, mismatch, rejection, timeout or unknown when readback
+is allowed. Write-only acknowledgment remains **unverified / readback unavailable**,
+and no forbidden Get is sent. An acknowledged SetC alone is not success.
+`g` manually refreshes a
 Get-permitted property. Cancellation never rolls back a write or retries it.
 
 ![Actual tcell widget drawing](docs/images/tui.png)
@@ -35,19 +38,20 @@ Get-permitted property. Cancellation never rolls back a write or retries it.
 | Up / Down | Select a device and load maps/Get; select property or scroll log |
 | Enter | Devices: refresh maps/Get; Properties: open MRA editor |
 | `d` / F5 | Confirm all-device rediscovery on selected interface (or optional unicast peer); F5 works while filtering |
-| `w` | Same MRA editor as property Enter → Review → SetC confirmation |
+| `w` | Same MRA editor as property Enter; editor Enter sends / Esc cancels |
 | `g` | Fresh Get for selected Get-permitted property |
 | `r` | Refresh selected device maps and all Get-permitted values |
+| `l` | Full-screen wrapped protocol log, including exact requested/readback EDT and result; Esc closes |
 | `/` | Filter listed devices by IP, EOJ or MRA class; empty shows all; Enter focuses devices |
 | Esc | Cancel dialog; otherwise cancel in-flight request, clear search, focus devices |
 | `?` | Key help |
 | `q` / Ctrl-C | Exit, cancel workers and restore terminal; Ctrl-C also exits dialogs |
 
-The device pane expands with terminal width and has separate IP, EOJ and name columns. At less than 120 columns or 28 rows, devices and properties stack at full width. Use at least 68×26; smaller screens can clip content but Esc/Ctrl-C remain usable. Selection/forms survive resize. Mouse input is disabled. Logs retain the latest 256 events and follow the tail when not focused; focus them to scroll.
+The device pane expands with terminal width and has separate IP, EOJ and name columns. At less than 120 columns or 28 rows, devices and properties stack at full width. Use at least 68×26; smaller screens can clip content but Esc/Ctrl-C remain usable. Selection/forms survive resize. Mouse input is disabled. Logs occupy roughly one third of the terminal and retain the latest 256 events. Focus them to scroll, or press `l` for full-screen wrapped frames and results.
 
 ## Network discovery
 
-Network mode is the default. A sole eligible local multicast-capable IPv4 interface/address is selected automatically. Multiple eligible addresses open a picker with the interface/address dropdown initially focused; Select and discover all continues on that interface. Startup binds UDP 3610, joins the group **on that selected interface**, and sends one multicast Get D6 to `224.0.23.0:3610`, destination EOJ `0EF000`. Press `d` or F5 and confirm to repeat discovery. A three-second window collects correlated node-profile responses from multiple IPs and adds their instances to the left list. No peer IP is required. D5 instance-list INF and concrete device INF also update the list, with local last-seen time/source in the selected device header. At most 256 devices are retained; entries are observations, not an authoritative online/offline inventory.
+Network mode is the default. A sole eligible local multicast-capable IPv4 interface/address is selected automatically. Multiple eligible addresses open a picker with the interface/address dropdown initially focused; arrows select the address, Return continues on that interface and Esc exits. There are no buttons. Startup binds UDP 3610, joins the group **on that selected interface**, and sends one multicast Get D6 to `224.0.23.0:3610`, destination EOJ `0EF000`. Press `d` or F5 and confirm to repeat discovery. A three-second window collects correlated node-profile responses from multiple IPs and adds their instances to the left list. No peer IP is required. D5 instance-list INF and concrete device INF also update the list, with local last-seen time/source in the selected device header. At most 256 devices are retained; entries are observations, not an authoritative online/offline inventory.
 
 ```sh
 uechoctl tui                    # automatic discovery; picker if multiple addresses
@@ -64,11 +68,11 @@ selects the demo. `d` types normally when the filter has focus; F5 opens redisco
 normal pane. Rediscovery confirmation clears the filter to show all devices.
 During an active operation, Esc cancels it; retry d/F5 after it finishes.
 
-All SetC writes still require Review and Confirm.
+Only an explicit Enter in the value editor sends a SetC.
 
 The local IPv4 must belong to the named interface. IPv6, TCP, SetI/SetGet/INFC and periodic discovery are outside this controller. Outbound multicast uses the selected IPv4 interface and TTL 1. Core public protocol/transport APIs encode and send messages and join multicast; the controller configures the reusable unicast connection before binding, because the core Bind sets SO_REUSEADDR after bind. Core source is unchanged.
 
-The right pane reconciles the pinned official **MRA 1.3.0** device/superclass names and schemas with actual 9D/9E/9F maps. Supported device properties are shown first with decoded current Get values **and raw EDT**; definition-only properties are marked unsupported and cannot be queried or edited. Unknown EPCs and unsupported schemas remain raw. MRA enum choices and bounded integer numbers provide typed inputs; fixed scale and unit come from the schema. Simple unions support special enum values alongside number input. Historical definitions use fresh EPC 82 release information; ambiguous or future versions disable editing. Every editor validates before Review and again before sending. See [MRA adapter provenance and supported types](../../internal/tui/mra/README.md). This is developer tooling, not comprehensive MRA validation or certified appliance safety.
+The right pane reconciles the pinned official **MRA 1.3.0** device/superclass names and schemas with actual 9D/9E/9F maps. Supported device properties are shown first with decoded current Get values **and raw EDT**; definition-only properties are marked unsupported and cannot be queried or edited. Unknown EPCs and unsupported schemas remain raw. MRA enum choices and bounded integer numbers provide typed inputs; fixed scale and unit come from the schema. Simple unions support special enum values alongside number input. Historical definitions use fresh EPC 82 release information; ambiguous or future versions disable editing. Every editor validates its value before sending. See [MRA adapter provenance and supported types](../../internal/tui/mra/README.md). This is developer tooling, not comprehensive MRA validation or certified appliance safety.
 
 Maps are validated using the core public property-map decoder (list and bitmap formats), checked for count/duplicates and published together. Refresh disables old write permissions immediately. Readable properties are fetched sequentially, so settings are individual timestamped observations rather than an atomic device snapshot. Read-only, unknown, unsupported and unread values are distinguished. Typed editing requires a live Set-map entry; readback is only sent for a live Get-map entry. Write-only acknowledgment is never presented as verified success.
 
@@ -89,7 +93,7 @@ UECHOTUI_SIMULATOR_V1=/tmp/uecho-simulator-v1 GOWORK=off \
   go test -race -v ./internal/tui/controller -run TestSimulatorLoopback
 ```
 
-The test starts/stops the released binary, discovers all three devices, loads all property maps and Get values, writes lighting EPC 80=30, verifies it with a distinct TID/fresh Get and receives status-change INF. The CI also creates `simtest0` with documentation-only addresses `192.0.2.10` (simulator) / `192.0.2.20` (controller), multicast enabled and a group route, all inside an isolated namespace. `UECHOTUI_ISOLATED_MULTICAST=1` opts into `TestSimulatorMulticast`, which refuses any other active/addressed interface. The released simulator runs with a private PTY, `--display 127.0.0.1:18990 --udp 192.0.2.10:3610 --allow-lan --multicast-interface simtest0`. It discovers three devices via multicast, loads maps/Get, writes lighting level B0=4B (75%), verifies fresh correlated Get and receives INF, then shuts down normally. See the exact namespace setup in [.github/workflows/uechotui.yml](../../.github/workflows/uechotui.yml); never execute that setup on a household interface. For interactive testing inside that same isolated environment, launch the simulator with `--plain --udp 127.0.0.2:3610`, then launch this controller with `--interface lo --bind 127.0.0.1 --peer 127.0.0.2` and perform confirmations yourself.
+The test starts/stops the released binary, discovers all three devices, loads all property maps and Get values, writes lighting EPC 80=30, verifies it with a distinct TID/fresh Get and receives status-change INF. The CI also creates `simtest0` with documentation-only addresses `192.0.2.10` (simulator) / `192.0.2.20` (controller), multicast enabled and a group route, all inside an isolated namespace. `UECHOTUI_ISOLATED_MULTICAST=1` opts into `TestSimulatorMulticast`, which refuses any other active/addressed interface. The released simulator runs with a private PTY, `--display 127.0.0.1:18990 --udp 192.0.2.10:3610 --allow-lan --multicast-interface simtest0`. It discovers three devices via multicast, loads maps/Get, writes lighting level B0=4B (75%), verifies fresh correlated Get and receives INF, then shuts down normally. See the exact namespace setup in [.github/workflows/uechotui.yml](../../.github/workflows/uechotui.yml); never execute that setup on a household interface. For interactive testing inside that same isolated environment, launch the simulator with `--plain --udp 127.0.0.2:3610`, then launch this controller with `--interface lo --bind 127.0.0.1 --peer 127.0.0.2` and send explicitly from the value editor.
 
 ### Simulator preview and discovery
 
@@ -115,7 +119,7 @@ GOWORK=off go mod download
 make tui-check
 ```
 
-Checks cover formatting, vet, tests/race and darwin/arm64 + linux/arm64 builds. Default TUI tests use fake clients/screens and open no sockets; this differs from the CLI network default. Fixtures cover identity/ESV/EPC/TID mismatches, duplicates, concurrent requests, timeout/cancel/close, exhausted TIDs, malformed frames, readback mismatch/unknown/rejection, stale INF isolation, keyboard navigation/search, confirmation cancellation, form apply, resize, and screen finalization. The opt-in released-simulator test is separate. Existing core/examples tests can open multicast sockets; run them only inside a disposable isolated namespace/container, not against household interfaces.
+Checks cover formatting, vet, tests/race and darwin/arm64 + linux/arm64 builds. Default TUI tests use fake clients/screens and open no sockets; this differs from the CLI network default. Fixtures cover identity/ESV/EPC/TID mismatches, duplicates, concurrent requests, timeout/cancel/close, exhausted TIDs, malformed frames, readback mismatch/unknown/rejection, stale INF isolation, keyboard navigation/search, editor cancellation, direct Enter send, enum commit, repeated Enter suppression, form apply, resize, and screen finalization. The opt-in released-simulator tests also drive the actual UI ON/OFF keys and verify SetC/fresh Get against the model and GUI SSE payload. Existing core/examples tests can open multicast sockets; run them only inside a disposable isolated namespace/container, not against household interfaces.
 
 To regenerate actual widget screenshots:
 

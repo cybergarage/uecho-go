@@ -125,14 +125,12 @@ func TestWriteReviewAndApply(t *testing.T) {
 	form := d.modal.(*tview.Form)
 	input := form.GetFormItem(0).(*tview.DropDown)
 	input.SetCurrentOption(1)
-	form.SetFocus(2)
+	form.SetFocus(0)
 	key(d, tcell.KeyEnter, 0)
-	if _, ok := d.modal.(*tview.Modal); !ok {
-		t.Fatal("missing review confirmation")
+	if d.modal != nil {
+		t.Fatal("send retained a confirmation dialog")
 	}
-	before := len(d.session.Client.Events())
-	key(d, tcell.KeyRight, 0)
-	key(d, tcell.KeyEnter, 0)
+	before := 0
 	deadline := time.Now().Add(time.Second)
 	for time.Now().Before(deadline) {
 		select {
@@ -414,16 +412,12 @@ func TestTypedNumberAndUnsupportedControls(t *testing.T) {
 	input := form.GetFormItem(1).(*tview.InputField)
 	before := len(d.session.Client.Events())
 	input.SetText("101")
-	form.GetButton(1).InputHandler()(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), func(tview.Primitive) {})
+	key(d, tcell.KeyEnter, 0)
 	if d.modal != form || len(d.session.Client.Events()) != before {
 		t.Fatal("invalid value advanced or sent")
 	}
 	input.SetText("75")
-	form.GetButton(1).InputHandler()(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), func(tview.Primitive) {})
-	if _, ok := d.modal.(*tview.Modal); !ok {
-		t.Fatal("typed value lacks confirmation")
-	}
-	d.closeModal()
+	key(d, tcell.KeyEscape, 0)
 	if len(d.session.Client.Events()) != before {
 		t.Fatal("cancel transmitted")
 	}
@@ -454,7 +448,7 @@ func TestInterfacePickerRequiresConfirmation(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 		if confirm {
 			// Initial focus is the dropdown: Enter opens it, Down selects address 2.
-			for _, k := range []tcell.Key{tcell.KeyEnter, tcell.KeyDown, tcell.KeyEnter, tcell.KeyTab, tcell.KeyTab, tcell.KeyEnter} {
+			for _, k := range []tcell.Key{tcell.KeyDown, tcell.KeyEnter} {
 				screen.PostEventWait(tcell.NewEventKey(k, 0, tcell.ModNone))
 			}
 		} else {

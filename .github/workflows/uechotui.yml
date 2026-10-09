@@ -62,5 +62,5 @@ jobs:
             ip route add 224.0.0.0/4 dev simtest0
             cd "$1"
             export GOWORK=off GOPROXY=off GOTOOLCHAIN=local GOMODCACHE="$2" GOCACHE="$3" UECHOTUI_SIMULATOR_V1="$4" UECHOTUI_ISOLATED_MULTICAST=1
-            "$5" test -race -count=1 -v ./internal/tui/controller -run "TestSimulator(Loopback|Multicast)"
+            "$5" test -race -count=1 -v ./internal/tui/controller ./internal/tui/dashboard -run "TestSimulator(Loopback|Multicast|UIEnumToDisplay)"
           ' -- "$GITHUB_WORKSPACE/uecho-go" "$(go env GOMODCACHE)" "$RUNNER_TEMP/tui-go-cache" "$RUNNER_TEMP/uecho-simulator-v1" "$(command -v go)"

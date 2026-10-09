@@ -304,6 +304,7 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 		return nil
 	}
 	s.Status(fmt.Sprintf("SetC acknowledged TID %04X; sending fresh Get readback", ack.Message.TID()))
+	s.Client.Log(Event{Kind: "SET-ACK", Text: fmt.Sprintf("%s EPC %02X requested EDT %X; acknowledgment alone does not verify state", t, ep, data), TID: ack.Message.TID()})
 	r, err := s.request(ctx, t, 0x62, ep, nil)
 	if err != nil {
 		s.mark(t, ep, "SetC acknowledged; readback unknown")
@@ -314,7 +315,9 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 		state = "Readback mismatch"
 	}
 	s.save(t, ep, r, state)
-	s.Status(fmt.Sprintf("%s: SetC TID %04X / Get TID %04X RX %s EDT %X", state, ack.Message.TID(), r.Message.TID(), stamp(r.Received), r.Message.Property(0).Data()))
+	result := fmt.Sprintf("%s: %s EPC %02X requested EDT %X / received EDT %X; SetC TID %04X / Get TID %04X RX %s", state, t, ep, data, r.Message.Property(0).Data(), ack.Message.TID(), r.Message.TID(), stamp(r.Received))
+	s.Status(result)
+	s.Client.Log(Event{Kind: "RESULT", Text: result, TID: r.Message.TID()})
 	return nil
 }
 func ParseHex(text string) ([]byte, error) {

@@ -26,7 +26,7 @@ func NewCommand() *cobra.Command {
 	o := options{network: true}
 	c := &cobra.Command{
 		Use: "tui", Short: "Discover all ECHONET Lite devices and open the terminal controller",
-		Long: "Open the network controller and discover all devices on the selected interface. Use --demo for a socket-free fixture. / filters the listed devices; d/F5 repeats discovery. Select a device for fresh maps/Get; property Enter opens its MRA editor. g reads a property; r refreshes device maps/Get. Writes always require confirmation; write-only outcomes remain unverified.",
+		Long: "Open the network controller and discover all devices on the selected interface. Use --demo for a socket-free fixture. / filters the listed devices; d/F5 repeats discovery. Select a device for fresh maps/Get; property Enter opens its MRA editor. g reads a property; r refreshes device maps/Get. Editors show the target and current value; Return sends and Esc cancels; write-only outcomes remain unverified.",
 		Args: cobra.NoArgs,
 		RunE: func(c *cobra.Command, _ []string) error {
 			if o.demo && c.Flags().Changed("network") && o.network {

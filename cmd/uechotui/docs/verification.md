@@ -97,3 +97,37 @@ Its local interface/IP inventory was en8/192.168.100.25 and en1/192.168.100.26;
 --allow-lan and --multicast-interface, exposing all three modeled devices through
 one chosen interface. No simulator process, LAN traffic, or appliance was used or
 modified by this task. Hosted CI retains isolated released-simulator checks.
+
+## Enum commit and direct-send workflow (PR after #13)
+
+The supplied TID 0097 Set_Res acknowledges processing but contains no original
+EDT. TID 0098 Get_Res returns lighting EPC 80=31 (OFF). It cannot establish that
+30 was sent. Read-only inspection traced simulator Engine.HandleAll ->
+Store.Write -> revision/STATE/notify -> /events snapshot -> room.html power label;
+there is no demonstrated simulator defect requiring a simulator patch.
+
+Before: a focused enum Down key displayed an OFF candidate while
+GetCurrentOption still returned index 0 / On (30). The new regression test
+TestEnumArrowCommitsDisplayedValue failed on the prior implementation. After:
+arrows commit the displayed option, and leaving an open list with Tab commits
+its visible candidate. Space opens a list; its Enter only commits, while the
+next Enter sends. Editor and interface picker have no Cancel/Review buttons;
+Esc cancels/exits and Return sends/selects. Editors initially focus the value
+and show target, EPC, decoded value, EDT, readback availability and key actions.
+Opening Enter does not cascade into SET, and rapid repeated Enter cannot create
+a second write while the first operation is busy. Device changes invalidate an
+open editor. Multiple enum choices, numeric invalid input, cancellation and
+read-only/write-only regression coverage remain in the fake-screen tests.
+
+Protocol logs now reserve approximately one third of the screen. `l` opens a
+full-screen wrapped log that retains exact TX/RX frames, SET-ACK (which is not
+verified success), and RESULT with both requested/readback EDT. Mismatch details
+remain available after other operations. Updated screenshots use actual cells.
+
+The opt-in TestSimulatorUIEnumToDisplay runs only in the CI Linux network
+namespace, driving actual focused-widget UI keys OFF -> ON -> OFF through the
+released v1 simulator. It checks separate SET/Get TIDs, 31/30/31 readback,
+model power, and the GUI's actual /events SSE power/STATE payload. The existing
+loopback/multicast regressions also run there. No household discovery/write or
+existing simulator stop/restart is performed. Physical M4/M6 LAN operation and
+browser rendering of the existing GUI require the user's follow-up test.

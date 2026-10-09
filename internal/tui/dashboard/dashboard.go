@@ -33,6 +33,7 @@ type Dashboard struct {
 	logs, header, status *tview.TextView
 	search               *tview.InputField
 	modal                tview.Primitive
+	submit               func()
 	prior                tview.Primitive
 	visible              []controller.Device
 	selected             controller.Target
@@ -73,7 +74,7 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	})
 	d.props.SetSelectedFunc(func(int, int) { d.write() })
 	d.body = tview.NewFlex()
-	footer := tview.NewTextView().SetText("Device select: Get | Enter/w: edit | g: Get | r: refresh\nTab/Shift-Tab | d/F5: rediscover | /: filter | ?: help\nEsc: cancel | q/Ctrl-C: exit")
+	footer := tview.NewTextView().SetText("Device select: Get | Enter/w: edit | g: Get | r: refresh\nTab/Shift-Tab | d/F5: rediscover | /: filter | ?: help\nEsc: cancel | q/Ctrl-C: exit | l: full logs")
 	d.root = tview.NewFlex().SetDirection(tview.FlexRow).AddItem(d.header, 1, 0, false).AddItem(d.search, 1, 0, false).AddItem(d.body, 0, 1, true).AddItem(d.logs, 9, 0, false).AddItem(footer, 3, 0, false).AddItem(d.status, 2, 0, false)
 	d.pages = tview.NewPages().AddPage("main", d.root, true, true)
 	d.App.SetRoot(d.pages, true).EnableMouse(false).EnablePaste(true).SetFocus(d.devices).SetInputCapture(d.capture)
@@ -93,11 +94,11 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 		w, h := screen.Size()
 		d.body.Clear()
 		if w < 120 || h < 28 {
-			d.root.ResizeItem(d.logs, 6, 0)
+			d.root.ResizeItem(d.logs, max(6, h/3), 0)
 			d.setDeviceNameWidth(w)
 			d.body.SetDirection(tview.FlexRow).AddItem(d.devices, 6, 0, false).AddItem(d.props, 0, 1, false)
 		} else {
-			d.root.ResizeItem(d.logs, 9, 0)
+			d.root.ResizeItem(d.logs, max(9, h/3), 0)
 			deviceWidth := min(max(48, 2*w/5), w-64)
 			d.setDeviceNameWidth(deviceWidth)
 			d.body.SetDirection(tview.FlexColumn).AddItem(d.devices, deviceWidth, 0, false).AddItem(d.props, 0, 1, false)
@@ -206,6 +207,9 @@ func (d *Dashboard) refresh(force bool) {
 		}
 	}
 	d.logs.SetText(b.String())
+	if panel, ok := d.modal.(*tview.TextView); ok {
+		panel.SetText(b.String() + "\nRESULT: " + snap.Status)
+	}
 	if !d.logs.HasFocus() {
 		d.logs.ScrollToEnd()
 	}
@@ -308,6 +312,19 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 	if d.modal != nil {
+		if e.Key() == tcell.KeyEnter && d.submit != nil {
+			if _, choosing := d.App.GetFocus().(*tview.List); !choosing {
+				d.submit()
+				return nil
+			}
+		}
+		// Leaving an open enum list commits its visible candidate. Otherwise
+		// tview's Tab closes/moves focus while retaining the previous EDT.
+		if _, ok := d.modal.(*tview.Form); ok && (e.Key() == tcell.KeyTab || e.Key() == tcell.KeyBacktab) {
+			if list, ok := d.App.GetFocus().(*tview.List); ok {
+				list.InputHandler()(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), func(p tview.Primitive) { d.App.SetFocus(p) })
+			}
+		}
 		if e.Key() == tcell.KeyEscape {
 			d.closeModal()
 			return nil
@@ -355,7 +372,10 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.search)
 		return nil
 	case '?':
-		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; select device loads maps/Get; Enter or w typed SetC; g fresh property Get; r refresh device maps/Get; d/F5 rediscover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. Readable SetC has fresh Get readback; write-only acknowledgment remains unverified. Cancel never rolls back an applied write.", func() {})
+		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; select device loads maps/Get; Enter or w typed SetC; g fresh property Get; r refresh device maps/Get; l full wrapped logs; d/F5 rediscover all; / filter listed IP/EOJ/class (empty = all); Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. Readable SetC has fresh Get readback; write-only acknowledgment remains unverified. Cancel never rolls back an applied write.", func() {})
+		return nil
+	case 'l':
+		d.showLogs()
 		return nil
 	case 'g':
 		d.get()
@@ -393,9 +413,22 @@ func (d *Dashboard) rediscover() {
 	})
 }
 
+// Full-screen, wrapped copy preserves complete TX/RX frames and operation results.
+func (d *Dashboard) showLogs() {
+	d.prior = d.App.GetFocus()
+	detail := tview.NewTextView().SetWrap(true).SetScrollable(true)
+	detail.SetBorder(true).SetTitle(" Full protocol log / arrows, PgUp/PgDn / Esc close ")
+	detail.SetText(d.logs.GetText(false) + "\nRESULT: " + d.session.Snapshot().Status)
+	detail.ScrollToEnd()
+	d.modal = detail
+	d.pages.AddPage("dialog", detail, true, true)
+	d.App.SetFocus(detail)
+}
+
 func (d *Dashboard) closeModal() {
 	d.pages.RemovePage("dialog")
 	d.modal = nil
+	d.submit = nil
 	d.App.SetFocus(d.prior)
 }
 func (d *Dashboard) show(p tview.Primitive) {
@@ -459,6 +492,7 @@ func (d *Dashboard) write() {
 	if hasInput {
 		labels = append(labels, "Enter "+field.Kind)
 	}
+	updatePreview := func() {}
 	selected := -1
 	for i, o := range options {
 		if string(o.Data) == string(v.Values[ep].Data) {
@@ -469,7 +503,21 @@ func (d *Dashboard) write() {
 		selected = len(options)
 	}
 	if len(labels) > 0 {
-		form.AddDropDown("Value kind", labels, selected, func(_ string, i int) { selected = i })
+		form.AddDropDown("Value (arrows apply; Space opens list)", labels, selected, func(_ string, i int) { selected = i; updatePreview() })
+		dropdown := form.GetFormItem(0).(*tview.DropDown)
+		dropdown.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			i, _ := dropdown.GetCurrentOption()
+			switch event.Key() {
+			case tcell.KeyDown:
+				i = min(i+1, len(labels)-1)
+			case tcell.KeyUp:
+				i = max(i-1, 0)
+			default:
+				return event
+			}
+			dropdown.SetCurrentOption(i)
+			return nil
+		})
 	}
 	input := tview.NewInputField()
 	if hasInput {
@@ -483,10 +531,15 @@ func (d *Dashboard) write() {
 				current = ""
 			}
 		}
-		input.SetLabel(label + ": ").SetText(current)
+		input.SetLabel(label + ": ").SetText(current).SetChangedFunc(func(string) { updatePreview() })
 		form.AddFormItem(input)
 	}
-	form.AddButton("Cancel", d.closeModal).AddButton("Review", func() {
+	submit := func() {
+		if d.selected != v.Target {
+			d.closeModal()
+			d.session.Status("Canceled: device selection changed; reopen the editor")
+			return
+		}
 		var data []byte
 		var err error
 		if selected >= 0 && selected < len(options) {
@@ -504,15 +557,36 @@ func (d *Dashboard) write() {
 			return
 		}
 		d.closeModal()
-		readback := "Then fresh Get readback."
-		if !slices.Contains(v.Get, ep) {
-			readback = "Write-only: no Get permission; readback cannot be verified."
+		d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) })
+	}
+	form.AddTextView("Send to", "", 0, 5, false, false)
+	preview := form.GetFormItem(form.GetFormItemCount() - 1).(*tview.TextView)
+	updatePreview = func() {
+		value := "select a value"
+		if selected >= 0 && selected < len(options) {
+			value = fmt.Sprintf("%s / EDT %X", definition.Decode(options[selected].Data), options[selected].Data)
+		} else if hasInput {
+			data, err := field.Encode(input.GetText())
+			if err != nil {
+				value = "Invalid: " + err.Error()
+			} else {
+				value = fmt.Sprintf("%s / EDT %X", definition.Decode(data), data)
+			}
 		}
-		d.confirm(fmt.Sprintf("Send SetC EPC %02X %s = %s\nEDT %X (%d bytes)?\n%s\n%s Effects may persist after cancel/timeout.", ep, definition.Name, definition.Decode(data), data, len(data), v.Target, readback), func() { d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) }) })
-	})
+		readback := "Fresh Get verifies the result"
+		if !slices.Contains(v.Get, ep) {
+			readback = "Write-only: acknowledged result remains unverified"
+		}
+		preview.SetText(fmt.Sprintf("%s\nEPC %02X %s\n%s\n%s\nReturn: send current value / Esc: cancel", v.Target, ep, definition.Name, value, readback))
+	}
+	updatePreview()
 	form.SetBorder(true).SetTitle(fmt.Sprintf("SetC %02X / %s / MRA 1.3.0", ep, definition.Name))
-	form.SetFocus(form.GetFormItemCount())
+	form.SetFocus(0)
+	if hasInput && selected == len(options) {
+		form.SetFocus(1)
+	}
 	d.show(form)
+	d.submit = submit
 }
 func (d *Dashboard) start(f func(context.Context) error) {
 	if d.busy {

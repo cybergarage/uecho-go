@@ -45,7 +45,7 @@ interface/address is selected automatically; multiple addresses open a picker.
 Use `uechoctl tui --demo` for the socket-free fixture.
 
 The [TUI guide](cmd/uechotui/README.md) covers device selection, MRA settings
-with raw Get values, property Enter editing, confirmed SetC/fresh Get verification, and protocol/INF
+with raw Get values, property Enter editing, Enter-to-send SetC/fresh Get verification, and protocol/INF
 logs. `/` filters the listed devices by IP, EOJ or class; an empty filter shows
 all devices. `d` or F5 repeats discovery (F5 also works while filtering). No filter or peer IP is needed to discover
 all devices. Specify both `--interface` and `--bind` to choose local values
