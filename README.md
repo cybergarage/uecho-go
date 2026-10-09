@@ -43,8 +43,10 @@ Run `make tui` for a socket-free controller demo. The separate
 [uechotui command](cmd/uechotui/README.md) provides device selection,
 interface-selected multicast discovery, MRA settings with raw Get values,
 confirmed SetC/fresh Get verification, and
-protocol/INF logs. Networking requires explicit interface, bind IP and peer IP;
-see its README for isolated simulator v1.0.0 verification and limitations.
+protocol/INF logs. Enable networking with `--network` to choose the local
+interface/address in the UI, or specify both `--interface` and `--bind`.
+`--peer` is optional and selects unicast discovery instead of multicast.
+See its README for isolated simulator v1.0.0 verification and limitations.
 
 Install the command-line tools with `make install`. This runs `go install` for
 `uechoctl`, `uechopost`, `uechosearch`, `uechotui`, and the existing
