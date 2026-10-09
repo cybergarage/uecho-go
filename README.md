@@ -40,8 +40,14 @@ Implementing ECHONET Lite controllers and devices from scratch requires handling
 ## Fullscreen developer controller
 
 Run `make tui` for a socket-free controller demo. The separate
-[uechotui example](examples/uechotui/README.md) provides device selection,
+[uechotui command](cmd/uechotui/README.md) provides device selection,
 interface-selected multicast discovery, MRA settings with raw Get values,
 confirmed SetC/fresh Get verification, and
 protocol/INF logs. Networking requires explicit interface, bind IP and peer IP;
 see its README for isolated simulator v1.0.0 verification and limitations.
+
+Install the command-line tools with `make install`. This runs `go install` for
+`uechoctl`, `uechopost`, `uechosearch`, `uechotui`, and the existing
+`uecholight`/`uechobench` examples. Set `GOBIN` to choose the destination
+(for example, `GOBIN=/tmp/uecho-bin make install`). The TUI uses a separate
+module under `cmd/uechotui` to keep terminal dependencies out of the library.

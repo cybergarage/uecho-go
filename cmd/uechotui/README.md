@@ -57,7 +57,7 @@ No household LAN or physical appliance was contacted. The integration test uses 
 # In the isolated Linux environment, with both repositories available:
 cd uecho-simulator
 GOWORK=off go build -o /tmp/uecho-simulator-v1 ./cmd/uecho-simulator
-cd ../uecho-go/examples/uechotui
+cd ../uecho-go/cmd/uechotui
 UECHOTUI_SIMULATOR_V1=/tmp/uecho-simulator-v1 GOWORK=off \
   go test -race -v ./internal/controller -run TestSimulatorLoopback
 ```
@@ -67,7 +67,7 @@ The test starts/stops the released binary, discovers all three devices, loads al
 ## Checks
 
 ```sh
-GOWORK=off go -C examples/uechotui mod download
+GOWORK=off go -C cmd/uechotui mod download
 make tui-check
 ```
 
@@ -76,7 +76,7 @@ Checks cover formatting, vet, tests/race and darwin/arm64 + linux/arm64 builds. 
 To regenerate actual widget screenshots:
 
 ```sh
-cd examples/uechotui
+cd cmd/uechotui
 UECHOTUI_SCREENSHOT_DIR="$PWD/docs/images" GOWORK=off \
   go test ./internal/dashboard -run TestScreenshot -count=1
 ```
