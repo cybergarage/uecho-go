@@ -5,11 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/sys/unix"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -22,37 +25,70 @@ import (
 // user's simulator and LAN are never involved; SSE is the GUI's actual input.
 func TestSimulatorUIEnumToDisplay(t *testing.T) {
 	binary := os.Getenv("UECHOTUI_SIMULATOR_V1")
-	if binary == "" || runtime.GOOS != "linux" {
+	if binary == "" || runtime.GOOS != "linux" || os.Getenv("UECHOTUI_ISOLATED_MULTICAST") != "1" {
 		t.Skip("isolated Linux simulator opt-in")
 	}
-	cmd := exec.Command(binary, "--plain", "--udp", "127.0.0.2:3610", "--display", "127.0.0.1:18080")
-	stdin, err := cmd.StdinPipe()
+	// Supply the released terminal mode a private Linux PTY.
+	master, err := os.OpenFile("/dev/ptmx", os.O_RDWR|syscall.O_NOCTTY, 0600)
 	if err != nil {
 		t.Fatal(err)
 	}
-	stdout, err := cmd.StdoutPipe()
+	defer master.Close()
+	if err = unix.IoctlSetPointerInt(int(master.Fd()), unix.TIOCSPTLCK, 0); err != nil {
+		t.Fatal(err)
+	}
+	number, err := unix.IoctlGetInt(int(master.Fd()), unix.TIOCGPTN)
 	if err != nil {
 		t.Fatal(err)
 	}
-	cmd.Stderr = os.Stderr
+	slave, err := os.OpenFile(fmt.Sprintf("/dev/pts/%d", number), os.O_RDWR|syscall.O_NOCTTY, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer slave.Close()
+	cmd := exec.Command(binary, "--display", "127.0.0.1:18080", "--udp", "127.0.0.2:3610")
+	cmd.Env = append(os.Environ(), "TERM=xterm-256color")
+	cmd.Stdin = slave
+	cmd.Stdout = slave
+	cmd.Stderr = slave
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true, Setctty: true, Ctty: 0}
 	if err = cmd.Start(); err != nil {
 		t.Fatal(err)
 	}
-	defer func() { stdin.Close(); cmd.Process.Kill(); cmd.Wait() }()
-	ready := make(chan struct{})
-	go func() {
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "Explicit loopback UDP:") {
-				close(ready)
-				return
+	slave.Close()
+	drained := make(chan struct{})
+	go func() { io.Copy(io.Discard, master); close(drained) }()
+	done := make(chan error, 1)
+	go func() { done <- cmd.Wait() }()
+	defer func() {
+		cmd.Process.Signal(os.Interrupt)
+		select {
+		case err := <-done:
+			if err != nil {
+				t.Error("simulator exit", err)
 			}
+		case <-time.After(2 * time.Second):
+			cmd.Process.Kill()
+			<-done
+			t.Error("simulator shutdown timed out")
 		}
+		master.Close()
+		<-drained
 	}()
-	select {
-	case <-ready:
-	case <-time.After(5 * time.Second):
-		t.Fatal("simulator not ready")
+	httpClient := http.Client{Timeout: 200 * time.Millisecond}
+	ready := false
+	deadline := time.Now().Add(5 * time.Second)
+	for time.Now().Before(deadline) {
+		res, e := httpClient.Get("http://127.0.0.1:18080/")
+		if e == nil {
+			res.Body.Close()
+			ready = true
+			break
+		}
+		time.Sleep(20 * time.Millisecond)
+	}
+	if !ready {
+		t.Fatal("released simulator failed to start")
 	}
 	c, err := controller.Open("lo", "127.0.0.1")
 	if err != nil {
