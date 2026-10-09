@@ -85,14 +85,13 @@ func TestNavigationSearchConfirmCancelResize(t *testing.T) {
 	}
 	key(d, tcell.KeyEscape, 0)
 	key(d, tcell.KeyEnter, 0)
-	if d.modal == nil {
-		t.Fatal("load dialog")
+	drawScreen(d, s)
+	d.jobs.Wait()
+	drawScreen(d, s)
+	if d.modal != nil {
+		t.Fatal("device Enter should refresh without a Get dialog")
 	}
 	before := len(d.session.Client.Events())
-	key(d, tcell.KeyEnter, 0)
-	if d.modal != nil || len(d.session.Client.Events()) != before {
-		t.Fatal("cancel must send nothing")
-	}
 	d.App.SetFocus(d.props)
 	d.ep = 0x80
 	key(d, tcell.KeyRune, 'w')
@@ -122,7 +121,7 @@ func TestWriteReviewAndApply(t *testing.T) {
 	drawScreen(d, s)
 	d.App.SetFocus(d.props)
 	d.ep = 0x80
-	d.write()
+	key(d, tcell.KeyEnter, 0)
 	form := d.modal.(*tview.Form)
 	input := form.GetFormItem(0).(*tview.DropDown)
 	input.SetCurrentOption(1)
@@ -196,6 +195,8 @@ func TestTerminalFinalization(t *testing.T) {
 // regenerate documentation images, not to create an artist's mockup.
 func TestScreenshot(t *testing.T) {
 	d, s := setup(t)
+	d.session.Add(controller.Target{IP: "192.0.2.100", EOJ: 0x013001})
+	d.session.Add(controller.Target{IP: "198.51.100.200", EOJ: 0x001101})
 	drawScreen(d, s)
 	cells, w, h := s.GetContents()
 	var text strings.Builder
@@ -225,7 +226,7 @@ func TestScreenshot(t *testing.T) {
 		w, h   int
 		dialog bool
 		ep     byte
-	}{{"tui", 132, 36, false, 0}, {"tui-compact", 68, 26, false, 0}, {"tui-set", 132, 36, true, 0x80}, {"tui-number", 132, 36, true, 0xb0}} {
+	}{{"tui", 132, 36, false, 0}, {"tui-wide", 160, 36, false, 0}, {"tui-compact", 68, 26, false, 0}, {"tui-set", 132, 36, true, 0x80}, {"tui-number", 132, 36, true, 0xb0}} {
 		s.SetSize(shot.w, shot.h)
 		if shot.dialog {
 			if d.modal != nil {
@@ -393,7 +394,7 @@ func TestCompactKeysRemainVisible(t *testing.T) {
 		}
 		text.WriteByte('\n')
 	}
-	for _, hint := range []string{"/ filter | ? help", "Esc cancel | q / Ctrl-C exit", "Value | raw EDT"} {
+	for _, hint := range []string{"/: filter | ?: help", "Esc: cancel | q/Ctrl-C: exit", "Enter/w: edit", "g: Get", "r: refresh", "Value | raw EDT"} {
 		if !strings.Contains(text.String(), hint) {
 			t.Fatalf("compact hint %q hidden:\n%s", hint, text.String())
 		}
@@ -403,8 +404,9 @@ func TestCompactKeysRemainVisible(t *testing.T) {
 func TestTypedNumberAndUnsupportedControls(t *testing.T) {
 	d, screen := setup(t)
 	drawScreen(d, screen)
+	d.App.SetFocus(d.props)
 	d.ep = 0xb0
-	d.write()
+	key(d, tcell.KeyEnter, 0)
 	form, ok := d.modal.(*tview.Form)
 	if !ok {
 		t.Fatal("number editor unavailable")
@@ -613,5 +615,113 @@ func TestRediscoveryKeysBusyCancelAndRepeat(t *testing.T) {
 			t.Fatal("repeated discovery reused a TID")
 		}
 		lastTID = tid
+	}
+}
+
+func TestDeviceColumnsAndResponsivePaneBounds(t *testing.T) {
+	d, screen := setup(t)
+	target := controller.Target{IP: "192.168.100.216", EOJ: 0x013001}
+	d.session.Add(target)
+	for _, size := range []struct{ w, h int }{{132, 36}, {160, 36}, {119, 36}, {68, 26}, {45, 22}, {132, 36}} {
+		screen.SetSize(size.w, size.h)
+		drawScreen(d, screen)
+		dx, _, dw, _ := d.devices.GetRect()
+		px, _, pw, _ := d.props.GetRect()
+		if dx < 0 || px < 0 || dx+dw > size.w || px+pw > size.w {
+			t.Fatalf("panes exceed terminal %dx%d", size.w, size.h)
+		}
+		if size.w >= 120 && size.h >= 28 {
+			if dw <= 38 || pw < 64 || px < dx+dw {
+				t.Fatalf("wide panes devices=%d properties=%d x=%d", dw, pw, px)
+			}
+		} else if dw != size.w || pw != size.w {
+			t.Fatal("narrow panes must stack at full terminal width")
+		}
+		if size.w >= 68 {
+			var text strings.Builder
+			cells, w, h := screen.GetContents()
+			for y := 0; y < h; y++ {
+				for x := 0; x < w; x++ {
+					r := cells[y*w+x].Runes
+					if len(r) > 0 {
+						text.WriteRune(r[0])
+					} else {
+						text.WriteByte(' ')
+					}
+				}
+				text.WriteByte('\n')
+			}
+			for _, v := range d.visible {
+				if !strings.Contains(text.String(), v.Target.IP) || !strings.Contains(text.String(), fmt.Sprintf("%06X", uint(v.Target.EOJ))) || !strings.Contains(text.String(), v.Name()) {
+					t.Fatalf("identity/name clipped at %dx%d: %v\n%s", size.w, size.h, v.Target, text.String())
+				}
+			}
+		}
+	}
+}
+
+func TestDeviceSwitchCancelsReadsAndKeepsLatestSelection(t *testing.T) {
+	d, screen := setup(t)
+	a := d.selected
+	b := controller.Target{IP: a.IP, EOJ: 0x013001}
+	d.session.Add(b)
+	drawScreen(d, screen)
+	d.autoLoad = true
+	started := make(chan struct{})
+	d.startRead(func(ctx context.Context) error { close(started); <-ctx.Done(); return ctx.Err() })
+	<-started
+	d.selectDevice(b)
+	d.selectDevice(a)
+	d.selectDevice(b)
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	if d.selected != b || d.busy || !strings.Contains(d.props.GetTitle(), "Home air conditioner") {
+		t.Fatal("latest selection/load not retained")
+	}
+	if v, ok := d.device(); !ok || !v.Maps || len(v.Values) == 0 {
+		t.Fatal("selected device did not auto-load")
+	}
+	// Switching during a write never interrupts its acknowledgment/readback job.
+	started = make(chan struct{})
+	release := make(chan struct{})
+	d.start(func(ctx context.Context) error {
+		close(started)
+		select {
+		case <-release:
+			return nil
+		case <-ctx.Done():
+			t.Error("selection canceled a confirmed write")
+			return ctx.Err()
+		}
+	})
+	<-started
+	d.selectDevice(a)
+	close(release)
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	if d.selected != a || d.busy {
+		t.Fatal("pending latest read after write did not run")
+	}
+}
+
+func TestPropertyEnterReadOnlyAndManualGet(t *testing.T) {
+	d, screen := setup(t)
+	drawScreen(d, screen)
+	d.App.SetFocus(d.props)
+	d.ep = 0x82
+	before := len(d.session.Client.Events())
+	key(d, tcell.KeyEnter, 0)
+	if d.modal != nil || len(d.session.Client.Events()) != before || !strings.Contains(d.session.Snapshot().Status, "Not editable") {
+		t.Fatal("read-only Enter should explain, without Get or Set")
+	}
+	key(d, tcell.KeyRune, 'g')
+	d.jobs.Wait()
+	drawScreen(d, screen)
+	if len(d.session.Client.Events()) <= before || !strings.Contains(d.session.Snapshot().Status, "Get success") {
+		t.Fatal("manual g did not read")
 	}
 }

@@ -104,7 +104,11 @@ func (s *Session) sighted(t Target, at time.Time, origin string) {
 func (s *Session) request(ctx context.Context, t Target, esv protocol.ESV, ep byte, data []byte) (Reply, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
-	return s.Client.RoundTrip(ctx, t, esv, ep, data)
+	r, err := s.Client.RoundTrip(ctx, t, esv, ep, data)
+	if err == nil && ctx.Err() != nil {
+		return Reply{}, ctx.Err()
+	}
+	return r, err
 }
 func (s *Session) Discover(ctx context.Context, ip string) error {
 	if err := s.acquire(ctx); err != nil {
@@ -251,7 +255,8 @@ func (s *Session) get(ctx context.Context, t Target, ep byte) error {
 	return nil
 }
 
-// Set performs one SetC then a distinct fresh Get. Cancellation/timeout after
+// Set performs one SetC and a distinct fresh Get only when the live map permits it.
+// A write-only acknowledgment remains unverified. Cancellation/timeout after
 // transmission leaves outcome unknown; it does not retry a possibly applied Set.
 func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error {
 	if err := s.acquire(ctx); err != nil {
@@ -261,7 +266,8 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 
 	s.mu.Lock()
 	d := s.devices[t]
-	allowed := d != nil && d.Maps && slices.Contains(d.Set, ep) && slices.Contains(d.Get, ep)
+	allowed := d != nil && d.Maps && slices.Contains(d.Set, ep)
+	readable := d != nil && slices.Contains(d.Get, ep)
 	var schemaErr error
 	if allowed {
 		def, known := d.Definitions()[ep]
@@ -273,7 +279,7 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 	}
 	s.mu.Unlock()
 	if !allowed {
-		return s.fail("SetC", fmt.Errorf("requires fresh Get/Set maps and a supported MRA write schema"))
+		return s.fail("SetC", fmt.Errorf("requires fresh device maps, Set permission and a supported MRA write schema"))
 	}
 	if schemaErr != nil {
 		return s.fail("SetC", schemaErr)
@@ -290,6 +296,12 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 			return s.fail("SetC rejected", err)
 		}
 		return s.fail("SetC outcome unknown / possibly applied", err)
+	}
+	if !readable {
+		state := "SetC acknowledged; readback unavailable (not in Get map)"
+		s.mark(t, ep, state)
+		s.Status(fmt.Sprintf("%s: TID %04X; device outcome unverified", state, ack.Message.TID()))
+		return nil
 	}
 	s.Status(fmt.Sprintf("SetC acknowledged TID %04X; sending fresh Get readback", ack.Message.TID()))
 	r, err := s.request(ctx, t, 0x62, ep, nil)

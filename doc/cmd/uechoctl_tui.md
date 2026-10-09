@@ -4,7 +4,7 @@ Discover all ECHONET Lite devices and open the terminal controller
 
 ### Synopsis
 
-Open the network controller and discover all devices on the selected interface. Use --demo for a socket-free fixture. / filters the listed devices; d/F5 repeats discovery. Writes always require confirmation.
+Open the network controller and discover all devices on the selected interface. Use --demo for a socket-free fixture. / filters the listed devices; d/F5 repeats discovery. Select a device for fresh maps/Get; property Enter opens its MRA editor. g reads a property; r refreshes device maps/Get. Writes always require confirmation; write-only outcomes remain unverified.
 
 ```
 uechoctl tui [flags]
