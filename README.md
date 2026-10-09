@@ -33,7 +33,7 @@ Implementing ECHONET Lite controllers and devices from scratch requires handling
 
 ## Related projects
 
-[uecho-simulator](https://github.com/cybergarage/uecho-simulator) is a small ECHONET Lite development simulator with virtual lighting, air conditioning, and temperature sensing. It provides a full-screen terminal UI and a live, read-only browser preview, runs offline by default, and implements limited device profiles. It is built with `uecho-go` and serves as an example application.
+[uecho-simulator](https://github.com/cybergarage/uecho-simulator) is a small ECHONET Lite development simulator with virtual lighting, air conditioning, and temperature sensing. It provides a full-screen terminal UI and a live, read-only browser preview, offers offline fixtures and limited device profiles. It is built with `uecho-go` and serves as an example application.
 
 [enet]:https://echonet.jp/english/
 
@@ -58,3 +58,21 @@ the existing `uecholight`/`uechobench` examples (six binaries). Set `GOBIN` to
 choose the destination (for example, `GOBIN=/tmp/uecho-bin make install`).
 `uechoctl tui` and `uechotui` share one implementation in the root module;
 existing `uechoctl` subcommands remain available.
+
+## v1.4.0 installation migration
+
+Install controller tools from `cmd`, for example:
+
+```sh
+go install github.com/cybergarage/uecho-go/cmd/uechoctl@v1.4.0
+go install github.com/cybergarage/uecho-go/cmd/uechotui@v1.4.0
+go install github.com/cybergarage/uecho-go/cmd/uechopost@v1.4.0
+go install github.com/cybergarage/uecho-go/cmd/uechosearch@v1.4.0
+```
+
+The former `examples/uechopost` and `examples/uechosearch` paths have moved.
+`make install` installs all six tools and honors `GOBIN`. Public Go library
+signatures remain compatible; Go 1.25 is required. [ChangeLog](ChangeLog.md)
+describes the new TUI, tested M6-to-M4 simulator lighting path and remaining
+public-core concurrency/physical-appliance limitations. `VERSION` controls
+version generation; update it explicitly when preparing a release.
