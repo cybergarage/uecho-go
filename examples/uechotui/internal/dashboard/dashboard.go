@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cybergarage/uecho-go/examples/uechotui/internal/controller"
+	"github.com/cybergarage/uecho-go/examples/uechotui/internal/mra"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -44,12 +45,12 @@ func New(s *controller.Session, peer, mode string) *Dashboard {
 	d.devices = tview.NewTable().SetSelectable(true, false).SetFixed(1, 0)
 	d.devices.SetBorder(true).SetTitle(" Devices / Enter: load maps + Get ")
 	d.props = tview.NewTable().SetSelectable(true, false).SetFixed(1, 0)
-	d.props.SetBorder(true).SetTitle(" Raw properties / Enter: Get / w: SetC ")
+	d.props.SetBorder(true).SetTitle(" MRA settings / Enter: Get / w: SetC ")
 	d.logs = tview.NewTextView().SetWrap(false).SetScrollable(true)
 	d.logs.SetBorder(true).SetTitle(" Protocol events (256 max) / INF arrival only ")
-	d.header = tview.NewTextView().SetText(" UECHO CONTROLLER | " + mode + " | raw hex — schema not inferred")
+	d.header = tview.NewTextView().SetText(" UECHO CONTROLLER | " + mode + " | MRA 1.3.0 | fresh Get + raw EDT")
 	d.status = tview.NewTextView()
-	d.search = tview.NewInputField().SetLabel(" / Search IP / EOJ: ")
+	d.search = tview.NewInputField().SetLabel(" / Search IP / EOJ / class: ")
 	d.search.SetChangedFunc(func(string) { d.refresh(true) })
 	d.search.SetDoneFunc(func(tcell.Key) { d.App.SetFocus(d.devices) })
 	d.devices.SetSelectionChangedFunc(func(row, _ int) {
@@ -119,7 +120,7 @@ func (d *Dashboard) refresh(force bool) {
 	d.visible = nil
 	query := strings.ToLower(d.search.GetText())
 	for _, v := range snap.Devices {
-		if strings.Contains(strings.ToLower(v.Target.String()), query) {
+		if strings.Contains(strings.ToLower(v.Target.String()+" "+v.Name()), query) {
 			d.visible = append(d.visible, v)
 		}
 	}
@@ -128,7 +129,7 @@ func (d *Dashboard) refresh(force bool) {
 	d.devices.SetCell(0, 0, tview.NewTableCell("IP / EOJ").SetSelectable(false))
 	selection := 0
 	for i, v := range d.visible {
-		d.devices.SetCell(i+1, 0, tview.NewTableCell(v.Target.String()))
+		d.devices.SetCell(i+1, 0, tview.NewTableCell(fmt.Sprintf("%s / %06X %s", v.Target.IP, uint(v.Target.EOJ), v.Name())))
 		if v.Target == d.selected {
 			selection = i + 1
 		}
@@ -164,14 +165,17 @@ func (d *Dashboard) device() (controller.Device, bool) {
 }
 func (d *Dashboard) refreshProperties() {
 	d.props.Clear()
-	for i, h := range []string{"EPC", "Get/Set/INF", "EDT (raw hex)", "Get RX UTC / TID / state"} {
+	for i, h := range []string{"EPC / MRA name", "GSI", "Value | raw EDT", "Get RX UTC / TID / state"} {
 		d.props.SetCell(0, i, tview.NewTableCell(h).SetSelectable(false).SetTextColor(tcell.ColorAqua))
 	}
 	v, ok := d.device()
 	if !ok {
+		d.props.SetTitle(" MRA settings / Enter: Get / w: SetC ")
 		return
 	}
-	codes := []byte{}
+	d.props.SetTitle(fmt.Sprintf(" MRA settings: %s / %06X | seen %s %s ", v.Name(), uint(v.Target.EOJ), v.LastSeen.UTC().Format("15:04:05Z"), v.Origin))
+	definitions := v.Definitions()
+	codes := mra.Codes(definitions)
 	for ep := range v.Values {
 		codes = append(codes, ep)
 	}
@@ -180,6 +184,18 @@ func (d *Dashboard) refreshProperties() {
 	}
 	slices.Sort(codes)
 	codes = slices.Compact(codes)
+	slices.SortStableFunc(codes, func(a, b byte) int {
+		supported := func(ep byte) bool {
+			return slices.Contains(v.Get, ep) || slices.Contains(v.Set, ep) || slices.Contains(v.Announce, ep)
+		}
+		if supported(a) && !supported(b) {
+			return -1
+		}
+		if !supported(a) && supported(b) {
+			return 1
+		}
+		return int(a) - int(b)
+	})
 	selection := 1
 	for i, ep := range codes {
 		row := i + 1
@@ -200,13 +216,24 @@ func (d *Dashboard) refreshProperties() {
 			}
 			flags = string(f)
 		}
+		definition, known := definitions[ep]
+		name := definition.Name
+		if !known {
+			name = "Unknown property"
+		}
 		value := v.Values[ep]
 		state := "unknown / never read"
+		if v.Maps && flags == "---" {
+			state = "unsupported by device maps"
+		}
+		if definition.Reason != "" {
+			state += " / " + definition.Reason
+		}
 		if !value.Received.IsZero() {
 			state = fmt.Sprintf("%s / %04X / %s", value.Received.UTC().Format("15:04:05.000Z"), value.TID, value.State)
 		}
-		for col, text := range []string{fmt.Sprintf("%02X", ep), flags, fmt.Sprintf("%X", value.Data), state} {
-			d.props.SetCell(row, col, tview.NewTableCell(text).SetReference(ep))
+		for col, text := range []string{fmt.Sprintf("%02X %s", ep, name), flags, fmt.Sprintf("%s | %X", definition.Decode(value.Data), value.Data), state} {
+			d.props.SetCell(row, col, tview.NewTableCell(text).SetReference(ep).SetMaxWidth([]int{25, 3, 24, 0}[col]))
 		}
 	}
 	if len(codes) > 0 {
@@ -265,13 +292,19 @@ func (d *Dashboard) capture(e *tcell.EventKey) *tcell.EventKey {
 		d.App.SetFocus(d.search)
 		return nil
 	case '?':
-		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w raw SetC; d discovery; / search; Esc cancel; q/Ctrl-C exit.\n\nAll EDT is raw hex. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
+		d.confirm("Keys: Tab/Shift-Tab focus; arrows select/scroll; Enter load/Get; w typed SetC; d discovery; / search; Esc cancel; q/Ctrl-C exit.\n\nMRA state/number/raw schemas provide names and editors. Unsupported types remain raw and read only. Device maps determine availability; Get RX shows snapshot freshness. INF arrival is not a device timestamp. SetC is followed by a separate Get: success, mismatch or unknown. Cancel never rolls back an applied write.", func() {})
 		return nil
 	case 'w':
 		d.write()
 		return nil
 	case 'd':
-		d.confirm("Send node-profile Get D6 discovery to "+d.peer+":3610?", func() { d.start(func(ctx context.Context) error { return d.session.Discover(ctx, d.peer) }) })
+		destination := d.peer
+		if destination == "" {
+			destination = "224.0.23.0:3610 on the explicitly selected interface (3 second collection window)"
+		} else {
+			destination += ":3610"
+		}
+		d.confirm("Send node-profile Get D6 discovery to "+destination+"?", func() { d.start(func(ctx context.Context) error { return d.session.Discover(ctx, d.peer) }) })
 		return nil
 	}
 	return e
@@ -303,6 +336,10 @@ func (d *Dashboard) get() {
 		return
 	}
 	ep := d.ep
+	if !v.Maps || !slices.Contains(v.Get, ep) {
+		d.session.Status("Get unavailable: not in fresh device Get map")
+		return
+	}
 	d.confirm(fmt.Sprintf("Send fresh Get EPC %02X?\n%s", ep, v.Target), func() { d.start(func(ctx context.Context) error { return d.session.Get(ctx, v.Target, ep) }) })
 }
 func (d *Dashboard) write() {
@@ -315,19 +352,70 @@ func (d *Dashboard) write() {
 		d.session.Status("Read only / unknown permission: load property maps first")
 		return
 	}
+	definition, known := v.Definitions()[ep]
+	if !known || !definition.Editable() || !slices.Contains(v.Get, ep) {
+		d.session.Status("Read only: unsupported/ambiguous MRA schema or no Get readback map")
+		return
+	}
 	form := tview.NewForm()
-	input := tview.NewInputField().SetLabel("EDT raw hex: ").SetText(fmt.Sprintf("%X", v.Values[ep].Data))
-	form.AddFormItem(input).AddButton("Cancel", d.closeModal).AddButton("Review", func() {
-		data, err := controller.ParseHex(input.GetText())
+	options := definition.Options()
+	field, hasInput := definition.InputField()
+	labels := []string{}
+	for _, o := range options {
+		labels = append(labels, o.Label)
+	}
+	if hasInput {
+		labels = append(labels, "Enter "+field.Kind)
+	}
+	selected := -1
+	for i, o := range options {
+		if string(o.Data) == string(v.Values[ep].Data) {
+			selected = i
+		}
+	}
+	if hasInput && selected < 0 {
+		selected = len(options)
+	}
+	if len(labels) > 0 {
+		form.AddDropDown("Value kind", labels, selected, func(_ string, i int) { selected = i })
+	}
+	input := tview.NewInputField()
+	if hasInput {
+		label := "Raw hex"
+		current := fmt.Sprintf("%X", v.Values[ep].Data)
+		if field.Kind == "number" {
+			label = fmt.Sprintf("%.6g..%.6g %s (step %.6g)", field.Min*field.Scale, field.Max*field.Scale, field.Unit, field.Scale)
+			decoded := definition.Decode(v.Values[ep].Data)
+			current = strings.Fields(decoded)[0]
+			if current == "raw" || current == "unread" {
+				current = ""
+			}
+		}
+		input.SetLabel(label + ": ").SetText(current)
+		form.AddFormItem(input)
+	}
+	form.AddButton("Cancel", d.closeModal).AddButton("Review", func() {
+		var data []byte
+		var err error
+		if selected >= 0 && selected < len(options) {
+			data = append([]byte(nil), options[selected].Data...)
+		} else if hasInput {
+			data, err = field.Encode(input.GetText())
+		} else {
+			err = fmt.Errorf("select a value")
+		}
+		if err == nil {
+			err = definition.Validate(data)
+		}
 		if err != nil {
 			form.SetTitle(err.Error())
 			return
 		}
 		d.closeModal()
-		d.confirm(fmt.Sprintf("Send SetC EPC %02X EDT %X (%d bytes)?\n%s\nThen send fresh Get to verify. Device effect may persist after cancel/timeout.", ep, data, len(data), v.Target), func() { d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) }) })
+		d.confirm(fmt.Sprintf("Send SetC EPC %02X %s = %s\nEDT %X (%d bytes)?\n%s\nThen fresh Get readback. Effects may persist after cancel/timeout.", ep, definition.Name, definition.Decode(data), data, len(data), v.Target), func() { d.start(func(ctx context.Context) error { return d.session.Set(ctx, v.Target, ep, data) }) })
 	})
-	form.SetBorder(true).SetTitle(fmt.Sprintf("SetC %02X — schema unknown; raw hex", ep))
-	form.SetFocus(1)
+	form.SetBorder(true).SetTitle(fmt.Sprintf("SetC %02X / %s / MRA 1.3.0", ep, definition.Name))
+	form.SetFocus(form.GetFormItemCount())
 	d.show(form)
 }
 func (d *Dashboard) start(f func(context.Context) error) {

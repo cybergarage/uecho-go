@@ -41,6 +41,7 @@ Implementing ECHONET Lite controllers and devices from scratch requires handling
 
 Run `make tui` for a socket-free controller demo. The separate
 [uechotui example](examples/uechotui/README.md) provides device selection,
-property maps and raw Get values, confirmed SetC/fresh Get verification, and
+interface-selected multicast discovery, MRA settings with raw Get values,
+confirmed SetC/fresh Get verification, and
 protocol/INF logs. Networking requires explicit interface, bind IP and peer IP;
 see its README for isolated simulator v1.0.0 verification and limitations.

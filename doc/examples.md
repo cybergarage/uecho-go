@@ -94,8 +94,8 @@ $ uecholight
 
 ## uechotui
 
-A fullscreen controller with a safe offline demo, explicit unicast discovery,
-raw property maps/Get values, confirmed SetC with fresh Get readback, and protocol
+A fullscreen controller with a safe offline demo, interface-selected multicast discovery,
+MRA settings and raw property maps/Get values, confirmed SetC with fresh Get readback, and protocol
 logs/INF display. Run `make tui` from the repository root. It owns a separate Go
 module so core and the existing examples do not acquire terminal dependencies.
 See [the uechotui README](../examples/uechotui/README.md) for keys, explicit network

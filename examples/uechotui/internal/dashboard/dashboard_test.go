@@ -122,8 +122,8 @@ func TestWriteReviewAndApply(t *testing.T) {
 	d.ep = 0x80
 	d.write()
 	form := d.modal.(*tview.Form)
-	input := form.GetFormItem(0).(*tview.InputField)
-	input.SetText("31")
+	input := form.GetFormItem(0).(*tview.DropDown)
+	input.SetCurrentOption(1)
 	form.SetFocus(2)
 	key(d, tcell.KeyEnter, 0)
 	if _, ok := d.modal.(*tview.Modal); !ok {
@@ -208,7 +208,7 @@ func TestScreenshot(t *testing.T) {
 		}
 		text.WriteByte('\n')
 	}
-	if !strings.Contains(text.String(), "Raw properties") || !strings.Contains(text.String(), "Protocol events") {
+	if !strings.Contains(text.String(), "MRA settings") || !strings.Contains(text.String(), "Protocol events") {
 		t.Fatal(text.String())
 	}
 	dir := os.Getenv("UECHOTUI_SCREENSHOT_DIR")
@@ -222,10 +222,14 @@ func TestScreenshot(t *testing.T) {
 		name   string
 		w, h   int
 		dialog bool
-	}{{"tui", 132, 36, false}, {"tui-compact", 68, 26, false}, {"tui-set", 132, 36, true}} {
+		ep     byte
+	}{{"tui", 132, 36, false, 0}, {"tui-compact", 68, 26, false, 0}, {"tui-set", 132, 36, true, 0x80}, {"tui-number", 132, 36, true, 0xb0}} {
 		s.SetSize(shot.w, shot.h)
 		if shot.dialog {
-			d.ep = 0x80
+			if d.modal != nil {
+				d.closeModal()
+			}
+			d.ep = shot.ep
 			d.write()
 		}
 		drawScreen(d, s)
@@ -387,9 +391,77 @@ func TestCompactKeysRemainVisible(t *testing.T) {
 		}
 		text.WriteByte('\n')
 	}
-	for _, hint := range []string{"/ search | ? help", "Esc cancel | q / Ctrl-C exit", "EDT (raw hex)"} {
+	for _, hint := range []string{"/ search | ? help", "Esc cancel | q / Ctrl-C exit", "Value | raw EDT"} {
 		if !strings.Contains(text.String(), hint) {
 			t.Fatalf("compact hint %q hidden:\n%s", hint, text.String())
+		}
+	}
+}
+
+func TestTypedNumberAndUnsupportedControls(t *testing.T) {
+	d, screen := setup(t)
+	drawScreen(d, screen)
+	d.ep = 0xb0
+	d.write()
+	form, ok := d.modal.(*tview.Form)
+	if !ok {
+		t.Fatal("number editor unavailable")
+	}
+	input := form.GetFormItem(1).(*tview.InputField)
+	before := len(d.session.Client.Events())
+	input.SetText("101")
+	form.GetButton(1).InputHandler()(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), func(tview.Primitive) {})
+	if d.modal != form || len(d.session.Client.Events()) != before {
+		t.Fatal("invalid value advanced or sent")
+	}
+	input.SetText("75")
+	form.GetButton(1).InputHandler()(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), func(tview.Primitive) {})
+	if _, ok := d.modal.(*tview.Modal); !ok {
+		t.Fatal("typed value lacks confirmation")
+	}
+	d.closeModal()
+	if len(d.session.Client.Events()) != before {
+		t.Fatal("cancel transmitted")
+	}
+	d.ep = 0xff
+	d.write()
+	if d.modal != nil {
+		t.Fatal("unknown editor")
+	}
+	d.ep = 0x81
+	d.get()
+	if d.modal != nil {
+		t.Fatal("unsupported Get confirmation")
+	}
+}
+
+func TestInterfacePickerRequiresConfirmation(t *testing.T) {
+	for _, confirm := range []bool{false, true} {
+		screen := tcell.NewSimulationScreen("UTF-8")
+		screen.SetSize(100, 30)
+		done := make(chan error, 1)
+		go func() {
+			choice, err := selectInterface(context.Background(), []controller.InterfaceOption{{Name: "fixture0", IP: "192.0.2.20"}}, screen)
+			if confirm && err == nil && choice.IP != "192.0.2.20" {
+				err = fmt.Errorf("wrong selection")
+			}
+			done <- err
+		}()
+		time.Sleep(20 * time.Millisecond)
+		if confirm {
+			screen.PostEventWait(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		}
+		screen.PostEventWait(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		select {
+		case err := <-done:
+			if confirm && err != nil {
+				t.Fatal(err)
+			}
+			if !confirm && err != context.Canceled {
+				t.Fatal("default must cancel", err)
+			}
+		case <-time.After(time.Second):
+			t.Fatal("picker blocked")
 		}
 	}
 }

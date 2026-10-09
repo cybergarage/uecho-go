@@ -37,11 +37,17 @@ jobs:
           GOWORK=off go -C uecho-go mod download
           GOWORK=off go -C uecho-go/examples/uechotui mod download
           GOWORK=off go -C simulator build -o "$RUNNER_TEMP/uecho-simulator-v1" ./cmd/uecho-simulator
-      - name: Isolated loopback controller and v1.0.0 device
+      - name: Isolated loopback + multicast controller and v1.0.0 device
         run: |
           sudo unshare --net -- bash -eu -c '
             ip link set lo up
+            ip link add simtest0 type dummy
+            ip addr add 192.0.2.10/24 dev simtest0
+            ip addr add 192.0.2.20/24 dev simtest0
+            ip link set simtest0 multicast on
+            ip link set simtest0 up
+            ip route add 224.0.0.0/4 dev simtest0
             cd "$1"
-            export GOWORK=off GOPROXY=off GOTOOLCHAIN=local GOMODCACHE="$2" GOCACHE="$3" UECHOTUI_SIMULATOR_V1="$4"
-            "$5" test -race -count=1 -v ./internal/controller -run TestSimulatorLoopback
+            export GOWORK=off GOPROXY=off GOTOOLCHAIN=local GOMODCACHE="$2" GOCACHE="$3" UECHOTUI_SIMULATOR_V1="$4" UECHOTUI_ISOLATED_MULTICAST=1
+            "$5" test -race -count=1 -v ./internal/controller -run "TestSimulator(Loopback|Multicast)"
           ' -- "$GITHUB_WORKSPACE/uecho-go/examples/uechotui" "$(go env GOMODCACHE)" "$RUNNER_TEMP/tui-go-cache" "$RUNNER_TEMP/uecho-simulator-v1" "$(command -v go)"

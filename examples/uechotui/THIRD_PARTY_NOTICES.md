@@ -850,3 +850,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    limitations under the License.
 
 ```
+
+## ECHONET MRA reference data
+
+MRA English 1.3.0 data is embedded under its MIT license. See [original copyright and permission notice](internal/mra/COPYRIGHT.txt) and [provenance](internal/mra/README.md).

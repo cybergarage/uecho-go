@@ -26,6 +26,8 @@ type Device struct {
 	Get, Set, Announce []byte
 	Values             map[byte]Value
 	Maps               bool
+	LastSeen           time.Time
+	Origin             string
 }
 type Snapshot struct {
 	Devices []Device
@@ -42,7 +44,17 @@ type Session struct {
 
 func NewSession(c *Client) *Session {
 	s := &Session{Client: c, operation: make(chan struct{}, 1), devices: make(map[Target]*Device), status: "Ready — no requests sent", timeout: 3 * time.Second}
+	c.OnInstances(func(ip string, data []byte, at time.Time) { s.addInstances(ip, data, at) })
 	c.OnNotification(func(m *protocol.Message, at time.Time) {
+		if m.SEOJ() == 0x0ef001 {
+			for _, p := range m.Properties() {
+				if p.Code() == 0xd5 {
+					s.addInstances(m.SourceAddress(), p.Data(), at)
+				}
+			}
+		} else if m.SEOJ()&0xff != 0 {
+			s.sighted(Target{m.SourceAddress(), m.SEOJ()}, at, "INF")
+		}
 		// Separate notification cache is deliberate: arrival order cannot prove
 		// freshness; INF is never readback or a replacement for a Get snapshot.
 		cEvent := Event{Time: at, Kind: "INF", From: fmt.Sprintf("%s:3610", m.SourceAddress()), Text: "arrival time only; freshness unknown", Hex: fmt.Sprintf("%X", m.Bytes()), TID: m.TID()}
@@ -74,7 +86,19 @@ func (s *Session) Add(t Target) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.devices[t]; !ok {
+		if len(s.devices) >= 256 {
+			return
+		}
 		s.devices[t] = &Device{Target: t, Values: make(map[byte]Value)}
+	}
+}
+func (s *Session) sighted(t Target, at time.Time, origin string) {
+	s.Add(t)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if d := s.devices[t]; d != nil && !at.Before(d.LastSeen) {
+		d.LastSeen = at
+		d.Origin = origin
 	}
 }
 func (s *Session) request(ctx context.Context, t Target, esv protocol.ESV, ep byte, data []byte) (Reply, error) {
@@ -88,6 +112,17 @@ func (s *Session) Discover(ctx context.Context, ip string) error {
 	}
 	defer s.release()
 
+	if ip == "" {
+		s.Status("Sending multicast Get D6 on selected interface; collecting responses")
+		window, cancel := context.WithTimeout(ctx, s.timeout)
+		defer cancel()
+		n, err := s.Client.Discover(window)
+		if err != nil {
+			return s.fail("Discovery", err)
+		}
+		s.Status(fmt.Sprintf("Discovery window complete: %d nodes; %d listed devices (not proof of absence)", n, len(s.Snapshot().Devices)))
+		return nil
+	}
 	s.Status("Sending discovery Get D6 to " + ip)
 	r, err := s.request(ctx, Target{ip, 0x0ef001}, 0x62, 0xd6, nil)
 	if err != nil {
@@ -100,11 +135,20 @@ func (s *Session) Discover(ctx context.Context, ip string) error {
 	for i := 1; i < len(b); i += 3 {
 		eoj := protocol.ObjectCode(uint32(b[i])<<16 | uint32(b[i+1])<<8 | uint32(b[i+2]))
 		if eoj&0xff != 0 {
-			s.Add(Target{ip, eoj})
+			s.sighted(Target{ip, eoj}, r.Received, "D6 response")
 		}
 	}
 	s.Status(fmt.Sprintf("Discovery success: %d instances, TID %04X at %s", b[0], r.Message.TID(), stamp(r.Received)))
 	return nil
+}
+func (s *Session) addInstances(ip string, b []byte, at time.Time) {
+	if !validInstances(b) {
+		return
+	}
+	for i := 1; i < len(b); i += 3 {
+		eoj := protocol.ObjectCode(uint32(b[i])<<16 | uint32(b[i+1])<<8 | uint32(b[i+2]))
+		s.sighted(Target{ip, eoj}, at, "instance list")
+	}
 }
 func stamp(t time.Time) string { return t.UTC().Format("15:04:05.000Z") }
 func (s *Session) fail(operation string, err error) error {
@@ -178,6 +222,8 @@ func (s *Session) Load(ctx context.Context, t Target) error {
 func (s *Session) save(t Target, ep byte, r Reply, state string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	s.devices[t].LastSeen = r.Received
+	s.devices[t].Origin = "Get response"
 	s.devices[t].Values[ep] = Value{Data: append([]byte(nil), r.Message.Property(0).Data()...), Sent: r.Sent, Received: r.Received, TID: r.Message.TID(), State: state}
 }
 func (s *Session) Get(ctx context.Context, t Target, ep byte) error {
@@ -215,10 +261,22 @@ func (s *Session) Set(ctx context.Context, t Target, ep byte, data []byte) error
 
 	s.mu.Lock()
 	d := s.devices[t]
-	allowed := d != nil && d.Maps && slices.Contains(d.Set, ep)
+	allowed := d != nil && d.Maps && slices.Contains(d.Set, ep) && slices.Contains(d.Get, ep)
+	var schemaErr error
+	if allowed {
+		def, known := d.Definitions()[ep]
+		if !known || !def.Editable() {
+			allowed = false
+		} else {
+			schemaErr = def.Validate(data)
+		}
+	}
 	s.mu.Unlock()
 	if !allowed {
-		return s.fail("SetC", fmt.Errorf("not writable in a freshly loaded Set map"))
+		return s.fail("SetC", fmt.Errorf("requires fresh Get/Set maps and a supported MRA write schema"))
+	}
+	if schemaErr != nil {
+		return s.fail("SetC", schemaErr)
 	}
 	if len(data) == 0 || len(data) > 255 {
 		return s.fail("SetC", fmt.Errorf("EDT must contain 1..255 bytes"))

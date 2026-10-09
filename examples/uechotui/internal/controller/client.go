@@ -39,6 +39,7 @@ type pending struct {
 	target  Target
 	request *protocol.Message
 	sent    time.Time
+	until   time.Time
 	replies chan Reply
 }
 
@@ -52,6 +53,10 @@ type Client struct {
 	pending      map[uint]*pending
 	events       []Event
 	unicast      *transport.UnicastUDPSocket
+	multicast    *transport.MulticastSocket
+	discovery    *discovery
+	instances    func(string, []byte, time.Time)
+	local        string
 	workers      sync.WaitGroup
 	send         func(Target, *protocol.Message) error
 	notification func(*protocol.Message, time.Time)
@@ -78,6 +83,21 @@ func (c *Client) Events() []Event {
 // Open binds only an explicitly supplied local IPv4 on its named interface.
 // No advertisement is sent and no multicast group is joined.
 func Open(ifaceName, bind string) (*Client, error) {
+	iface, err := validateBinding(ifaceName, bind)
+	if err != nil {
+		return nil, err
+	}
+	c := newClient()
+	c.unicast = transport.NewUnicastUDPSocket()
+	if err = c.unicast.Bind(iface, bind, 3610); err != nil {
+		return nil, err
+	}
+	c.send = func(t Target, m *protocol.Message) error { _, e := c.unicast.SendMessage(t.IP, 3610, m); return e }
+	c.read(c.unicast.UDPSocket)
+	return c, nil
+}
+
+func validateBinding(ifaceName, bind string) (*net.Interface, error) {
 	iface, err := net.InterfaceByName(ifaceName)
 	if err != nil {
 		return nil, err
@@ -100,14 +120,7 @@ func Open(ifaceName, bind string) (*Client, error) {
 	if !found {
 		return nil, fmt.Errorf("bind IP does not belong to interface %s", ifaceName)
 	}
-	c := newClient()
-	c.unicast = transport.NewUnicastUDPSocket()
-	if err = c.unicast.Bind(iface, bind, 3610); err != nil {
-		return nil, err
-	}
-	c.send = func(t Target, m *protocol.Message) error { _, e := c.unicast.SendMessage(t.IP, 3610, m); return e }
-	c.read(c.unicast.UDPSocket)
-	return c, nil
+	return iface, nil
 }
 
 // Read raw datagrams on the connection owned by the public transport socket so
@@ -136,7 +149,9 @@ func (c *Client) read(socket *transport.UDPSocket) {
 			}
 			m.From.IP = from.IP
 			m.From.Port = from.Port
-			c.receive(m, now)
+			if m.SourceAddress() != c.local {
+				c.receive(m, now)
+			}
 		}
 	}()
 }
@@ -194,7 +209,7 @@ func (c *Client) receive(m *protocol.Message, now time.Time) {
 		c.mu.Unlock()
 		return
 	}
-	if p := c.pending[m.TID()]; p != nil && !now.Before(p.sent) && match(p, m) {
+	if p := c.pending[m.TID()]; p != nil && !now.Before(p.sent) && (p.until.IsZero() || !now.After(p.until)) && match(p, m) {
 		select {
 		case p.replies <- Reply{m, p.sent, now}:
 		default:
@@ -202,10 +217,25 @@ func (c *Client) receive(m *protocol.Message, now time.Time) {
 		c.mu.Unlock()
 		return
 	}
+	if c.discovery != nil && discoveryMatch(c.discovery, m, now) {
+		p := c.discovery
+		key := m.SourceAddress()
+		if !p.seen[key] && len(p.seen) < 256 {
+			p.seen[key] = true
+			p.count++
+			instances := c.instances
+			c.mu.Unlock()
+			if instances != nil {
+				instances(key, m.Property(0).Data(), now)
+			}
+			return
+		}
+	}
 	notification := c.notification
 	c.mu.Unlock()
 	// INF arrival never verifies a write or replaces a fresh Get value.
-	if m.ESV() == 0x73 && m.SourcePort() == 3610 && (m.DEOJ() == SourceEOJ || m.DEOJ() == 0x0ef001 || m.DEOJ() == 0x0ef000) && notification != nil {
+	ip := net.ParseIP(m.SourceAddress())
+	if ip != nil && ip.To4() != nil && !ip.IsUnspecified() && !ip.IsMulticast() && m.ESV() == 0x73 && m.SourcePort() == 3610 && (m.DEOJ() == SourceEOJ || m.DEOJ() == 0x0ef001 || m.DEOJ() == 0x0ef000) && notification != nil {
 		notification(m, now)
 	}
 }
@@ -246,7 +276,8 @@ func (c *Client) RoundTrip(ctx context.Context, t Target, esv protocol.ESV, epc 
 	c.next++
 	m := Request(t.EOJ, esv, epc, data)
 	m.SetTID(c.next)
-	p := &pending{target: t, request: m, sent: time.Now(), replies: make(chan Reply, 1)}
+	deadline, _ := ctx.Deadline()
+	p := &pending{target: t, request: m, sent: time.Now(), until: deadline, replies: make(chan Reply, 1)}
 	c.pending[c.next] = p
 	c.mu.Unlock()
 	defer func() { c.mu.Lock(); delete(c.pending, m.TID()); c.mu.Unlock() }()
@@ -300,6 +331,9 @@ func (c *Client) Close() error {
 	// upstream Close mutates it). net.UDPConn permits concurrent read/close.
 	if c.unicast != nil {
 		c.unicast.Conn.Close()
+	}
+	if c.multicast != nil {
+		c.multicast.Conn.Close()
 	}
 	c.mu.Unlock()
 	c.workers.Wait()

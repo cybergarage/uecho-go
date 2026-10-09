@@ -8,10 +8,10 @@ import (
 	"github.com/cybergarage/uecho-go/net/echonet/protocol"
 )
 
-// Demo opens no sockets and uses a tiny raw-hex fixture, not an MRA schema.
+// Demo opens no sockets and uses a tiny raw-hex fixture, with explicit MRA Release R.
 func Demo() *Client {
 	c := newClient()
-	values := map[byte][]byte{0x80: {0x30}, 0xb0: {0x4b}, 0x9d: {1, 0x80}, 0x9e: {2, 0x80, 0xb0}, 0x9f: {5, 0x80, 0xb0, 0x9d, 0x9e, 0x9f}}
+	values := map[byte][]byte{0x80: {0x30}, 0x82: {0, 0, 'R', 0}, 0xb0: {0x4b}, 0x9d: {1, 0x80}, 0x9e: {2, 0x80, 0xb0}, 0x9f: {6, 0x82, 0x80, 0xb0, 0x9d, 0x9e, 0x9f}}
 	packets := make(chan *protocol.Message, 16)
 	c.send = func(_ Target, m *protocol.Message) error {
 		clone, _ := protocol.NewMessageWithBytes(m.Bytes())
@@ -35,7 +35,8 @@ func Demo() *Client {
 				res.From.Port = 3610
 				ep := byte(req.Property(0).Code())
 				p := protocol.NewPropertyWithCode(protocol.PropertyCode(ep))
-				if req.DEOJ() == 0x0ef001 && ep == 0xd6 {
+				if (req.DEOJ() == 0x0ef001 || req.DEOJ() == 0x0ef000) && ep == 0xd6 {
+					res.SetSEOJ(0x0ef001)
 					p.SetData([]byte{1, 2, 0x90, 1})
 				} else if req.ESV() == 0x61 {
 					values[ep] = append([]byte(nil), req.Property(0).Data()...)

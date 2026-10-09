@@ -163,6 +163,7 @@ func TestReadbackMismatchAndUnknown(t *testing.T) {
 			s.Add(target)
 			s.devices[target].Maps = true
 			s.devices[target].Set = []byte{0x80}
+			s.devices[target].Get = []byte{0x80}
 			c.send = func(_ Target, req *protocol.Message) error {
 				if mode == "timeout" && req.ESV() == 0x62 {
 					return nil

@@ -23,10 +23,10 @@ func main() {
 	}
 }
 func run() (result error) {
-	network := flag.Bool("network", false, "explicitly enable UDP; requires --interface, --bind, --peer")
+	network := flag.Bool("network", false, "explicitly enable UDP; choose interface in UI or specify --interface/--bind; optional --peer unicast")
 	iface := flag.String("interface", "", "confirmed local interface name")
 	bind := flag.String("bind", "", "confirmed local IPv4; listen port is 3610")
-	peer := flag.String("peer", "", "confirmed device/simulator literal IPv4; discovery is unicast")
+	peer := flag.String("peer", "", "optional confirmed literal IPv4 for isolated unicast discovery")
 	flag.Parse()
 	state, err := term.GetState(int(os.Stdin.Fd()))
 	if err != nil {
@@ -37,23 +37,41 @@ func run() (result error) {
 			result = errors.Join(result, fmt.Errorf("restore terminal: %w", err))
 		}
 	}()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 	var c *controller.Client
 	mode := "OFFLINE DEMO — no sockets"
 	target := "127.0.0.1"
 	if *network {
-		if *iface == "" || *bind == "" || *peer == "" {
-			return fmt.Errorf("--network requires explicit --interface, --bind and --peer")
+		if (*iface == "") != (*bind == "") {
+			return fmt.Errorf("specify both --interface and --bind")
 		}
-		ip := net.ParseIP(*peer)
-		if ip == nil || ip.To4() == nil || ip.IsUnspecified() || ip.IsMulticast() {
-			return fmt.Errorf("--peer must be literal unicast IPv4")
+		if *iface == "" {
+			choice, e := dashboard.SelectInterface(ctx)
+			if e != nil {
+				return e
+			}
+			*iface = choice.Name
+			*bind = choice.IP
 		}
-		c, err = controller.Open(*iface, *bind)
+		target = ""
+		if *peer != "" {
+			ip := net.ParseIP(*peer)
+			if ip == nil || ip.To4() == nil || ip.IsUnspecified() || ip.IsMulticast() {
+				return fmt.Errorf("--peer must be literal unicast IPv4")
+			}
+			target = ip.String()
+			c, err = controller.Open(*iface, *bind)
+		} else {
+			c, err = controller.OpenMulticast(*iface, *bind)
+		}
 		if err != nil {
 			return err
 		}
-		target = ip.String()
-		mode = "UDP " + *bind + ":3610 -> " + target + ":3610"
+		mode = "UDP " + *iface + " / " + *bind + ":3610 | multicast discovery"
+		if target != "" {
+			mode = "UDP " + *iface + " / " + *bind + ":3610 -> " + target + ":3610 (unicast)"
+		}
 	} else {
 		if *iface != "" || *bind != "" || *peer != "" {
 			return fmt.Errorf("network options require --network")
@@ -62,7 +80,5 @@ func run() (result error) {
 	}
 	defer c.Close()
 	s := controller.NewSession(c)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 	return dashboard.New(s, target, mode).Run(ctx)
 }
