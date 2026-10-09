@@ -19,4 +19,5 @@ Control Echonet Lite devices from command line. See 'uechoctl <command> --help' 
 * [uechoctl get](uechoctl_get.md)	 - Get property value from Echonet Lite device.
 * [uechoctl scan](uechoctl_scan.md)	 - Scan for Echonet Lite devices.
 * [uechoctl set](uechoctl_set.md)	 - Set property value to Echonet Lite device.
+* [uechoctl tui](uechoctl_tui.md)	 - Discover all ECHONET Lite devices and open the terminal controller
 
