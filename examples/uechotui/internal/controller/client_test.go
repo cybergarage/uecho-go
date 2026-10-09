@@ -266,3 +266,34 @@ func TestCanceledRequestDoesNotAcceptLateReply(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestDemoConcurrentOverloadRemainsCancellable(t *testing.T) {
+	c := Demo()
+	defer c.Close()
+	var wg sync.WaitGroup
+	for range 100 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			r, err := c.RoundTrip(ctx, Target{"127.0.0.1", 0x029001}, 0x62, 0x80, nil)
+			if err != nil {
+				if !strings.Contains(err.Error(), "queue full") {
+					t.Error(err)
+				}
+				return
+			}
+			if r.Message.Property(0).Data()[0] != 0x30 {
+				t.Error("wrong overload response")
+			}
+		}()
+	}
+	done := make(chan struct{})
+	go func() { wg.Wait(); close(done) }()
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("demo queue blocked receive/cancel")
+	}
+}

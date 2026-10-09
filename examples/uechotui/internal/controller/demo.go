@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net"
 	"time"
 
@@ -14,8 +15,12 @@ func Demo() *Client {
 	packets := make(chan *protocol.Message, 16)
 	c.send = func(_ Target, m *protocol.Message) error {
 		clone, _ := protocol.NewMessageWithBytes(m.Bytes())
-		packets <- clone
-		return nil
+		select {
+		case packets <- clone:
+			return nil
+		default:
+			return fmt.Errorf("demo request queue full")
+		}
 	}
 	c.workers.Add(1)
 	go func() {
