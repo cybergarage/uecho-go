@@ -5,19 +5,19 @@
 
 ![logo](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/logo.png)
 
-`uecho-go` is a portable and cross-platform development framework for creating controller applications and devices based on [ECHONET Lite][enet] for Go developers. [ECHONET][enet] is an open standard specification for IoT devices in Japan that defines more than 100 IoT device types, including crime prevention sensors, air conditioners, and refrigerators.
+`uecho-go` is a portable, cross-platform framework for developing [ECHONET Lite][enet] controllers and devices in Go. ECHONET Lite is an open standard for IoT devices in Japan that defines more than 100 IoT device types, including security sensors, air conditioners, and refrigerators.
 
 ## What is uEcho?
 
-`uecho-go` enables developers to easily control [ECHONET Lite][enet] devices or create standard-compliant devices. The framework is designed with object-oriented programming principles, featuring object-oriented naming conventions and functions grouped into classes such as `Controller`, `Node`, `Class`, and `Object`.
+`uecho-go` provides APIs for controlling [ECHONET Lite][enet] devices and implementing device applications. It follows object-oriented naming conventions, with components such as `Controller`, `Node`, `Class`, and `Object`.
 
 ![framework](https://raw.githubusercontent.com/cybergarage/uecho-go/master/doc/img/framework.png)
 
-Traditionally, implementing IoT controllers or devices for [ECHONET Lite][enet] required developers to understand and implement complex communication middleware specifications, including message formats and base sequences.
+Implementing ECHONET Lite controllers and devices from scratch requires handling protocol details such as message formats and communication sequences.
 
-`uecho-go` is also inspired by reactive programming principles. Using `uecho-go`, developers only need to set up basic listeners to implement devices and controllers, as uEcho automatically handles other requests such as property read/write and notification requests.
+`uecho-go` is also inspired by reactive programming principles. It handles property read/write requests and notifications, allowing developers to focus on application logic by configuring listeners.
 
-# Table of Contents
+## Table of Contents
 
 - **Controller**
   - [Overview of Controller](https://github.com/cybergarage/uecho-go/blob/master/doc/controller_overview.md)
@@ -31,4 +31,8 @@ Traditionally, implementing IoT controllers or devices for [ECHONET Lite][enet] 
 - **Appendix**
   - [Extended Configurations for Go Platform](https://github.com/cybergarage/uecho-go/blob/master/doc/extensions.md)
 
-[enet]:http://echonet.jp/english/
+## Related projects
+
+[uecho-simulator](https://github.com/cybergarage/uecho-simulator) is a small ECHONET Lite development simulator with virtual lighting, air conditioning, and temperature sensing. It provides a full-screen terminal UI and a live, read-only browser preview, runs offline by default, and implements limited device profiles. It is built with `uecho-go` and serves as an example application.
+
+[enet]:https://echonet.jp/english/
