@@ -42,12 +42,30 @@ func selectInterface(ctx context.Context, options []controller.InterfaceOption, 
 	}
 	selected := 0
 	confirmed := false
-	form.AddDropDown("Interface / IPv4", labels, 0, func(_ string, i int) { selected = i }).AddButton("Cancel", app.Stop).AddButton("Select and discover all", func() { confirmed = true; app.Stop() })
-	form.SetBorder(true).SetTitle("Choose interface: startup discovers all devices")
+	form.AddDropDown("Interface / IPv4", labels, 0, func(_ string, i int) { selected = i })
+	form.SetBorder(true).SetTitle("Choose interface / arrows select / Return discover all / Esc exit")
 	form.SetFocus(0)
 	app.SetRoot(form, true).SetInputCapture(func(e *tcell.EventKey) *tcell.EventKey {
 		if e.Key() == tcell.KeyEscape || e.Key() == tcell.KeyCtrlC {
 			app.Stop()
+			return nil
+		}
+		if e.Key() == tcell.KeyEnter {
+			confirmed = true
+			app.Stop()
+			return nil
+		}
+		if e.Key() == tcell.KeyDown || e.Key() == tcell.KeyUp {
+			if e.Key() == tcell.KeyDown {
+				selected = min(selected+1, len(options)-1)
+			} else {
+				selected = max(selected-1, 0)
+			}
+			form.GetFormItem(0).(*tview.DropDown).SetCurrentOption(selected)
+			return nil
+		}
+		// Keep this a single-field choice; no nested dropdown or buttons.
+		if e.Key() == tcell.KeyTab || e.Key() == tcell.KeyBacktab || e.Key() == tcell.KeyRune {
 			return nil
 		}
 		return e
