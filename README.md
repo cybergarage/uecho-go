@@ -36,3 +36,12 @@ Implementing ECHONET Lite controllers and devices from scratch requires handling
 [uecho-simulator](https://github.com/cybergarage/uecho-simulator) is a small ECHONET Lite development simulator with virtual lighting, air conditioning, and temperature sensing. It provides a full-screen terminal UI and a live, read-only browser preview, runs offline by default, and implements limited device profiles. It is built with `uecho-go` and serves as an example application.
 
 [enet]:https://echonet.jp/english/
+
+## Fullscreen developer controller
+
+Run `make tui` for a socket-free controller demo. The separate
+[uechotui example](examples/uechotui/README.md) provides device selection,
+interface-selected multicast discovery, MRA settings with raw Get values,
+confirmed SetC/fresh Get verification, and
+protocol/INF logs. Networking requires explicit interface, bind IP and peer IP;
+see its README for isolated simulator v1.0.0 verification and limitations.

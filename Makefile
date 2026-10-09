@@ -100,3 +100,15 @@ clean:
 	go clean -cache -testcache
 	go clean -modcache
 	go clean -i ${PKGES}
+
+# The terminal example owns a separate module so core and existing examples do
+# not acquire terminal dependencies. Override TUI_ARGS only for explicit opt-in.
+.PHONY: tui tui-check tui-build
+tui:
+	cd examples/uechotui && GOWORK=off go run . $(TUI_ARGS)
+
+tui-check:
+	cd examples/uechotui && ./scripts/check.sh
+
+tui-build:
+	cd examples/uechotui && GOWORK=off go build -o bin/uechotui .
