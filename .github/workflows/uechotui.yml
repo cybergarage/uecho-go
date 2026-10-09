@@ -1,0 +1,47 @@
+name: Controller TUI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.x'
+      - name: Download pinned dependencies
+        run: GOWORK=off go -C examples/uechotui mod download
+      - name: Offline UI, correlation, race and portable builds
+        run: make tui-check
+  simulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: uecho-go
+      - uses: actions/checkout@v7
+        with:
+          repository: cybergarage/uecho-simulator
+          ref: v1.0.0
+          path: simulator
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.x'
+      - name: Prepare modules and released simulator
+        run: |
+          GOWORK=off go -C uecho-go mod download
+          GOWORK=off go -C uecho-go/examples/uechotui mod download
+          GOWORK=off go -C simulator build -o "$RUNNER_TEMP/uecho-simulator-v1" ./cmd/uecho-simulator
+      - name: Isolated loopback controller and v1.0.0 device
+        run: |
+          sudo unshare --net -- bash -eu -c '
+            ip link set lo up
+            cd "$1"
+            export GOWORK=off GOPROXY=off GOTOOLCHAIN=local GOMODCACHE="$2" GOCACHE="$3" UECHOTUI_SIMULATOR_V1="$4"
+            "$5" test -race -count=1 -v ./internal/controller -run TestSimulatorLoopback
+          ' -- "$GITHUB_WORKSPACE/uecho-go/examples/uechotui" "$(go env GOMODCACHE)" "$RUNNER_TEMP/tui-go-cache" "$RUNNER_TEMP/uecho-simulator-v1" "$(command -v go)"
