@@ -131,3 +131,12 @@ model power, and the GUI's actual /events SSE power/STATE payload. The existing
 loopback/multicast regressions also run there. No household discovery/write or
 existing simulator stop/restart is performed. Physical M4/M6 LAN operation and
 browser rendering of the existing GUI require the user's follow-up test.
+
+Local native PTY demo additionally verified direct Enter OFF: SetC TID 000B /
+Get 000C EDT 31, then ON: SetC 000D / Get 000E EDT 30, with the full wrapped
+RESULT panel. `q` restored the terminal and exited zero. Temporary GOBIN
+`/tmp/uecho-enum-bin` contains all six tools; root vet/build and help succeeded.
+The integration display requires its own PTY (plain/display are mutually
+exclusive). Integration packages run serially because they share loopback 3610.
+The released simulator starts OFF: its initial no-op OFF write has no STATE
+change event; ON and subsequent OFF must both publish STATE in the GUI SSE.

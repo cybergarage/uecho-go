@@ -51,7 +51,7 @@ func TestSimulatorUIEnumToDisplay(t *testing.T) {
 	target := controller.Target{IP: "127.0.0.2", EOJ: 0x029001}
 	d.selected = target
 	drawScreen(d, screen)
-	for _, want := range []byte{0x31, 0x30, 0x31} {
+	for step, want := range []byte{0x31, 0x30, 0x31} {
 		d.ep = 0x80
 		d.App.SetFocus(d.props)
 		focusedKey(d, tcell.KeyEnter)
@@ -99,7 +99,8 @@ func TestSimulatorUIEnumToDisplay(t *testing.T) {
 		}
 		scanner := bufio.NewScanner(response.Body)
 		found := false
-		stateEvent := false
+		// The initial lighting state is already OFF; only changes publish STATE.
+		stateEvent := step == 0
 		for scanner.Scan() {
 			line := scanner.Text()
 			if !strings.HasPrefix(line, "data: ") {
